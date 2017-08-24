@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Managed\Resources;
 
-use ContinuousPipe\Model\Component\Resources;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 
 interface ResourceUsageResolver
@@ -12,7 +11,7 @@ interface ResourceUsageResolver
      *
      * @throws ResourcesException
      *
-     * @return Resources
+     * @return ResourceUsage
      */
-    public function forFlow(FlatFlow $flow) : Resources;
+    public function forFlow(FlatFlow $flow) : ResourceUsage;
 }

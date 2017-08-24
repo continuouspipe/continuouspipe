@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Environment;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Promise\PromiseInterface;
 
 class CallbackEnvironmentRepository implements DeployedEnvironmentRepository
 {
@@ -32,6 +33,14 @@ class CallbackEnvironmentRepository implements DeployedEnvironmentRepository
     public function findByFlow(FlatFlow $flow)
     {
         return $this->decoratedRepository->findByFlow($flow);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowAndCluster(FlatFlow $flow, string $clusterIdentifier): PromiseInterface
+    {
+        return $this->decoratedRepository->findByFlowAndCluster($flow, $clusterIdentifier);
     }
 
     /**

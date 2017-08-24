@@ -76,36 +76,12 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      */
     public function findByFlow(FlatFlow $flow)
     {
-        $promises = [];
-
-        foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            $clusterEnvironmentsPromise = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)->then(
-                function (array $clusterEnvironments) use ($clusterIdentifier) {
-                    // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
-                    return array_map(function (Environment $environment) use ($clusterIdentifier) {
-                        return new DeployedEnvironment(
-                            $environment->getIdentifier(),
-                            $clusterIdentifier,
-                            $environment->getComponents(),
-                            $environment->getStatus()
-                        );
-                    }, $clusterEnvironments);
-                },
-                function (\Throwable $e) use ($clusterIdentifier) {
-                    $this->logger->warning(
-                        'Fetching environment list from Pipe failed.',
-                        ['exception' => $e, 'cluster' => $clusterIdentifier]
-                    );
-
-                    return [];
-                }
-            );
-
-            $promises[] = $clusterEnvironmentsPromise;
-        }
-
         $environments = array_reduce(
-            Promise\unwrap($promises),
+            Promise\unwrap(
+                array_map(function (string $clusterIdentifier) use ($flow) {
+                    return $this->findByFlowAndCluster($flow, $clusterIdentifier);
+                }, $this->findClusterIdentifiers($flow))
+            ),
             function ($carry, array $item) {
                 return array_merge($carry, $item);
             },
@@ -113,6 +89,34 @@ class EnvironmentClient implements DeployedEnvironmentRepository
         );
 
         return $this->uniqueEnvironments($environments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowAndCluster(FlatFlow $flow, string $clusterIdentifier) : PromiseInterface
+    {
+        return $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)->then(
+            function (array $clusterEnvironments) use ($clusterIdentifier) {
+                // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
+                return array_map(function (Environment $environment) use ($clusterIdentifier) {
+                    return new DeployedEnvironment(
+                        $environment->getIdentifier(),
+                        $clusterIdentifier,
+                        $environment->getComponents(),
+                        $environment->getStatus()
+                    );
+                }, $clusterEnvironments);
+            },
+            function (\Throwable $e) use ($clusterIdentifier) {
+                $this->logger->warning(
+                    'Fetching environment list from Pipe failed.',
+                    ['exception' => $e, 'cluster' => $clusterIdentifier]
+                );
+
+                return [];
+            }
+        );
     }
 
     /**

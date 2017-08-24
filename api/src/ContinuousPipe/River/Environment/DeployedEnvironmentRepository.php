@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Environment;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
+use GuzzleHttp\Promise\PromiseInterface;
 
 interface DeployedEnvironmentRepository
 {
@@ -18,6 +19,18 @@ interface DeployedEnvironmentRepository
      * @return DeployedEnvironment[]
      */
     public function findByFlow(FlatFlow $flow);
+
+    /**
+     * Find the deployed environments of this flow, for the given cluster.
+     *
+     * @param FlatFlow $flow
+     * @param string $clusterIdentifier
+     *
+     * @throws DeployedEnvironmentException
+     *
+     * @return PromiseInterface|DeployedEnvironment[]
+     */
+    public function findByFlowAndCluster(FlatFlow $flow, string $clusterIdentifier) : PromiseInterface;
 
     /**
      * Delete a deployed environment.
