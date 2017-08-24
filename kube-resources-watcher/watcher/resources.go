@@ -6,9 +6,15 @@ import (
     meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type NamespaceResourceUsageNamespace struct {
+    Name string              `json:"name"`
+    Labels map[string]string `json:"labels"`
+}
+
 type NamespaceResourceUsage struct {
-    Limits   v1.ResourceList `json:"limits"`
-    Requests v1.ResourceList `json:"requests"`
+    Namespace NamespaceResourceUsageNamespace `json:"namespace"`
+    Limits    v1.ResourceList                 `json:"limits"`
+    Requests  v1.ResourceList                 `json:"requests"`
 }
 
 type ResourceUsageCalculator interface {
@@ -25,7 +31,13 @@ func (ruc* KubernetesResourceUsageCalculator) CalculateForNamespace(namespace st
         return NamespaceResourceUsage{}, err
     }
 
+    usageNamespace, err := ruc.GetUsageNamespace(namespace)
+    if err != nil {
+        return NamespaceResourceUsage{}, err
+    }
+
     usage := NamespaceResourceUsage{
+        Namespace: usageNamespace,
         Limits: v1.ResourceList{},
         Requests: v1.ResourceList{},
     }
@@ -38,6 +50,18 @@ func (ruc* KubernetesResourceUsageCalculator) CalculateForNamespace(namespace st
     }
 
     return usage, nil
+}
+
+func (ruc* KubernetesResourceUsageCalculator) GetUsageNamespace(name string) (NamespaceResourceUsageNamespace, error) {
+    namespace, err := ruc.KubernetesClient.Namespaces().Get(name, meta_v1.GetOptions{})
+    if err != nil {
+        return NamespaceResourceUsageNamespace{}, err
+    }
+
+    return NamespaceResourceUsageNamespace{
+        Name: namespace.Name,
+        Labels: namespace.Labels,
+    }, nil
 }
 
 func AddQuantity(to *v1.ResourceList, from v1.ResourceList) {
