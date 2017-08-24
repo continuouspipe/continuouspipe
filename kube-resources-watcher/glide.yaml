@@ -1,0 +1,7 @@
+package: github.com/continuouspipe/continuouspipe/kube-resources-watcher
+import:
+- package: k8s.io/client-go
+  version: ^4.0.0
+  subpackages:
+  - "4.0"
+- package: k8s.io/apimachinery
