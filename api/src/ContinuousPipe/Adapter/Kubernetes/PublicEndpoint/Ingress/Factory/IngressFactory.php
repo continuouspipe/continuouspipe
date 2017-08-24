@@ -330,7 +330,7 @@ class IngressFactory implements EndpointFactory
             return ServiceSpecification::TYPE_NODE_PORT;
         }
 
-        if ($this->classHasToBeNodePort($endpointIngress->getClass())) {
+        if (null !== $endpointIngress->getClass() && $this->classHasToBeNodePort($endpointIngress->getClass())) {
             return ServiceSpecification::TYPE_NODE_PORT;
         }
 
