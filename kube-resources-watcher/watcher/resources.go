@@ -49,5 +49,3 @@ func AddQuantity(to *v1.ResourceList, from v1.ResourceList) {
         }
     }
 }
-
-// Throttled calculator

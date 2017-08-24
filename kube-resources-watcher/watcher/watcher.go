@@ -13,8 +13,7 @@ import (
 
 type Watcher struct {
     KubernetesClient *kubernetes.Clientset
-    ResourceUsageCalculator
-    NamespaceResourceStore
+    ResourceUpdater
 }
 
 func (w *Watcher) Watch(stopCh <-chan struct{}) {
@@ -50,17 +49,8 @@ func (w *Watcher) ObjectHasChanged(obj interface{}) {
         return;
     }
 
-    err := w.UpdateNamespaceResources(pod.Namespace)
+    err := w.ResourceUpdater.Update(pod.Namespace)
     if err != nil {
         fmt.Println("ERROR: "+err.Error())
     }
-}
-
-func (w *Watcher) UpdateNamespaceResources(namespace string) error {
-    usage, err := w.ResourceUsageCalculator.CalculateForNamespace(namespace)
-    if err != nil {
-        return err
-    }
-
-    return w.NamespaceResourceStore.StoreUsage(namespace, usage)
 }
