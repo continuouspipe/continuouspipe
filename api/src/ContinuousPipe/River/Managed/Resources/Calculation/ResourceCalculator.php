@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Managed\Resources\Calculation;
 
 use ContinuousPipe\Model\Component\Resources;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
+use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 
 class ResourceCalculator
 {
@@ -12,9 +13,9 @@ class ResourceCalculator
      *
      * @param DeployedEnvironment[] $environments
      *
-     * @return Resources
+     * @return ResourceUsage
      */
-    public static function sumEnvironmentResources($environments = []) : Resources
+    public static function sumEnvironmentResources($environments = []) : ResourceUsage
     {
         $requests = new AggregateResourcesRequest();
         $limits = new AggregateResourcesRequest();
@@ -41,6 +42,9 @@ class ResourceCalculator
             }
         }
 
-        return new Resources($requests->toResourcesRequest(), $limits->toResourcesRequest());
+        return new ResourceUsage(
+            $requests->toResourcesRequest(),
+            $limits->toResourcesRequest()
+        );
     }
 }

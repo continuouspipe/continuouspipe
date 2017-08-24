@@ -28,5 +28,12 @@
                 <argument type="service" id="river.github.file_system_resolver" />
             </argument>
         </service>
+
+        <service id="river.managed.resources.history_repository" class="ContinuousPipe\River\Managed\Resources\InMemoryUsageHistoryRepository" />
+        <service id="river.managed.resources.history_repository.traced"
+                 class="ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository"
+                 decorates="river.managed.resources.history_repository">
+            <argument type="service" id="river.managed.resources.history_repository.traced.inner" />
+        </service>
     </services>
 </container>

@@ -51,6 +51,7 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                     - @jms_serializer
+                    - @river.managed.resources.history_repository.traced
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -202,6 +203,7 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                     - @jms_serializer
+                    - @river.managed.resources.history_repository.traced
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -313,6 +315,7 @@ default:
                     - @authenticator.team_repository
                     - @event_bus
                     - @jms_serializer
+                    - @river.managed.resources.history_repository.traced
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -390,6 +393,7 @@ smoke:
                     - @authenticator.team_repository
                     - @event_bus
                     - @jms_serializer
+                    - @river.managed.resources.history_repository.traced
                 - TideContext:
                     - @command_bus
                     - @event_bus

@@ -2,26 +2,43 @@
 
 namespace ContinuousPipe\River\Managed\Resources;
 
+use ContinuousPipe\Model\Component\ResourcesRequest;
+
 class ResourceUsage
 {
     /**
-     * @var array|ClusterResourceUsage[]
+     * @var ResourcesRequest|null
      */
-    private $clusterUsages;
+    private $requests;
 
     /**
-     * @param ClusterResourceUsage[] $clusterUsages
+     * @var ResourcesRequest|null
      */
-    public function __construct(array $clusterUsages)
+    private $limits;
+
+    /**
+     * @param ResourcesRequest|null $requests
+     * @param ResourcesRequest|null $limits
+     */
+    public function __construct(ResourcesRequest $requests = null, ResourcesRequest $limits = null)
     {
-        $this->clusterUsages = $clusterUsages;
+        $this->requests = $requests;
+        $this->limits = $limits;
     }
 
     /**
-     * @return array|ClusterResourceUsage[]
+     * @return ResourcesRequest|null
      */
-    public function getClusterUsages()
+    public function getRequests()
     {
-        return $this->clusterUsages;
+        return $this->requests;
+    }
+
+    /**
+     * @return ResourcesRequest|null
+     */
+    public function getLimits()
+    {
+        return $this->limits;
     }
 }
