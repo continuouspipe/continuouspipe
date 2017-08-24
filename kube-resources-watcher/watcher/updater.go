@@ -19,7 +19,7 @@ func (dru* DirectResourceUpdater) Update(namespace string) error {
         return err
     }
 
-    return dru.NamespaceResourceStore.StoreUsage(namespace, usage)
+    return dru.NamespaceResourceStore.Store(usage)
 }
 
 func NewDebouncedResourceUpdater(decoratedUpdater ResourceUpdater, debouncingPeriod time.Duration) *DebouncedResourceUpdater {

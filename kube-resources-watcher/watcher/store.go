@@ -9,7 +9,7 @@ import (
 )
 
 type NamespaceResourceStore interface {
-    StoreUsage(namespace string, resources NamespaceResourceUsage) error
+    Store(usage NamespaceResourceUsage) error
 }
 
 func NewCollectionNamespaceResourceStore(collection []NamespaceResourceStore) *CollectionNamespaceResourceStore {
@@ -21,9 +21,9 @@ type CollectionNamespaceResourceStore struct {
     collection []NamespaceResourceStore
 }
 
-func (me *CollectionNamespaceResourceStore) StoreUsage(namespace string, resources NamespaceResourceUsage) error {
+func (me *CollectionNamespaceResourceStore) Store(usage NamespaceResourceUsage) error {
     for _, store := range me.collection {
-        err := store.StoreUsage(namespace, resources)
+        err := store.Store(usage)
 
         if err != nil {
             return err
@@ -34,8 +34,8 @@ func (me *CollectionNamespaceResourceStore) StoreUsage(namespace string, resourc
 }
 
 type ScreenResourceStore struct {}
-func (me *ScreenResourceStore) StoreUsage(namespace string, resources NamespaceResourceUsage) error {
-    fmt.Printf("Namespace \"%s\": %s CPU requests, %s memory requests\n", namespace, resources.Requests.Cpu().String(), resources.Requests.Memory().String())
+func (me *ScreenResourceStore) Store(usage NamespaceResourceUsage) error {
+    fmt.Printf("Namespace \"%s\": %s CPU requests, %s memory requests\n", usage.Namespace.Name, usage.Requests.Cpu().String(), usage.Requests.Memory().String())
 
     return nil
 }
@@ -59,12 +59,8 @@ type HttpResourceReport struct {
     Resources NamespaceResourceUsage `json:"resources"`
 }
 
-func (me *HttpResourceStore) StoreUsage(namespace string, resources NamespaceResourceUsage) error {
-    body, err := json.Marshal(HttpResourceReport{
-        Namespace: namespace,
-        Resources: resources,
-    })
-
+func (me *HttpResourceStore) Store(usage NamespaceResourceUsage) error {
+    body, err := json.Marshal(usage)
     if err != nil {
         return err
     }
