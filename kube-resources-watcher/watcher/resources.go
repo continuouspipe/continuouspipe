@@ -7,8 +7,8 @@ import (
 )
 
 type NamespaceResourceUsage struct {
-    Limits   v1.ResourceList
-    Requests v1.ResourceList
+    Limits   v1.ResourceList `json:"limits"`
+    Requests v1.ResourceList `json:"requests"`
 }
 
 type ResourceUsageCalculator interface {

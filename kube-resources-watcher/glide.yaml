@@ -5,3 +5,7 @@ import:
   subpackages:
   - "4.0"
 - package: k8s.io/apimachinery
+- package: github.com/GoogleCloudPlatform/cloudsql-proxy
+  version: ^1.10.0
+  subpackages:
+  - proxy

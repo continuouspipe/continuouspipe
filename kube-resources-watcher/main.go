@@ -10,37 +10,24 @@ import (
 )
 
 func main() {
-    clusterAddress := os.Getenv("CLUSTER_ADDRESS")
-    clusterUsername := os.Getenv("CLUSTER_USERNAME")
-    clusterPassword := os.Getenv("CLUSTER_PASSWORD")
-
-    if clusterAddress == "" || clusterUsername == "" || clusterPassword == "" {
-        panic(errors.New("Cluster credentials are required"))
-
-        return;
+    client, err := GetKubernetesClient()
+    if err != nil {
+        panic(err)
     }
 
-    clientset, err := kubernetes.NewForConfig(&rest.Config{
-        Host: clusterAddress,
-        Username: clusterUsername,
-        Password: clusterPassword,
-        TLSClientConfig: rest.TLSClientConfig{
-            Insecure: true,
-        },
-    })
-
+    store, err := GetResourcesStore()
     if err != nil {
-        panic(err.Error())
+        panic(err)
     }
 
     w := watcher.Watcher{
-        KubernetesClient: clientset,
+        KubernetesClient: client,
         ResourceUpdater: watcher.NewDebouncedResourceUpdater(
             &watcher.DirectResourceUpdater{
                 ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
-                    KubernetesClient: clientset,
+                    KubernetesClient: client,
                 },
-                NamespaceResourceStore: &watcher.ScreenResourceStore{},
+                NamespaceResourceStore: store,
             },
             1 * time.Second,
         ),
@@ -51,4 +38,35 @@ func main() {
     for{
         time.Sleep(time.Second)
     }
+}
+func GetResourcesStore() (watcher.NamespaceResourceStore, error) {
+    stores := []watcher.NamespaceResourceStore{
+        &watcher.ScreenResourceStore{},
+    }
+
+    httpEndpoint := os.Getenv("HTTP_ENDPOINT")
+    if "" != httpEndpoint {
+        stores = append(stores, watcher.NewHttpResourceStore(httpEndpoint))
+    }
+
+    return watcher.NewCollectionNamespaceResourceStore(stores), nil
+}
+
+func GetKubernetesClient() (*kubernetes.Clientset, error) {
+    clusterAddress := os.Getenv("CLUSTER_ADDRESS")
+    clusterUsername := os.Getenv("CLUSTER_USERNAME")
+    clusterPassword := os.Getenv("CLUSTER_PASSWORD")
+
+    if clusterAddress == "" || clusterUsername == "" || clusterPassword == "" {
+        return nil, errors.New("Cluster credentials are required")
+    }
+
+    return kubernetes.NewForConfig(&rest.Config{
+        Host: clusterAddress,
+        Username: clusterUsername,
+        Password: clusterPassword,
+        TLSClientConfig: rest.TLSClientConfig{
+            Insecure: true,
+        },
+    })
 }
