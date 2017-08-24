@@ -35,10 +35,15 @@ func main() {
 
     w := watcher.Watcher{
         KubernetesClient: clientset,
-        ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
-            KubernetesClient: clientset,
-        },
-        NamespaceResourceStore: &watcher.ScreenResourceStore{},
+        ResourceUpdater: watcher.NewDebouncedResourceUpdater(
+            &watcher.DirectResourceUpdater{
+                ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
+                    KubernetesClient: clientset,
+                },
+                NamespaceResourceStore: &watcher.ScreenResourceStore{},
+            },
+            1 * time.Second,
+        ),
     }
 
     stop := make(chan struct{})
