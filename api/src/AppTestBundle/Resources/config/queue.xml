@@ -23,5 +23,10 @@
                  decorates="river.user_activity.dispatcher">
             <argument type="service" id="river.user_activity.middleware_supporting_dispatcher.inner" />
         </service>
+        <service id="river.managed.resources.history_repository.traced"
+                 class="ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository"
+                 decorates="river.managed.resources.history_repository">
+            <argument type="service" id="river.managed.resources.history_repository.traced.inner" />
+        </service>
     </services>
 </container>
