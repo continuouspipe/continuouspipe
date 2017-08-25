@@ -2,7 +2,7 @@
 
 angular.module('continuousPipeRiver')
     .service('BillingProfileRepository', function($resource, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profiles/:uuid');
+        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid');
 
         this.findMine = function() {
             return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;

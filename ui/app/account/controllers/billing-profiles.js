@@ -32,4 +32,7 @@ angular.module('continuousPipeRiver')
                 });
             });
         };
+    })
+    .controller('ShowBillingProfileController', function($scope, billingProfile) {
+        $scope.billingProfile = billingProfile;
     });

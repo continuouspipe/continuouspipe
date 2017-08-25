@@ -1,0 +1,66 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>Billing profile "{{ billingProfile.name }}"</h2>
+    </div>
+</md-toolbar>
+<md-content class="md-padding" flex>
+    <div flex-xs layout="row">
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Tides usage</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    GRAPH
+                </md-card-content>
+            </md-card>
+        </div>
+
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Resources usage</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    GRAPH
+                </md-card-content>
+            </md-card>
+        </div>
+    </div>
+
+    <div flex-xs layout="row">
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Your plan</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    Details about the plan
+                </md-card-content>
+            </md-card>
+        </div>
+
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Admins</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+                    List of admis
+                </md-card-content>
+            </md-card>
+        </div>
+    </div>
+
+    <div flex-xs layout="row" align="right">
+        <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button>
+    </div>
+</md-content>

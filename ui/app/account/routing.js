@@ -64,5 +64,20 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('billing-profile', {
+                parent: 'billing-profiles',
+                url: '/:uuid',
+                resolve: {
+                    billingProfile: function(BillingProfileRepository, $stateParams) {
+                        return BillingProfileRepository.find($stateParams.uuid);
+                    }
+                },
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/show.html',
+                        controller: 'ShowBillingProfileController'
+                    }
+                }
+            })
         ;
     });
