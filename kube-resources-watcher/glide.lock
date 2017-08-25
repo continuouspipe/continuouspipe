@@ -1,0 +1,14 @@
+hash: 27fcbb685fe0ec2076cb89c7226ac110b300a67fc5c2d106a20860eecb2f3f78
+updated: 2017-08-24T18:37:43.475603505+02:00
+imports:
+- name: github.com/GoogleCloudPlatform/cloudsql-proxy
+  version: 571947b0f240c8b2fa4d163065e5b155920ddfa9
+  subpackages:
+  - proxy
+- name: k8s.io/apimachinery
+  version: 1fd2e63a9a370677308a42f24fd40c86438afddf
+- name: k8s.io/client-go
+  version: d92e8497f71b7b4e0494e5bd204b48d34bd6f254
+  subpackages:
+  - "4.0"
+testImports: []
