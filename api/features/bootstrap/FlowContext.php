@@ -11,6 +11,9 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
+use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
+use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 use ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
@@ -1457,6 +1460,91 @@ EOF;
     public function theFollowingRequestIsSentTo($method, $path, PyStringNode $string)
     {
         $this->response = $this->kernel->handle(Request::create($path, $method, [], [], [], ['CONTENT_TYPE' => 'application/json'], $string->getRaw()));
+    }
+
+    /**
+     * @Given the following resource usage history entry have been saved:
+     */
+    public function theFollowingResourceUsageHistoryEntryHaveBeenSaved(TableNode $table)
+    {
+        foreach ($table->getHash() as $row) {
+            $this->tracedUsageHistoryRepository->save(new ResourceUsageHistory(
+                Uuid::uuid4(),
+                Uuid::fromString($row['flow_uuid']),
+                $row['environment_identifier'],
+                new ResourceUsage(
+                    new Component\ResourcesRequest($row['requests_cpu'], $row['requests_memory']),
+                    new Component\ResourcesRequest($row['limits_cpu'], $row['limits_memory'])
+                ),
+                new \DateTime($row['datetime'])
+            ));
+        }
+    }
+
+    /**
+     * @When I request the resource usage of the flow :flowUuid from the :left to :right with a :internal interval
+     */
+    public function iRequestTheResourceUsageOfTheFlowFromTheToWithAInterval($flowUuid, $left, $right, $interval)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/managed/resources',
+            'GET',
+            [
+                'left' => $left,
+                'right' => $right,
+                'interval' => $interval
+            ]
+        ));
+    }
+
+    /**
+     * @Then I should see the following usage:
+     */
+    public function iShouldSeeTheFollowingUsage(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+        $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $expectedUsage) {
+            $usage = $this->getUsageForDate($usageCollection, $expectedUsage['datetime']);
+
+            if (ResourceConverter::resourceToNumber($usage['cpu']) != ResourceConverter::resourceToNumber($expectedUsage['cpu'])) {
+                throw new \RuntimeException(sprintf(
+                    'Expected CPU usage to not match for date %s: %s instead of %s',
+                    $expectedUsage['datetime'],
+                    $usage['cpu'],
+                    $expectedUsage['cpu']
+                ));
+            }
+
+            if (ResourceConverter::resourceToNumber($usage['memory']) != ResourceConverter::resourceToNumber($expectedUsage['memory'])) {
+                throw new \RuntimeException(sprintf(
+                    'Expected memory usage to not match for date %s: %s instead of %s',
+                    $expectedUsage['datetime'],
+                    $usage['memory'],
+                    $expectedUsage['memory']
+                ));
+            }
+        }
+    }
+
+    private function getUsageForDate(array $usageCollection, string $dateTime)
+    {
+        $expectedDateTime = new \DateTime($dateTime);
+        $foundDates = [];
+
+        // Find the usage
+        foreach ($usageCollection as $usageRow) {
+            $usageDateTime = new \DateTime($usageRow['datetime']['left']);
+
+            if ($usageDateTime == $expectedDateTime) {
+                return $usageRow['usage'];
+            }
+
+            $foundDates[] = $usageRow['datetime']['left'];
+        }
+
+        throw new \RuntimeException('No usage found for this date. Found following dates: '.implode(', ', $foundDates));
     }
 
     /**

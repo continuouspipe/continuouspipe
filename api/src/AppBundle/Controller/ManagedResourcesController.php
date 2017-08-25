@@ -6,6 +6,9 @@ use AppBundle\Request\Managed\UsedResourcesNamespace;
 use AppBundle\Request\Managed\UsedResourcesRequest;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshot;
+use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCalculator;
+use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCollection;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
@@ -14,7 +17,9 @@ use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
@@ -77,6 +82,59 @@ class ManagedResourcesController
             ),
             new \DateTime()
         ));
+    }
+
+    /**
+     * @Route("/flows/{uuid}/managed/resources", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function getFlowUsageAction(FlatFlow $flow, Request $request)
+    {
+        $left = new \DateTime($request->get('left', '-30days'));
+        $right = new \DateTime($request->get('right', 'now'));
+        $interval = new \DateInterval($request->get('internal', 'P1D'));
+
+        $history = $this->usageHistoryRepository->findByFlow($flow->getUuid());
+        $usageCalculator = new UsageSnapshotCalculator();
+        $snapshotsCollection = new UsageSnapshotCollection();
+
+        // From the history to point-in-time snapshot
+        foreach ($history as $entry) {
+            $usageCalculator->updateWith($entry);
+
+            $snapshotsCollection->add(
+                $entry->getDateTime(),
+                $usageCalculator->snapshot()
+            );
+        }
+
+        $flattenedUsage = [];
+
+        $cursor = $left;
+        while ($cursor < $right) {
+            $previousUsage = $snapshotsCollection->lastBefore($cursor) ?: ResourceUsage::zero();
+            $cursorEnd = clone $cursor;
+            $cursorEnd->add($interval);
+
+            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($cursor, $cursorEnd))) {
+                $usageInInterval = $previousUsage;
+            }
+
+            $flattenedUsage[] = [
+                'datetime' => [
+                    'left' => clone $cursor,
+                    'right' => clone $cursorEnd,
+                ],
+                'usage' => $usageInInterval->max($previousUsage)->getLimits(),
+            ];
+
+            // Move cursor
+            $cursor = $cursorEnd;
+        }
+
+        return $flattenedUsage;
     }
 
     private function flowFromNamespace(UsedResourcesNamespace $namespace) : FlatFlow
