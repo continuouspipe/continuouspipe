@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: kube-resources-watcher
+  name: kube-resources-watcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component-identifier: kube-resources-watcher
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        component-identifier: kube-resources-watcher
+      name: kube-resources-watcher
+    spec:
+      containers:
+      - env:
+        - name: CLUSTER_INCEPTION
+          value: "true"
+        - name: HTTP_ENDPOINT
+          value: "<to-be-changed>"
+        - name: HTTP_ENDPOINT_BEARER_TOKEN
+          value: "<not-mandatory-but-security-is-key>"
+        image: quay.io/continuouspipe/kube-resources-watcher:v1
+        name: kube-resources-watcher
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
