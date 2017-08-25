@@ -15,6 +15,8 @@ use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -43,6 +45,10 @@ class UsageController
      */
     private $tideRepository;
     /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -51,12 +57,14 @@ class UsageController
         ResourceUsageHistoryRepository $usageHistoryRepository,
         FlatFlowRepository $flatFlowRepository,
         TideRepository $tideRepository,
+        TeamRepository $teamRepository,
         LoggerInterface $logger
     ) {
         $this->usageHistoryRepository = $usageHistoryRepository;
         $this->flatFlowRepository = $flatFlowRepository;
         $this->tideRepository = $tideRepository;
         $this->logger = $logger;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -101,39 +109,12 @@ class UsageController
      */
     public function getResourcesUsageAction(FlatFlow $flow, Request $request)
     {
-        $left = new \DateTime($request->get('left', '-30days'));
-        $right = new \DateTime($request->get('right', 'now'));
-        $interval = new \DateInterval($request->get('internal', 'P1D'));
-
-        $history = $this->usageHistoryRepository->findByFlow($flow->getUuid());
-        $usageCalculator = new UsageSnapshotCalculator();
-        $snapshotsCollection = new UsageSnapshotCollection();
-
-        // From the history to point-in-time snapshot
-        foreach ($history as $entry) {
-            $usageCalculator->updateWith($entry);
-
-            $snapshotsCollection->add(
-                $entry->getDateTime(),
-                $usageCalculator->snapshot()
-            );
-        }
-
-        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($snapshotsCollection) {
-            $previousUsage = $snapshotsCollection->lastBefore($left) ?: ResourceUsage::zero();
-
-            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($left, $right))) {
-                $usageInInterval = $previousUsage;
-            }
-
-            return [
-                'datetime' => [
-                    'left' => clone $left,
-                    'right' => clone $right,
-                ],
-                'usage' => $usageInInterval->max($previousUsage)->getLimits(),
-            ];
-        });
+        return $this->getResourcesUsage(
+            $flow,
+            new \DateTime($request->get('left', '-30days')),
+            new \DateTime($request->get('right', 'now')),
+            new \DateInterval($request->get('internal', 'P1D'))
+        );
     }
 
     /**
@@ -144,29 +125,61 @@ class UsageController
      */
     public function getTidesUsageAction(FlatFlow $flow, Request $request)
     {
+        return $this->getTideUsage(
+            $flow,
+            new \DateTime($request->get('left', '-30days')),
+            new \DateTime($request->get('right', 'now')),
+            new \DateInterval($request->get('internal', 'P1D'))
+        );
+    }
+
+    /**
+     * @Route("/usage/aggregated", methods={"GET"})
+     * @View
+     */
+    public function getAggregatedUsageAction(Request $request)
+    {
         $left = new \DateTime($request->get('left', '-30days'));
         $right = new \DateTime($request->get('right', 'now'));
         $interval = new \DateInterval($request->get('internal', 'P1D'));
 
-        $tideCollection = new ArrayCollection(
-            $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
-        );
+        $teams = array_map(function (string $teamSlug) {
+            return $this->teamRepository->find($teamSlug);
+        }, explode(',', $request->get('teams', '')));
 
-        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
-            return [
-                'datetime' => [
-                    'left' => clone $left,
-                    'right' => clone $right,
-                ],
-                'usage' => [
-                    'tides' => $tideCollection
-                        ->filter(function (Tide $tide) use ($left, $right) {
-                            return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
-                        })
-                        ->count(),
-                ],
-            ];
-        });
+        if (empty($teams)) {
+            throw new BadRequestHttpException('No teams requested');
+        }
+
+        $flows = array_reduce($teams, function (array $carry, Team $team) {
+            return array_merge($carry, $this->flatFlowRepository->findByTeam($team));
+        }, []);
+
+        $usages = array_reduce($flows, function (array $carry, FlatFlow $flow) use ($left, $right, $interval) {
+            $flowUsages = $this->mergeUsages(array_merge(
+                $this->getTideUsage($flow, $left, $right, $interval),
+                $this->getResourcesUsage($flow, $left, $right, $interval)
+            ));
+
+            return array_merge(
+                $carry,
+                array_map(function (array $usage) use ($flow) {
+                    $usage['flow'] = [
+                        'uuid' => $flow->getUuid()->toString(),
+                        'name' => $flow->getRepository()->getAddress(),
+                    ];
+
+                    $usage['team'] = [
+                        'slug' => $flow->getTeam()->getSlug(),
+                        'name' => $flow->getTeam()->getName(),
+                    ];
+
+                    return $usage;
+                }, $flowUsages)
+            );
+        }, []);
+
+        return $this->aggregateUsageEntriesByDateTime($usages);
     }
 
     private function flowFromNamespace(UsedResourcesNamespace $namespace) : FlatFlow
@@ -200,5 +213,105 @@ class UsageController
         }
 
         return $results;
+    }
+
+    private function getTideUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval): array
+    {
+        $tideCollection = new ArrayCollection(
+            $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
+        );
+
+        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
+            return [
+                'datetime' => [
+                    'left' => clone $left,
+                    'right' => clone $right,
+                ],
+                'usage' => [
+                    'tides' => $tideCollection
+                        ->filter(function (Tide $tide) use ($left, $right) {
+                            return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
+                        })
+                        ->count(),
+                ],
+            ];
+        });
+    }
+
+    private function getResourcesUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval) : array
+    {
+        $history = $this->usageHistoryRepository->findByFlow($flow->getUuid());
+        $usageCalculator = new UsageSnapshotCalculator();
+        $snapshotsCollection = new UsageSnapshotCollection();
+
+        // From the history to point-in-time snapshot
+        foreach ($history as $entry) {
+            $usageCalculator->updateWith($entry);
+
+            $snapshotsCollection->add(
+                $entry->getDateTime(),
+                $usageCalculator->snapshot()
+            );
+        }
+
+        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($snapshotsCollection) {
+            $previousUsage = $snapshotsCollection->lastBefore($left) ?: ResourceUsage::zero();
+
+            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($left, $right))) {
+                $usageInInterval = $previousUsage;
+            }
+
+            $resources = $usageInInterval->max($previousUsage)->getLimits();
+
+            return [
+                'datetime' => [
+                    'left' => clone $left,
+                    'right' => clone $right,
+                ],
+                'usage' => [
+                    'cpu' => $resources->getCpu(),
+                    'memory' => $resources->getMemory(),
+                ],
+            ];
+        });
+    }
+
+    private function aggregateUsageEntriesByDateTime(array $usages)
+    {
+        $aggregated = [];
+
+        foreach ($usages as $usage) {
+            $key = $usage['datetime']['left']->getTimestamp().'-'.$usage['datetime']['right']->getTimestamp();
+
+            if (!array_key_exists($key, $aggregated)) {
+                $aggregated[$key] = [
+                    'datetime' => $usage['datetime'],
+                    'entries' => [],
+                ];
+            }
+
+            unset($usage['datetime']);
+            $aggregated[$key]['entries'][] = $usage;
+        }
+
+        return array_values($aggregated);
+    }
+
+    /**
+     * @param array $usages
+     *
+     * @return array
+     */
+    private function mergeUsages(array $usages) : array
+    {
+        return array_map(function (array $usage) {
+            $usage['usage'] = array_reduce($usage['entries'], function (array $carry, array $entry) {
+                return array_merge($carry, $entry['usage']);
+            }, []);
+
+            unset($usage['entries']);
+
+            return $usage;
+        }, $this->aggregateUsageEntriesByDateTime($usages));
     }
 }
