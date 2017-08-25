@@ -51,5 +51,18 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('billing-profiles', {
+                url: '/billing-profiles',
+                parent: 'account',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/list.html',
+                        controller: 'BillingProfilesController'
+                    },
+                    'title@layout': {
+                        template: 'Billing profiles'
+                    }
+                }
+            })
         ;
     });
