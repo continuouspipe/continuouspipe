@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Helpers\KernelClientHelper;
@@ -93,6 +94,33 @@ class TeamContext implements Context
      */
     public function iShouldSeeThatOnTheTheFlowFromTheTeamUsedTide($dateTime, $flow, $team, $count)
     {
+        $usage = $this->findUsageFromResponse($dateTime, $flow, $team);
+        if ($usage['tides'] != $count) {
+            throw new \RuntimeException(sprintf(
+                'Found %d tides instead of %d',
+                $usage['tides'],
+                $count
+            ));
+        }
+    }
+
+    /**
+     * @Then I should see that on the :dateTime the flow :flow from the team :team used :amount of :resource
+     */
+    public function iShouldSeeThatOnTheTheFlowFromTheTeamUsedOfCpu($dateTime, $flow, $team, $amount, $resource)
+    {
+        $usage = $this->findUsageFromResponse($dateTime, $flow, $team);
+        if (ResourceConverter::resourceToNumber($usage[$resource]) != ResourceConverter::resourceToNumber($amount)) {
+            throw new \RuntimeException(sprintf(
+                'Found %s instead of %s',
+                $usage[$resource],
+                $resource
+            ));
+        }
+    }
+
+    private function findUsageFromResponse($dateTime, $flow, $team)
+    {
         $this->assertResponseCode(200);
 
         $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
@@ -100,17 +128,10 @@ class TeamContext implements Context
 
         foreach ($usage['entries'] as $item) {
             if ($item['flow']['uuid'] == $flow && $item['team']['slug'] == $team) {
-                if ($item['usage']['tides'] != $count) {
-                    throw new \RuntimeException(sprintf(
-                        'Found %d tides instead of %d',
-                        $item['tides'],
-                        $count
-                    ));
-                }
-
-                return;
+                return $item['usage'];
             }
         }
+
 
         throw new \RuntimeException('Did not find such item');
     }
