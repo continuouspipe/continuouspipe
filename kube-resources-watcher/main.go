@@ -7,6 +7,7 @@ import (
     "errors"
     "time"
     "github.com/continuouspipe/continuouspipe/kube-resources-watcher/watcher"
+    "strconv"
 )
 
 func main() {
@@ -20,6 +21,16 @@ func main() {
         panic(err)
     }
 
+    debounceSecondsString := os.Getenv("DEBOUNCE_SECONDS")
+    if "" == debounceSecondsString {
+        debounceSecondsString = "1"
+    }
+
+    debounceSeconds, err := strconv.ParseInt(debounceSecondsString, 10, 32)
+    if err != nil {
+        panic(err)
+    }
+
     w := watcher.Watcher{
         KubernetesClient: client,
         ResourceUpdater: watcher.NewDebouncedResourceUpdater(
@@ -29,7 +40,7 @@ func main() {
                 },
                 NamespaceResourceStore: store,
             },
-            1 * time.Second,
+            time.Duration(debounceSeconds) * time.Second,
         ),
     }
 

@@ -18,3 +18,4 @@ CLUSTER_USERNAME | Username to connect to the Kubernetes cluter | Yes | admin
 CLUSTER_PASSWORD | The password to use to connect to the Kubernetes cluster | Yes | ø
 HTTP_ENDPOINT | HTTP endpoint to which post the resource usages | No | https://api.my-domain.com/usage
 HTTP_ENDPOINT_BEARER_TOKEN | The Bearer token to use in the Authorization header | No | ey123.[...]
+DEBOUNCE_SECONDS | Minimum seconds between two updates for the same namespace | No | 60 (Default: 1)
