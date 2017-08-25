@@ -21,27 +21,14 @@ func main() {
         panic(err)
     }
 
-    debounceSecondsString := os.Getenv("DEBOUNCE_SECONDS")
-    if "" == debounceSecondsString {
-        debounceSecondsString = "1"
-    }
-
-    debounceSeconds, err := strconv.ParseInt(debounceSecondsString, 10, 32)
+    resourceUpdater, err := GetResourceUpdater(client, store)
     if err != nil {
         panic(err)
     }
 
     w := watcher.Watcher{
         KubernetesClient: client,
-        ResourceUpdater: watcher.NewDebouncedResourceUpdater(
-            &watcher.DirectResourceUpdater{
-                ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
-                    KubernetesClient: client,
-                },
-                NamespaceResourceStore: store,
-            },
-            time.Duration(debounceSeconds) * time.Second,
-        ),
+        ResourceUpdater: resourceUpdater,
     }
 
     stop := make(chan struct{})
@@ -50,6 +37,29 @@ func main() {
         time.Sleep(time.Second)
     }
 }
+
+func GetResourceUpdater(kubernetesClient *kubernetes.Clientset, store watcher.NamespaceResourceStore) (watcher.ResourceUpdater, error) {
+    debounceSecondsString := os.Getenv("DEBOUNCE_SECONDS")
+    if "" == debounceSecondsString {
+        debounceSecondsString = "1"
+    }
+
+    debounceSeconds, err := strconv.ParseInt(debounceSecondsString, 10, 32)
+    if err != nil {
+        return nil, err
+    }
+
+    return watcher.NewDebouncedResourceUpdater(
+        &watcher.DirectResourceUpdater{
+            ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
+                KubernetesClient: kubernetesClient,
+            },
+            NamespaceResourceStore: store,
+        },
+        time.Duration(debounceSeconds) * time.Second,
+    ), nil
+}
+
 func GetResourcesStore() (watcher.NamespaceResourceStore, error) {
     stores := []watcher.NamespaceResourceStore{
         &watcher.ScreenResourceStore{},
