@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Managed\Resources;
 
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
+use Ramsey\Uuid\UuidInterface;
 
 class TracedUsageHistoryRepository implements ResourceUsageHistoryRepository
 {
@@ -33,6 +34,14 @@ class TracedUsageHistoryRepository implements ResourceUsageHistoryRepository
         $this->decoratedRepository->save($entry);
 
         $this->saved[] = $entry;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlow(UuidInterface $flowUuid): array
+    {
+        return $this->decoratedRepository->findByFlow($flowUuid);
     }
 
     /**
