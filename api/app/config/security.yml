@@ -17,7 +17,7 @@ security:
                         password: ''
                     continuouspipe_builder_for_sources:
                         roles: ['ROLE_DOWNLOAD_CODE_ARCHIVE']
-                    'system:resources-usage-updater':
+                    'system:resources_usage_updater':
                         roles: ['ROLE_RESOURCE_USAGE_CREATOR']
 
         chain:
