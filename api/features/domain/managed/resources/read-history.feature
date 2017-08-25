@@ -31,7 +31,7 @@ Feature:
       | 2017-08-07T12:00:00Z | 94b58d8e-7c2f-11e7-b19c-0a580a8405ef | master                 | 600m         | 10Gi            | 800m       | 15Gi          |
       | 2017-08-08T12:00:00Z | 94b58d8e-7c2f-11e7-b19c-0a580a8405ef | master                 | 300m         | 1Gi             | 300m       | 800Mi        |
     When I request the resource usage of the flow "94b58d8e-7c2f-11e7-b19c-0a580a8405ef" from the "2017-08-01T00:00:00Z" to "2017-09-01T00:00:00Z" with a "P1D" interval
-    Then I should see the following usage:
+    Then I should see the following resource usage:
     | datetime   | cpu       | memory       |
     | 2017-08-01 | 200m      | 1500Mi       |
     | 2017-08-02 | 400m      | 3000Mi       |

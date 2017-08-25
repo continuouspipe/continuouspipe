@@ -3,11 +3,10 @@
 namespace ContinuousPipe\River\Tests\View;
 
 use ContinuousPipe\River\CodeReference;
-use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideList;
 use ContinuousPipe\River\View\TideRepository;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class InMemoryTideRepository implements TideRepository
@@ -42,7 +41,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         if (!array_key_exists((string) $uuid, $this->tides)) {
             throw new TideNotFound(sprintf(
@@ -57,7 +56,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference)
+    public function findByCodeReference(UuidInterface $flowUuid, CodeReference $codeReference)
     {
         $codeReferenceIdentifier = $this->getCodeReferenceIdentifier($codeReference);
         if (!array_key_exists($codeReferenceIdentifier, $this->tideByCodeReference)) {
@@ -82,7 +81,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    public function findRunningByFlowUuidAndBranch(UuidInterface $flowUuid, $branch)
     {
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_RUNNING;
@@ -92,7 +91,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findRunningByFlowUuid(Uuid $flowUuid)
+    public function findRunningByFlowUuid(UuidInterface $flowUuid)
     {
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) {
             return $tide->getStatus() == Tide::STATUS_RUNNING;
@@ -102,7 +101,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlowUuid(Uuid $uuid)
+    public function findByFlowUuid(UuidInterface $uuid)
     {
         $uuid = (string) $uuid;
 
@@ -120,7 +119,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByBranch(Uuid $flowUuid, $branch, $limit = null)
+    public function findByBranch(UuidInterface $flowUuid, $branch, $limit = null)
     {
         $tides = array_values(array_filter($this->tides, function (Tide $tide) use ($flowUuid, $branch) {
             return $tide->getFlowUuid() == $flowUuid && $tide->getCodeReference()->getBranch() == $branch;
@@ -136,7 +135,7 @@ class InMemoryTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    public function findPendingByFlowUuidAndBranch(UuidInterface $flowUuid, $branch)
     {
         return array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($branch) {
             return $tide->getCodeReference()->getBranch() == $branch && $tide->getStatus() == Tide::STATUS_PENDING;
@@ -187,6 +186,17 @@ class InMemoryTideRepository implements TideRepository
         return count($tides);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowBetween(UuidInterface $flowUuid, \DateTimeInterface $left, \DateTimeInterface $right) : TideList
+    {
+        return new InMemoryTideList(
+            array_values(array_filter($this->findByFlowUuid($flowUuid)->toArray(), function (Tide $tide) use ($left, $right) {
+                return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
+            }))
+        );
+    }
 
     /**
      * @param CodeReference $codeReference

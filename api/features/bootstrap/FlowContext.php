@@ -1487,7 +1487,7 @@ EOF;
     public function iRequestTheResourceUsageOfTheFlowFromTheToWithAInterval($flowUuid, $left, $right, $interval)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/flows/'.$flowUuid.'/managed/resources',
+            '/flows/'.$flowUuid.'/usage/resources',
             'GET',
             [
                 'left' => $left,
@@ -1498,9 +1498,9 @@ EOF;
     }
 
     /**
-     * @Then I should see the following usage:
+     * @Then I should see the following resource usage:
      */
-    public function iShouldSeeTheFollowingUsage(TableNode $table)
+    public function iShouldSeeTheFollowingResourceUsage(TableNode $table)
     {
         $this->assertResponseCode(200);
         $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
@@ -1560,5 +1560,42 @@ EOF;
         }
 
         throw new \RuntimeException('Such usage history not found');
+    }
+
+    /**
+     * @When I request the tide usage of the flow :flowUuid from the :left to :right with a :internal interval
+     */
+    public function iRequestTheTideUsageOfTheFlowFromTheToWithAInterval($flowUuid, $left, $right, $interval)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/usage/tides',
+            'GET',
+            [
+                'left' => $left,
+                'right' => $right,
+                'interval' => $interval
+            ]
+        ));
+    }
+
+    /**
+     * @Then I should see the following tide usage:
+     */
+    public function iShouldSeeTheFollowingTideUsage(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+        $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $expectedUsage) {
+            $usage = $this->getUsageForDate($usageCollection, $expectedUsage['datetime']);
+
+            if ($usage['tides'] != $expectedUsage['tides']) {
+                throw new \RuntimeException(sprintf(
+                    'Expected %d tides but found %s',
+                    $expectedUsage['tides'],
+                    $usage['tides']
+                ));
+            }
+        }
     }
 }

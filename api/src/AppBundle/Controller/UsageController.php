@@ -13,6 +13,9 @@ use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 use ContinuousPipe\River\Repository\FlowNotFound;
+use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -23,9 +26,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
- * @Route(service="app.controller.managed_resources")
+ * @Route(service="app.controller.usage")
  */
-class ManagedResourcesController
+class UsageController
 {
     /**
      * @var ResourceUsageHistoryRepository
@@ -36,6 +39,10 @@ class ManagedResourcesController
      */
     private $flatFlowRepository;
     /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -43,10 +50,12 @@ class ManagedResourcesController
     public function __construct(
         ResourceUsageHistoryRepository $usageHistoryRepository,
         FlatFlowRepository $flatFlowRepository,
+        TideRepository $tideRepository,
         LoggerInterface $logger
     ) {
         $this->usageHistoryRepository = $usageHistoryRepository;
         $this->flatFlowRepository = $flatFlowRepository;
+        $this->tideRepository = $tideRepository;
         $this->logger = $logger;
     }
 
@@ -85,12 +94,12 @@ class ManagedResourcesController
     }
 
     /**
-     * @Route("/flows/{uuid}/managed/resources", methods={"GET"})
+     * @Route("/flows/{uuid}/usage/resources", methods={"GET"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
      * @Security("is_granted('READ', flow)")
      * @View
      */
-    public function getFlowUsageAction(FlatFlow $flow, Request $request)
+    public function getResourcesUsageAction(FlatFlow $flow, Request $request)
     {
         $left = new \DateTime($request->get('left', '-30days'));
         $right = new \DateTime($request->get('right', 'now'));
@@ -110,31 +119,54 @@ class ManagedResourcesController
             );
         }
 
-        $flattenedUsage = [];
+        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($snapshotsCollection) {
+            $previousUsage = $snapshotsCollection->lastBefore($left) ?: ResourceUsage::zero();
 
-        $cursor = $left;
-        while ($cursor < $right) {
-            $previousUsage = $snapshotsCollection->lastBefore($cursor) ?: ResourceUsage::zero();
-            $cursorEnd = clone $cursor;
-            $cursorEnd->add($interval);
-
-            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($cursor, $cursorEnd))) {
+            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($left, $right))) {
                 $usageInInterval = $previousUsage;
             }
 
-            $flattenedUsage[] = [
+            return [
                 'datetime' => [
-                    'left' => clone $cursor,
-                    'right' => clone $cursorEnd,
+                    'left' => clone $left,
+                    'right' => clone $right,
                 ],
                 'usage' => $usageInInterval->max($previousUsage)->getLimits(),
             ];
+        });
+    }
 
-            // Move cursor
-            $cursor = $cursorEnd;
-        }
+    /**
+     * @Route("/flows/{uuid}/usage/tides", methods={"GET"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('READ', flow)")
+     * @View
+     */
+    public function getTidesUsageAction(FlatFlow $flow, Request $request)
+    {
+        $left = new \DateTime($request->get('left', '-30days'));
+        $right = new \DateTime($request->get('right', 'now'));
+        $interval = new \DateInterval($request->get('internal', 'P1D'));
 
-        return $flattenedUsage;
+        $tideCollection = new ArrayCollection(
+            $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
+        );
+
+        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
+            return [
+                'datetime' => [
+                    'left' => clone $left,
+                    'right' => clone $right,
+                ],
+                'usage' => [
+                    'tides' => $tideCollection
+                        ->filter(function (Tide $tide) use ($left, $right) {
+                            return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
+                        })
+                        ->count(),
+                ],
+            ];
+        });
     }
 
     private function flowFromNamespace(UsedResourcesNamespace $namespace) : FlatFlow
@@ -150,5 +182,23 @@ class ManagedResourcesController
         }
 
         throw new \InvalidArgumentException('No label on the namespace');
+    }
+
+    private function foreachInterval(\DateTime $left, \DateTime $right, \DateInterval $interval, callable $intervalCallable)
+    {
+        $results = [];
+        $cursor = $left;
+
+        while ($cursor < $right) {
+            $cursorEnd = clone $cursor;
+            $cursorEnd->add($interval);
+
+            $results[] = $intervalCallable($cursor, $cursorEnd);
+
+            // Move cursor
+            $cursor = $cursorEnd;
+        }
+
+        return $results;
     }
 }
