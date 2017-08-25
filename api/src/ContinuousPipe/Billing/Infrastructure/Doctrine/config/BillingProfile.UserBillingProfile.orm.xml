@@ -11,6 +11,17 @@
         <field name="hasTrial" type="boolean" nullable="true" />
         <field name="tidesPerHour" type="integer" nullable="true" />
 
+        <many-to-many field="teams" target-entity="ContinuousPipe\Security\Team\Team">
+            <join-table name="billing_profile_teams">
+                <join-columns>
+                    <join-column name="billing_profile_uuid" referenced-column-name="uuid" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="team_slug" referenced-column-name="slug" unique="true" on-delete="CASCADE" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
         <many-to-many field="admins" target-entity="ContinuousPipe\Security\User\User">
             <join-table name="user_billing_profiles">
                 <join-columns>

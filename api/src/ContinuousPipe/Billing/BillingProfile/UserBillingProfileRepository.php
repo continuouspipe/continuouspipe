@@ -55,11 +55,4 @@ interface UserBillingProfileRepository
      * @param UserBillingProfile $billingProfile
      */
     public function unlink(Team $team, UserBillingProfile $billingProfile);
-
-    /**
-     * @param UuidInterface $billingProfileUuid
-     *
-     * @return Team[]
-     */
-    public function findRelations(UuidInterface $billingProfileUuid);
 }

@@ -54,6 +54,13 @@ class UserBillingProfile
      */
     private $admins;
 
+    /**
+     * @JMS\Type("array<ContinuousPipe\Security\Team\Team>")
+     *
+     * @var Team[]|Collection
+     */
+    private $teams;
+
     public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, bool $hasTrial = false, int $tidesPerHour = 0)
     {
         $this->uuid = $uuid;
@@ -82,6 +89,18 @@ class UserBillingProfile
         }
 
         return $this->admins;
+    }
+
+    /**
+     * @return Team[]|Collection
+     */
+    public function getTeams()
+    {
+        if (null === $this->teams) {
+            $this->teams = new ArrayCollection();
+        }
+
+        return $this->teams;
     }
 
     /**
@@ -138,5 +157,13 @@ class UserBillingProfile
     public function setAdmins(Collection $admins)
     {
         $this->admins = $admins;
+    }
+
+    /**
+     * @param Team[]|Collection $teams
+     */
+    public function setTeams(Collection $teams)
+    {
+        $this->teams = $teams;
     }
 }

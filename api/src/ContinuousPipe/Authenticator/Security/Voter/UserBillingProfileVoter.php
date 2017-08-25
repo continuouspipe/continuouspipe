@@ -51,13 +51,11 @@ class UserBillingProfileVoter extends Voter
 
         /** @var SecurityUser $user */
         $user = $token->getUser();
-
         if ($user instanceof SecurityUser && $billingProfile->isAdmin($user->getUser())) {
             return true;
         }
 
-        $teams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-        $teamsUserIsAdmin = array_filter($teams, function (Team $team) use ($user) {
+        return $billingProfile->getTeams()->filter(function (Team $team) use ($user) {
             $adminUserMemberships = $team->getMemberships()->filter(function (TeamMembership $membership) use ($user) {
                 return $membership->getUser()->getUsername() == $user->getUsername();
             })->filter(function (TeamMembership $membership) {
@@ -65,8 +63,6 @@ class UserBillingProfileVoter extends Voter
             });
 
             return $adminUserMemberships->count() > 0;
-        });
-
-        return count($teamsUserIsAdmin) > 0;
+        })->count() > 0;
     }
 }
