@@ -17,6 +17,8 @@ security:
                         password: ''
                     continuouspipe_builder_for_sources:
                         roles: ['ROLE_DOWNLOAD_CODE_ARCHIVE']
+                    'system:resources-usage-updater':
+                        roles: ['ROLE_RESOURCE_USAGE_CREATOR']
 
         chain:
             chain:
@@ -64,6 +66,9 @@ security:
 
         # TODO: Secure with Atlassian's IPs
         - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # Managed services
+        - { path: ^/managed/resources$, roles: ROLE_RESOURCE_USAGE_CREATOR }
 
         # Required by GCE healthchecks
         - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

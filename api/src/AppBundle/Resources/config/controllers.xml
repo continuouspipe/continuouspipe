@@ -71,7 +71,6 @@
             <argument type="service" id="river.flow.environment_client" />
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="river.k8s_watcher" />
-            <argument type="service" id="river.managed.resources.usage_resolver"/>
         </service>
         <service id="app.controller.account" class="AppBundle\Controller\AccountController">
             <argument type="service" id="river.code_repository.explorer" />
@@ -83,6 +82,11 @@
         <service id="app.controller.features" class="AppBundle\Controller\FlowFeaturesController">
             <argument type="service" id="command_bus"/>
             <argument type="service" id="river.flex.availability_detector"/>
+        </service>
+        <service id="app.controller.managed_resources" class="AppBundle\Controller\ManagedResourcesController">
+            <argument type="service" id="river.managed.resources.history_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="logger" />
         </service>
 
         <!-- Param converters -->

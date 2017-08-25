@@ -11,6 +11,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
+use ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\River\Tests\Pipe\HookableClient;
@@ -130,6 +131,11 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     private $serializer;
 
+    /**
+     * @var TracedUsageHistoryRepository
+     */
+    private $tracedUsageHistoryRepository;
+
     public function __construct(
         FakeClient $pipeClient,
         HookableClient $hookablePipeClient,
@@ -140,7 +146,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         InMemoryAuthenticatorClient $authenticatorClient,
         TeamRepository $teamRepository,
         MessageBus $eventBus,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        TracedUsageHistoryRepository $tracedUsageHistoryRepository
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -152,6 +159,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->eventBus = $eventBus;
         $this->hookablePipeClient = $hookablePipeClient;
         $this->serializer = $serializer;
+        $this->tracedUsageHistoryRepository = $tracedUsageHistoryRepository;
     }
 
     /**
@@ -703,6 +711,14 @@ EOF;
     public function iShouldBeToldThatIDonTHaveThePermissions()
     {
         $this->assertResponseCode(403);
+    }
+
+    /**
+     * @When I should be told that the resource has been created
+     */
+    public function iShouldBeToldThatTheResourceHasBeenCreated()
+    {
+        $this->assertResponseCode(201);
     }
 
     /**
@@ -1363,16 +1379,6 @@ EOF;
     }
 
     /**
-     * @When I request the usage of the flow :uuid
-     */
-    public function iRequestTheUsageOfTheFlow($uuid)
-    {
-        $this->response = $this->kernel->handle(Request::create(
-            '/flows/'.$uuid.'/usage'
-        ));
-    }
-
-    /**
      * @Given the environment :environmentName on the cluster :cluster has component :component with specification:
      */
     public function theEnvironmentOnTheClusterHasComponentWithSpecification($environmentName, $cluster, $component, PyStringNode $specification)
@@ -1443,5 +1449,28 @@ EOF;
         if ($requests->getMemory() != $memory) {
             throw new \RuntimeException(sprintf('Expected memory requests %s but got %s', $memory, $requests->getMemory()));
         }
+    }
+
+    /**
+     * @When the following :method request is sent to :path:
+     */
+    public function theFollowingRequestIsSentTo($method, $path, PyStringNode $string)
+    {
+        $this->response = $this->kernel->handle(Request::create($path, $method, [], [], [], ['CONTENT_TYPE' => 'application/json'], $string->getRaw()));
+    }
+
+    /**
+     * @Then a resource usage entry for the environment :environment in the flow :flowUuid should have been saved
+     */
+    public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveBeenSaved($environment, $flowUuid)
+    {
+        $saved = $this->tracedUsageHistoryRepository->getSaved();
+        foreach ($saved as $history) {
+            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid)) && $history->getEnvironmentIdentifier() == $environment) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Such usage history not found');
     }
 }
