@@ -74,20 +74,32 @@ func GetResourcesStore() (watcher.NamespaceResourceStore, error) {
 }
 
 func GetKubernetesClient() (*kubernetes.Clientset, error) {
-    clusterAddress := os.Getenv("CLUSTER_ADDRESS")
-    clusterUsername := os.Getenv("CLUSTER_USERNAME")
-    clusterPassword := os.Getenv("CLUSTER_PASSWORD")
+    var config *rest.Config
+    if "true" == os.Getenv("CLUSTER_INCEPTION") {
+        inClusterConfig, err := rest.InClusterConfig()
+        if err != nil {
+            return nil, err
+        }
 
-    if clusterAddress == "" || clusterUsername == "" || clusterPassword == "" {
-        return nil, errors.New("Cluster credentials are required")
+        config = inClusterConfig
+    } else {
+        clusterAddress := os.Getenv("CLUSTER_ADDRESS")
+        clusterUsername := os.Getenv("CLUSTER_USERNAME")
+        clusterPassword := os.Getenv("CLUSTER_PASSWORD")
+
+        if clusterAddress == "" || clusterUsername == "" || clusterPassword == "" {
+            return nil, errors.New("Cluster credentials are required")
+        }
+
+        config = &rest.Config{
+            Host: clusterAddress,
+            Username: clusterUsername,
+            Password: clusterPassword,
+            TLSClientConfig: rest.TLSClientConfig{
+                Insecure: true,
+            },
+        }
     }
 
-    return kubernetes.NewForConfig(&rest.Config{
-        Host: clusterAddress,
-        Username: clusterUsername,
-        Password: clusterPassword,
-        TLSClientConfig: rest.TLSClientConfig{
-            Insecure: true,
-        },
-    })
+    return kubernetes.NewForConfig(config)
 }
