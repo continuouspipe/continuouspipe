@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Message\Debug\TracedMessageProducer;
 use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -25,6 +26,9 @@ use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideTaskView;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
+use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -1329,6 +1333,29 @@ EOF;
     public function iShouldBeToldThatIDonTHaveThePermissionsTheListTheTides()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Given there is the following tides:
+     */
+    public function thereIsTheFollowingTides(TableNode $table)
+    {
+        foreach ($table->getHash() as $tideRow) {
+            $tide = Tide::create(
+                Uuid::uuid4(),
+                Uuid::fromString($tideRow['flow_uuid']),
+                new CodeReference(new GitHubCodeRepository(1234, 'address', 'orga', 'name', false)),
+                TreeLog::fromId('1234'),
+                new Team('slug', 'name'),
+                new User('username', Uuid::uuid4()),
+                [],
+                new \DateTime($tideRow['datetime'])
+            );
+
+            $tide->setStatus($tideRow['status']);
+
+            $this->viewTideRepository->save($tide);
+        }
     }
 
     /**
