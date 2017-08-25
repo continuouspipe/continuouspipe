@@ -87,6 +87,7 @@
             <argument type="service" id="river.managed.resources.history_repository" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="authenticator.team_repository" />
             <argument type="service" id="logger"/>
         </service>
 

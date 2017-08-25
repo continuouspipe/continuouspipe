@@ -33,6 +33,23 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I request the usage of the teams :teams from the :left to :right with a :interval interval
+     */
+    public function iRequestTheUsageOfTheTeamsFromTheToWithAInterval($teams, $left, $right, $interval)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/usage/aggregated',
+            'GET',
+            [
+                'teams' => $teams,
+                'left' => $left,
+                'right' => $right,
+                'interval' => $interval,
+            ]
+        ));
+    }
+
+    /**
      * @Then the team is successfully deleted
      */
     public function theTeamIsSuccessfullyDeleted()
@@ -69,5 +86,51 @@ class TeamContext implements Context
         if ($message != $response['error']) {
             throw new UnexpectedValueException(sprintf("Error message does not match:\n %s", $response['error']));
         }
+    }
+
+    /**
+     * @Then I should see that on the :dateTime the flow :flow from the team :team used :count tide
+     */
+    public function iShouldSeeThatOnTheTheFlowFromTheTeamUsedTide($dateTime, $flow, $team, $count)
+    {
+        $this->assertResponseCode(200);
+
+        $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $usage = $this->getRowForDate($usageCollection, $dateTime);
+
+        foreach ($usage['entries'] as $item) {
+            if ($item['flow']['uuid'] == $flow && $item['team']['slug'] == $team) {
+                if ($item['usage']['tides'] != $count) {
+                    throw new \RuntimeException(sprintf(
+                        'Found %d tides instead of %d',
+                        $item['tides'],
+                        $count
+                    ));
+                }
+
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Did not find such item');
+    }
+
+    private function getRowForDate(array $usageCollection, string $dateTime)
+    {
+        $expectedDateTime = new \DateTime($dateTime);
+        $foundDates = [];
+
+        // Find the usage
+        foreach ($usageCollection as $usageRow) {
+            $usageDateTime = new \DateTime($usageRow['datetime']['left']);
+
+            if ($usageDateTime == $expectedDateTime) {
+                return $usageRow;
+            }
+
+            $foundDates[] = $usageRow['datetime']['left'];
+        }
+
+        throw new \RuntimeException('No usage found for this date. Found following dates: '.implode(', ', $foundDates));
     }
 }
