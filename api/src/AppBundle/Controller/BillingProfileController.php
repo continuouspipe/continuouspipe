@@ -151,10 +151,8 @@ class BillingProfileController
      */
     public function configureAction(User $user, UserBillingProfile $billingProfile, Request $request)
     {
-        $billingProfileTeams = $this->userBillingProfileRepository->findRelations($billingProfile->getUuid());
-
         $activities = [];
-        foreach ($billingProfileTeams as $team) {
+        foreach ($billingProfile->getTeams() as $team) {
             $activities = array_merge($activities, $this->activityTracker->findBy($team, new \DateTime('-30 days'), new \DateTime()));
         }
 
@@ -240,10 +238,10 @@ class BillingProfileController
 
         return [
             'billingProfile' => $billingProfile,
+            'billingProfileTeams' => $billingProfile->getTeams(),
             'subscriptions' => $subscriptions,
             'usage' => $this->usageTracker->getUsage($billingProfile->getUuid(), new \DateTime('-30 days'), new \DateTime()),
             'trialExpiration' => $this->trialResolver->getTrialPeriodExpirationDate($billingProfile),
-            'billingProfileTeams' => $billingProfileTeams,
             'userActivities' => $activities,
             'activityPerDay' => $this->activityPerDay($activities, new \DateTime('-30 days'), new \DateTime()),
         ];

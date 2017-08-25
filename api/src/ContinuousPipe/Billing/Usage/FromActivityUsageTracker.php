@@ -32,7 +32,7 @@ class FromActivityUsageTracker implements UsageTracker
     {
         /** @var UserActivity[] $activities */
         $activities = array_reduce(
-            $this->userBillingProfileRepository->findRelations($billingProfileUuid),
+            $this->userBillingProfileRepository->find($billingProfileUuid)->getTeams()->toArray(),
             function (array $activities, Team $team) use ($start, $end) {
                 return array_merge($activities, $this->activityTracker->findBy($team, $start, $end));
             },

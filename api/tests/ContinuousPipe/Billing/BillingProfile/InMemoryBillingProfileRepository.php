@@ -15,13 +15,6 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     private $profiles = [];
 
     /**
-     * The key being the team slug.
-     *
-     * @var array<string,UserBillingProfile>
-     */
-    private $links = [];
-
-    /**
      * @var TeamRepository
      */
     private $teamRepository;
@@ -43,7 +36,12 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
             ));
         }
 
-        return $this->profiles[$uuid->toString()];
+        $profile = $this->profiles[$uuid->toString()];
+        $profile->setTeams($profile->getTeams()->map(function(Team $team) {
+            return $this->teamRepository->find($team->getSlug());
+        }));
+
+        return $profile;
     }
 
     /**
@@ -74,14 +72,15 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
      */
     public function findByTeam(Team $team): UserBillingProfile
     {
-        if (!array_key_exists($team->getSlug(), $this->links)) {
-            throw new UserBillingProfileNotFound(sprintf(
-                'No billing profile found for team %s',
-                $team->getSlug()
-            ));
+        foreach ($this->profiles as $profile) {
+            if ($profile->getTeams()->filter(function(Team $teamProfile) use ($team) {
+                return $teamProfile->getSlug() == $team->getSlug();
+            })->count() > 0) {
+                return $profile;
+            }
         }
 
-        return $this->links[$team->getSlug()];
+        throw new UserBillingProfileNotFound('No found for this team');
     }
 
     /**
@@ -89,7 +88,7 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
      */
     public function link(Team $team, UserBillingProfile $billingProfile)
     {
-        $this->links[$team->getSlug()] = $billingProfile;
+        $this->find($billingProfile->getUuid())->getTeams()->add($team);
     }
 
     /**
@@ -97,11 +96,7 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
      */
     public function unlink(Team $team, UserBillingProfile $billingProfile)
     {
-        if (!array_key_exists($team->getSlug(), $this->links)) {
-            return;
-        }
-
-        unset($this->links[$team->getSlug()]);
+        $this->find($billingProfile->getUuid())->getTeams()->removeElement($team);
     }
 
     /**
@@ -109,16 +104,6 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
      */
     public function findRelations(UuidInterface $billingProfileUuid)
     {
-        $teamSlugs = [];
-
-        foreach ($this->links as $teamSlug => $profile) {
-            if ($profile->getUuid()->equals($billingProfileUuid)) {
-                $teamSlugs[] = $teamSlug;
-            }
-        }
-
-        return array_map(function(string $slug) {
-            return $this->teamRepository->find($slug);
-        }, $teamSlugs);
+        return $this->find($billingProfileUuid)->getTeams();
     }
 }
