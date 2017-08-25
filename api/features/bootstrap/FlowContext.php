@@ -1531,6 +1531,7 @@ EOF;
     private function getUsageForDate(array $usageCollection, string $dateTime)
     {
         $expectedDateTime = new \DateTime($dateTime);
+        $foundDates = [];
 
         // Find the usage
         foreach ($usageCollection as $usageRow) {
@@ -1539,9 +1540,11 @@ EOF;
             if ($usageDateTime == $expectedDateTime) {
                 return $usageRow['usage'];
             }
+
+            $foundDates[] = $usageRow['datetime']['left'];
         }
 
-        throw new \RuntimeException('No usage found for this date');
+        throw new \RuntimeException('No usage found for this date. Found following dates: '.implode(', ', $foundDates));
     }
 
     /**
