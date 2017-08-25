@@ -18,8 +18,8 @@ angular.module('continuousPipeRiver')
                 parent: 'account',
                 views: {
                     'content@account': {
-                        templateUrl: 'account/views/list.html',
-                        controller: 'AccountsController'
+                        templateUrl: 'account/views/connected-accounts/list.html',
+                        controller: 'ConnectedAccountsController'
                     },
                     'title@layout': {
                         template: 'My Account'
