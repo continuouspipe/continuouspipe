@@ -4,7 +4,9 @@ namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\ManagedResourc
 
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
+use ContinuousPipe\River\Managed\Resources\ResourcesException;
 use Doctrine\ORM\EntityManager;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineResourceUsageHistoryRepository implements ResourceUsageHistoryRepository
 {
@@ -25,5 +27,15 @@ class DoctrineResourceUsageHistoryRepository implements ResourceUsageHistoryRepo
     {
         $this->entityManager->persist($entry);
         $this->entityManager->flush();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlow(UuidInterface $flowUuid): array
+    {
+        return $this->entityManager->getRepository(ResourceUsageHistory::class)->findBy([
+            'flowUuid' => $flowUuid,
+        ]);
     }
 }
