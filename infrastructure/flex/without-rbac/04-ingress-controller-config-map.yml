@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  hsts: "false"
+  server-name-hash-bucket-size: "128"
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-controller-conf
