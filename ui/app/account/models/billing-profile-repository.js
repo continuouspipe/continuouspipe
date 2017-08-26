@@ -19,4 +19,12 @@ angular.module('continuousPipeRiver')
         this.delete = function(profile) {
             return this.resource.remove({uuid: profile.uuid}).$promise;
         };
+
+        this.getUsage = function(profile) {
+            return $resource(RIVER_API_URL+'/usage/aggregated').query({
+                teams: profile.teams.map(function(team) {
+                    return team.slug
+                }).join(',')
+            }).$promise;
+        };
     });
