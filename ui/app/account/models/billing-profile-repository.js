@@ -3,6 +3,11 @@
 angular.module('continuousPipeRiver')
     .service('BillingProfileRepository', function($resource, AUTHENTICATOR_API_URL, RIVER_API_URL) {
         this.resource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid');
+        this.adminsResource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid/admins/:username', {}, {
+            delete: {
+                method: 'DELETE'
+            }
+        });
 
         this.findMine = function() {
             return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;
@@ -27,4 +32,18 @@ angular.module('continuousPipeRiver')
                 }).join(',')
             }).$promise;
         };
+
+        this.addAdmin = function(billingProfile, username) {
+            return this.adminsResource.save({
+                uuid: billingProfile.uuid,
+                username: username
+            }).$promise;
+        };
+
+        this.removeAdmin = function(billingProfile, username) {
+            return this.adminsResource.delete({
+                uuid: billingProfile.uuid,
+                username: username
+            }).$promise;
+        }
     });

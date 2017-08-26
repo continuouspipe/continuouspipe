@@ -54,8 +54,25 @@
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content>
-                    List of admis
+                    <md-list>
+                        <md-list-item ng-repeat="admin in billingProfile.admins">
+                            <h3>{{ admin.username }}</h3>
+                            <md-button ng-click="removeAdmin(admin)">Remove</md-button>
+                        </md-list-item>
+                    </md-list>
                 </md-card-content>
+                <md-card-actions>
+                    <form name="addAdminForm">
+                        <md-input-container class="md-block" flex-gt-xs>
+                            <label>Username</label>
+                            <input ng-model="newAdminUsername" required />
+                        </md-input-container>
+                        <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
+                            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                            Add
+                        </md-button>
+                    </form>
+                </md-card-actions>
             </md-card>
         </div>
     </div>

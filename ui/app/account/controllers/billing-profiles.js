@@ -33,85 +33,45 @@ angular.module('continuousPipeRiver')
             });
         };
     })
-    .controller('ShowBillingProfileController', function($scope, BillingProfileRepository, billingProfile) {
+    .controller('ShowBillingProfileController', function($scope, $mdToast, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
         $scope.billingProfile = billingProfile;
 
-        var normalizeAmount = function(amount) {
-            if (typeof amount == 'string') {
-                if (amount.substr(-2) == 'Gi') {
-                    amount = parseFloat(amount.substr(0, amount.length - 2)) * 1000;
-                } else if (amount.substr(-2) == 'Mi') {
-                    amount = parseFloat(amount.substr(0, amount.length - 2));
-                } else if (amount.substr(-1) == 'm') {
-                    amount = parseFloat(amount.substr(0, amount.length - 1)) / 1000;
-                }
-            }
-
-            return parseFloat(amount);
+        $scope.addAdmin = function(username) {
+            $scope.isLoading = true;
+            BillingProfileRepository.addAdmin(username).then(function() {
+                $mdToast.show($mdToast.simple()
+                    .textContent(username+' successfully added as an administrator')
+                    .position('top')
+                    .hideDelay(3000)
+                    .parent($('md-content#content'))
+                );
+            }, function (error) {
+                swal("Error !", $http.getError(error) || "An unknown error occurred while adding "+username+" as adminstrator", "error");
+            })['finally'](function () {
+                $scope.isLoading = false;
+            });
         };
 
-        var normalizeUsage = function(usage) {
-            Object.keys(usage).forEach(function(key) {
-                return usage[key] = normalizeAmount(usage[key]);
+        $scope.removeAdmin = function(admin) {
+            $scope.isLoading = true;
+            BillingProfileRepository.removeAdmin(admin.username).then(function() {
+                $mdToast.show($mdToast.simple()
+                    .textContent(username+' successfully removed from the administrators')
+                    .position('top')
+                    .hideDelay(3000)
+                    .parent($('md-content#content'))
+                );
+            }, function (error) {
+                swal("Error !", $http.getError(error) || "An unknown error occurred while removing "+username+" from the administrators", "error");
+            })['finally'](function () {
+                $scope.isLoading = false;
             });
-
-            return usage;
-        };
-        
-        var groupEntriesBy = function(entries, groupByFunction) {
-            var groupedEntries = {};
-
-            entries.forEach(function(entry) {
-                var key = groupByFunction(entry);
-
-                // Parse entry's usage
-                entry.usage = normalizeUsage(entry.usage);
-
-                if (!key in groupedEntries) {
-                    groupedEntries[key] = entry;
-                } else {
-                    Object.keys(entry.usage).forEach(function(key) {
-                        groupedEntries.usage[key] += entry.usage[key];
-                    });
-                }
-            });
-
-            return Object.values(groupedEntries);
-        };
-
-        var graphDataFromUsage = function(usage, key) {
-            var groupByFunction = function(entry) { return entry.flow.uuid },
-                header = ['Date'];
-
-            groupEntriesBy(usage[0].entries, groupByFunction).forEach(function(entry) {
-                header.push(groupByFunction(entry));
-            });
-
-            var rows = [
-                header
-            ];
-
-            usage.map(function(entry) {
-                var row = [
-                    (new Date(entry.datetime.left)).toDateString()
-                ];
-
-                groupEntriesBy(entry.entries, groupByFunction).forEach(function(entry) {
-                    row.push(entry.usage[key]);
-                });
-
-                return row;
-            }).forEach(function(row) {
-                rows.push(row);
-            });
-            
-            return rows;
         };
 
         BillingProfileRepository.getUsage(billingProfile).then(function(usage) {
             $scope.tidesGraph = {
                 type: 'SteppedAreaChart',
-                data: graphDataFromUsage(usage, 'tides'),
+                data: UsageGraphBuilder.dataFromUsage(usage, 'tides'),
                 options: {
                     title: 'Number of tides',
                     isStacked: true
@@ -120,7 +80,7 @@ angular.module('continuousPipeRiver')
 
             $scope.resourcesGraph = {
                 type: 'SteppedAreaChart',
-                data: graphDataFromUsage(usage, 'memory'),
+                data: UsageGraphBuilder.dataFromUsage(usage, 'memory'),
                 options: {
                     title: 'Resources (Memory)',
                     isStacked: true
