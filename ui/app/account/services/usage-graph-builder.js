@@ -34,7 +34,7 @@ angular.module('continuousPipeRiver')
                 // Parse entry's usage
                 entry.usage = normalizeUsage(entry.usage);
 
-                if (!key in groupedEntries) {
+                if (!(key in groupedEntries)) {
                     groupedEntries[key] = entry;
                 } else {
                     Object.keys(entry.usage).forEach(function(key) {
@@ -59,8 +59,9 @@ angular.module('continuousPipeRiver')
             ];
 
             usage.map(function(entry) {
+                var leftDate = new Date(entry.datetime.left);
                 var row = [
-                    (new Date(entry.datetime.left)).toDateString()
+                    new Date(leftDate.getFullYear(), leftDate.getMonth(), leftDate.getDate())
                 ];
 
                 groupEntriesBy(entry.entries, groupByFunction).forEach(function(entry) {

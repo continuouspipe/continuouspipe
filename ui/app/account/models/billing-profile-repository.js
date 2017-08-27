@@ -37,13 +37,13 @@ angular.module('continuousPipeRiver')
             return this.adminsResource.save({
                 uuid: billingProfile.uuid,
                 username: username
-            }).$promise;
+            }, {}).$promise;
         };
 
         this.removeAdmin = function(billingProfile, username) {
             return this.adminsResource.delete({
                 uuid: billingProfile.uuid,
                 username: username
-            }).$promise;
+            }, {}).$promise;
         }
     });

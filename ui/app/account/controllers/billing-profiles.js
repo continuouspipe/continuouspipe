@@ -33,12 +33,14 @@ angular.module('continuousPipeRiver')
             });
         };
     })
-    .controller('ShowBillingProfileController', function($scope, $mdToast, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
+    .controller('ShowBillingProfileController', function($scope, $mdToast, $http, $state, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
         $scope.billingProfile = billingProfile;
 
         $scope.addAdmin = function(username) {
             $scope.isLoading = true;
-            BillingProfileRepository.addAdmin(username).then(function() {
+            BillingProfileRepository.addAdmin(billingProfile, username).then(function() {
+                $state.reload();
+
                 $mdToast.show($mdToast.simple()
                     .textContent(username+' successfully added as an administrator')
                     .position('top')
@@ -54,7 +56,9 @@ angular.module('continuousPipeRiver')
 
         $scope.removeAdmin = function(admin) {
             $scope.isLoading = true;
-            BillingProfileRepository.removeAdmin(admin.username).then(function() {
+            BillingProfileRepository.removeAdmin(billingProfile, admin.username).then(function() {
+                $state.reload();
+
                 $mdToast.show($mdToast.simple()
                     .textContent(username+' successfully removed from the administrators')
                     .position('top')
@@ -73,8 +77,12 @@ angular.module('continuousPipeRiver')
                 type: 'SteppedAreaChart',
                 data: UsageGraphBuilder.dataFromUsage(usage, 'tides'),
                 options: {
-                    title: 'Number of tides',
-                    isStacked: true
+                    isStacked: true,
+                    chartArea: {width: '90%', height: '80%'},
+                    hAxis: {
+                        format: 'd/M/yy',
+                        gridlines: {count: 15}
+                    }
                 }
             };
 
@@ -82,8 +90,12 @@ angular.module('continuousPipeRiver')
                 type: 'SteppedAreaChart',
                 data: UsageGraphBuilder.dataFromUsage(usage, 'memory'),
                 options: {
-                    title: 'Resources (Memory)',
-                    isStacked: true
+                    isStacked: true,
+                    chartArea: {width: '90%', height: '80%'},
+                    hAxis: {
+                        format: 'd/M/yy',
+                        gridlines: {count: 15}
+                    }
                 }
             };
         });
