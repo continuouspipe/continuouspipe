@@ -41,3 +41,24 @@ Feature:
     Then the deployment request should be successfully created
     And the replication controller "app" should be deleted
     And the deployment "app" should be created
+
+  Scenario: It logs the pods while waiting for the deployment to finish
+    Given the specification come from the template "simple-app"
+    And the pods of the deployment "app" will be running after creation
+    And the pods of the deployment "mysql" will be running after creation
+    When I send the built deployment request
+    Then the deployment request should be successfully created
+    And the deployment "app" should have at least 1 available replica
+    And I should see a pods log event in the log stream
+    And the deployment should be successful
+
+  Scenario: It ignores if the logstream client fails
+    Given the specification come from the template "simple-app"
+    And the pods of the deployment "app" will be running after creation
+    And the pods of the deployment "mysql" will be running after creation
+    And the log stream client will fail to update logs
+    When I send the built deployment request
+    Then the deployment request should be successfully created
+    And the deployment "app" should have at least 1 available replica
+    And I should see a pods log event in the log stream
+    And the deployment should be successful
