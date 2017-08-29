@@ -10,7 +10,7 @@ use Ramsey\Uuid\UuidInterface;
 class NotifyCommand implements Message
 {
     /**
-     * @JMS\Type("Ramsey\Uuid\Uuid")
+     * @JMS\Type("uuid")
      *
      * @var UuidInterface
      */
