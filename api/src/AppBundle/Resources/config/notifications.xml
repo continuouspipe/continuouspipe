@@ -29,6 +29,7 @@
                  class="ContinuousPipe\River\Notifications\Asynchronous\Notifier\TransformCallsToCommand"
                  decorates="river.notifications.notifier">
             <argument type="service" id="command_bus" />
+            <argument type="service" id="river.notifications.notifier.asynchronous.notifier.calls_to_commands.inner" />
         </service>
 
         <service id="river.notifications.notifier.asynchronous.handler.do_notify"

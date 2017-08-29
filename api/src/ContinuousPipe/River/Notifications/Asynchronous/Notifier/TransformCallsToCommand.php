@@ -15,9 +15,15 @@ class TransformCallsToCommand implements Notifier
      */
     private $commandBus;
 
-    public function __construct(MessageBus $commandBus)
+    /**
+     * @var Notifier
+     */
+    private $decoratedNotifier;
+
+    public function __construct(MessageBus $commandBus, Notifier $decoratedNotifier)
     {
         $this->commandBus = $commandBus;
+        $this->decoratedNotifier = $decoratedNotifier;
     }
 
     /**
@@ -33,6 +39,6 @@ class TransformCallsToCommand implements Notifier
      */
     public function supports(Tide $tide, Status $status, array $configuration)
     {
-        return true;
+        return $this->decoratedNotifier->supports($tide, $status, $configuration);
     }
 }
