@@ -51,8 +51,8 @@ func TestItChangesDockerIoServerAddress(t *testing.T) {
         t.Error(err)
     }
 
-    if _, ok := tracedBuilder.calls[0].AuthConfigs["docker.io"]; ok {
-        t.Error("Found docker.io key")
+    if _, ok := tracedBuilder.calls[0].AuthConfigs["docker.io"]; !ok {
+        t.Error("Not found docker.io key")
     }
 
     if _, ok := tracedBuilder.calls[0].AuthConfigs["https://index.docker.io/v1/"]; !ok {

@@ -51,8 +51,6 @@ func (nib *CredentialsAwareImageBuilder) Build(buildContext io.Reader, options t
     for key, config := range options.AuthConfigs {
         if key == "docker.io" {
             options.AuthConfigs["https://index.docker.io/v1/"] = config
-
-            delete(options.AuthConfigs, "docker.io")
         }
     }
 
