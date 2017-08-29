@@ -44,6 +44,22 @@ func (dib *DockerImageBuilder) Build(buildContext io.Reader, options types.Image
     return ReadDockerResponse(response.Body, output)
 }
 
+type CredentialsAwareImageBuilder struct {
+    decoratedBuilder ImageBuilder
+}
+func (nib *CredentialsAwareImageBuilder) Build(buildContext io.Reader, options types.ImageBuildOptions, output io.Writer) error {
+    for key, config := range options.AuthConfigs {
+        if key == "docker.io" {
+            options.AuthConfigs["https://index.docker.io/v1/"] = config
+
+            delete(options.AuthConfigs, "docker.io")
+        }
+    }
+
+    return nib.decoratedBuilder.Build(buildContext, options, output)
+}
+
+
 // ImagePusher allow to push the image
 type ImagePusher interface {
     Push(imageName string, authConfig string, output io.Writer) error
