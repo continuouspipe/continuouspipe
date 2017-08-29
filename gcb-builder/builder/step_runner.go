@@ -40,9 +40,11 @@ func NewDockerStepRunner(client *client.Client, artifactManager ArtifactManager)
                 dockerClient: client,
             },
         },
-        imageBuilder: &RetryImageBuilder{
-            decoratedBuilder: &DockerImageBuilder{
-                dockerClient: client,
+        imageBuilder: &CredentialsAwareImageBuilder{
+            &RetryImageBuilder{
+                decoratedBuilder: &DockerImageBuilder{
+                    dockerClient: client,
+                },
             },
         },
         dockerClient: client,
