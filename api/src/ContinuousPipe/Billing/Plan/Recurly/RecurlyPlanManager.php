@@ -97,17 +97,21 @@ class RecurlyPlanManager implements PlanManager
      */
     private function subscriptionByBillingProfile(UserBillingProfile $billingProfile)
     {
-        $list = \Recurly_SubscriptionList::getForAccount($billingProfile->getUuid()->toString());
+        try {
+            $list = \Recurly_SubscriptionList::getForAccount($billingProfile->getUuid()->toString());
 
-        if ($list->count() == 0) {
+            if ($list->count() == 0) {
+                return null;
+            } elseif ($list->count() > 1) {
+                $this->logger->warning('Found more than one Recurly subscription for this client', [
+                    'billing_profile_uuid' => $billingProfile->getUuid()->toString(),
+                    'billing_profile_name' => $billingProfile->getName(),
+                ]);
+            }
+
+            return $list->current();
+        } catch (\Recurly_NotFoundError $e) {
             return null;
-        } elseif ($list->count() > 1) {
-            $this->logger->warning('Found more than one Recurly subscription for this client', [
-                'billing_profile_uuid' => $billingProfile->getUuid()->toString(),
-                'billing_profile_name' => $billingProfile->getName(),
-            ]);
         }
-
-        return $list->current();
     }
 }
