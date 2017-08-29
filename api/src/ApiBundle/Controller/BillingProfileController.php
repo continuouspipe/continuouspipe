@@ -2,11 +2,13 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Billing\Plan\ChangeBillingPlanRequest;
 use ContinuousPipe\Billing\BillingProfile\Request\UserBillingProfileCreationRequest;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Plan\PlanManager;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -41,16 +43,23 @@ class BillingProfileController
      */
     private $subscriptionClient;
 
+    /**
+     * @var PlanManager
+     */
+    private $planManager;
+
     public function __construct(
         UserBillingProfileRepository $userBillingProfileRepository,
         UserBillingProfileCreator $userBillingProfileCreator,
         ValidatorInterface $validator,
-        SubscriptionClient $subscriptionClient
+        SubscriptionClient $subscriptionClient,
+        PlanManager $planManager
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->userBillingProfileCreator = $userBillingProfileCreator;
         $this->validator = $validator;
         $this->subscriptionClient = $subscriptionClient;
+        $this->planManager = $planManager;
     }
 
     /**
@@ -150,6 +159,19 @@ class BillingProfileController
         $this->userBillingProfileRepository->save($billingProfile);
 
         return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}/change-plan", methods={"POST"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @ParamConverter("changeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function changePlanAction(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user)
+    {
+        return $this->planManager->changePlan($billingProfile, $changeRequest, $user);
     }
 
     /**

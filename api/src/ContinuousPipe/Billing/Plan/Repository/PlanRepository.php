@@ -16,4 +16,6 @@ interface PlanRepository
      * @return AddOn[]
      */
     public function findAddOns() : array;
+
+    public function findPlanByIdentifier(string $identifier) : Plan;
 }

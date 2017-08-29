@@ -20,5 +20,9 @@
                 <argument type="service" id="kube_status.http.middleware.predictable_request_mapping" />
             </call>
         </service>
+
+        <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\NullPlanManager">
+            <argument type="service" id="app.billing.plan_repository"/>
+        </service>
     </services>
 </container>

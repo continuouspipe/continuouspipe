@@ -4,6 +4,7 @@ namespace ContinuousPipe\Billing\Plan\Repository;
 
 use ContinuousPipe\Billing\Plan\AddOn;
 use ContinuousPipe\Billing\Plan\Plan;
+use ContinuousPipe\Billing\Plan\PlanNotFound;
 use JMS\Serializer\SerializerInterface;
 
 class JsonRepresentedPlanRepository implements PlanRepository
@@ -47,5 +48,16 @@ class JsonRepresentedPlanRepository implements PlanRepository
     public function findAddOns(): array
     {
         return $this->addOns;
+    }
+
+    public function findPlanByIdentifier(string $identifier): Plan
+    {
+        foreach ($this->plans as $plan) {
+            if ($plan->getIdentifier() == $identifier) {
+                return $plan;
+            }
+        }
+
+        throw new PlanNotFound(sprintf('Plan with identifier "%s" not found', $identifier));
     }
 }

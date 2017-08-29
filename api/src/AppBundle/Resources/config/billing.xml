@@ -50,5 +50,13 @@
             <argument>%billing_plans%</argument>
             <argument>%billing_addons%</argument>
         </service>
+
+        <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\Recurly\RecurlyPlanManager">
+            <argument type="service" id="app.billing.plan_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%recurly_subdomain%</argument>
+            <argument>%recurly_api_key%</argument>
+        </service>
     </services>
 </container>

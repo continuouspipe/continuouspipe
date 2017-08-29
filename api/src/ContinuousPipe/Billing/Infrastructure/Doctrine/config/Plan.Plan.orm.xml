@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <embeddable name="ContinuousPipe\Billing\Plan\Plan">
+        <field name="identifier" type="string" nullable="false" />
+        <field name="name" type="string" nullable="true" />
+        <field name="price" type="float" nullable="true" />
+
+        <embedded name="metrics" class="ContinuousPipe\Billing\Plan\Metrics" column-prefix="metrics_" />
+    </embeddable>
+
+</doctrine-mapping>

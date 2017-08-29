@@ -50,6 +50,7 @@
             <argument type="service" id="app.user_billing_profile_creator" />
             <argument type="service" id="validator" />
             <argument type="service" id="builder.billing.subscription_client" />
+            <argument type="service" id="app.billing.plan_manager"/>
         </service>
         <service id="api.controller.api_key" class="ApiBundle\Controller\ApiKeyController">
             <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
