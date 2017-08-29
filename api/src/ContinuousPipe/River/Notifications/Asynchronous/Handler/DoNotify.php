@@ -50,24 +50,26 @@ class DoNotify
     {
         try {
             $tide = $this->getTide($command);
+        } catch (TideNotFound $e) {
+            $this->logger->warning('Handling notification failed, because tide does not exist.', [
+                'message' => $e->getMessage(),
+                'tide' => (string) $command->getTideUuid(),
+                'exception' => $e,
+            ]);
+            return;
+        }
+
+        try {
             $status = $command->getStatus();
             $configuration = $command->getConfiguration();
             $this->notifier->notify($tide, $status, $configuration);
         } catch (NotificationException $e) {
-            if (isset($tide)) {
-                $logger = $this->loggerFactory->fromId($tide->getLogId());
-                $logger->child(new Text($e->getMessage()));
-            }
+            $logger = $this->loggerFactory->fromId($tide->getLogId());
+            $logger->child(new Text($e->getMessage()));
 
             $this->logger->warning('Unable to send notification', [
                 'message' => $e->getMessage(),
                 'notification' => $command->getConfiguration(),
-                'tide' => (string) $command->getTideUuid(),
-                'exception' => $e,
-            ]);
-        } catch (TideNotFound $e) {
-            $this->logger->warning('Handling notification failed, because tide does not exist.', [
-                'message' => $e->getMessage(),
                 'tide' => (string) $command->getTideUuid(),
                 'exception' => $e,
             ]);
