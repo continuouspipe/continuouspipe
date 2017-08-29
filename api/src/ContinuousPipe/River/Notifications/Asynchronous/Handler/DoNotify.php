@@ -52,9 +52,7 @@ class DoNotify
             $tide = $this->getTide($command);
             $status = $command->getStatus();
             $configuration = $command->getConfiguration();
-            if ($this->notifier->supports($tide, $status, $configuration)) {
-                $this->notifier->notify($tide, $status, $configuration);
-            }
+            $this->notifier->notify($tide, $status, $configuration);
         } catch (NotificationException $e) {
             if (isset($tide)) {
                 $logger = $this->loggerFactory->fromId($tide->getLogId());
