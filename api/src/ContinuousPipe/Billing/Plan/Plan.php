@@ -29,6 +29,7 @@ class Plan
 
     /**
      * @JMS\Type("ContinuousPipe\Billing\Plan\Metrics")
+     * @JMS\AccessType("public_method")
      *
      * @var Metrics
      */
@@ -75,6 +76,19 @@ class Plan
      */
     public function getMetrics(): Metrics
     {
-        return $this->metrics;
+        return $this->metrics ?: new Metrics(0, 0, 0, 0);
+    }
+
+    /**
+     * @param Metrics $metrics
+     */
+    public function setMetrics(Metrics $metrics)
+    {
+        $this->metrics = $metrics;
+    }
+
+    public function isEmpty() : bool
+    {
+        return empty($this->identifier);
     }
 }

@@ -66,6 +66,7 @@ class UserBillingProfile
 
     /**
      * @JMS\Type("ContinuousPipe\Billing\Plan\Plan")
+     * @JMS\AccessType("public_method")
      *
      * @var Plan|null
      */
@@ -151,6 +152,10 @@ class UserBillingProfile
      */
     public function getPlan()
     {
+        if (null !== $this->plan && $this->plan->isEmpty()) {
+            $this->plan = null;
+        }
+
         return $this->plan;
     }
 
@@ -184,6 +189,14 @@ class UserBillingProfile
     public function setTeams(Collection $teams)
     {
         $this->teams = $teams;
+    }
+
+    /**
+     * @param Plan|null $plan
+     */
+    public function setPlan(Plan $plan = null)
+    {
+        $this->plan = $plan;
     }
 
     public function withPlan(Plan $plan = null)

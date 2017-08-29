@@ -5,7 +5,7 @@
                           http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <embeddable name="ContinuousPipe\Billing\Plan\Plan">
-        <field name="identifier" type="string" nullable="false" />
+        <field name="identifier" type="string" nullable="true" />
         <field name="name" type="string" nullable="true" />
         <field name="price" type="float" nullable="true" />
 
