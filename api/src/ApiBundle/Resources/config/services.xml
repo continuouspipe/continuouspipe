@@ -59,6 +59,9 @@
             <argument type="service" id="app.repository.team"/>
             <argument type="service" id="security.authorization_checker"/>
         </service>
+        <service id="api.controller.billing_plan" class="ApiBundle\Controller\BillingPlanController">
+            <argument type="service" id="app.billing.plan_repository" />
+        </service>
 
         <!-- Authentication -->
         <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey">

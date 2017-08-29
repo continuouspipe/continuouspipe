@@ -36,6 +36,8 @@ class UserBillingProfile
     /**
      * @JMS\Type("boolean")
      *
+     * TODO: Replace by a plan!
+     *
      * @var bool
      */
     private $hasTrial;
