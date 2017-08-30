@@ -23,6 +23,18 @@
             <argument>%logitio_url%</argument>
             <argument>%logitio_api_key%</argument>
         </service>
+        <service id="river.analytics.logitio.asynchronous.client.calls_to_command"
+                 class="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Client\TransformCallsToCommand"
+                 decorates="river.logitio.client">
+            <argument type="service" id="command_bus" />
+        </service>
+        <service id="river.analytics.logitio.asynchronous.handler.add_event_handler"
+                 class="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Handler\AddEventHandler">
+            <argument type="service" id="river.analytics.logitio.asynchronous.client.calls_to_command.inner" />
+
+            <tag name="asynchronous_command_handler"
+                 handles="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Command\AddEventCommand" />
+        </service>
 
         <service id="river.analytics.logitio.guzzle_client" class="GuzzleHttp\Client">
             <tag name="csa_guzzle.client" />
