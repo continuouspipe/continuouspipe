@@ -78,6 +78,7 @@
                         </md-card-title>
                         <md-card-content>
                             <md-list>
+                                <md-subheader class="md-no-sticky">Users</md-subheader>
                                 <md-list-item ng-repeat="admin in billingProfile.admins">
                                     <md-icon>person</md-icon>
                                     <p>{{ admin.username }}</p>
@@ -86,23 +87,23 @@
                                     </md-button>
                                 </md-list-item>
                             </md-list>
+                            <md-card-actions>
+                                <form name="addAdminForm">
+                                    <div layout-gt-xs="row">
+                                        <md-input-container class="md-block" flex-gt-xs>
+                                            <label>Username</label>
+                                            <input ng-model="newAdminUsername" required />
+                                        </md-input-container>
+                                        <md-input-container class="md-block">
+                                            <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
+                                                <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                                                Add
+                                            </md-button>
+                                        </md-input-container>
+                                    </div>
+                                </form>
+                            </md-card-actions>
                         </md-card-content>
-                        <md-card-actions>
-                            <form name="addAdminForm">
-                                <div layout-gt-xs="row">
-                                    <md-input-container class="md-block" flex-gt-xs>
-                                        <label>Username</label>
-                                        <input ng-model="newAdminUsername" required />
-                                    </md-input-container>
-                                    <md-input-container class="md-block">
-                                        <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
-                                            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
-                                            Add
-                                        </md-button>
-                                    </md-input-container>
-                                </div>
-                            </form>
-                        </md-card-actions>
                     </md-card>
                 </div>
             </div>
