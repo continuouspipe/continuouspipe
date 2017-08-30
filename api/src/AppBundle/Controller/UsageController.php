@@ -17,6 +17,7 @@ use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\TimeResolver\TimeResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
@@ -52,19 +53,25 @@ class UsageController
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var TimeResolver
+     */
+    private $timeResolver;
 
     public function __construct(
         ResourceUsageHistoryRepository $usageHistoryRepository,
         FlatFlowRepository $flatFlowRepository,
         TideRepository $tideRepository,
         TeamRepository $teamRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        TimeResolver $timeResolver
     ) {
         $this->usageHistoryRepository = $usageHistoryRepository;
         $this->flatFlowRepository = $flatFlowRepository;
         $this->tideRepository = $tideRepository;
         $this->logger = $logger;
         $this->teamRepository = $teamRepository;
+        $this->timeResolver = $timeResolver;
     }
 
     /**
@@ -97,7 +104,7 @@ class UsageController
                 $request->getRequests(),
                 $request->getLimits()
             ),
-            new \DateTime()
+            $this->timeResolver->resolve()
         ));
     }
 
