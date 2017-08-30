@@ -28,15 +28,17 @@
                 </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <md-input-container class="md-block" flex-gt-xs>
-                    <label>Billing profile</label>
-                    <md-select ng-model="patch.billing_profile" md-on-open="loadBillingProfiles()" placeholder="Select the billing profile">
-                        <md-option ng-value="undefined" selected="selected">{{ billingProfile.name }} (user "{{ billingProfile.user.username }}") <em>(Don't change)</em></md-option>
-                        <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">{{ billingProfile.name }}</md-option>
-                    </md-select>
-                </md-input-container>
+                <remote-resource resource-name="billingProfile">
+                    <md-input-container class="md-block" flex-gt-xs ng-if="billingProfile">
+                        <label>Billing profile</label>
+                        <md-select ng-model="patch.billing_profile" md-on-open="loadBillingProfiles()" placeholder="Select the billing profile">
+                            <md-option ng-value="undefined" selected="selected">{{ billingProfile.name }} <em>(Don't change)</em></md-option>
+                            <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">{{ billingProfile.name }}</md-option>
+                        </md-select>
+                    </md-input-container>
+                </remote-resource>
             </md-card-content>
-            <md-card-actions layout="column" layout-align="start">
+            <md-card-actions layout="column" layout-align="start" ng-if="billingProfile">
                 <md-button class="md-raised md-primary" ui-sref="billing-profile({uuid: billingProfile.uuid})">Billing profile usage & details</md-button>
             </md-card-actions>
         </md-card>
