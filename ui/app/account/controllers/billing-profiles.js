@@ -100,6 +100,11 @@ angular.module('continuousPipeRiver')
             };
         });
 
+        BillingProfileRepository.getUsage(billingProfile, 'P31D').then(function(usage) {
+           console.log('tides', usage[0].entries[0].usage);
+           $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+        });
+
         $scope.change = function(ev) {
             var scope = $scope.$new();
             scope.billingProfile = billingProfile;
@@ -123,7 +128,6 @@ angular.module('continuousPipeRiver')
         $scope.loadPlans = function() {
             return plansPromise.then(function(plans) {
                 $scope.plans = plans;
-
                 return plans;
             });
         };
