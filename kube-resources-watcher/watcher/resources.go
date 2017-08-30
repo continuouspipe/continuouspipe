@@ -24,8 +24,14 @@ func (kpnf *KubernetesNamespaceFinder) GetPodsInNamespace(namespace string) ([]v
     return list.Items, nil
 }
 
-func (kpnf *KubernetesNamespaceFinder) GetNamespace(namespace string) (*v1.Namespace, error) {
-    return kpnf.kubernetesClient.Namespaces().Get(namespace, meta_v1.GetOptions{})
+func (kpnf *KubernetesNamespaceFinder) GetNamespace(name string) (v1.Namespace, error) {
+    namespace, err := kpnf.kubernetesClient.Namespaces().Get(name, meta_v1.GetOptions{})
+
+    if err != nil {
+        return v1.Namespace{}, err
+    }
+
+    return *namespace, err
 }
 
 func NewKubernetesNamespaceFinder(client *kubernetes.Clientset) *KubernetesNamespaceFinder {
