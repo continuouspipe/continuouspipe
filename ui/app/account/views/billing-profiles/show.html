@@ -78,7 +78,7 @@
                                 <th>Teams linked</th>
                                 <td>
                                     <span ng-if="!billingProfile.teams.length">No team</span>
-                                    <md-chips ng-if="billingProfile.teams.length > 0">
+                                    <md-chips ng-if="billingProfile.teams.length">
                                         <md-chip ng-repeat="team in billingProfile.teams">{{ team.name }}</md-chip>
                                     </md-chips>
                                 </td>
@@ -89,6 +89,8 @@
                 <md-card-actions>
                     <div layout-gt-xs="row">
                         <md-button class="md-raised" ng-click="change($event)">Change</md-button>
+                        <span flex />
+                        <md-button ng-if="billingProfile.invoices_url" ng-href="{{ billingProfile.invoices_url }}">Invoices</md-button>
                     </div>
                 </md-card-actions>
             </md-card>
