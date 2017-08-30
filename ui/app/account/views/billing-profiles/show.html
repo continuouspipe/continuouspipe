@@ -18,7 +18,7 @@
                             <p>You don't have any plan for now, select one!</p>
                         </md-card-content>
                         <md-card-content ng-if="billingProfile.plan">
-                            <table>
+                            <table width="100%">
                                 <tbody>
                                 <tr>
                                     <th>Plan name</th>
@@ -34,12 +34,6 @@
                                     <td>{{ billingProfile.plan.metrics.tides }}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2">
-                                        {{ billingProfile.plan.metrics.used.tides }}
-                                        <md-progress-linear md-mode="determinate" value="{{billingProfile.plan.metrics.used.tides}}"></md-progress-linear>
-                                    </td>
-                                </tr>
-                                <tr>
                                     <th>Memory Available</th>
                                     <td>{{ billingProfile.plan.metrics.memory }} GB</td>
                                 </tr>
@@ -51,7 +45,6 @@
                                     <th>Available private Docker image</th>
                                     <td>{{ billingProfile.plan.metrics.docker_image }}</td>
                                 </tr>
-                                <tr class="separator"></tr>
                                 <tr>
                                     <th>Teams linked</th>
                                     <td>
@@ -61,6 +54,10 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="block block__background">
+                                <div class="block__title">Tides used: {{ billingProfile.plan.metrics.used.tides }} of {{ billingProfile.plan.metrics.tides }}</div>
+                                <md-progress-linear md-mode="determinate" value="{{billingProfile.plan.metrics.used.tides}}"></md-progress-linear>
+                            </div>
                             <md-card-actions layout="row" layout-align="space-between">
                                 <div flex="2" layout="column">
                                     <md-button class="md-raised md-primary" ng-click="change($event)">Change</md-button>
@@ -76,7 +73,7 @@
                     <md-card>
                         <md-card-title>
                             <md-card-title-text>
-                                <span class="md-headline">Account managers</span>
+                                <span class="md-headline">Billing admin</span>
                             </md-card-title-text>
                         </md-card-title>
                         <md-card-content>
