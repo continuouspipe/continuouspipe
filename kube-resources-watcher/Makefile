@@ -1,5 +1,5 @@
 IMAGE_NAME=quay.io/continuouspipe/kube-resources-watcher
-TAG=v1
+TAG=v0.0.2
 
 all: tests build push
 

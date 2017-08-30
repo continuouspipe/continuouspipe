@@ -51,9 +51,9 @@ func GetResourceUpdater(kubernetesClient *kubernetes.Clientset, store watcher.Na
 
     return watcher.NewDebouncedResourceUpdater(
         &watcher.DirectResourceUpdater{
-            ResourceUsageCalculator: &watcher.KubernetesResourceUsageCalculator{
-                KubernetesClient: kubernetesClient,
-            },
+            ResourceUsageCalculator: watcher.NewKubernetesResourceUsageCalculator(
+                watcher.NewKubernetesNamespaceFinder(kubernetesClient),
+            ),
             NamespaceResourceStore: store,
         },
         time.Duration(debounceSeconds) * time.Second,
