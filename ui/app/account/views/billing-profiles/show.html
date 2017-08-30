@@ -88,20 +88,25 @@
                                 </md-list-item>
                             </md-list>
                             <md-card-actions>
-                                <form name="addAdminForm">
-                                    <div layout-gt-xs="row">
-                                        <md-input-container class="md-block" flex-gt-xs>
-                                            <label>Username</label>
-                                            <input ng-model="newAdminUsername" required />
-                                        </md-input-container>
-                                        <md-input-container class="md-block">
-                                            <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
-                                                <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
-                                                Add
-                                            </md-button>
-                                        </md-input-container>
-                                    </div>
-                                </form>
+                                <md-list>
+                                    <md-subheader class="md-no-sticky">Add User</md-subheader>
+                                    <md-list-item>
+                                        <form name="addAdminForm" flex="100">
+                                            <div layout-gt-xs="row">
+                                                <md-input-container class="md-block" flex-gt-xs>
+                                                    <label>Username</label>
+                                                    <input ng-model="newAdminUsername" required />
+                                                </md-input-container>
+                                                <md-input-container class="md-block">
+                                                    <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
+                                                        <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                                                        Add
+                                                    </md-button>
+                                                </md-input-container>
+                                            </div>
+                                        </form>
+                                    </md-list-item>
+                                </md-list>
                             </md-card-actions>
                         </md-card-content>
                     </md-card>
@@ -127,7 +132,7 @@
                     <md-card>
                         <md-card-title>
                             <md-card-title-text>
-                                <span class="md-headline">Resources usage (GB of memory)</span>
+                                <span class="md-headline">Resources usage (MB of memory)</span>
                             </md-card-title-text>
                         </md-card-title>
                         <md-card-content>
