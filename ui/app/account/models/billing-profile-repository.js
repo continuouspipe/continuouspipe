@@ -25,11 +25,12 @@ angular.module('continuousPipeRiver')
             return this.resource.remove({uuid: profile.uuid}).$promise;
         };
 
-        this.getUsage = function(profile) {
+        this.getUsage = function(profile, period) {
             return $resource(RIVER_API_URL+'/usage/aggregated').query({
                 teams: profile.teams.map(function(team) {
                     return team.slug
-                }).join(',')
+                }).join(','),
+                interval: period
             }).$promise;
         };
 
