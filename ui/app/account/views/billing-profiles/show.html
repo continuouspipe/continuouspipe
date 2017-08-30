@@ -54,9 +54,7 @@
                             <th>Teams linked</th>
                             <td>
                                 <span ng-if="!billingProfile.teams.length">No team</span>
-                                <md-chips ng-if="billingProfile.teams.length > 0">
-                                    <md-chip ng-repeat="team in billingProfile.teams">{{ team.name }}</md-chip>
-                                </md-chips>
+                                <span ng-repeat="team in billingProfile.teams">{{ team.name }}</span>
                             </td>
                         </tr>
                         </tbody>
