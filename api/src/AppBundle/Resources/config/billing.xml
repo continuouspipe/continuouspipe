@@ -59,5 +59,11 @@
             <argument>%recurly_subdomain%</argument>
             <argument>%recurly_api_key%</argument>
         </service>
+
+        <service id="app.billing.add_invoices_to_serialized" class="ContinuousPipe\Billing\Plan\Recurly\AddRecurlysInvoicesUrlToSerializedBillingProfiles">
+            <argument type="service" id="builder.billing.subscription_client" />
+
+            <tag name="jms_serializer.event_subscriber" />
+        </service>
     </services>
 </container>
