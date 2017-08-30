@@ -31,7 +31,7 @@ class UsageSnapshotCollection
      *
      * @return ResourceUsage|null
      */
-    public function highestUsageInInternal(\DateTimeInterface $left, \DateTimeInterface $right)
+    public function highestUsageInInterval(\DateTimeInterface $left, \DateTimeInterface $right)
     {
         $snapshots = $this->snapshotsInInterval($left, $right);
         if (count($snapshots) == 0) {
