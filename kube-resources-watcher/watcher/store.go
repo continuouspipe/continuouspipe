@@ -78,7 +78,14 @@ func (me *HttpResourceStore) Store(usage NamespaceResourceUsage) error {
         req.Header.Set("Authorization", "Bearer "+me.bearerToken)
     }
 
-    _, err = me.httpClient.Do(req)
+    resp, err := me.httpClient.Do(req)
+    if err != nil {
+        return err
+    }
 
-    return err
+    if resp.StatusCode != 201 {
+        return fmt.Errorf("Unexpected response (%d): %s", resp.StatusCode, resp.Status)
+    }
+
+    return nil
 }
