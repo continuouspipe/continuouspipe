@@ -30,7 +30,7 @@
     "angular-resizable": "^1.2.0",
     "xterm.js": "^2.8.1",
     "kube-status": "https://github.com/continuouspipe/kube-status.git#639b90e36c1b57e5c6801dfadfbc0dd4daf452e8",
-    "angular-google-chart": "1.0.0-beta.1"
+    "angular-google-chart": "https://github.com/sroze/angular-google-chart.git#be412b217d73e4825aaa3217bdc2ecb063c5e947"
   },
   "devDependencies": {
     "angular-mocks": "~1.5.0"
@@ -40,6 +40,6 @@
   "resolutions": {
     "angular": "~1.5.0",
     "angular-material": "~1.0.6",
-    "angular-google-chart": "1.0.0-beta.1"
+    "angular-google-chart": "be412b217d73e4825aaa3217bdc2ecb063c5e947"
   }
 }
