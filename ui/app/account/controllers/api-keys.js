@@ -2,7 +2,6 @@
 
 angular.module('continuousPipeRiver')
     .controller('ApiKeysController', function($scope, $state, $remoteResource, $http, user, UserRepository) {
-        $scope.apiKeys = [];
         var load = function() {
             $remoteResource.load('apiKeys', UserRepository.findApiKeysByUsername(user.username)).then(function (apiKeys) {
                 $scope.apiKeys = apiKeys;

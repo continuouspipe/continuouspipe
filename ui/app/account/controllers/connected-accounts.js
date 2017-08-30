@@ -2,9 +2,6 @@
 
 angular.module('continuousPipeRiver')
     .controller('ConnectedAccountsController', function($scope, $remoteResource, $http, AccountRepository) {
-
-        $scope.accounts = [];
-
         var load = function() {
             $remoteResource.load('accounts', AccountRepository.findMine()).then(function (accounts) {
                 $scope.accounts = accounts;

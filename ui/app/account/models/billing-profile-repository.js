@@ -45,5 +45,13 @@ angular.module('continuousPipeRiver')
                 uuid: billingProfile.uuid,
                 username: username
             }, {}).$promise;
-        }
+        };
+
+        this.findPlans = function() {
+            return $resource(AUTHENTICATOR_API_URL+'/api/billing/plans').query().$promise;
+        };
+
+        this.changePlan = function(billingProfile, changeRequest) {
+            return $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid/change-plan').save({uuid: billingProfile.uuid}, changeRequest).$promise;
+        };
     });

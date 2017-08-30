@@ -33,7 +33,7 @@ angular.module('continuousPipeRiver')
             });
         };
     })
-    .controller('ShowBillingProfileController', function($scope, $mdToast, $http, $state, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
+    .controller('ShowBillingProfileController', function($scope, $mdToast, $mdDialog, $http, $state, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
         $scope.billingProfile = billingProfile;
 
         $scope.addAdmin = function(username) {
@@ -99,4 +99,69 @@ angular.module('continuousPipeRiver')
                 }
             };
         });
-    });
+
+        $scope.change = function(ev) {
+            var scope = $scope.$new();
+            scope.billingProfile = billingProfile;
+
+            $mdDialog.show({
+                controller: 'ChangeBillingProfileController',
+                templateUrl: 'account/views/billing-profiles/dialogs/change.html',
+                targetEvent: ev,
+                clickOutsideToClose:true,
+                scope: scope
+
+            }).then(function(answer) {
+                $state.reload();
+            });
+        }
+    })
+    .controller('ChangeBillingProfileController', function($scope, $http, $mdDialog, $mdToast, BillingProfileRepository) {
+        var plansPromise = BillingProfileRepository.findPlans();
+        $scope.changeRequest = {};
+
+        $scope.loadPlans = function() {
+            return plansPromise.then(function(plans) {
+                $scope.plans = plans;
+
+                return plans;
+            });
+        };
+
+        $scope.close = function() {
+            $mdDialog.cancel();
+        };
+
+        $scope.done = function() {
+            $mdDialog.hide();
+        };
+
+        $scope.change = function(plan) {
+            $scope.isLoading = true;
+            BillingProfileRepository.changePlan($scope.billingProfile, {
+                plan: $scope.changeRequest.plan.identifier
+            }).then(function(response) {
+                if (response.redirect_url) {
+                    $scope.hasBeenRedirected = true;
+
+                    window.location.href = response.redirect_url+
+                        (response.redirect_url.indexOf('?') === -1 ? '?' : '&')+
+                        'from='+window.location.href+
+                        '&billing_profile='+$scope.billingProfile.uuid;
+                } else {
+                    $mdToast.show($mdToast.simple()
+                        .textContent('Plan successfully changed')
+                        .position('top')
+                        .hideDelay(3000)
+                        .parent($('md-content#content'))
+                    );
+
+                    $scope.done();
+                }
+            }, function(error) {
+                swal("Error !", $http.getError(error) || "An unknown error occured while changing plan", "error");
+            })['finally'](function() {
+                $scope.isLoading = false;
+            });
+        };
+    })

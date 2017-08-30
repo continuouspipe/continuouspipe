@@ -79,5 +79,14 @@ angular.module('continuousPipeRiver')
                     }
                 }
             })
+            .state('billing-profile.change', {
+                url: '/change',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/change.html',
+                        controller: 'ChangeBillingProfileController'
+                    }
+                }
+            })
         ;
     });

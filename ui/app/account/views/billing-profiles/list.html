@@ -10,7 +10,7 @@
 </md-toolbar>
 <md-content flex id="content" class="card-grid">
     <remote-resource resource-name="billingProfiles">
-        <div class="list-items" ng-if="billingProfiles.length != 0">
+        <div class="list-items" ng-if="billingProfiles.length > 0">
             <div class="list-items-header">
                 <div class="list-col-8">Name</div>
                 <div class="list-col-2">Plan</div>
@@ -23,7 +23,8 @@
                     <span>{{ billingProfile.name }}</span>
                 </div>
                 <div class="list-col-2">
-                    <span>TODO</span>
+                    <span ng-if="billingProfile.plan">{{ billingProfile.plan.name }}</span>
+                    <span ng-if="!billingProfile.plan"><em>No plan</em></span>
                 </div>
                 <div class="list-col-2">
                     <span>{{ billingProfile.teams.length }}</span>

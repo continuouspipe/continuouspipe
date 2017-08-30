@@ -13,7 +13,8 @@
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content>
-                    <div google-chart chart="tidesGraph" style="height:450px; width:100%;"></div>
+                    <div ng-if="billingProfile.teams.length > 0" google-chart chart="tidesGraph" style="height:450px; width:100%;"></div>
+                    <p ng-if="!billingProfile.teams.length">Connect this billing profile to projects to see the usage here.</p>
                 </md-card-content>
             </md-card>
         </div>
@@ -26,7 +27,8 @@
                     </md-card-title-text>
                 </md-card-title>
                 <md-card-content>
-                    <div google-chart chart="resourcesGraph" style="height:450px; width:100%;"></div>
+                    <div ng-if="billingProfile.teams.length > 0" google-chart chart="resourcesGraph" style="height:450px; width:100%;"></div>
+                    <p ng-if="!billingProfile.teams.length">Connect this billing profile to projects to see the usage here.</p>
                 </md-card-content>
             </md-card>
         </div>
@@ -40,9 +42,55 @@
                         <span class="md-headline">Your plan</span>
                     </md-card-title-text>
                 </md-card-title>
-                <md-card-content>
-                    Details about the plan
+                <md-card-content ng-if="!billingProfile.plan">
+                    <p>You don't have any plan for now, select one!</p>
                 </md-card-content>
+                <md-card-content ng-if="billingProfile.plan">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Plan name</th>
+                                <td>{{ billingProfile.plan.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Monthly price</th>
+                                <td>£{{ billingProfile.plan.price }}</td>
+                            </tr>
+                            <tr class="separator"></tr>
+                            <tr>
+                                <th>Available tides</th>
+                                <td>{{ billingProfile.plan.metrics.tides }}</td>
+                            </tr>
+                            <tr>
+                                <th>Available memory</th>
+                                <td>{{ billingProfile.plan.metrics.memory }} GB</td>
+                            </tr>
+                            <tr>
+                                <th>Available storage</th>
+                                <td>{{ billingProfile.plan.metrics.storage }} GB</td>
+                            </tr>
+                            <tr>
+                                <th>Available private Docker image</th>
+                                <td>{{ billingProfile.plan.metrics.docker_image }}</td>
+                            </tr>
+                            <tr class="separator"></tr>
+                            <tr>
+                                <th>Teams linked</th>
+                                <td>
+                                    <span ng-if="!billingProfile.teams.length">No team</span>
+                                    <md-chips ng-if="billingProfile.teams.length > 0">
+                                        <md-chip ng-repeat="team in billingProfile.teams">{{ team.name }}</md-chip>
+                                    </md-chips>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </md-card-content>
+                <md-card-actions>
+                    <div layout-gt-xs="row">
+                        <md-button class="md-raised" ng-click="change($event)">Change</md-button>
+                    </div>
+                </md-card-actions>
             </md-card>
         </div>
 

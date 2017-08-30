@@ -10,7 +10,7 @@
 </md-toolbar>
 <md-content flex id="content">
     <remote-resource resource-name="apiKeys">
-        <table class="table hover">
+        <table class="table hover" ng-if="apiKeys.length > 0">
             <thead>
             <tr>
                 <th>Key</th>
