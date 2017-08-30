@@ -103,11 +103,12 @@ func AddQuantity(list ...v1.ResourceList) v1.ResourceList {
 
     for _, resourcesToAdd := range list {
         for resourceName, quantity := range resourcesToAdd {
+            copiedQuantity := *(quantity.Copy())
             if otherQuantity, ok := resources[resourceName]; ok {
-                quantity.Add(otherQuantity)
+                copiedQuantity.Add(otherQuantity)
             }
 
-            resources[resourceName] = *(quantity.Copy())
+            resources[resourceName] = copiedQuantity
         }
     }
 
