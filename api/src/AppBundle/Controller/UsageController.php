@@ -113,7 +113,7 @@ class UsageController
             $flow,
             new \DateTime($request->get('left', '-30days')),
             new \DateTime($request->get('right', 'now')),
-            new \DateInterval($request->get('internal', 'P1D'))
+            new \DateInterval($request->get('interval', 'P1D'))
         );
     }
 
@@ -129,7 +129,7 @@ class UsageController
             $flow,
             new \DateTime($request->get('left', '-30days')),
             new \DateTime($request->get('right', 'now')),
-            new \DateInterval($request->get('internal', 'P1D'))
+            new \DateInterval($request->get('interval', 'P1D'))
         );
     }
 
@@ -141,7 +141,7 @@ class UsageController
     {
         $left = new \DateTime($request->get('left', '-30days'));
         $right = new \DateTime($request->get('right', 'now'));
-        $interval = new \DateInterval($request->get('internal', 'P1D'));
+        $interval = new \DateInterval($request->get('interval', 'P1D'));
 
         $teams = array_map(function (string $teamSlug) {
             return $this->teamRepository->find($teamSlug);
@@ -257,7 +257,7 @@ class UsageController
         return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($snapshotsCollection) {
             $previousUsage = $snapshotsCollection->lastBefore($left) ?: ResourceUsage::zero();
 
-            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInternal($left, $right))) {
+            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInterval($left, $right))) {
                 $usageInInterval = $previousUsage;
             }
 
