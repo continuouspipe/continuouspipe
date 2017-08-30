@@ -89,6 +89,7 @@
             <argument type="service" id="river.view.tide_repository" />
             <argument type="service" id="authenticator.team_repository" />
             <argument type="service" id="logger"/>
+            <argument type="service" id="continuouspipe.message.time_resolver" />
         </service>
 
         <!-- Param converters -->

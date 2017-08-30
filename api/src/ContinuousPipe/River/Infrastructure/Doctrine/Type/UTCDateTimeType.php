@@ -39,11 +39,23 @@ class UTCDateTimeType extends DateTimeType
             return $value;
         }
 
-        $converted = \DateTime::createFromFormat(
+        $formats = [
             $this->getDateTimeFormatString(),
-            $value,
-            self::getUTC()
-        );
+            'Y-m-d H:i:s',
+        ];
+
+        $converted = false;
+        foreach ($formats as $format) {
+            if (
+                $converted = \DateTime::createFromFormat(
+                    $format,
+                    $value,
+                    self::getUTC()
+                )
+            ) {
+                break;
+            }
+        }
 
         if (!$converted) {
             throw ConversionException::conversionFailedFormat(
