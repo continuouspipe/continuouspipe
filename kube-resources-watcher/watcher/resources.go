@@ -6,6 +6,34 @@ import (
     meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type NamespaceFinder interface {
+    GetPodsInNamespace(namespace string) ([]v1.Pod, error)
+    GetNamespace(namespace string) (v1.Namespace, error)
+}
+
+type KubernetesNamespaceFinder struct {
+    kubernetesClient *kubernetes.Clientset
+}
+
+func (kpnf *KubernetesNamespaceFinder) GetPodsInNamespace(namespace string) ([]v1.Pod, error) {
+    list, err := kpnf.kubernetesClient.Pods(namespace).List(meta_v1.ListOptions{})
+    if err != nil {
+        return []v1.Pod{}, err
+    }
+
+    return list.Items, nil
+}
+
+func (kpnf *KubernetesNamespaceFinder) GetNamespace(namespace string) (*v1.Namespace, error) {
+    return kpnf.kubernetesClient.Namespaces().Get(namespace, meta_v1.GetOptions{})
+}
+
+func NewKubernetesNamespaceFinder(client *kubernetes.Clientset) *KubernetesNamespaceFinder {
+    return &KubernetesNamespaceFinder{
+        kubernetesClient: client,
+    }
+}
+
 type NamespaceResourceUsageNamespace struct {
     Name string              `json:"name"`
     Labels map[string]string `json:"labels"`
@@ -22,16 +50,22 @@ type ResourceUsageCalculator interface {
 }
 
 type KubernetesResourceUsageCalculator struct {
-    KubernetesClient *kubernetes.Clientset
+    finder NamespaceFinder
+}
+
+func NewKubernetesResourceUsageCalculator(finder NamespaceFinder) *KubernetesResourceUsageCalculator {
+    return &KubernetesResourceUsageCalculator{
+        finder: finder,
+    }
 }
 
 func (ruc* KubernetesResourceUsageCalculator) CalculateForNamespace(namespace string) (NamespaceResourceUsage, error) {
-    list, err := ruc.KubernetesClient.Pods(namespace).List(meta_v1.ListOptions{})
+    pods, err := ruc.finder.GetPodsInNamespace(namespace)
     if err != nil {
         return NamespaceResourceUsage{}, err
     }
 
-    usageNamespace, err := ruc.GetUsageNamespace(namespace)
+    usageNamespace, err := ruc.getUsageNamespace(namespace)
     if err != nil {
         return NamespaceResourceUsage{}, err
     }
@@ -42,18 +76,18 @@ func (ruc* KubernetesResourceUsageCalculator) CalculateForNamespace(namespace st
         Requests: v1.ResourceList{},
     }
 
-    for _, pod := range list.Items {
+    for _, pod := range pods {
         for _, container := range pod.Spec.Containers {
-            AddQuantity(&usage.Limits, container.Resources.Limits)
-            AddQuantity(&usage.Requests, container.Resources.Requests)
+            usage.Limits = AddQuantity(usage.Limits, container.Resources.Limits)
+            usage.Requests = AddQuantity(usage.Requests, container.Resources.Requests)
         }
     }
 
     return usage, nil
 }
 
-func (ruc* KubernetesResourceUsageCalculator) GetUsageNamespace(name string) (NamespaceResourceUsageNamespace, error) {
-    namespace, err := ruc.KubernetesClient.Namespaces().Get(name, meta_v1.GetOptions{})
+func (ruc* KubernetesResourceUsageCalculator) getUsageNamespace(name string) (NamespaceResourceUsageNamespace, error) {
+    namespace, err := ruc.finder.GetNamespace(name)
     if err != nil {
         return NamespaceResourceUsageNamespace{}, err
     }
@@ -64,12 +98,18 @@ func (ruc* KubernetesResourceUsageCalculator) GetUsageNamespace(name string) (Na
     }, nil
 }
 
-func AddQuantity(to *v1.ResourceList, from v1.ResourceList) {
-    for resourceName, quantity := range from {
-        if val, ok := (*to)[resourceName]; ok {
-            val.Add(quantity)
-        } else {
-            (*to)[resourceName] = quantity
+func AddQuantity(list ...v1.ResourceList) v1.ResourceList {
+    resources := v1.ResourceList{}
+
+    for _, resourcesToAdd := range list {
+        for resourceName, quantity := range resourcesToAdd {
+            if otherQuantity, ok := resources[resourceName]; ok {
+                quantity.Add(otherQuantity)
+            }
+
+            resources[resourceName] = *(quantity.Copy())
         }
     }
+
+    return resources
 }
