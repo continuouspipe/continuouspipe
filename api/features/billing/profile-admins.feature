@@ -27,3 +27,11 @@ Feature:
     When I remove "flick" as an administrator of the billing profile "00000000-0000-0000-0000-000000000000"
     And I request the billing profile "00000000-0000-0000-0000-000000000000"
     Then I should not see "flick" as admin of the billing profile "00000000-0000-0000-0000-000000000000"
+
+  Scenario: As an admin, I see the invoices link
+    Given I am authenticated as user "samuel"
+    And the billing account "00000000-0000-0000-0000-000000000000" have the following subscriptions:
+      | plan        | quantity | state  |
+      | single-user | 10       | active |
+    And I request the billing profile "00000000-0000-0000-0000-000000000000"
+    Then I should see the billing profile invoices link

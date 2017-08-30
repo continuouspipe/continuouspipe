@@ -272,6 +272,20 @@ class TeamContext implements Context
     }
 
     /**
+     * @Then I should see the billing profile invoices link
+     */
+    public function iShouldSeeTheBillingProfileInvoicesLink()
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (!isset($json['invoices_url'])) {
+            throw new \RuntimeException('Could not find the invoices URL');
+        }
+    }
+
+    /**
      * @Then I should see that the billing profile is :profileUuid
      */
     public function iShouldSeeThatTheBillingProfileIs($profileUuid)

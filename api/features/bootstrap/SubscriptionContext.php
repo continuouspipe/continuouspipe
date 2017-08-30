@@ -175,7 +175,9 @@ class SubscriptionContext implements Context
                     (int) $row['quantity'],
                     0,
                     new \DateTime('-1 month'),
-                    new \DateTime()
+                    new \DateTime(),
+                    null,
+                    'https://continuouspipe.io'
                 )
             );
         }
