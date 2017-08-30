@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Billing\BillingProfile;
 
+use ContinuousPipe\Billing\Plan\Plan;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -36,6 +37,8 @@ class UserBillingProfile
     /**
      * @JMS\Type("boolean")
      *
+     * TODO: Replace by a plan!
+     *
      * @var bool
      */
     private $hasTrial;
@@ -61,7 +64,15 @@ class UserBillingProfile
      */
     private $teams;
 
-    public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, bool $hasTrial = false, int $tidesPerHour = 0)
+    /**
+     * @JMS\Type("ContinuousPipe\Billing\Plan\Plan")
+     * @JMS\AccessType("public_method")
+     *
+     * @var Plan|null
+     */
+    private $plan;
+
+    public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, bool $hasTrial = false, int $tidesPerHour = 0, Plan $plan = null)
     {
         $this->uuid = $uuid;
         $this->name = $name;
@@ -69,6 +80,7 @@ class UserBillingProfile
         $this->admins = !$admins instanceof Collection ? new ArrayCollection($admins) : $admins;
         $this->hasTrial = $hasTrial;
         $this->tidesPerHour = $tidesPerHour;
+        $this->plan = $plan;
     }
 
     /**
@@ -135,6 +147,18 @@ class UserBillingProfile
         return $this->tidesPerHour ?: 0;
     }
 
+    /**
+     * @return Plan|null
+     */
+    public function getPlan()
+    {
+        if (null !== $this->plan && $this->plan->isEmpty()) {
+            $this->plan = null;
+        }
+
+        return $this->plan;
+    }
+
     public function setTidesPerHour(int $tiderPerHour)
     {
         $this->tidesPerHour = $tiderPerHour;
@@ -165,5 +189,20 @@ class UserBillingProfile
     public function setTeams(Collection $teams)
     {
         $this->teams = $teams;
+    }
+
+    /**
+     * @param Plan|null $plan
+     */
+    public function setPlan(Plan $plan = null)
+    {
+        $this->plan = $plan;
+    }
+
+    public function withPlan(Plan $plan = null)
+    {
+        $this->plan = $plan;
+
+        return $this;
     }
 }

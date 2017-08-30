@@ -11,6 +11,8 @@
         <field name="hasTrial" type="boolean" nullable="true" />
         <field name="tidesPerHour" type="integer" nullable="true" />
 
+        <embedded name="plan" class="ContinuousPipe\Billing\Plan\Plan" column-prefix="plan_" />
+
         <many-to-many field="teams" target-entity="ContinuousPipe\Security\Team\Team">
             <join-table name="billing_profile_teams">
                 <join-columns>

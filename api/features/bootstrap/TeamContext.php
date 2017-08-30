@@ -284,6 +284,35 @@ class TeamContext implements Context
     }
 
     /**
+     * @When I change the billing profile :billingProfileUuid with the plan :planIdentifier
+     */
+    public function iChangeTheBillingProfileWithThePlan($billingProfileUuid, $planIdentifier)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/billing-profile/'.$billingProfileUuid.'/change-plan',
+            'POST',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode([
+                'plan' => $planIdentifier,
+            ])
+        ));
+    }
+
+    /**
+     * @Then I should see that the billing profile have the plan :planIdentifier
+     */
+    public function iShouldSeeThatTheBillingProfileHaveThePlan($planIdentifier)
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if ($json['plan']['identifier'] != $planIdentifier) {
+            throw new \RuntimeException('Did not find expected plan');
+        }
+    }
+
+    /**
      * @When I request the details of team :team with the API key :key
      */
     public function iRequestTheDetailsOfTeamWithTheApiKey($team, $key)
@@ -414,6 +443,7 @@ class TeamContext implements Context
 
     /**
      * @Then the team should be successfully updated
+     * @Then the billing profile should be successfully updated
      */
     public function theTeamShouldBeSuccessfullyUpdated()
     {

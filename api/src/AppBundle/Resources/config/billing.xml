@@ -43,5 +43,21 @@
             <argument type="service" id="app.billing.activity_tracker" />
             <argument type="service" id="app.repository.billing_profile" />
         </service>
+
+        <!-- Plans -->
+        <service id="app.billing.plan_repository" class="ContinuousPipe\Billing\Plan\Repository\JsonRepresentedPlanRepository">
+            <argument type="service" id="jms_serializer" />
+            <argument>%billing_plans%</argument>
+            <argument>%billing_addons%</argument>
+        </service>
+
+        <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\Recurly\RecurlyPlanManager">
+            <argument type="service" id="app.billing.plan_repository"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="router"/>
+            <argument>%recurly_subdomain%</argument>
+            <argument>%recurly_api_key%</argument>
+        </service>
     </services>
 </container>
