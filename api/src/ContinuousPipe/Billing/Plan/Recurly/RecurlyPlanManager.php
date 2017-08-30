@@ -10,6 +10,8 @@ use ContinuousPipe\Billing\Plan\Repository\PlanRepository;
 use ContinuousPipe\Security\User\User;
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RecurlyPlanManager implements PlanManager
 {
@@ -29,12 +31,17 @@ class RecurlyPlanManager implements PlanManager
      * @var EntityManager
      */
     private $entityManager;
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
 
-    public function __construct(PlanRepository $planRepository, LoggerInterface $logger, EntityManager $entityManager, string $subdomain, string $apiKey)
+    public function __construct(PlanRepository $planRepository, LoggerInterface $logger, EntityManager $entityManager, UrlGeneratorInterface $urlGenerator, string $subdomain, string $apiKey)
     {
         $this->planRepository = $planRepository;
         $this->logger = $logger;
         $this->entityManager = $entityManager;
+        $this->urlGenerator = $urlGenerator;
         $this->subdomain = $subdomain;
 
         \Recurly_Client::$subdomain = $subdomain;
@@ -44,17 +51,19 @@ class RecurlyPlanManager implements PlanManager
     public function changePlan(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user) : ChangeBillingPlanResponse
     {
         if (null === ($subscription = $this->subscriptionByBillingProfile($billingProfile))) {
-            return new ChangeBillingPlanResponse($billingProfile, sprintf(
-                'https://%s.recurly.com/subscribe/%s/%s/%s?%s',
-                $this->subdomain,
-                $changeRequest->getPlan(),
-                $billingProfile->getUuid()->toString(),
-                urlencode($user->getUsername()),
-                http_build_query([
-                    'quantity' => 1,
-                    'email' => $user->getEmail()
-                ])
-            ));
+            return new ChangeBillingPlanResponse($billingProfile, $this->urlGenerator->generate('billing_redirection_out', [
+                'to' => sprintf(
+                    'https://%s.recurly.com/subscribe/%s/%s/%s?%s',
+                    $this->subdomain,
+                    $changeRequest->getPlan(),
+                    $billingProfile->getUuid()->toString(),
+                    urlencode($user->getUsername()),
+                    http_build_query([
+                        'quantity' => 1,
+                        'email' => $user->getEmail()
+                    ])
+                )
+            ], UrlGeneratorInterface::ABSOLUTE_URL));
         }
 
         $updatedBillingProfile = $this->getUpdatedBillingProfile(
@@ -70,10 +79,24 @@ class RecurlyPlanManager implements PlanManager
         );
     }
 
+    public function refreshBillingProfile(UserBillingProfile $billingProfile) : UserBillingProfile
+    {
+        if (null === ($subscription = $this->subscriptionByBillingProfile($billingProfile))) {
+            return $billingProfile;
+        }
+
+        $updatedBillingProfile = $this->getUpdatedBillingProfile($billingProfile, $subscription);
+
+        $this->entityManager->persist($updatedBillingProfile);
+        $this->entityManager->flush();
+
+        return $updatedBillingProfile;
+    }
+
     private function getUpdatedBillingProfile(UserBillingProfile $billingProfile, \Recurly_Subscription $subscription)
     {
         return $billingProfile->withPlan(
-            $this->planRepository->findPlanByIdentifier($subscription->plan_code)
+            $this->planRepository->findPlanByIdentifier($subscription->plan->plan_code)
         );
     }
 
