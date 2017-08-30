@@ -65,6 +65,8 @@
                 <md-card-actions>
                     <div layout-gt-xs="row">
                         <md-button class="md-raised" ng-click="change($event)">Change</md-button>
+                        <span flex />
+                        <md-button ng-if="billingProfile.invoices_url" ng-href="{{ billingProfile.invoices_url }}">Invoices</md-button>
                     </div>
                 </md-card-actions>
             </md-card>
