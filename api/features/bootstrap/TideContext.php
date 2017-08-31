@@ -765,11 +765,7 @@ EOF;
      */
     public function theDeployedEnvironmentNameShouldBePrefixedByTheFlowIdentifier()
     {
-        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
-        $environmentNames = array_map(function (DeploymentStarted $event) {
-            return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
-        }, $deploymentStartedEvents);
-
+        $environmentNames = $this->getDeployedEnvironmentNames();
         $flowUuid = (string) $this->flowContext->getCurrentFlow()->getUuid();
         $matchingEnvironmentNames = array_filter($environmentNames, function ($environmentName) use ($flowUuid) {
             return substr($environmentName, 0, strlen($flowUuid)) == $flowUuid;
@@ -781,6 +777,37 @@ EOF;
                 implode(', ', $environmentNames)
             ));
         }
+    }
+
+    /**
+     * @When the deployed environment name should be :name
+     */
+    public function theDeployedEnvironmentNameShouldBe($name)
+    {
+        $environmentNames = $this->getDeployedEnvironmentNames();
+
+        if (count($environmentNames) == 0) {
+            throw new \RuntimeException('No environment deployed');
+        }
+        
+        foreach ($environmentNames as $environmentName) {
+            if ($environmentName != $name) {
+                throw new \RuntimeException(sprintf(
+                    'Found %s but expected %s',
+                    $environmentName,
+                    $name
+                ));
+            }
+        }
+    }
+
+    private function getDeployedEnvironmentNames()
+    {
+        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
+
+        return array_map(function (DeploymentStarted $event) {
+            return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
+        }, $deploymentStartedEvents);
     }
 
     public function aTideIsStartedWithTasks(array $tasks, string $branch = 'master')
