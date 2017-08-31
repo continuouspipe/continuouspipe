@@ -34,7 +34,7 @@ final class Token
      * @JMS\Type("string")
      * @JMS\SerializedName("id_token")
      *
-     * @var string
+     * @var string|null
      */
     private $idToken;
 
@@ -42,9 +42,9 @@ final class Token
      * @param string $accessToken
      * @param string $tokenType
      * @param int    $expiresIn
-     * @param string $idToken
+     * @param string|null $idToken
      */
-    public function __construct(string $accessToken, string $tokenType, int $expiresIn, string $idToken)
+    public function __construct(string $accessToken, string $tokenType, int $expiresIn, string $idToken = null)
     {
         $this->accessToken = $accessToken;
         $this->tokenType = $tokenType;
@@ -77,9 +77,9 @@ final class Token
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getIdToken() : string
+    public function getIdToken()
     {
         return $this->idToken;
     }
