@@ -20,5 +20,11 @@
                  decorates="river.flow.environment_client">
             <argument type="service" id="river.flow.environment_client.callback.inner" />
         </service>
+
+        <service id="river.pipe.deployment_request.cluster_resolver.fake_clusters"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\FakeClusterResolver"
+                 decorates="river.pipe.deployment_request.cluster_resolver">
+            <argument type="service" id="river.pipe.deployment_request.cluster_resolver.fake_clusters.inner" />
+        </service>
     </services>
 </container>

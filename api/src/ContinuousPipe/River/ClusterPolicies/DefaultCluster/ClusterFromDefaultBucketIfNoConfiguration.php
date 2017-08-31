@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\ClusterPolicies\DefaultCluster;
 
+use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterResolutionException;
 use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterResolver;
 use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\TargetClusterResolver;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
@@ -35,7 +36,7 @@ class ClusterFromDefaultBucketIfNoConfiguration implements TargetClusterResolver
      */
     public function getClusterIdentifier(Tide $tide, EnvironmentAwareConfiguration $configuration): Cluster
     {
-        if ($configuration->getClusterIdentifier() !== null) {
+        if (!empty($configuration->getClusterIdentifier())) {
             return $this->decoratedResolver->getClusterIdentifier($tide, $configuration);
         }
 
@@ -46,7 +47,7 @@ class ClusterFromDefaultBucketIfNoConfiguration implements TargetClusterResolver
         }
 
         if ($clusters->count() === 1) {
-            return $clusters[0]->getIdentifier();
+            return $clusters[0];
         }
 
         foreach ($clusters as $cluster) {
