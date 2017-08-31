@@ -103,8 +103,7 @@ class GKEClusterAccountCreator implements ClusterCreator
             new Cluster\ClusterCredentials(
                 $cluster->getMasterAuthentication()->getUsername(),
                 $cluster->getMasterAuthentication()->getPassword(),
-                $cluster->getMasterAuthentication()->getClientCertificate(),
-                $cluster->getMasterAuthentication()->getClusterCaCertificate()
+                $cluster->getMasterAuthentication()->getClientCertificate()
             )
         );
     }
