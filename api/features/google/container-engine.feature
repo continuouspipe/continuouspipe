@@ -34,6 +34,6 @@ Feature:
     And there is a project "my-project" in the account "dd5d98a6-a11f-11e6-80f5-76304dec7eb7"
     And there is a cluster named "builder-eu-west1-b" in the "europe-west1-b" zone in the project "my-project"
     And there is a cluster named "builder-eu-west1-c" in the "europe-west1-c" zone in the project "my-project"
-    When I request the list of the clusters for the account "dd5d98a6-a11f-11e6-80f5-76304dec7eb7" and the project "my-project"
+    When I request the list of the Google Container Engine clusters for the account "dd5d98a6-a11f-11e6-80f5-76304dec7eb7" and the project "my-project"
     Then I should see the cluster "builder-eu-west1-b"
     And I should see the cluster "builder-eu-west1-c"

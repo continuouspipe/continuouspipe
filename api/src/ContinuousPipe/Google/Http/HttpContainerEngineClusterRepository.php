@@ -2,8 +2,10 @@
 
 namespace ContinuousPipe\Google\Http;
 
+use ContinuousPipe\Google\ContainerEngineCluster;
 use ContinuousPipe\Google\ContainerEngineClusterList;
 use ContinuousPipe\Google\ContainerEngineClusterRepository;
+use ContinuousPipe\Google\GoogleException;
 use ContinuousPipe\Security\Account\GoogleAccount;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
@@ -67,6 +69,8 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
             return $client->requestAsync('GET', $url)->then(function (Response $response) {
                 $contents = $response->getBody()->getContents();
 
+                echo $contents;
+
                 return $this->serializer->deserialize($contents, ContainerEngineClusterList::class, 'json');
             })->then(function (ContainerEngineClusterList $clusterList) {
                 return $clusterList->getClusters();
@@ -82,5 +86,28 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
         return array_reduce($results, function (array $carry, array $clusters) {
             return array_merge($carry, $clusters);
         }, []);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function find(GoogleAccount $account, string $project, string $clusterIdentifier): ContainerEngineCluster
+    {
+        $clusters = $this->findAll($account, $project);
+        $foundClusterNames = [];
+
+        foreach ($clusters as $cluster) {
+            if ($cluster->getName() == $clusterIdentifier) {
+                return $cluster;
+            }
+
+            $foundClusterNames[] = $cluster->getName();
+        }
+
+        throw new GoogleException(sprintf(
+            'Did not find cluster named "%s" but found: %s',
+            $clusterIdentifier,
+            implode(', ', $foundClusterNames)
+        ));
     }
 }

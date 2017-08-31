@@ -62,4 +62,60 @@ final class ContainerEngineCluster
      * @var string
      */
     private $currentNodeCount;
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return NodeConfiguration
+     */
+    public function getNodeConfiguration(): NodeConfiguration
+    {
+        return $this->nodeConfiguration;
+    }
+
+    /**
+     * @return MasterAuthentication
+     */
+    public function getMasterAuthentication(): MasterAuthentication
+    {
+        return $this->masterAuthentication;
+    }
+
+    /**
+     * @return string
+     */
+    public function getZone(): string
+    {
+        return $this->zone;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentMasterVersion(): string
+    {
+        return $this->currentMasterVersion;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentNodeCount(): string
+    {
+        return $this->currentNodeCount;
+    }
 }
