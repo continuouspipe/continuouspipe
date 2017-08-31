@@ -22,13 +22,13 @@ Feature:
     Given I am authenticated as "samuel"
     And there is the following tides:
       | datetime             | flow_uuid                            | status  |
-      | 2017-07-29T12:00:00Z | 94b58d8e-7c2f-11e7-b19c-0a580a8405ef | success |
+      | 2017-07-29T12:00:00Z | 00000000-0000-0000-0000-000011112222 | success |
       | 2017-07-29T19:00:00Z | 00000000-0000-0000-0000-000000000000 | success |
-      | 2017-08-01T19:00:00Z | 94b58d8e-7c2f-11e7-b19c-0a580a8405ef | success |
+      | 2017-08-01T19:00:00Z | 00000000-0000-0000-0000-000011112222 | success |
       | 2017-08-01T19:00:00Z | 00000000-0000-0000-0000-000000000000 | success |
       | 2017-08-02T19:00:00Z | 00000000-0000-0000-0000-000000000000 | success |
       | 2017-08-02T19:00:00Z | 00000000-0000-0000-0000-000000000000 | failure |
-      | 2017-08-03T19:00:00Z | 94b58d8e-7c2f-11e7-b19c-0a580a8405ef | success |
+      | 2017-08-03T19:00:00Z | 00000000-0000-0000-0000-000011112222 | success |
       | 2017-08-04T01:00:00Z | 00000000-0000-0000-0000-000000000000 | success |
     When I request the tide usage of the flow "00000000-0000-0000-0000-000000000000" from the "2017-08-01T00:00:00Z" to "2017-09-01T00:00:00Z" with a "P1D" interval
     Then I should see the following tide usage:

@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\InMemoryDatabaseFactory">
+            <argument type="service" id="csa_guzzle.middleware.history" />
+        </service>
+        <service id="river.pipeline.view.storage" class="ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage" />
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.main"/>
+    </services>
+</container>
