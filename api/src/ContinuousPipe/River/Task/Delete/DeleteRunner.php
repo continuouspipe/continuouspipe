@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Task\Delete;
 
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;

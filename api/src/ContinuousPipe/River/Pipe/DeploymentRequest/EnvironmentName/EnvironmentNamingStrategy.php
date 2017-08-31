@@ -1,8 +1,9 @@
 <?php
 
-namespace ContinuousPipe\River\Task\Deploy\Naming;
+namespace ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName;
 
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\Tide;
 
 interface EnvironmentNamingStrategy

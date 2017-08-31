@@ -12,7 +12,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeleted;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeletionFailed;
 use ContinuousPipe\River\Task\Delete\Event\StartedEnvironmentDeletion;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskCreated;
 use ContinuousPipe\River\Task\TaskEvent;

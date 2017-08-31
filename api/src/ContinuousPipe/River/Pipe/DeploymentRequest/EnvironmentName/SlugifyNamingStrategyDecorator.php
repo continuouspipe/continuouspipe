@@ -1,8 +1,9 @@
 <?php
 
-namespace ContinuousPipe\River\Task\Deploy\Naming;
+namespace ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName;
 
 use Cocur\Slugify\Slugify;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Tide;
 
 class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy

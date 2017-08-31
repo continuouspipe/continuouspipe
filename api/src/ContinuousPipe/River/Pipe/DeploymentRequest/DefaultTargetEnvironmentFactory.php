@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequest;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Tide;
 
 class DefaultTargetEnvironmentFactory implements TargetEnvironmentFactory
