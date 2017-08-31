@@ -20,17 +20,17 @@ Feature:
 
   @smoke
   Scenario: I receive and store resource for a flow
-    Given I have a flow with UUID "94b58d8e-7c2f-11e7-b19c-0a580a8405ef"
+    Given I have a flow with UUID "00000000-0000-0000-0000-000011112222"
     And I am authenticated with the "ROLE_RESOURCE_USAGE_CREATOR" role
     When the following POST request is sent to "/managed/resources":
     """
     {
       "namespace":{
-        "name":"94b58d8e-7c2f-11e7-b19c-0a580a8405ef-master",
+        "name":"00000000-0000-0000-0000-000011112222-master",
         "labels":{
-          "continuous-pipe-environment":"94b58d8e-7c2f-11e7-b19c-0a580a8405ef-master",
+          "continuous-pipe-environment":"00000000-0000-0000-0000-000011112222-master",
           "created-by":"continuous-pipe",
-          "flow":"94b58d8e-7c2f-11e7-b19c-0a580a8405ef"
+          "flow":"00000000-0000-0000-0000-000011112222"
         }
       },
       "limits":{
@@ -44,4 +44,4 @@ Feature:
     }
     """
     Then I should be told that the resource has been created
-    And a resource usage entry for the environment "94b58d8e-7c2f-11e7-b19c-0a580a8405ef-master" in the flow "94b58d8e-7c2f-11e7-b19c-0a580a8405ef" should have been saved
+    And a resource usage entry for the environment "00000000-0000-0000-0000-000011112222-master" in the flow "00000000-0000-0000-0000-000011112222" should have been saved
