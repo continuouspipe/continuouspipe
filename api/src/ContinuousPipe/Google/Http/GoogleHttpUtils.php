@@ -26,8 +26,6 @@ final class GoogleHttpUtils
         } catch (\InvalidArgumentException $e) {
         }
 
-        echo $contents;
-
         return 'Unexpected response ('.$response->getStatusCode().')';
     }
 

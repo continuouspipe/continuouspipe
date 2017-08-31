@@ -69,8 +69,6 @@ class HttpContainerEngineClusterRepository implements ContainerEngineClusterRepo
             return $client->requestAsync('GET', $url)->then(function (Response $response) {
                 $contents = $response->getBody()->getContents();
 
-                echo $contents;
-
                 return $this->serializer->deserialize($contents, ContainerEngineClusterList::class, 'json');
             })->then(function (ContainerEngineClusterList $clusterList) {
                 return $clusterList->getClusters();
