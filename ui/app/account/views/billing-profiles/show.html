@@ -56,7 +56,7 @@
                             </table>
                             <div class="block block__background">
                                 <div class="block__title">Tides used: {{ billingProfile.plan.metrics.used.tides }} of {{ billingProfile.plan.metrics.tides }}</div>
-                                <md-progress-linear md-mode="determinate" value="{{billingProfile.plan.metrics.used.tides}}"></md-progress-linear>
+                                <md-progress-linear md-mode="determinate" value="{{ (billingProfile.plan.metrics.used.tides / billingProfile.plan.metrics.tides) * 100 }}"></md-progress-linear>
                             </div>
                             <md-card-actions layout="row" layout-align="space-between">
                                 <div flex="2" layout="column">
