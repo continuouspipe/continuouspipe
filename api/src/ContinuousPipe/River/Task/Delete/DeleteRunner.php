@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Delete;
 
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
+use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\TargetClusterResolver;
 use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
@@ -27,11 +28,21 @@ class DeleteRunner implements TaskRunner
      */
     private $environmentNamingStrategy;
 
-    public function __construct(LoggerFactory $loggerFactory, DeployedEnvironmentRepository $deployedEnvironmentRepository, EnvironmentNamingStrategy $environmentNamingStrategy)
-    {
+    /**
+     * @var TargetClusterResolver
+     */
+    private $targetClusterResolver;
+
+    public function __construct(
+        LoggerFactory $loggerFactory,
+        DeployedEnvironmentRepository $deployedEnvironmentRepository,
+        EnvironmentNamingStrategy $environmentNamingStrategy,
+        TargetClusterResolver $targetClusterResolver
+    ) {
         $this->loggerFactory = $loggerFactory;
         $this->deployedEnvironmentRepository = $deployedEnvironmentRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
+        $this->targetClusterResolver = $targetClusterResolver;
     }
 
     /**
@@ -47,7 +58,8 @@ class DeleteRunner implements TaskRunner
             $tide,
             $this->loggerFactory,
             $this->deployedEnvironmentRepository,
-            $this->environmentNamingStrategy
+            $this->environmentNamingStrategy,
+            $this->targetClusterResolver
         );
     }
 
