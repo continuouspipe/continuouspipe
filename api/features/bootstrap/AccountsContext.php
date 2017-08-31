@@ -6,6 +6,7 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
+use ContinuousPipe\Billing\Plan\Repository\PlanRepository;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\Account\GitHubAccount;
@@ -49,17 +50,23 @@ class AccountsContext implements Context
      * @var \SecurityContext
      */
     private $securityContext;
+    /**
+     * @var PlanRepository
+     */
+    private $planRepository;
 
     public function __construct(
         AccountRepository $accountRepository,
         KernelInterface $kernel,
         PredefinedRequestMappingMiddleware $predefinedRequestMappingMiddleware,
-        UserBillingProfileRepository $userBillingProfileRepository
+        UserBillingProfileRepository $userBillingProfileRepository,
+        PlanRepository $planRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->kernel = $kernel;
         $this->predefinedRequestMappingMiddleware = $predefinedRequestMappingMiddleware;
         $this->userBillingProfileRepository = $userBillingProfileRepository;
+        $this->planRepository = $planRepository;
     }
 
     /**
@@ -100,6 +107,17 @@ class AccountsContext implements Context
             ] : [],
             false
         ));
+    }
+
+    /**
+     * @Given the billing profile :billingProfile have the plan :planIdentifier
+     */
+    public function theBillingProfileHaveThePlan($billingProfileUuid, $planIdentifier)
+    {
+        $userBillingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($billingProfileUuid));
+        $userBillingProfile->withPlan($this->planRepository->findPlanByIdentifier($planIdentifier));
+
+        $this->userBillingProfileRepository->save($userBillingProfile);
     }
 
     /**
@@ -351,7 +369,7 @@ class AccountsContext implements Context
     }
 
     /**
-     * @When I request the list of the clusters for the account :account and the project :project
+     * @When I request the list of the Google Container Engine clusters for the account :account and the project :project
      */
     public function iRequestTheListOfTheClustersForTheAccountAndTheProject($account, $project)
     {

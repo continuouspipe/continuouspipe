@@ -75,11 +75,12 @@ class TeamContext implements Context
 
     /**
      * @Given there is a team :slug
+     * @Given there is a team :slug with the credentials bucket :bucketUuid
      */
-    public function thereIsATeam($slug)
+    public function thereIsATeam($slug, $bucketUuid = null)
     {
         if (!$this->teamRepository->exists($slug)) {
-            $this->teamRepository->save(new Team($slug, $slug, Uuid::uuid1()));
+            $this->teamRepository->save(new Team($slug, $slug, null !== $bucketUuid ? Uuid::fromString($bucketUuid) : Uuid::uuid4()));
         }
     }
 
@@ -237,6 +238,19 @@ class TeamContext implements Context
                 ],
             ])
         ));
+    }
+
+    /**
+     * @When I request a managed cluster to be created for the team :teamSlug
+     */
+    public function iRequestAManagedClusterToBeCreatedForTheTeam($teamSlug)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/api/teams/'.$teamSlug.'/managed/create-cluster',
+            'POST'
+        ));
+
+        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**

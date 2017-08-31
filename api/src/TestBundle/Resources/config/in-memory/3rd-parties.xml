@@ -10,6 +10,7 @@
         <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\PredictableClientFactory">
             <argument type="service" id="google.http.middleware.predictable_request_mapping" />
         </service>
+        <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\InMemoryClusterCreator" />
         <service id="builder.billing.subscription_client.in_memory" class="ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient" />
         <service id="builder.billing.subscription_client" alias="builder.billing.subscription_client.in_memory" />
 
