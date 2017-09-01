@@ -97,7 +97,8 @@ class TideDto
             $wrappedTide->getConfiguration() ?: [],
             $wrappedTide->getCreationDate(),
             $wrappedTide->getGenerationUuid(),
-            $this->pipeline
+            $this->pipeline,
+            $wrappedTide->getFailureReason()
         );
 
         $tide->setStatus($wrappedTide->getStatus());
