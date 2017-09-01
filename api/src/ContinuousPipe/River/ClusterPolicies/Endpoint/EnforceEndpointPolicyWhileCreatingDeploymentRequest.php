@@ -147,21 +147,45 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
             }
 
             if (isset($policyConfiguration['ingress-host-suffix'])) {
+                if (!isset($policyConfiguration['default-host-suffix'])) {
+                    $policyConfiguration['default-host-suffix'] = $policyConfiguration['ingress-host-suffix'];
+                }
+
+                if (!isset($policyConfiguration['host-rules'])) {
+                    $policyConfiguration['host-rules'] = [
+                        ['domain' => '*', 'suffix' => $policyConfiguration['ingress-host-suffix']],
+                    ];
+                }
+            }
+
+            if (isset($policyConfiguration['default-host-suffix'])) {
                 if (null !== ($ingress = $endpoint->getIngress())) {
                     if (empty($rules = $ingress->getRules())) {
                         $ingress->setRules([
-                            $this->generateIngressRule($tide, '-'.$endpoint->getName().$policyConfiguration['ingress-host-suffix']),
+                            $this->generateIngressRule($tide, '-' . $endpoint->getName() . $policyConfiguration['default-host-suffix']),
                         ]);
                     }
+                }
+            }
 
-                    foreach ($rules as $rule) {
-                        if (substr($rule->getHost(), -strlen($policyConfiguration['ingress-host-suffix'])) != $policyConfiguration['ingress-host-suffix']) {
-                            throw new ClusterPolicyException(sprintf(
-                                'Ingress hostname of component "%s" is "%s" while the suffix "%s" is enforced by the cluster policy',
-                                $endpoint->getName(),
-                                $rule->getHost(),
-                                $policyConfiguration['ingress-host-suffix']
-                            ));
+            if (isset($policyConfiguration['host-rules']) && is_array($policyConfiguration['host-rules'])) {
+                if (null !== ($ingress = $endpoint->getIngress())) {
+                    foreach ($ingress->getRules() as $ingressRule) {
+                        foreach ($policyConfiguration['host-rules'] as $enforcedHostRule) {
+                            if ($enforcedHostRule['domain'] == '*' || substr($ingressRule->getHost(), -strlen($enforcedHostRule['domain'])) == $enforcedHostRule['domain']) {
+                                // Rule is matching the host. Enforce rule's details
+
+                                if (isset($enforcedHostRule['suffix']) &&
+                                    substr($ingressRule->getHost(), -strlen($enforcedHostRule['suffix'])) != $enforcedHostRule['suffix']
+                                ) {
+                                    throw new ClusterPolicyException(sprintf(
+                                        'Ingress hostname of component "%s" is "%s" while the suffix "%s" is enforced by the cluster policy',
+                                        $endpoint->getName(),
+                                        $ingressRule->getHost(),
+                                        $enforcedHostRule['suffix']
+                                    ));
+                                }
+                            }
                         }
                     }
                 }
