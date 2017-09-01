@@ -37,6 +37,7 @@ class EnhancedDeploymentRequestFactory implements DeploymentRequestFactory
     {
         return $this->deploymentRequestEnhancer->enhance(
             $tide,
+            $taskDetails,
             $this->decoratedFactory->create($tide, $taskDetails, $configuration)
         );
     }

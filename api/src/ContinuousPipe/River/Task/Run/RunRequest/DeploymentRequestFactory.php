@@ -90,6 +90,7 @@ class DeploymentRequestFactory
 
         return $this->deploymentRequestEnhancer->enhance(
             $tide,
+            $taskDetails,
             $request
         );
     }
