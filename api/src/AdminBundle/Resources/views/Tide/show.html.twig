@@ -16,7 +16,12 @@
             <table class="table">
                 <tr>
                     <th>Status</th>
-                    <td>{{ tide.status }}</td>
+                    <td>
+                        {{ tide.status }}
+                        {% if tide.failureReason is not null %}
+                            ({{ tide.failureReason }})
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>Code Repository</th>
