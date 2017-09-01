@@ -7,5 +7,6 @@ pull the messages, start a PHP process for the message and extend their deadline
 ./puller -google-project-id=[project-id] -service-account=[base64-encoded] -subscription=[subscription-name] -script-path=[path]
 ```
 
-`puller` will run the script with the following arguments:
+The script with be ran with the following arguments:
 1. The base64-encoded message
+2. The base64-encoded JSON array of attributes
