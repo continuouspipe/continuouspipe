@@ -9,6 +9,7 @@ use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver
 use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
+use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 use Psr\Log\LoggerInterface;
 
@@ -44,9 +45,9 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
     /**
      * {@inheritdoc}
      */
-    public function enhance(Tide $tide, DeploymentRequest $deploymentRequest)
+    public function enhance(Tide $tide, TaskDetails $taskDetails, DeploymentRequest $deploymentRequest)
     {
-        $request = $this->decoratedEnhancer->enhance($tide, $deploymentRequest);
+        $request = $this->decoratedEnhancer->enhance($tide, $taskDetails, $deploymentRequest);
 
         try {
             $policy = $this->clusterPolicyResolver->find($tide->getTeam(), $deploymentRequest->getTarget()->getClusterIdentifier(), 'resources');
