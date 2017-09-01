@@ -94,11 +94,9 @@ class GKEClusterAccountCreator implements ClusterCreator
             $this->version($cluster->getCurrentMasterVersion()),
             null,
             null,
-            [
-                // Policies
-            ],
+            [],
             $cluster->getMasterAuthentication()->getClientCertificate(),
-            $cluster->getMasterAuthentication()->getClusterCaCertificate(),
+            null, // (Don't add the CA certificate for now - https://inviqa.atlassian.net/browse/CD-599) $cluster->getMasterAuthentication()->getClusterCaCertificate(),
             $base64EncodedServiceAccount,
             new Cluster\ClusterCredentials(
                 $cluster->getMasterAuthentication()->getUsername(),
