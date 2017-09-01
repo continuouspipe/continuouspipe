@@ -8,6 +8,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamin
 use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
+use ContinuousPipe\Security\Credentials\Cluster;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -30,7 +31,7 @@ class ExpressionResolverNamingStrategy implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Tide $tide, $expression = null)
+    public function getName(Tide $tide, Cluster $cluster, $expression = null)
     {
         if (null === $expression) {
             throw new UnresolvedEnvironmentNameException('The environment name expression must not be blank');
@@ -45,14 +46,6 @@ class ExpressionResolverNamingStrategy implements EnvironmentNamingStrategy
         );
 
         return $this->resolveExpression($expression, $context);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function isEnvironmentPartOfFlow(Uuid $flowUuid, Environment $environment)
-    {
-        throw new \RuntimeException('Can\'t let you know that...');
     }
 
     /**

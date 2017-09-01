@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName;
 
 use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
 {
@@ -32,9 +33,9 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Tide $tide, $expression = null)
+    public function getName(Tide $tide, Cluster $cluster, $expression = null)
     {
-        $name = $this->namingStrategy->getName($tide, $expression);
+        $name = $this->namingStrategy->getName($tide, $cluster, $expression);
         if (strlen($name) <= $this->maxLength) {
             return $name;
         }
@@ -46,7 +47,7 @@ class LimitedLengthNamingStrategy implements EnvironmentNamingStrategy
 
         $hashLength = 10;
         $strippedName .= substr($branchIdentifier, 0, $this->maxLength - strlen($strippedName) - $hashLength - 1).'-';
-        $strippedName .= substr(md5($branchIdentifier), 0, $hashLength);
+        $strippedName .= Hashifier::hash($branchIdentifier, $hashLength);
 
         return $strippedName;
     }

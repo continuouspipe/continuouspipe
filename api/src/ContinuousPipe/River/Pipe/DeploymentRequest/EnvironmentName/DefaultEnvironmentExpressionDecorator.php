@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName;
 
 use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class DefaultEnvironmentExpressionDecorator implements EnvironmentNamingStrategy
 {
@@ -13,29 +14,49 @@ class DefaultEnvironmentExpressionDecorator implements EnvironmentNamingStrategy
     private $environmentNamingStrategy;
 
     /**
-     * @var string
-     */
-    private $defaultExpression;
-
-    /**
      * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param string                    $defaultExpression
      */
-    public function __construct(EnvironmentNamingStrategy $environmentNamingStrategy, $defaultExpression)
+    public function __construct(EnvironmentNamingStrategy $environmentNamingStrategy)
     {
         $this->environmentNamingStrategy = $environmentNamingStrategy;
-        $this->defaultExpression = $defaultExpression;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName(Tide $tide, $expression = null)
+    public function getName(Tide $tide, Cluster $cluster, $expression = null)
     {
         if (null === $expression) {
-            $expression = $this->defaultExpression;
+            if (null !== ($prefix = $this->getClusterPolicyEnvironmentPrefix($cluster))) {
+                $prefix = $prefix.Hashifier::hash($tide->getFlowUuid()->toString(), 5).'-';
+            } else {
+                // We keep the full UUID for BC reasons.
+                $prefix = $tide->getFlowUuid()->toString().'-';
+            }
+
+            $expression = $this->expressionForPrefix($prefix);
         }
 
-        return $this->environmentNamingStrategy->getName($tide, $expression);
+        return $this->environmentNamingStrategy->getName($tide, $cluster, $expression);
+    }
+
+    private function getClusterPolicyEnvironmentPrefix(Cluster $cluster)
+    {
+        foreach ($cluster->getPolicies() as $policy) {
+            if ($policy->getName() == 'environment') {
+                $policyConfiguration = $policy->getConfiguration();
+
+                if (isset($policyConfiguration['prefix'])) {
+                    return $policyConfiguration['prefix'];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function expressionForPrefix(string $prefix) : string
+    {
+        return '\''.$prefix.'\' ~ code_reference.branch';
     }
 }

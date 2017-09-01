@@ -77,6 +77,7 @@ class DeleteTask implements Task
                 $deployedEnvironment = new DeployedEnvironment(
                     $environmentNamingStrategy->getName(
                         $tide,
+                        $cluster,
                         $configuration->getEnvironmentName()
                     ),
                     $cluster->getIdentifier()

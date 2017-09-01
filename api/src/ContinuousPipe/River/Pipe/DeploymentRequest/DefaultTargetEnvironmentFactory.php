@@ -7,6 +7,7 @@ use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterResolutionExcepti
 use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\TargetClusterResolver;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\Tide;
 
 class DefaultTargetEnvironmentFactory implements TargetEnvironmentFactory
@@ -42,14 +43,21 @@ class DefaultTargetEnvironmentFactory implements TargetEnvironmentFactory
             throw new DeploymentRequestException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return new Target(
-            $this->environmentNamingStrategy->getName(
+        try {
+            $name = $this->environmentNamingStrategy->getName(
                 $tide,
+                $cluster,
                 $configuration->getEnvironmentName()
-            ),
+            );
+        } catch (UnresolvedEnvironmentNameException $e) {
+            throw new DeploymentRequestException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return new Target(
+            $name,
             $cluster->getIdentifier(),
             [
-                'flow' => (string) $tide->getFlowUuid(),
+                'flow' => (string)$tide->getFlowUuid(),
             ]
         );
     }

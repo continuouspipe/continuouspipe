@@ -24,6 +24,7 @@ use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use JMS\Serializer\Serializer;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Request;
@@ -565,6 +566,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -584,6 +586,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -602,6 +605,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 

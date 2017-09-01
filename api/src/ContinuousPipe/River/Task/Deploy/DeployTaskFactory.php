@@ -37,26 +37,18 @@ class DeployTaskFactory implements TaskFactory
     private $componentFactory;
 
     /**
-     * @var string
-     */
-    private $defaultEnvironmentExpression;
-
-    /**
      * @param MessageBus       $commandBus
      * @param LoggerFactory    $loggerFactory
      * @param ComponentFactory $componentFactory
-     * @param string           $defaultEnvironmentExpression
      */
     public function __construct(
         MessageBus $commandBus,
         LoggerFactory $loggerFactory,
-        ComponentFactory $componentFactory,
-        $defaultEnvironmentExpression
+        ComponentFactory $componentFactory
     ) {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->componentFactory = $componentFactory;
-        $this->defaultEnvironmentExpression = $defaultEnvironmentExpression;
     }
 
     /**

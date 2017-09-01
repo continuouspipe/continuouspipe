@@ -11,7 +11,6 @@
             <argument type="service" id="river.task.deploy.configuration.component_factory" />
             <argument type="service" id="river.task.deploy.deployment_request_factory"/>
             <argument type="service" id="river.pipe_client"/>
-            <argument>%default_environment_expression%</argument>
 
             <tag name="river.task_factory" task="deploy" />
         </service>
@@ -30,7 +29,6 @@
                  class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\DefaultEnvironmentExpressionDecorator"
                  decorates="river.task.deploy.naming.expression_resolver">
             <argument type="service" id="river.task.deploy.naming.default_environment_expression.inner" />
-            <argument>%default_environment_expression%</argument>
         </service>
 
         <service id="river.task.deploy.naming.slugify"
