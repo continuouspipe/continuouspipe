@@ -328,3 +328,123 @@ Feature:
     When a tide is started for the branch "master"
     Then the endpoint "app" of the component "app" should be deployed with an ingress with the host "master-app-test.continuouspipe.net"
     And the endpoint "app" of the component "app" should be an ingress without http rule
+
+  Scenario: Uses default host suffix and host rules
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "endpoint",
+        "configuration": {
+          "type": "ingress",
+          "ingress-class": "nginx",
+
+          "default-host-suffix": "-test.continuouspipe.net",
+          "host-rules": [
+            {"domain": "continuouspipe.net", "suffix": "-test.continuouspipe.net"}
+          ]
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+                            accessibility:
+                                from_external: true
+    """
+    When a tide is started for the branch "master"
+    Then the endpoint "app" of the component "app" should be deployed with an ingress with the host "master-app-test.continuouspipe.net"
+
+  Scenario: It refuses the host based on the rule
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "endpoint",
+        "configuration": {
+          "type": "ingress",
+          "ingress-class": "nginx",
+
+          "default-host-suffix": "-test.continuouspipe.net",
+          "host-rules": [
+            {"domain": "continuouspipe.net", "suffix": "-test.continuouspipe.net"}
+          ]
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+                            accessibility:
+                                from_external: true
+                        endpoints:
+                            - name: app
+                              ingress:
+                                  host_suffix: "foo.continuouspipe.net"
+    """
+    When a tide is started for the branch "master"
+    Then the tide should be failed
+    And a log containing 'Ingress hostname of component "app" is "masterfoo.continuouspipe.net" while the suffix "-test.continuouspipe.net" is enforced by the cluster policy' should be created
+
+  Scenario: It allows extra domain names
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "endpoint",
+        "configuration": {
+          "type": "ingress",
+          "ingress-class": "nginx",
+
+          "default-host-suffix": "-test.continuouspipe.net",
+          "host-rules": [
+            {"domain": "continuouspipe.net", "suffix": "-test.continuouspipe.net"}
+          ]
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+                            accessibility:
+                                from_external: true
+                        endpoints:
+                            - name: app
+                            - name: www
+                              condition: code_reference.branch == 'master'
+                              ingress:
+                                  host: www.mydomain.com
+    """
+    When a tide is started for the branch "master"
+    Then the endpoint "app" of the component "app" should be deployed with an ingress with the host "master-app-test.continuouspipe.net"
+    And the endpoint "www" of the component "app" should be deployed with an ingress with the host "www.mydomain.com"
