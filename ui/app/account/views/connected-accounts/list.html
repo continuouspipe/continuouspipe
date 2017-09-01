@@ -7,9 +7,9 @@
     </div>
 </md-toolbar>
 
-<md-content flex id="content" class="card-grid">
+<md-content flex id="content">
     <remote-resource resource-name="accounts">
-        <table class="table hover">
+        <table class="table hover" ng-if="accounts.length > 0">
             <thead>
             <tr>
                 <th>Type</th>
@@ -28,7 +28,7 @@
             </tbody>
         </table>
 
-        <p>
+        <p ng-if="accounts">
             <md-button ng-click="connectAccount('github')" class="md-raised">
                 <md-icon class="cp-icon-github"></md-icon>
                 Connect a GitHub account

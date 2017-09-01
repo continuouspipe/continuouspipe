@@ -18,8 +18,8 @@ angular.module('continuousPipeRiver')
                 parent: 'account',
                 views: {
                     'content@account': {
-                        templateUrl: 'account/views/list.html',
-                        controller: 'AccountsController'
+                        templateUrl: 'account/views/connected-accounts/list.html',
+                        controller: 'ConnectedAccountsController'
                     },
                     'title@layout': {
                         template: 'My Account'
@@ -48,6 +48,43 @@ angular.module('continuousPipeRiver')
                     },
                     'title@layout': {
                         template: 'Create an API Key'
+                    }
+                }
+            })
+            .state('billing-profiles', {
+                url: '/billing-profiles',
+                parent: 'account',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/list.html',
+                        controller: 'BillingProfilesController'
+                    },
+                    'title@layout': {
+                        template: 'Billing profiles'
+                    }
+                }
+            })
+            .state('billing-profile', {
+                parent: 'billing-profiles',
+                url: '/:uuid',
+                resolve: {
+                    billingProfile: function(BillingProfileRepository, $stateParams) {
+                        return BillingProfileRepository.find($stateParams.uuid);
+                    }
+                },
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/show.html',
+                        controller: 'ShowBillingProfileController'
+                    }
+                }
+            })
+            .state('billing-profile.change', {
+                url: '/change',
+                views: {
+                    'content@account': {
+                        templateUrl: 'account/views/billing-profiles/change.html',
+                        controller: 'ChangeBillingProfileController'
                     }
                 }
             })

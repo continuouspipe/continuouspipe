@@ -8,10 +8,9 @@
         <md-button class="md-raised" aria-label="Create an API key" ui-sref="api-keys.create"><md-icon>add</md-icon> Create an API key</md-button>
     </div>
 </md-toolbar>
-
-<md-content flex id="content" class="card-grid">
+<md-content flex id="content">
     <remote-resource resource-name="apiKeys">
-        <table class="table hover">
+        <table class="table hover" ng-if="apiKeys.length > 0">
             <thead>
             <tr>
                 <th>Key</th>

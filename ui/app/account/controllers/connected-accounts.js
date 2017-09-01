@@ -1,10 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('AccountsController', function($scope, $remoteResource, $http, AccountRepository) {
-
-        $scope.accounts = [];
-
+    .controller('ConnectedAccountsController', function($scope, $remoteResource, $http, AccountRepository) {
         var load = function() {
             $remoteResource.load('accounts', AccountRepository.findMine()).then(function (accounts) {
                 $scope.accounts = accounts;

@@ -1,0 +1,35 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="billingProfiles">{{ billingProfiles.length }} billing profiles(s)</span>
+            <span ng-hide="billingProfiles">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create a billing profile" ng-click="create($event)"><md-icon>add</md-icon> New billing profile</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <remote-resource resource-name="billingProfiles">
+        <div class="list-items" ng-if="billingProfiles.length > 0">
+            <div class="list-items-header">
+                <div class="list-col-8">Name</div>
+                <div class="list-col-2">Plan</div>
+                <div class="list-col-2">Number of linked teams</div>
+            </div>
+
+            <div class="list-item clickable" ng-repeat="billingProfile in billingProfiles | orderBy:'name'" ui-sref="billing-profile({uuid: billingProfile.uuid})">
+                <div class="list-col-8">
+                    <md-icon class="md-avatar-icon"><i class="material-icons">store</i></md-icon>
+                    <span>{{ billingProfile.name }}</span>
+                </div>
+                <div class="list-col-2">
+                    <span ng-if="billingProfile.plan">{{ billingProfile.plan.name }}</span>
+                    <span ng-if="!billingProfile.plan"><em>No plan</em></span>
+                </div>
+                <div class="list-col-2">
+                    <span>{{ billingProfile.teams.length }}</span>
+                </div>
+            </div>
+        </div>
+    </remote-resource>
+</md-content>

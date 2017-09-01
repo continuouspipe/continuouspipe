@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
                     project: project
                 });
             }, function (error) {
-                swal("Error !", $http.getError(error) || "An unknown error occured while create the project", "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while creating the project", "error");
             })['finally'](function () {
                 $scope.isLoading = false;
             });
