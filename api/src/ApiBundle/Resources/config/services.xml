@@ -236,5 +236,12 @@
             <argument>%managed_google_project_id%</argument>
             <argument>%managed_google_cluster_identifier%</argument>
         </service>
+
+        <service id="app.managed.cluster_creator.add_cluster_policies"
+                 class="ContinuousPipe\Managed\ClusterCreation\AddManagedClusterPolicies"
+                 decorates="app.managed.cluster_creator">
+            <argument type="service" id="app.managed.cluster_creator.add_cluster_policies.inner" />
+            <argument>%managed_cloud_flare_credentials%</argument>
+        </service>
     </services>
 </container>
