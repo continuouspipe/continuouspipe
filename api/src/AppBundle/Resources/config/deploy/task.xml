@@ -11,7 +11,6 @@
             <argument type="service" id="river.task.deploy.configuration.component_factory" />
             <argument type="service" id="river.task.deploy.deployment_request_factory"/>
             <argument type="service" id="river.pipe_client"/>
-            <argument>%default_environment_expression%</argument>
 
             <tag name="river.task_factory" task="deploy" />
         </service>
@@ -22,24 +21,23 @@
         </service>
 
         <!-- Naming strategies -->
-        <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Task\Deploy\Naming\ExpressionResolverNamingStrategy">
+        <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\ExpressionResolverNamingStrategy">
             <argument type="service" id="river.task_filter.context_factory" />
         </service>
 
         <service id="river.task.deploy.naming.default_environment_expression"
-                 class="ContinuousPipe\River\Task\Deploy\Naming\DefaultEnvironmentExpressionDecorator"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\DefaultEnvironmentExpressionDecorator"
                  decorates="river.task.deploy.naming.expression_resolver">
             <argument type="service" id="river.task.deploy.naming.default_environment_expression.inner" />
-            <argument>%default_environment_expression%</argument>
         </service>
 
         <service id="river.task.deploy.naming.slugify"
-                 class="ContinuousPipe\River\Task\Deploy\Naming\SlugifyNamingStrategyDecorator"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\SlugifyNamingStrategyDecorator"
                  decorates="river.task.deploy.naming.expression_resolver">
             <argument type="service" id="river.task.deploy.naming.slugify.inner" />
         </service>
 
-        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\LimitedLengthNamingStrategy">
+        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\LimitedLengthNamingStrategy">
             <argument type="service" id="river.task.deploy.naming.expression_resolver" />
         </service>
 

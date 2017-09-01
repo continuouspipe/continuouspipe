@@ -13,6 +13,7 @@
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="river.flow.environment_client" />
             <argument type="service" id="river.task.deploy.naming.environment_strategy"/>
+            <argument type="service" id="river.pipe.deployment_request.target_cluster_resolver"/>
         </service>
     </services>
 </container>

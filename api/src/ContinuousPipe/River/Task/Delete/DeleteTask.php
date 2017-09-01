@@ -9,10 +9,13 @@ use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterResolutionException;
+use ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\TargetClusterResolver;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeleted;
 use ContinuousPipe\River\Task\Delete\Event\EnvironmentDeletionFailed;
 use ContinuousPipe\River\Task\Delete\Event\StartedEnvironmentDeletion;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Task\Deploy\Naming\UnresolvedEnvironmentNameException;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskCreated;
 use ContinuousPipe\River\Task\TaskEvent;
@@ -49,7 +52,7 @@ class DeleteTask implements Task
         }
     }
 
-    public function start(Tide $tide, LoggerFactory $loggerFactory, DeployedEnvironmentRepository $deployedEnvironmentRepository, EnvironmentNamingStrategy $environmentNamingStrategy)
+    public function start(Tide $tide, LoggerFactory $loggerFactory, DeployedEnvironmentRepository $deployedEnvironmentRepository, EnvironmentNamingStrategy $environmentNamingStrategy, TargetClusterResolver $targetClusterResolver)
     {
         if ($this->status == Task::STATUS_RUNNING) {
             throw new \RuntimeException('The task is already running');
@@ -58,20 +61,36 @@ class DeleteTask implements Task
         $label = 'Deleting environment';
         $logger = $loggerFactory->from($tide->getLog())->child(new Text($label))->updateStatus(Log::RUNNING);
 
-        $deployedEnvironment = new DeployedEnvironment(
-            $environmentNamingStrategy->getName(
-                $tide,
-                $this->configuration['environment']['name']
-            ),
-            $this->configuration['cluster']
+        $configuration = new DeleteTaskConfiguration(
+            $this->configuration['cluster'],
+            $this->configuration['environment']['name']
         );
 
-        $childLogger = $logger->child(new Text(sprintf(
-            'Deleting environment <code>%s</code>',
-            $deployedEnvironment->getIdentifier()
-        )));
-
         try {
+            try {
+                $cluster = $targetClusterResolver->getClusterIdentifier($tide, $configuration);
+            } catch (ClusterResolutionException $e) {
+                throw new DeployedEnvironmentException($e->getMessage(), $e->getCode(), $e);
+            }
+
+            try {
+                $deployedEnvironment = new DeployedEnvironment(
+                    $environmentNamingStrategy->getName(
+                        $tide,
+                        $cluster,
+                        $configuration->getEnvironmentName()
+                    ),
+                    $cluster->getIdentifier()
+                );
+            } catch (UnresolvedEnvironmentNameException $e) {
+                throw new DeployedEnvironmentException('Can\'t find the environment name: '.$e->getMessage(), $e->getCode(), $e);
+            }
+
+            $childLogger = $logger->child(new Text(sprintf(
+                'Deleting environment <code>%s</code>',
+                $deployedEnvironment->getIdentifier()
+            )));
+
             $deployedEnvironmentRepository->delete(
                 $tide->getTeam(),
                 $tide->getUser(),
@@ -96,8 +115,13 @@ class DeleteTask implements Task
                 $e->getMessage()
             ));
 
-            $childLogger->child(new Text($e->getMessage()));
-            $childLogger->updateStatus(Log::FAILURE);
+            if (isset($childLogger)) {
+                $childLogger->child(new Text($e->getMessage()));
+                $childLogger->updateStatus(Log::FAILURE);
+            } else {
+                $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+            }
+
             $logger->updateStatus(Log::FAILURE);
         }
     }

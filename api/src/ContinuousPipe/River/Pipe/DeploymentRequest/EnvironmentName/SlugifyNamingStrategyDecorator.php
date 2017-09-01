@@ -1,9 +1,10 @@
 <?php
 
-namespace ContinuousPipe\River\Task\Deploy\Naming;
+namespace ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName;
 
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\Security\Credentials\Cluster;
 
 class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
 {
@@ -23,10 +24,10 @@ class SlugifyNamingStrategyDecorator implements EnvironmentNamingStrategy
     /**
      * {@inheritdoc}
      */
-    public function getName(Tide $tide, $expression = null)
+    public function getName(Tide $tide, Cluster $cluster, $expression = null)
     {
         return (new Slugify())->slugify(
-            $this->decoratedStrategy->getName($tide, $expression)
+            $this->decoratedStrategy->getName($tide, $cluster, $expression)
         );
     }
 }

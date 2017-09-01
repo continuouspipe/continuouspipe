@@ -6,7 +6,7 @@ use ContinuousPipe\Pipe\Client;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Psr\Log\LoggerInterface;
