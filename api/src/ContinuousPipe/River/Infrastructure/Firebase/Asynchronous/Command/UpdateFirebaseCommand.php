@@ -3,10 +3,9 @@
 namespace ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Command;
 
 use ContinuousPipe\Message\Message;
-use ContinuousPipe\River\Message\OperationalMessage;
 use JMS\Serializer\Annotation as JMS;
 
-class UpdateFirebaseCommand implements OperationalMessage
+class UpdateFirebaseCommand implements Message
 {
     const COMMAND_SET = 'set';
     const COMMAND_UPDATE = 'update';
