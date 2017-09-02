@@ -29,5 +29,13 @@ message:
     connections:
         default:
             debug: true
+
+        main:
+            driver:
+                direct: ~
+        operations:
+            driver:
+                direct: ~
+        delayed:
             driver:
                 direct: ~

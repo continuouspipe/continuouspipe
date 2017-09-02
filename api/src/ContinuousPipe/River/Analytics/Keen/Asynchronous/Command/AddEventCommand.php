@@ -3,9 +3,10 @@
 namespace ContinuousPipe\River\Analytics\Keen\Asynchronous\Command;
 
 use ContinuousPipe\Message\Message;
+use ContinuousPipe\River\Message\OperationalMessage;
 use JMS\Serializer\Annotation as JMS;
 
-class AddEventCommand implements Message
+class AddEventCommand implements OperationalMessage
 {
     /**
      * @JMS\Type("string")
