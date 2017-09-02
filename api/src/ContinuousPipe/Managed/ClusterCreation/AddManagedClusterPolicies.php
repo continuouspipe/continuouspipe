@@ -43,6 +43,7 @@ class AddManagedClusterPolicies implements ClusterCreator
 
         return [
             new Cluster\ClusterPolicy('default'),
+            new Cluster\ClusterPolicy('managed'),
             new Cluster\ClusterPolicy('resources', [
                 // Default requests
                 'default-requests' => true,

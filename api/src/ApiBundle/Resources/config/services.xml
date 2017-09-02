@@ -243,5 +243,12 @@
             <argument type="service" id="app.managed.cluster_creator.add_cluster_policies.inner" />
             <argument>%managed_cloud_flare_credentials%</argument>
         </service>
+
+        <service id="app.managed.cluster_creator.ensure_team_billing"
+                 class="ContinuousPipe\Managed\ClusterCreation\Permissions\EnsureTeamHasSufficientBilling"
+                 decorates="app.managed.cluster_creator">
+            <argument type="service" id="app.managed.cluster_creator.ensure_team_billing.inner" />
+            <argument type="service" id="app.repository.billing_profile" />
+        </service>
     </services>
 </container>

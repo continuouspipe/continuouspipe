@@ -249,8 +249,6 @@ class TeamContext implements Context
             '/api/teams/'.$teamSlug.'/managed/create-cluster',
             'POST'
         ));
-
-        $this->assertResponseCodeIs($this->response, 201);
     }
 
     /**
@@ -463,6 +461,7 @@ class TeamContext implements Context
 
     /**
      * @Then the team should be successfully created
+     * @Then the managed cluster should be created
      */
     public function theTeamShouldBeSuccessfullyCreated()
     {
@@ -481,10 +480,26 @@ class TeamContext implements Context
     /**
      * @Then the team should not be created
      * @Then the team should not be updated
+     * @Then the cluster should not be created
      */
     public function theTeamShouldNotBeCreated()
     {
         $this->assertResponseCodeIs($this->response, 400);
+    }
+
+    /**
+     * @Then I should be told that :message
+     */
+    public function iShouldBeToldThat($message)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($json['message'] != $message) {
+            throw new \RuntimeException(sprintf(
+                'Got "%s" instead',
+                $json['message']
+            ));
+        }
     }
 
     /**
