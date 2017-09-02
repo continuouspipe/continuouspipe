@@ -168,10 +168,18 @@ tasks:
                               value: ${GITHUB_INTEGRATION_ID}
                             - name: GITHUB_INTEGRATION_KEY_NAME
                               value: ${GITHUB_INTEGRATION_KEY_NAME}
-                            - name: GOOGLE_PUB_SUB_TOPIC
+                            - name: GOOGLE_PUB_SUB_MAIN_TOPIC
                               value: ${GOOGLE_PUB_SUB_TOPIC}
-                            - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
+                            - name: GOOGLE_PUB_SUB_MAIN_SUBSCRIPTION_NAME
                               value: ${GOOGLE_PUB_SUB_SUBSCRIPTION_NAME}
+                            - name: GOOGLE_PUB_SUB_OPERATIONS_TOPIC
+                              value: ${GOOGLE_PUB_SUB_OPERATIONS_TOPIC}
+                            - name: GOOGLE_PUB_SUB_OPERATIONS_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_OPERATIONS_SUBSCRIPTION_NAME}
+                            - name: GOOGLE_PUB_SUB_DELAYED_TOPIC
+                              value: ${GOOGLE_PUB_SUB_DELAYED_TOPIC}
+                            - name: GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME}
                             - name: LOGITIO_API_KEY
                               value: ${LOGITIO_API_KEY}
                             - name: FLEX_CLUSTER_ADDRESS
@@ -212,6 +220,51 @@ tasks:
                             1002:
                               name: START_WORKER
                               value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: main
+
+                worker_operations:
+                    specification:
+                        accessibility:
+                            from_cluster: false
+                        source:
+                            from_service: api
+                        environment_variables:
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: operations
+
+                worker_delayed:
+                    specification:
+                        accessibility:
+                            from_cluster: false
+                        source:
+                            from_service: api
+                        environment_variables:
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: delayed
 
                 tideways:
                     specification:
