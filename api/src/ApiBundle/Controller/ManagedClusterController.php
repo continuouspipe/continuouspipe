@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ContinuousPipe\Managed\ClusterCreation\ClusterCreationException;
+use ContinuousPipe\Managed\ClusterCreation\ClusterCreationUserException;
 use ContinuousPipe\Managed\ClusterCreation\ClusterCreator;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketContainer;
@@ -58,6 +59,10 @@ class ManagedClusterController
 
         try {
             $cluster = $this->clusterCreator->createForTeam($team, 'managed');
+        } catch (ClusterCreationUserException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], 400);
         } catch (ClusterCreationException $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),
