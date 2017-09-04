@@ -31,12 +31,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
-    - name: GOOGLE_PUB_SUB_TOPIC
-      condition: code_reference.branch == 'production'
-      value: projects/continuous-pipe-1042/topics/production-river
-    - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
-      condition: code_reference.branch == 'production'
-      value: projects/continuous-pipe-1042/subscriptions/production-river-worker
     - name: REDIS_HOST
       condition: code_reference.branch == 'production'
       value: redis-sentinel-0.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-production.svc.cluster.local:26379
@@ -59,12 +53,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch != 'production'
       value: rabbitmq.stack-master.svc.cluster.local
-    - name: GOOGLE_PUB_SUB_TOPIC
-      condition: code_reference.branch != 'production'
-      value: projects/continuous-pipe-1042/topics/staging-river
-    - name: GOOGLE_PUB_SUB_SUBSCRIPTION_NAME
-      condition: code_reference.branch != 'production'
-      value: projects/continuous-pipe-1042/subscriptions/staging-river-worker
     - name: REDIS_HOST
       condition: code_reference.branch != 'production'
       value: redis-sentinel-0.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-master.svc.cluster.local:26379
