@@ -125,10 +125,10 @@ class GKEClusterAccountCreator implements ClusterCreator
         $serviceAccountFullName = $projectFullName.'/serviceAccounts/'.$serviceAccountName;
 
         try {
-            $serviceAccount = $iam->projects_serviceAccounts->get($serviceAccountFullName);
+            $iam->projects_serviceAccounts->get($serviceAccountFullName);
         } catch (\Google_Service_Exception $e) {
             if ($e->getCode() == 404) {
-                $serviceAccount= $iam->projects_serviceAccounts->create('projects/' . $this->projectId, new \Google_Service_Iam_CreateServiceAccountRequest([
+                $iam->projects_serviceAccounts->create('projects/' . $this->projectId, new \Google_Service_Iam_CreateServiceAccountRequest([
                     'accountId' => $accountId,
                     'serviceAccount' => new \Google_Service_Iam_ServiceAccount([
                         'displayName' => 'Team "'.$team->getSlug().'"',
@@ -155,20 +155,7 @@ class GKEClusterAccountCreator implements ClusterCreator
             'policy' => $policy,
         ]));
 
-        $keyId = substr($serviceAccountKey->name, strrpos($serviceAccountKey->name, '/') + 1);
-
-        return base64_encode(\GuzzleHttp\json_encode([
-            'type' => 'service_account',
-            'project_id' => $serviceAccount->projectId,
-            'client_email' => $serviceAccount->email,
-            'client_id' => $serviceAccount->oauth2ClientId,
-            'private_key_id' => $keyId,
-            'private_key' => base64_decode($serviceAccountKey->privateKeyData),
-            'token_uri' => 'https://accounts.google.com/o/oauth2/auth',
-            'auth_uri' => 'https://accounts.google.com/o/oauth2/token',
-            'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-            'client_x509_cert_url' => 'https://www.googleapis.com/robot/v1/metadata/x509/'.urlencode($serviceAccount->email),
-        ]));
+        return $serviceAccountKey->privateKeyData;
     }
 
     /**
