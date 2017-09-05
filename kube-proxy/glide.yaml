@@ -4,3 +4,10 @@ import:
 - package: golang.org/x/oauth2
   subpackages:
   - google
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: cloud.google.com/go
+  version: ^0.12.0
+  subpackages:
+  - compute/metadata
