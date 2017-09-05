@@ -361,17 +361,40 @@ message:
         connection: default
 
     command:
-        connection: default
-        message_deadline_expiration_manager: continuouspipe.message.default.message_puller
+        message_deadline_expiration_manager: continuouspipe.message.main.message_puller
 
     connections:
         default:
             driver:
+                router:
+                    message_to_connection_mapping:
+                        'ContinuousPipe\River\Message\OperationalMessage': operations
+                        'ContinuousPipe\Message\Delay\DelayedMessage': delayed
+                        '*': main
+
+        main:
+            driver:
                 google_pub_sub:
                     project_id: %google_pub_sub_project_id%
                     service_account_path: %google_pub_sub_service_account_path%
-                    topic: %google_pub_sub_topic%
-                    subscription: %google_pub_sub_subscription_name%
+                    topic: %google_pub_sub_main_topic%
+                    subscription: %google_pub_sub_main_subscription_name%
+
+        operations:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_operations_topic%
+                    subscription: %google_pub_sub_operations_subscription_name%
+
+        delayed:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_delayed_topic%
+                    subscription: %google_pub_sub_delayed_subscription_name%
 
     tideways:
         api_key: %tideways_api_key%

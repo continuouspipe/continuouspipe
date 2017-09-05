@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2449d86287ba3a77f56709857e9c788",
+    "content-hash": "359b578b69c9520cfbfbfc13812fb715",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -320,16 +320,16 @@
         },
         {
             "name": "continuous-pipe/message",
-            "version": "dev-master",
+            "version": "dev-feature/CD-595-add-a-router-for-messages",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/message.git",
-                "reference": "2df7480db4189c7a1110f41de695793face7d477"
+                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/2df7480db4189c7a1110f41de695793face7d477",
-                "reference": "2df7480db4189c7a1110f41de695793face7d477",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
+                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
                 "shasum": ""
             },
             "require": {
@@ -352,10 +352,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/message/tree/master",
+                "source": "https://github.com/continuouspipe/message/tree/feature/CD-595-add-a-router-for-messages",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-08-27 14:42:04"
+            "time": "2017-09-02 12:27:44"
         },
         {
             "name": "continuous-pipe/model",

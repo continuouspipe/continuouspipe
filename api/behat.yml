@@ -24,7 +24,7 @@ default:
                     - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
-                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
+                    - @continuouspipe.message.delayed.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -176,7 +176,7 @@ default:
                     - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
-                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
+                    - @continuouspipe.message.delayed.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -288,7 +288,7 @@ default:
                     - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
-                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
+                    - @continuouspipe.message.delayed.message_producer.delayed_messages_buffer
                 - Tide\TasksContext:
                     - @event_bus
                     - @river.repository.tide
@@ -404,7 +404,7 @@ smoke:
                     - @continuouspipe.message.default.message_producer.traced
                     - @river.time_resolver.predictable
                     - @river.repository.tide
-                    - @continuouspipe.message.default.message_producer.delayed_messages_buffer
+                    - @continuouspipe.message.delayed.message_producer.delayed_messages_buffer
                 - GitHubContext:
                     - @kernel
                     - @river.notifications.notifier.github.commit_status.traceable

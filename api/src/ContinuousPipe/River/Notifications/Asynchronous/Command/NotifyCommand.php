@@ -3,11 +3,12 @@
 namespace ContinuousPipe\River\Notifications\Asynchronous\Command;
 
 use ContinuousPipe\Message\Message;
+use ContinuousPipe\River\Message\OperationalMessage;
 use ContinuousPipe\River\Tide\Status\Status;
 use JMS\Serializer\Annotation as JMS;
 use Ramsey\Uuid\UuidInterface;
 
-class NotifyCommand implements Message
+class NotifyCommand implements OperationalMessage
 {
     /**
      * @JMS\Type("uuid")
