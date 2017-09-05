@@ -1,3 +1,6 @@
 package: github.com/continuouspipe/kube-proxy
 import:
 - package: github.com/golang/glog
+- package: golang.org/x/oauth2
+  subpackages:
+  - google

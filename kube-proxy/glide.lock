@@ -1,6 +1,10 @@
-hash: ec0d5c048c72b8eaf5e77b8875f937285ff92ae640f2e343e067d02bd8b83a40
-updated: 2017-03-20T12:40:54.308379492Z
+hash: a79088344d4587cac11f1ef1e628727c088d7b8b6c54a1398e02295a837a1cd3
+updated: 2017-09-05T16:20:14.998392925+01:00
 imports:
 - name: github.com/golang/glog
   version: 44145f04b68cf362d9c4df2182967c2275eaefed
+- name: golang.org/x/oauth2
+  version: a6bd8cefa1811bd24b86f8902872e4e8225f74c4
+  subpackages:
+  - google
 testImports: []

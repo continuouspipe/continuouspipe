@@ -43,14 +43,20 @@ type ApiFlowTeam struct {
 	Name       string `json:"name"`
 }
 
+type ApiClusterCredentials struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	GoogleServiceAccount string `json:"google_cloud_service_account"`
+}
+
 type ApiCluster struct {
 	Identifier string `json:"identifier"`
 	Address    string `json:"address"`
 	Version    string `json:"version"`
-	Username   string `json:"username"`
-	Password   string `json:"password"`
 	Type       string `json:"type"`
+	Credentials ApiClusterCredentials `json:"credentials"`
 }
+
 
 func (c ClusterInfo) GetCluster(cpUsername string, apiKeyOrToken string, flowId string, clusterIdentifier string) (*ApiCluster, error) {
 	apiFlow, err := c.GetApiFlow(cpUsername, apiKeyOrToken, flowId)
