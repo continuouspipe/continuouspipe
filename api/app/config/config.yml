@@ -361,7 +361,7 @@ message:
         connection: default
 
     command:
-        message_deadline_expiration_manager: continuouspipe.message.main.message_puller
+        message_deadline_expiration_manager: continuouspipe.message.delayed.message_puller
 
     connections:
         default:
