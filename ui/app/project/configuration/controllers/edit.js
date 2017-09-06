@@ -9,9 +9,11 @@ angular.module('continuousPipeRiver')
             }
         };
 
-        $remoteResource.load('billingProfile', ProjectRepository.getBillingProfile(project)).then(function (billingProfile) {
-            $scope.billingProfile = billingProfile;
-        });
+        var reloadBillingProfile = function() {
+            $remoteResource.load('billingProfile', ProjectRepository.getBillingProfile(project)).then(function (billingProfile) {
+                $scope.billingProfile = billingProfile;
+            });
+        };
 
         $scope.update = function() {
             if ($scope.patch.billing_profile) {
@@ -34,8 +36,9 @@ angular.module('continuousPipeRiver')
         var doUpdate = function() {
             $scope.isLoading = true;
             ProjectRepository.update(project, $scope.patch).then(function() {
-                $rootScope.$emit('configuration-saved');
+                reloadBillingProfile();
 
+                $rootScope.$emit('configuration-saved');
                 $mdToast.show($mdToast.simple()
                     .textContent('Configuration successfully saved!')
                     .position('top')
@@ -84,4 +87,6 @@ angular.module('continuousPipeRiver')
                 });
             });
         };
+
+        reloadBillingProfile();
     });

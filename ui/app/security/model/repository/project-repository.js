@@ -25,6 +25,8 @@ angular.module('continuousPipeRiver')
         };
 
         this.update = function(project, patch) {
+            patch = $.extend(true, {}, patch);
+            
             // Rewrite the "project" key to "team"
             if (patch.project) {
                 patch.team = patch.project;
