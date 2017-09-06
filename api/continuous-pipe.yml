@@ -34,6 +34,9 @@ variables:
     - name: REDIS_HOST
       condition: code_reference.branch == 'production'
       value: redis-sentinel-0.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-production.svc.cluster.local:26379
+    - name: K8S_WATCHER_URL
+      condition: code_reference.branch == 'production'
+      value: http://api.k8s-watcher-production.svc.cluster.local
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
@@ -56,6 +59,9 @@ variables:
     - name: REDIS_HOST
       condition: code_reference.branch != 'production'
       value: redis-sentinel-0.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-master.svc.cluster.local:26379
+    - name: K8S_WATCHER_URL
+      condition: code_reference.branch != 'production'
+      value: http://api.k8s-watcher-master.svc.cluster.local
 
 tasks:
     images:
@@ -139,7 +145,7 @@ tasks:
                             - name: HOSTED_GRAPHITE_API_KEY
                               value: ${HOSTED_GRAPHITE_API_KEY}
                             - name: K8S_WATCHER_URL
-                              value: http://api.k8s-watcher-master.svc.cluster.local
+                              value: ${K8S_WATCHER_URL}
                             - name: K8S_HEALTH_CHECKER_URL
                               value: http://health-checker.chc-master.svc.cluster.local
                             - name: ZIPKIN_BASE_URL

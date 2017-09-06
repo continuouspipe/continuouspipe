@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "359b578b69c9520cfbfbfc13812fb715",
+    "content-hash": "8c9783fcb27a9fc095fc3b091ba9c004",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -359,7 +359,7 @@
         },
         {
             "name": "continuous-pipe/model",
-            "version": "dev-master",
+            "version": "2.4.6",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/model.git",
@@ -385,7 +385,7 @@
                 "source": "https://github.com/continuouspipe/model/tree/master",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-08-23 07:35:47"
+            "time": "2017-08-23T07:35:47+00:00"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -423,16 +423,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.9.0",
+            "version": "2.9.5",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "7a9fa274a130692dffca0f5c2833c7e797952381"
+                "reference": "6284ec26006616e80040b4cc67e8a9598766bd71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/7a9fa274a130692dffca0f5c2833c7e797952381",
-                "reference": "7a9fa274a130692dffca0f5c2833c7e797952381",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/6284ec26006616e80040b4cc67e8a9598766bd71",
+                "reference": "6284ec26006616e80040b4cc67e8a9598766bd71",
                 "shasum": ""
             },
             "require": {
@@ -453,10 +453,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.9.0",
+                "source": "https://github.com/continuouspipe/security/tree/2.9.5",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-08-10T10:13:42+00:00"
+            "time": "2017-09-01T10:33:49+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8702,7 +8702,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "continuous-pipe/model": 20,
         "continuous-pipe/worker-bundle": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,

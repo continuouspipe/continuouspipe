@@ -36,11 +36,23 @@ class HttpWatcher implements Watcher
     public function logs(Cluster\Kubernetes $kubernetes, string $namespace, string $pod)
     {
         try {
+            if (null !== ($serviceAccount = $kubernetes->getCredentials()->getGoogleCloudServiceAccount())) {
+                $watcherCredentials = [
+                    'google_cloud_service_account' => $serviceAccount,
+                ];
+            } else {
+                $watcherCredentials = [
+                    'username' => $kubernetes->getCredentials()->getUsername(),
+                    'password' => $kubernetes->getCredentials()->getPassword(),
+                ];
+            }
+
             $response = $this->httpClient->request('post', $this->baseUrl.'/v1/watch/logs', [
                 'json' => [
                     'cluster' => [
                         'address' => $kubernetes->getAddress(),
                         'version' => 'v1',
+                        'credentials' => $watcherCredentials,
                         'username' => $kubernetes->getUsername(),
                         'password' => $kubernetes->getPassword(),
                     ],
@@ -81,7 +93,7 @@ class HttpWatcher implements Watcher
      *
      * @throws WatcherException
      *
-     * @return ResponseInterface $response
+     * @return array
      */
     private function getJson(ResponseInterface $response)
     {
