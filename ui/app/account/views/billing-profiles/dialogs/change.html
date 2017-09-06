@@ -16,7 +16,7 @@
                     <md-input-container flex>
                         <label>Plan</label>
                         <md-select name="plan" ng-model="changeRequest.plan" required md-on-open="loadPlans()" >
-                              <md-option ng-value="plan" ng-repeat="plan in plans">{{ plan.name }}</md-option>
+                              <md-option ng-value="plan" ng-repeat="plan in plans">{{ plan.name }} (£{{ plan.price }} / month)</md-option>
                         </md-select>
                     </md-input-container>
                 </div>

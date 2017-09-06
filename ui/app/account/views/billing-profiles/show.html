@@ -58,15 +58,15 @@
                                 <div class="block__title">Tides used: {{ billingProfile.plan.metrics.used.tides }} of {{ billingProfile.plan.metrics.tides }}</div>
                                 <md-progress-linear md-mode="determinate" value="{{ (billingProfile.plan.metrics.used.tides / billingProfile.plan.metrics.tides) * 100 }}"></md-progress-linear>
                             </div>
-                            <md-card-actions layout="row" layout-align="space-between">
-                                <div flex="2" layout="column">
-                                    <md-button class="md-raised md-primary" ng-click="change($event)">Change</md-button>
-                                </div>
-                                <div flex="2" layout="column">
-                                    <md-button class="md-raised md-primary" ng-if="billingProfile.invoices_url" ng-href="{{ billingProfile.invoices_url }}">Invoices</md-button>
-                                </div>
-                            </md-card-actions>
                         </md-card-content>
+                        <md-card-actions layout="row" layout-align="space-between">
+                            <div flex="2" layout="column">
+                                <md-button class="md-raised md-primary" ng-click="change($event)">Change</md-button>
+                            </div>
+                            <div flex="2" layout="column">
+                                <md-button class="md-raised md-primary" ng-if="billingProfile.invoices_url" ng-href="{{ billingProfile.invoices_url }}">Invoices</md-button>
+                            </div>
+                        </md-card-actions>
                     </md-card>
                 </div>
                 <div flex="100" flex-gt-xs="50" flex-gt-sm="100" layout="column">
