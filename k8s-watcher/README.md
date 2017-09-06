@@ -15,15 +15,15 @@ Path: `/v1/watch/logs`
 Request:
 ```
 {
-	"cluster": {
-		"address": "https://1.2.3.4",
+    "cluster": {
+        "address": "https://1.2.3.4",
         "credentials": {
-    		"username": "username",
-    		"password": "password"
+            "username": "username",
+            "password": "password"
         }
-	},
-	"namespace": "namespace",
-	"pod": "pod"
+    },
+    "namespace": "namespace",
+    "pod": "pod"
 }
 ```
 
@@ -32,7 +32,7 @@ Response:
 200 OK
 
 {
-	"log": "-KUvUFQ80nw5z2yL13CY"
+    "log": "-KUvUFQ80nw5z2yL13CY"
 }
 ```
 
