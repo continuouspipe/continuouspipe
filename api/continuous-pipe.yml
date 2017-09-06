@@ -60,8 +60,8 @@ variables:
       condition: code_reference.branch != 'production'
       value: redis-sentinel-0.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-master.svc.cluster.local:26379
     - name: K8S_WATCHER_URL
-      condition: code_reference.branch == 'production'
-      value: http://api.k8s-watcher-master.svc.cluster.local # We don't have a production one, yet.
+      condition: code_reference.branch != 'production'
+      value: http://api.k8s-watcher-master.svc.cluster.local
 
 tasks:
     images:
