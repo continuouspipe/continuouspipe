@@ -1,6 +1,7 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use LogStream\HookableLoggerFactory;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
 class LogContext implements Context
@@ -10,9 +11,15 @@ class LogContext implements Context
      */
     private $debugLogger;
 
-    public function __construct(DebugLoggerInterface $debugLogger)
+    /**
+     * @var HookableLoggerFactory
+     */
+    private $hookableLoggerFactory;
+
+    public function __construct(DebugLoggerInterface $debugLogger, HookableLoggerFactory $hookableLoggerFactory)
     {
         $this->debugLogger = $debugLogger;
+        $this->hookableLoggerFactory = $hookableLoggerFactory;
     }
 
     /**
@@ -27,5 +34,15 @@ class LogContext implements Context
         }
 
         throw new \RuntimeException('The specified message not found in the log.');
+    }
+
+    /**
+     * @Given the log stream client will fail to update logs
+     */
+    public function theLogStreamClientWillFailToUpdateLogs()
+    {
+        $this->hookableLoggerFactory->setUpdateHook(function() {
+            throw new \LogStream\Client\ClientException('Found status 0');
+        });
     }
 }

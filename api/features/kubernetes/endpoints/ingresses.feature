@@ -423,3 +423,35 @@ Feature:
     """
     When I send the built deployment request
     Then the secret "https-continuous-pipe" should be updated
+
+  Scenario: Create a empty ingress
+    Given the ingress "www" will be created with the public DNS address "app.my.dns"
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "www",
+            "ingress": {}
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the ingress named "www" should be created

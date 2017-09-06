@@ -50,15 +50,16 @@ class ClusterHealthContext implements Context
     }
 
     /**
+     * @Then I should see a :type log event in the log stream
      * @Then I should see a :type log event in the log stream with message :message
      */
-    public function iShouldSeeALogEventInTheLogStreamWithMessage($type, $message)
+    public function iShouldSeeALogEventInTheLogStreamWithMessage($type, $message = null)
     {
         $matching = $this->findEvent($type, $message);
 
         if (count($matching) == 0) {
             throw new \UnexpectedValueException(
-                sprintf('Expected to find an event %s with message %s, none found', $type, $message)
+                sprintf('Expected to find an event %s none found', $type)
             );
         }
     }
@@ -76,15 +77,18 @@ class ClusterHealthContext implements Context
         }
     }
 
-    private function findEvent($type, $message)
+    private function findEvent($type, $message = null)
     {
         return array_filter($this->logStream->getLogs(), function (array $entry) use ($type, $message) {
             if (!isset($entry['type'])) {
                 return false;
             }
 
-            if ($entry['type'] == 'events') {
+            if (null === $message) {
+                return $entry['type'] == $type;
+            }
 
+            if ($entry['type'] == 'events') {
                 if (empty($entry['events'])) {
                     return false;
                 }

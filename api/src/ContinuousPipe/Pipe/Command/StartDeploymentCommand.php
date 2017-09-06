@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Pipe\Command;
 
+use ContinuousPipe\Message\Message;
 use ContinuousPipe\Pipe\View\Deployment;
 
-class StartDeploymentCommand
+class StartDeploymentCommand implements Message
 {
     /**
      * @var Deployment
