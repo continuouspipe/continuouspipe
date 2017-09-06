@@ -1,3 +1,11 @@
+variables:
+    - name: KUBE_PROXY_HOSTNAME
+      condition: code_reference.branch == "production"
+      value: kube-proxy.continuouspipe.io
+    - name: KUBE_PROXY_HOSTNAME
+      condition: code_reference.branch == "master"
+      value: kube-proxy-staging.continuouspipe.io
+
 tasks:
     images:
         build:
@@ -25,6 +33,8 @@ tasks:
                               value: 8125
                             - name: STATSD_PREFIX
                               value: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
+                            - name: KUBE_PROXY_HOSTNAME
+                              value: ${KUBE_PROXY_HOSTNAME}
 
                     deployment_strategy:
                         readiness_probe:

@@ -35,8 +35,9 @@ app(function(queue, firebase, statsd) {
                 pod: urlMatches[4],
             };
 
+            var proxyHostname = process.env.KUBE_PROXY_HOSTNAME;
             var proxyWebSocketUri = 
-                'wss://x-token-auth:'+token+'@kube-proxy-staging.continuouspipe.io'+
+                'wss://x-token-auth:'+token+'@'+proxyHostname+
                 '/'+matches.flowUuid+'/'+matches.cluster+
                 '/api/v1'+
                 '/namespaces/'+matches.namespace+

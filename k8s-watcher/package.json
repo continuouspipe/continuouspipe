@@ -8,6 +8,7 @@
     "ajv": "^4.8.2",
     "express": "^4.13.3",
     "firebase": "^2.4.2",
+    "googleapis": "^21.3.0",
     "kubernetes-client": "^2.2.2",
     "kue": "^0.11.5",
     "node-statsd": "^0.1.1",
