@@ -1,5 +1,5 @@
 var ajv = require('ajv')(),
-    k8s = require('../k8s')
+    k8s = require('../k8s');
 
 var HttpHandlerFactory = function(queue, firebase, statsd) {
     var redirect = function(request, response) {
@@ -44,21 +44,23 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                         "address": {
                             "type": "string"
                         },
-                        "version": {
-                            "type": "string"
-                        },
-                        "username": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
+                        "credentials": {
+                            "type": "object",
+                            "properties": {
+                                "username": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                },
+                                "google_cloud_service_account": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "required": [
-                        "address",
-                        "version",
-                        "username",
-                        "password"
+                        "address"
                     ]
                 },
                 "namespace": {
@@ -84,43 +86,47 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                 return;
             }
 
-            var client = k8s.createClientFromCluster(data.cluster);
-            client.ns(data.namespace).po.get(data.pod, function(error, pod) {
-                if (error) {
-                    response.writeHead(400);
-                    response.end(JSON.stringify({
-                        code: error.code, 
-                        message: error.toString()
-                    }));
-
-                    return;
-                }
-
-                // If the `logId` is not given, create one
-                if (!data.logId) {
-                    data.logId = firebase.child('logs').push({'type': 'container'}).key();
-                    console.log('Created log "' + data.logId + '"');
-                    data.removeLog = true;
-                }
-
-                if (undefined === data.removeLog) {
-                    data.removeLog = false;
-                }
-
-                var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
-                    response.setHeader('Content-Type', 'application/json');
-
+            k8s.createClientFromCluster(data.cluster).then(function(client) {
+                return client.ns(data.namespace).po.get(data.pod, function(error, pod) {
                     if (error) {
-                        response.writeHead(500);
-                        response.end(JSON.stringify(error));
-                    } else {
-                        response.writeHead(200);
+                        response.writeHead(400);
                         response.end(JSON.stringify({
-                            'logId': data.logId,
-                            'jobId': job.id
+                            code: error.code, 
+                            message: error.toString()
                         }));
+
+                        return;
                     }
+
+                    // If the `logId` is not given, create one
+                    if (!data.logId) {
+                        data.logId = firebase.child('logs').push({'type': 'container'}).key();
+                        console.log('Created log "' + data.logId + '"');
+                        data.removeLog = true;
+                    }
+
+                    if (undefined === data.removeLog) {
+                        data.removeLog = false;
+                    }
+
+                    var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
+                        response.setHeader('Content-Type', 'application/json');
+
+                        if (error) {
+                            response.writeHead(500);
+                            response.end(JSON.stringify(error));
+                        } else {
+                            response.writeHead(200);
+                            response.end(JSON.stringify({
+                                'logId': data.logId,
+                                'jobId': job.id
+                            }));
+                        }
+                    });
                 });
+            }).catch(function(error) {
+                response.writeHead(500);
+                response.end(JSON.stringify(error));
             });
 
             statsd.increment('api.http.watch_logs');

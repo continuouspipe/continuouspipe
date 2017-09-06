@@ -17,9 +17,10 @@ Request:
 {
 	"cluster": {
 		"address": "https://1.2.3.4",
-		"version": "v1.4",
-		"username": "username",
-		"password": "password"
+        "credentials": {
+    		"username": "username",
+    		"password": "password"
+        }
 	},
 	"namespace": "namespace",
 	"pod": "pod"
@@ -39,3 +40,9 @@ Response:
 
 Method: `Websocket`
 Path: `/flows/<flowUuid>/cluster/<cluster>/<namespace>/pod/<pod>`
+
+## Local development
+
+```
+supervisor 
+```

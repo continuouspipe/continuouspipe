@@ -7,6 +7,8 @@ api:
         - .:/app
     expose:
         - 80
+    ports:
+        - "8081:80"
     environment:
         PORT: 80
         SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
@@ -15,6 +17,7 @@ api:
         STATSD_HOST: statsd.hostedgraphite.com
         STATSD_PORT: 8125
         STATSD_PREFIX: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
+        KUBE_PROXY_HOSTNAME: kube-proxy-staging.continuouspipe.io
 
 worker:
     build: .
@@ -30,6 +33,7 @@ worker:
         STATSD_HOST: statsd.hostedgraphite.com
         STATSD_PORT: 8125
         STATSD_PREFIX: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
+        KUBE_PROXY_HOSTNAME: kube-proxy-staging.continuouspipe.io
 
 redis:
     image: redis
