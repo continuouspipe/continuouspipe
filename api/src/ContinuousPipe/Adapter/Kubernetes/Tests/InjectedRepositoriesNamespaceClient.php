@@ -9,6 +9,7 @@ use Kubernetes\Client\Repository\EventRepository;
 use Kubernetes\Client\Repository\IngressRepository;
 use Kubernetes\Client\Repository\PersistentVolumeClaimRepository;
 use Kubernetes\Client\Repository\PodRepository;
+use Kubernetes\Client\Repository\RBAC\RoleBindingRepository;
 use Kubernetes\Client\Repository\ReplicationControllerRepository;
 use Kubernetes\Client\Repository\SecretRepository;
 use Kubernetes\Client\Repository\ServiceAccountRepository;
@@ -67,16 +68,10 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     private $eventRepository;
 
     /**
-     * @param PodRepository $podRepository
-     * @param ServiceRepository $serviceRepository
-     * @param ReplicationControllerRepository $replicationControllerRepository
-     * @param SecretRepository $secretRepository
-     * @param ServiceAccountRepository $serviceAccountRepository
-     * @param PersistentVolumeClaimRepository $persistentVolumeClaimRepository
-     * @param IngressRepository $ingressRepository
-     * @param DeploymentRepository $deploymentRepository
-     * @param EventRepository $eventRepository
+     * @var RoleBindingRepository
      */
+    private $roleBindingRepository;
+
     public function __construct(
         PodRepository $podRepository,
         ServiceRepository $serviceRepository,
@@ -86,7 +81,8 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
         PersistentVolumeClaimRepository $persistentVolumeClaimRepository,
         IngressRepository $ingressRepository,
         DeploymentRepository $deploymentRepository,
-        EventRepository $eventRepository
+        EventRepository $eventRepository,
+        RoleBindingRepository $roleBindingRepository
     ) {
         $this->podRepository = $podRepository;
         $this->serviceRepository = $serviceRepository;
@@ -97,6 +93,7 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
         $this->ingressRepository = $ingressRepository;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventRepository = $eventRepository;
+        $this->roleBindingRepository = $roleBindingRepository;
     }
 
     /**
@@ -169,6 +166,14 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     public function getEventRepository()
     {
         return $this->eventRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoleBindingRepository()
+    {
+        return $this->roleBindingRepository;
     }
 
     /**

@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
@@ -13,6 +14,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use JMS\Serializer\Serializer;
+use Kubernetes\Client\Model\RBAC\Subject;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -37,17 +39,23 @@ class SecurityContext implements Context
      * @var PreviouslyKnownValuesVault
      */
     private $previouslyKnownValuesVault;
+    /**
+     * @var TraceableRoleBindingRepository
+     */
+    private $traceableRoleBindingRepository;
 
     public function __construct(
         BucketRepository $bucketRepository,
         Serializer $serializer,
         TeamRepository $teamRepository,
-        PreviouslyKnownValuesVault $previouslyKnownValuesVault
+        PreviouslyKnownValuesVault $previouslyKnownValuesVault,
+        TraceableRoleBindingRepository $traceableRoleBindingRepository
     ) {
         $this->bucketRepository = $bucketRepository;
         $this->serializer = $serializer;
         $this->teamRepository = $teamRepository;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
+        $this->traceableRoleBindingRepository = $traceableRoleBindingRepository;
     }
 
     /**
@@ -71,14 +79,63 @@ class SecurityContext implements Context
     }
 
     /**
-     * @Given the cluster :clusterIdentifier of the bucket :bucketUuid has the :policyName policy
+     * @Given the user credentials of the cluster :clusterIdentifier of bucket :bucketUuid is a Google Cloud service account for the user :username
      */
-    public function theClusterHasThePolicy($clusterIdentifier, $bucketUuid, $policyName)
+    public function theUserCredentialsOfTheClusterOfBucketIsAGoogleCloudServiceAccountForTheUser($clusterIdentifier, $bucketUuid, $username)
     {
-        $cluster = $this->clusterFromBucket(Uuid::fromString($bucketUuid), $clusterIdentifier);
-        $cluster->setPolicies([
-            new Cluster\ClusterPolicy($policyName),
-        ]);
+        $this->updateClusterNamed($bucketUuid, $clusterIdentifier, function (Cluster $cluster) use ($username) {
+            if (!$cluster instanceof Cluster\Kubernetes) {
+                throw new \RuntimeException('Can only update Kubernetes clusters');
+            }
+
+            $serviceAccount = base64_encode(json_encode([
+                'type' => 'service_account',
+                'client_email' => $username,
+            ]));
+
+            return new Cluster\Kubernetes(
+                $cluster->getIdentifier(),
+                $cluster->getAddress(),
+                $cluster->getVersion(),
+                null,
+                null,
+                $cluster->getPolicies(),
+                null,
+                $cluster->getCaCertificate(),
+                $serviceAccount,
+                $cluster->getManagementCredentials()
+            );
+        });
+    }
+
+    /**
+     * @Given the cluster :clusterIdentifier of the bucket :bucketUuid has the :policyName policy with the following configuration:
+     */
+    public function theClusterHasThePolicy($clusterIdentifier, $bucketUuid, $policyName, PyStringNode $configuration)
+    {
+        $this->updateClusterNamed($bucketUuid, $clusterIdentifier, function (Cluster $cluster) use ($policyName, $configuration) {
+            return $cluster->withPolicies([
+                new Cluster\ClusterPolicy($policyName, \GuzzleHttp\json_decode($configuration->getRaw(), true)),
+            ]);
+        });
+    }
+
+    /**
+     * @Then the user :username should be bound to the cluster role :clusterRoleName in the namespace :namespace
+     */
+    public function theUserShouldBeBoundToTheClusterRoleInTheNamespace($username, $clusterRoleName, $namespace)
+    {
+        foreach ($this->traceableRoleBindingRepository->getCreated() as $binding) {
+            if (
+                $binding->getRoleRef()->getKind() == 'ClusterRole'
+                && $binding->getRoleRef()->getName() == $clusterRoleName
+                && $this->hasSubject($binding->getSubjects(), $username, 'User')
+            ) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('No created role binding found');
     }
 
     /**
@@ -106,18 +163,14 @@ class SecurityContext implements Context
         $this->previouslyKnownValuesVault->addDecryptionMapping($namespace, $encryptedValue, $string->getRaw());
     }
 
-    /**
-     * @param UuidInterface $bucketUuid
-     * @param string $clusterIdentifier
-     *
-     * @return Cluster
-     */
-    private function clusterFromBucket(UuidInterface $bucketUuid, $clusterIdentifier)
+    private function updateClusterNamed(string $bucketUuid, string $clusterIdentifier, callable $updateCallable)
     {
-        $bucket = $this->bucketRepository->find($bucketUuid);
-        foreach ($bucket->getClusters() as $cluster) {
+        $bucket = $this->bucketRepository->find(Uuid::fromString($bucketUuid));
+        foreach ($bucket->getClusters() as $key => $cluster) {
             if ($cluster->getIdentifier() == $clusterIdentifier) {
-                return $cluster;
+                $bucket->getClusters()->set($key, $updateCallable($cluster));
+
+                return;
             }
         }
 
@@ -125,5 +178,23 @@ class SecurityContext implements Context
             'Cluster "%s" not found in bucket',
             $clusterIdentifier
         ));
+    }
+
+    /**
+     * @param Subject[] $subjects
+     * @param string $username
+     * @param string $kind
+     *
+     * @return bool
+     */
+    private function hasSubject(array $subjects, string $username, string $kind) : bool
+    {
+        foreach ($subjects as $subject) {
+            if ($subject->getKind() == $kind && $subject->getName() == $username) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
