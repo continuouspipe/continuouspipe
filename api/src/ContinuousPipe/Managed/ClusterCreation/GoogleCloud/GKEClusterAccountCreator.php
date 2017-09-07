@@ -144,51 +144,7 @@ class GKEClusterAccountCreator implements ClusterCreator
             'privateKeyType' => 'TYPE_GOOGLE_CREDENTIALS_FILE',
         ]));
 
-        // Update project IAM bindings so the service account has the `roles/container.developer` role
-        $services = new \Google_Service_CloudResourceManager($this->googleClient);
-        $policy = $services->projects->getIamPolicy($this->projectId, new \Google_Service_CloudResourceManager_GetIamPolicyRequest());
-        $policy->setBindings(
-            $this->bindingWith($policy->getBindings(), 'roles/container.developer', 'serviceAccount:'.$serviceAccountName)
-        );
-
-        $services->projects->setIamPolicy($this->projectId, new \Google_Service_CloudResourceManager_SetIamPolicyRequest([
-            'policy' => $policy,
-        ]));
-
         return $serviceAccountKey->privateKeyData;
-    }
-
-    /**
-     * @param \Google_Service_CloudResourceManager_Binding[] $bindings
-     * @param string $role
-     * @param string $member
-     *
-     * @return \Google_Service_CloudResourceManager_Binding[]
-     */
-    private function bindingWith(array $bindings, string $role, string $member)
-    {
-        foreach ($bindings as $index => $binding) {
-            if ($binding->getRole() == $role) {
-                if (!in_array($member, $binding->getMembers())) {
-                    $binding->setMembers(array_merge($binding->getMembers(), [
-                        $member,
-                    ]));
-
-                    $bindings[$index] = $binding;
-                }
-
-                return $bindings;
-            }
-        }
-
-        $bindings[] = new \Google_Service_CloudResourceManager_Binding([
-            'role' => $role,
-            'members' => [
-                $member,
-            ]
-        ]);
-
-        return $bindings;
     }
 
     private function endpoint(string $endpoint) : string
