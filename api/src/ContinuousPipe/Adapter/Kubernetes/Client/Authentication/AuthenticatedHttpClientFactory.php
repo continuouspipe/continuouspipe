@@ -47,7 +47,7 @@ class AuthenticatedHttpClientFactory
             return new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::TOKEN, $this->googleCloudServiceAccountResolver->token($credentials->getGoogleCloudServiceAccount()));
         } elseif (null !== $credentials->getClientCertificate()) {
             return new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::CERTIFICATE, $credentials->getClientCertificate());
-        } else if (null !== $credentials->getUsername()) {
+        } elseif (null !== $credentials->getUsername()) {
             return new AuthenticationMiddleware($httpClient, AuthenticationMiddleware::USERNAME_PASSWORD, sprintf('%s:%s', $credentials->getUsername(), $credentials->getPassword()));
         }
 

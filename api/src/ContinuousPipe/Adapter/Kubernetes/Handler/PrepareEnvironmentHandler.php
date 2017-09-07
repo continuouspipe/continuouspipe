@@ -12,11 +12,17 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Event\DeploymentFailed;
 use ContinuousPipe\Pipe\Event\EnvironmentPrepared;
 use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
+use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Client;
+use Kubernetes\Client\Exception\ObjectNotFound;
 use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\LocalObjectReference;
+use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\RBAC\RoleBinding;
+use Kubernetes\Client\Model\RBAC\RoleRef;
+use Kubernetes\Client\Model\RBAC\Subject;
 use Kubernetes\Client\Model\Secret;
 use Kubernetes\Client\Model\ServiceAccount;
 use Kubernetes\Client\NamespaceClient;
@@ -89,9 +95,15 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $context = $command->getContext();
 
         try {
-            $client = $this->kubernetesClientFactory->getByCluster($context->getCluster());
+            $cluster = $context->getCluster();
+            $client = $this->kubernetesClientFactory->getByCluster($cluster);
+
             $namespace = $this->createNamespaceIfNotExists($client, $context);
             $this->createOrUpdateNamespaceCredentials($client, $context, $namespace);
+
+            if (null !== ($rbacConfiguration = $this->clusterPolicyConfiguration($cluster, 'rbac'))) {
+                $this->createOrUpdateRbacBinding($client->getNamespaceClient($namespace), $cluster, $rbacConfiguration);
+            }
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
             $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
@@ -212,5 +224,76 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         }
 
         return false;
+    }
+
+    private function createOrUpdateRbacBinding(NamespaceClient $namespaceClient, Kubernetes $cluster, array $rbacConfiguration)
+    {
+        if (!isset($rbacConfiguration['cluster-role'])) {
+            throw new \InvalidArgumentException('Configuration "cluster-role" not found in RBAC configuration');
+        }
+
+        $bindingName = 'team-service-account-is-managed-used';
+
+        try {
+            $namespaceClient->getRoleBindingRepository()->findOneByName($bindingName);
+        } catch (ObjectNotFound $e) {
+            $namespaceClient->getRoleBindingRepository()->create(new RoleBinding(
+                new ObjectMetadata('team-service-account-is-managed-used'),
+                new RoleRef(
+                    'rbac.authorization.k8s.io',
+                    'ClusterRole',
+                    $rbacConfiguration['cluster-role']
+                ),
+                [
+                    new Subject(
+                        'User',
+                        $this->usernameFromClusterCredentials($cluster)
+                    )
+                ]
+            ));
+        }
+    }
+
+    private function usernameFromClusterCredentials(Kubernetes $cluster)
+    {
+        if (null !== ($serviceAccount = $cluster->getCredentials()->getGoogleCloudServiceAccount())) {
+            $username = $this->usernameFromServiceAccount($serviceAccount);
+        } elseif (null === ($username = $cluster->getCredentials()->getUsername())) {
+            throw new \InvalidArgumentException('Can\'t get username to create role binding for, from cluster\'s credentials');
+        }
+
+        return $username;
+    }
+
+    private function usernameFromServiceAccount(string $serviceAccountAsBase64) : string
+    {
+        try {
+            $serviceAccountJson = \GuzzleHttp\json_decode(base64_decode($serviceAccountAsBase64), true);
+        } catch (\InvalidArgumentException $e) {
+            throw new \InvalidArgumentException('Service account is not valid', $e->getCode(), $e);
+        }
+
+        if (!isset($serviceAccountJson['client_email'])) {
+            throw new \InvalidArgumentException('Service account do not contain the `client_email` key');
+        }
+
+        return $serviceAccountJson['client_email'];
+    }
+
+    /**
+     * @param Cluster $cluster
+     * @param string $policyName
+     *
+     * @return array|null
+     */
+    private function clusterPolicyConfiguration(Cluster $cluster, string $policyName)
+    {
+        foreach ($cluster->getPolicies() as $policy) {
+            if ($policy->getName() == $policyName) {
+                return $policy->getConfiguration();
+            }
+        }
+
+        return null;
     }
 }
