@@ -11,10 +11,18 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DockerRegistry implements Registry
 {
+    /**
+     * @var ClientInterface
+     */
     private $client;
+
+    /**
+     * @var CredentialsRepository
+     */
     private $credentialsRepository;
 
     /**
@@ -35,7 +43,7 @@ class DockerRegistry implements Registry
     /**
      * {@inheritdoc}
      */
-    public function containsImage(Uuid $credentialsBucket, Image $image): bool
+    public function containsImage(UuidInterface $credentialsBucket, Image $image): bool
     {
         try {
             $registry = $this->credentialsRepository->findRegistryByImage(
@@ -61,7 +69,7 @@ class DockerRegistry implements Registry
     {
         $url = sprintf(
             'https://%s/v2/%s/manifests/%s',
-            $credentials->getServerAddress(),
+            $this->serverAddress($credentials->getServerAddress()),
             $image->getTwoPartName(),
             $image->getTag()
         );
@@ -70,7 +78,7 @@ class DockerRegistry implements Registry
             return $this->client->request(
                 'head',
                 $url,
-                isset($token) ? ['headers' => ['Authorization', 'Bearer ' . $token]] : []
+                isset($token) ? ['headers' => ['Authorization' => 'Bearer ' . $token]] : []
             );
         } catch (RequestException $e) {
             if (null === ($response = $e->getResponse())) {
@@ -135,5 +143,14 @@ class DockerRegistry implements Registry
         }
 
         return $json['token'];
+    }
+
+    private function serverAddress(string $serverAddress) : string
+    {
+        if ('docker.io' == $serverAddress) {
+            return 'index.docker.io';
+        }
+
+        return $serverAddress;
     }
 }

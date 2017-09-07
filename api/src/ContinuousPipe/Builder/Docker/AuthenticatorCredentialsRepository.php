@@ -8,6 +8,7 @@ use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class AuthenticatorCredentialsRepository implements CredentialsRepository
 {
@@ -34,7 +35,7 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
     /**
      * {@inheritdoc}
      */
-    public function findByImage(Image $image, Uuid $credentialsBucketUuid)
+    public function findByImage(Image $image, UuidInterface $credentialsBucketUuid)
     {
         return RegistryCredentials::fromDockerRegistryCredentials($this->findRegistryByImage($image, $credentialsBucketUuid));
     }
@@ -42,7 +43,7 @@ class AuthenticatorCredentialsRepository implements CredentialsRepository
     /**
      * {@inheritdoc}
      */
-    public function findRegistryByImage(Image $image, Uuid $credentialsBucketUuid): DockerRegistry
+    public function findRegistryByImage(Image $image, UuidInterface $credentialsBucketUuid): DockerRegistry
     {
         $server = $this->registryServerResolver->getServerName($image);
         $bucket = $this->bucketRepository->find($credentialsBucketUuid);
