@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -14,6 +15,9 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use JMS\Serializer\Serializer;
+use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\RBAC\RoleBinding;
+use Kubernetes\Client\Model\RBAC\RoleRef;
 use Kubernetes\Client\Model\RBAC\Subject;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -43,19 +47,25 @@ class SecurityContext implements Context
      * @var TraceableRoleBindingRepository
      */
     private $traceableRoleBindingRepository;
+    /**
+     * @var InMemoryRoleBindingRepository
+     */
+    private $inMemoryRoleBindingRepository;
 
     public function __construct(
         BucketRepository $bucketRepository,
         Serializer $serializer,
         TeamRepository $teamRepository,
         PreviouslyKnownValuesVault $previouslyKnownValuesVault,
-        TraceableRoleBindingRepository $traceableRoleBindingRepository
+        TraceableRoleBindingRepository $traceableRoleBindingRepository,
+        InMemoryRoleBindingRepository $inMemoryRoleBindingRepository
     ) {
         $this->bucketRepository = $bucketRepository;
         $this->serializer = $serializer;
         $this->teamRepository = $teamRepository;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
         $this->traceableRoleBindingRepository = $traceableRoleBindingRepository;
+        $this->inMemoryRoleBindingRepository = $inMemoryRoleBindingRepository;
     }
 
     /**
@@ -121,6 +131,18 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Given the namespace contains a role binding named :name
+     */
+    public function theNamespaceContainsARoleBindingNamed($name)
+    {
+        $this->inMemoryRoleBindingRepository->create(new RoleBinding(
+            new ObjectMetadata($name),
+            new RoleRef('rbac.authorization.k8s.io', 'ClusterRole', 'role-name'),
+            []
+        ));
+    }
+
+    /**
      * @Then the user :username should be bound to the cluster role :clusterRoleName in the namespace :namespace
      */
     public function theUserShouldBeBoundToTheClusterRoleInTheNamespace($username, $clusterRoleName, $namespace)
@@ -136,6 +158,21 @@ class SecurityContext implements Context
         }
 
         throw new \RuntimeException('No created role binding found');
+    }
+
+    /**
+     * @Then no role binding should be created
+     */
+    public function noRoleBindingShouldBeCreated()
+    {
+        $createdBindings = $this->traceableRoleBindingRepository->getCreated();
+
+        if (count($createdBindings) > 0) {
+            throw new \RuntimeException(sprintf(
+                'Found %d created bindings instead of 0',
+                count($createdBindings)
+            ));
+        }
     }
 
     /**

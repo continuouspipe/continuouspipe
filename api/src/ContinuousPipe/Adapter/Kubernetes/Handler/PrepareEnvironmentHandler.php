@@ -15,6 +15,7 @@ use ContinuousPipe\Pipe\Handler\Deployment\DeploymentHandler;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use Kubernetes\Client\Client;
+use Kubernetes\Client\Exception\ObjectNotFound;
 use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
 use Kubernetes\Client\Model\LocalObjectReference;
@@ -102,7 +103,6 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
             if (null !== ($rbacConfiguration = $this->clusterPolicyConfiguration($cluster, 'rbac'))) {
                 $this->createOrUpdateRbacBinding($client->getNamespaceClient($namespace), $cluster, $rbacConfiguration);
-
             }
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
@@ -232,20 +232,26 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             throw new \InvalidArgumentException('Configuration "cluster-role" not found in RBAC configuration');
         }
 
-        $namespaceClient->getRoleBindingRepository()->create(new RoleBinding(
-            new ObjectMetadata('team-service-account-is-managed-used'),
-            new RoleRef(
-                'rbac.authorization.k8s.io',
-                'ClusterRole',
-                $rbacConfiguration['cluster-role']
-            ),
-            [
-                new Subject(
-                    'User',
-                    $this->usernameFromClusterCredentials($cluster)
-                )
-            ]
-        ));
+        $bindingName = 'team-service-account-is-managed-used';
+
+        try {
+            $namespaceClient->getRoleBindingRepository()->findOneByName($bindingName);
+        } catch (ObjectNotFound $e) {
+            $namespaceClient->getRoleBindingRepository()->create(new RoleBinding(
+                new ObjectMetadata('team-service-account-is-managed-used'),
+                new RoleRef(
+                    'rbac.authorization.k8s.io',
+                    'ClusterRole',
+                    $rbacConfiguration['cluster-role']
+                ),
+                [
+                    new Subject(
+                        'User',
+                        $this->usernameFromClusterCredentials($cluster)
+                    )
+                ]
+            ));
+        }
     }
 
     private function usernameFromClusterCredentials(Kubernetes $cluster)

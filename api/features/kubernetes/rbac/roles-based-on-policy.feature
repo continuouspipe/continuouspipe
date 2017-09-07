@@ -39,3 +39,29 @@ Feature:
     Then the deployment "app" should be created
     And the user "a-team@continuouspipe-flex.iam.gserviceaccount.com" should be bound to the cluster role "managed-user" in the namespace "app"
     And the deployment should be successful
+
+  Scenario: It won't create the policy if it exists
+    Given the cluster "my-cluster" of the bucket "00000000-0000-0000-0000-000000000000" has the "rbac" policy with the following configuration:
+    """
+    {
+      "cluster-role": "managed-user"
+    }
+    """
+    And the namespace contains a role binding named "team-service-account-is-managed-used"
+    When I send a deployment request with the following components specification:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          }
+        }
+      }
+    ]
+    """
+    Then the deployment "app" should be created
+    And no role binding should be created
+    And the deployment should be successful
