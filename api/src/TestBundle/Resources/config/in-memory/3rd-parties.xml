@@ -11,9 +11,6 @@
             <argument type="service" id="google.http.middleware.predictable_request_mapping" />
         </service>
         <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\InMemoryClusterCreator" />
-        <service id="builder.billing.subscription_client.in_memory" class="ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient" />
-        <service id="builder.billing.subscription_client" alias="builder.billing.subscription_client.in_memory" />
-
         <service id="kube_status.http.middleware.predictable_request_mapping" class="GuzzleHttp\PredefinedRequestMappingMiddleware" />
         <service id="kube_status.http.handler" class="GuzzleHttp\HandlerStack">
             <factory class="GuzzleHttp\HandlerStack" method="create" />

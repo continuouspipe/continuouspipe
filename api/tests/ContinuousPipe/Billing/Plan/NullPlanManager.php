@@ -22,16 +22,24 @@ class NullPlanManager implements PlanManager
     }
 
     /**
-     * @param UserBillingProfile $billingProfile
-     * @param ChangeBillingPlanRequest $changeRequest
-     * @param User $user
-     *
-     * @return ChangeBillingPlanResponse
+     * {@inheritdoc}
      */
     public function changePlan(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user): ChangeBillingPlanResponse
     {
         return new ChangeBillingPlanResponse($billingProfile->withPlan(
             $this->planRepository->findPlanByIdentifier($changeRequest->getPlan())
         ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getInvoicesUrl(UserBillingProfile $billingProfile)
+    {
+        if (null !== $billingProfile->getPlan()) {
+            return 'https://google.com';
+        }
+
+        return null;
     }
 }

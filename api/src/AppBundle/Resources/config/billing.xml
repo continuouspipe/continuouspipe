@@ -32,12 +32,6 @@
             <tag name="kernel.event_listener" event="security.user_created" method="notify" />
         </service>
 
-        <!-- Subscription -->
-        <service id="builder.billing.subscription_client" class="ContinuousPipe\Billing\Subscription\Recurly\RecurlySubscriptionClient">
-            <argument>%recurly_subdomain%</argument>
-            <argument>%recurly_api_key%</argument>
-        </service>
-
         <!-- Usage -->
         <service id="app.billing.usage_tracker" class="ContinuousPipe\Billing\Usage\FromActivityUsageTracker">
             <argument type="service" id="app.billing.activity_tracker" />
@@ -61,7 +55,7 @@
         </service>
 
         <service id="app.billing.add_invoices_to_serialized" class="ContinuousPipe\Billing\Plan\Recurly\AddRecurlysInvoicesUrlToSerializedBillingProfiles">
-            <argument type="service" id="builder.billing.subscription_client" />
+            <argument type="service" id="app.billing.plan_manager" />
 
             <tag name="jms_serializer.event_subscriber" />
         </service>

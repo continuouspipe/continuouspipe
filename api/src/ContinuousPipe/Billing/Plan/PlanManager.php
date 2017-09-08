@@ -8,4 +8,11 @@ use ContinuousPipe\Security\User\User;
 interface PlanManager
 {
     public function changePlan(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user) : ChangeBillingPlanResponse;
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     *
+     * @return string|null
+     */
+    public function getInvoicesUrl(UserBillingProfile $billingProfile);
 }

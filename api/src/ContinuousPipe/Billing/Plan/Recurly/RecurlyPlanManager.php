@@ -79,6 +79,21 @@ class RecurlyPlanManager implements PlanManager
         );
     }
 
+    public function getInvoicesUrl(UserBillingProfile $billingProfile)
+    {
+        try {
+            $hostedAccountToken = \Recurly_Account::get($billingProfile->getUuid())->hosted_login_token;
+        } catch (\Recurly_NotFoundError $e) {
+            return null;
+        }
+
+        return sprintf(
+            'https://%s.recurly.com/account/%s',
+            $this->subdomain,
+            $hostedAccountToken
+        );
+    }
+
     public function refreshBillingProfile(UserBillingProfile $billingProfile) : UserBillingProfile
     {
         if (null === ($subscription = $this->subscriptionByBillingProfile($billingProfile))) {
