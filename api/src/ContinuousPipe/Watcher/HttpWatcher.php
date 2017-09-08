@@ -47,7 +47,7 @@ class HttpWatcher implements Watcher
                 ];
             }
 
-            $response = $this->httpClient->request('post', $this->baseUrl.'/v1/watch/logs', [
+            $response = $this->httpClient->request('post', $this->baseUrl . '/v1/watch/logs', [
                 'json' => [
                     'cluster' => [
                         'address' => $kubernetes->getAddress(),
@@ -68,7 +68,7 @@ class HttpWatcher implements Watcher
                     $message = $json['message'];
                 }
                 if (array_key_exists('code', $json)) {
-                    $code = (int) $json['code'];
+                    $code = (int)$json['code'];
 
                     if ($code == 404) {
                         $message = sprintf('The pod "%s" is not found. It might have been already replaced by another one or has been deleted.', $pod);
@@ -85,7 +85,12 @@ class HttpWatcher implements Watcher
 
         $json = $this->getJson($response);
 
-        return TreeLog::fromId($json['logId']);
+        // Backward compatibility
+        if (isset($json['logId'])) {
+            $json['identifier'] = $json['logId'];
+        }
+
+        return $json;
     }
 
     /**
