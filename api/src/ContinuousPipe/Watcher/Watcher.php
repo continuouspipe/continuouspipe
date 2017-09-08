@@ -14,7 +14,7 @@ interface Watcher
      *
      * @throws WatcherException
      *
-     * @return WatcherLog
+     * @return array
      */
     public function logs(Cluster\Kubernetes $kubernetes, string $namespace, string $pod);
 }
