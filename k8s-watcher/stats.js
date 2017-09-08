@@ -1,7 +1,7 @@
-var app = require('./app'),
-    processorFactory = require('./worker/processor');
+var bootstrap = require('./bootstrap'),
+    processorFactory = require('./src/worker-processor');
 
-app(function(queue, firebase, statsd) {
+bootstrap(function(queue, firebase, statsd) {
     setInterval(function() {
         get(queue)
         ('inactiveCount')

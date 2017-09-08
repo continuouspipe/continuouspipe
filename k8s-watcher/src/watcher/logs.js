@@ -1,5 +1,3 @@
-
-
 module.exports = function(firebase) {
     /**
      * What the logs of a given pod.

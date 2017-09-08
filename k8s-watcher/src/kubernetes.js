@@ -42,6 +42,8 @@ module.exports = new function() {
         }
 
         return this.auth(cluster.credentials).then(function(auth) {
+            console.log(auth);
+
             return Promise.resolve(new k8s.Core({
                 url: cluster.address,
                 version: 'v1',

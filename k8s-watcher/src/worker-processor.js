@@ -1,4 +1,4 @@
-var k8s = require('../k8s');
+var k8s = require('./kubernetes');
 
 module.exports = function(firebase) {
     // Configuration

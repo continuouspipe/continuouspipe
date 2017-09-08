@@ -1,5 +1,5 @@
 var ajv = require('ajv')(),
-    k8s = require('../k8s');
+    k8s = require('./kubernetes');
 
 var HttpHandlerFactory = function(queue, firebase, statsd) {
     var redirect = function(request, response) {

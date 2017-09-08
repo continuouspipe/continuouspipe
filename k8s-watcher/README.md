@@ -32,7 +32,7 @@ Response:
 200 OK
 
 {
-    "log": "-KUvUFQ80nw5z2yL13CY"
+    "logId": "-KUvUFQ80nw5z2yL13CY"
 }
 ```
 
@@ -44,5 +44,5 @@ Path: `/flows/<flowUuid>/cluster/<cluster>/<namespace>/pod/<pod>`
 ## Local development
 
 ```
-supervisor 
+docker-compose run 
 ```
