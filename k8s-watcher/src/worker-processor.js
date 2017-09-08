@@ -3,20 +3,21 @@ var k8s = require('./kubernetes');
 module.exports = function(firebase) {
     // Configuration
     var timeout = 1000 * 60 * 5,
-        logsWatcher = require('../watcher/logs')(firebase),
-        eventsWatcher = require('../watcher/events')(firebase);
+        logsWatcher = require('./watcher/logs')(),
+        eventsWatcher = require('./watcher/events')();
 
     return function(job, done) {
         console.log('[' + job.id + '] [DEBUG]', job.zid, job.workerId);
 
-        var data = job.data,
-            log = firebase.child('logs').child(data.logId);
+        var firebaseDatabase = firebase.database(),
+            data = job.data,
+            log = firebaseDatabase.ref(data.logId);
 
         k8s.createClientFromCluster(data.cluster).then(function(client) {
             console.log('[' + job.id + '] Processing cluster ', data.cluster.address, ' namespace ', data.namespace, 'pod', data.pod);
 
             // Create the raw log
-            var raw = firebase.child('raws').push({
+            var raw = firebaseDatabase.ref('raws').push({
                 type: 'raw',
                 logId: data.logId,
             });
@@ -26,7 +27,7 @@ module.exports = function(firebase) {
             // Add the raw reference
             log.child('children').push({
                 type: 'raw',
-                path: '/raws/' + raw.key()
+                path: '/raws/' + raw.key
             });
 
             // Add the events reference
@@ -63,7 +64,7 @@ module.exports = function(firebase) {
                     console.log('[' + job.id + '] Scheduling removal of the log in 5 seconds');
                     setTimeout(function() {
                         console.log('[' + job.id + '] Removing log "' + data.logId + '"');
-                        console.log('[' + job.id + '] Removing raw log "' + raw.key() + '"');
+                        console.log('[' + job.id + '] Removing raw log "' + raw.key + '"');
 
                         log.remove();
                         raw.remove();

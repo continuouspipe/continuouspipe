@@ -2,7 +2,7 @@ var http = require('http'),
     WebSocket = require('ws'),
     url = require('url'),
     handlerFactory = require('./src/http-handler'),
-    bootsrap = require('./src/bootstrap');
+    bootstrap = require('./src/bootstrap');
 
 bootstrap(function(queue, firebase, statsd) {
     var handler = handlerFactory(queue, firebase, statsd);

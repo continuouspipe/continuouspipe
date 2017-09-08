@@ -1,4 +1,4 @@
-module.exports = function(firebase) {
+module.exports = function() {
     /**
      * What the logs of a given pod.
      *

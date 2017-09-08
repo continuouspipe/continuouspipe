@@ -35,6 +35,8 @@ tasks:
                               value: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
                             - name: KUBE_PROXY_HOSTNAME
                               value: ${KUBE_PROXY_HOSTNAME}
+                            - name: FIREBASE_SERVICE_ACCOUNT
+                              value: ${FIREBASE_SERVICE_ACCOUNT}
 
                     deployment_strategy:
                         readiness_probe:

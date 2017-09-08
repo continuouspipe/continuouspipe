@@ -89,6 +89,7 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
             k8s.createClientFromCluster(data.cluster).then(function(client) {
                 return client.ns(data.namespace).po.get(data.pod, function(error, pod) {
                     if (error) {
+                        console.log('2', error, pod);
                         response.writeHead(400);
                         response.end(JSON.stringify({
                             code: error.code, 
@@ -98,30 +99,29 @@ var HttpHandlerFactory = function(queue, firebase, statsd) {
                         return;
                     }
 
-                    // If the `logId` is not given, create one
-                    if (!data.logId) {
-                        data.logId = firebase.child('logs').push({'type': 'container'}).key();
-                        console.log('Created log "' + data.logId + '"');
-                        data.removeLog = true;
-                    }
+                    var containerId = firebase.database().ref('logs').push({'type': 'container'}).key;
+                    data.logId = '/logs/'+containerId;
+                    console.log('Created log "' + data.logId + '"');
+                    data.removeLog = true;
 
-                    if (undefined === data.removeLog) {
-                        data.removeLog = false;
-                    }
+                    return firebase.auth().createCustomToken('anonymous', {raws: [containerId]}).then(function(customToken) {
+                        var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
+                            response.setHeader('Content-Type', 'application/json');
 
-                    var job = queue.create('logs', data).removeOnComplete(true).save(function(error) {
-                        response.setHeader('Content-Type', 'application/json');
-
-                        if (error) {
-                            response.writeHead(500);
-                            response.end(JSON.stringify(error));
-                        } else {
-                            response.writeHead(200);
-                            response.end(JSON.stringify({
-                                'logId': data.logId,
-                                'jobId': job.id
-                            }));
-                        }
+                            if (error) {
+                                response.writeHead(500);
+                                response.end(JSON.stringify(error));
+                            } else {
+                                response.writeHead(200);
+                                response.end(JSON.stringify({
+                                    'identifier': data.logId,
+                                    'database': {
+                                        'name': process.env.FIREBASE_DATABASE_NAME,
+                                        'authentication_token': customToken
+                                    }
+                                }));
+                            }
+                        });
                     });
                 });
             }).catch(function(error) {
