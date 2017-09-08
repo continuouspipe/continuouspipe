@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .directive('pipelineOverview', function ($authenticatedFirebaseDatabase, $firebaseArray) {
+    .directive('pipelineOverview', function ($authenticatedFirebaseDatabase, $firebaseArray, pipelineInfo) {
         return {
             restrict: 'E',
             scope: {
@@ -12,7 +12,7 @@ angular.module('continuousPipeRiver')
                 headline: '@'
             },
             templateUrl: 'flow/views/directives/pipeline-overview.html',
-            controller: function ($scope, PipelineRepository) {
+            controller: function ($scope, PipelineRepository, pipelineInfo) {
                 $scope.isLoading = true;
                 $authenticatedFirebaseDatabase.get($scope.flow).then(function (database) {
                     var lastTides = $firebaseArray(
@@ -42,6 +42,10 @@ angular.module('continuousPipeRiver')
 
                 $scope.deletePipeline = function (pipelineId) {
                     PipelineRepository.delete($scope.flow.uuid, pipelineId);
+                };
+
+                $scope.testPipeline = function (pipelineId) {
+                    pipelineInfo.changePipeline(pipelineId);
                 };
             }
         };

@@ -1,11 +1,32 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository) {
+    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository, pipelineInfo) {
         $scope.flow = flow;
         $scope.tidesPerPipeline = [];
         $scope.isLoading = true;
         $scope.tides = [];
+
+        $scope.checkName = function(pipelineName, checkAgainst) {
+
+            return function(tide) {
+                return tide.pipeline.uuid === checkAgainst.uuid;
+            }
+            
+        }
+
+        $scope.chosenPipeline = function(pipelines) {
+            const newPipelines = pipelines.sort((a, b) => a.name !== b.name ? a.name < b.name ? -1 : 1 : 0);
+            if (pipelineInfo.id == undefined) {
+                return newPipelines[0];
+            } else {
+                for(const pipeline in pipelines) {
+                    if (pipelines[pipeline].uuid === pipelineInfo.id) {
+                        return pipelines[pipeline];
+                    } 
+                }
+            }
+        }
 
         var mergeTidesIntoOneArray = function () {
             var tides = [];
@@ -53,4 +74,16 @@ angular.module('continuousPipeRiver')
         }).then(function () {
             $scope.isLoading = false;
         }));
-    });
+    })
+
+    .factory('pipelineInfo', 
+        function() {
+            const factory = {};
+
+            factory.changePipeline = function(pipelineId) {
+                factory.id = pipelineId;
+            }
+
+            return factory;
+        } 
+    );
