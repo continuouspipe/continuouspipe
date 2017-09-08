@@ -84,8 +84,12 @@ class HttpWatcher implements Watcher
         }
 
         $json = $this->getJson($response);
+        $databaseName = isset($json['database']) ? $json['database'] : '';
 
-        return TreeLog::fromId($json['logId']);
+        return new WatcherLog(
+            $databaseName,
+            $json['logId']
+        );
     }
 
     /**
