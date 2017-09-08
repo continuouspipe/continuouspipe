@@ -42,4 +42,14 @@ angular.module('continuousPipeRiver')
                 return firebase.database();
             });
         };
+    })
+    .service('$firebaseDatabaseResolver', function() {
+        this.get = function(descriptor) {
+            if (descriptor.name) {
+                // TODO
+                return;
+            }
+
+            return firebase.database();
+        };
     });

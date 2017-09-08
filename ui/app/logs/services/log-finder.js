@@ -1,16 +1,27 @@
 angular.module('continuousPipeRiver')
-	.service('LogFinder', function($firebaseObject) {
-		this.find = function(identifier) {
-			return $firebaseObject(this.getReference(identifier));
+	.service('LogFinder', function($firebaseObject, $firebaseDatabaseResolver) {
+		this.find = function(descriptor) {
+			return this.getReference(descriptor).then(function(reference) {
+				return $firebaseObject(reference);
+			});
 		};
 
-		this.getReference = function(identifier) {
-			var root = firebase.database().ref();
-
-			if (identifier.substr(0, 1) != '/') {
-				root = root.child('logs');
+		this.getReference = function(descriptor) {
+			if (typeof descriptor == 'string') {
+                descriptor = {
+                	identifier: descriptor
+				};
 			}
 
-			return root.child(identifier);
+			return $firebaseDatabaseResolver.get(descriptor.database).then(function(database) {
+                var root = database.ref();
+
+                // Backward compatibility
+                if (descriptor.identifier.substr(0, 1) != '/') {
+                    root = root.child('logs');
+                }
+
+                return root.child(descriptor.identifier);
+			});
 		};
 	});

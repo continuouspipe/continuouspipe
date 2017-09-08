@@ -36,26 +36,28 @@ angular.module('continuousPipeRiver')
                     });
                 }
 
+                function rawToHtml(raw) {
+                    return ansi_up.ansi_to_html(encode(raw));
+                }
+
                 scope.$watch('rawLogsContent', function(log) {
                     if (log.path) {
                         if (logsArray === null) {
-                            logsArray = $firebaseArray(LogFinder.getReference(log.path+'/children'));
-                            logsArray.$watch(function(event) {
-                                if (event.event == 'child_added') {
-                                    var record = logsArray.$getRecord(event.key),
-                                        sanitizedValue = encode(record.contents),
-                                        html = ansi_up.ansi_to_html(sanitizedValue);
+                            LogFinder.getReference(log.path+'/children').then(function(reference) {
+                                logsArray = $firebaseArray(reference);
+                                logsArray.$watch(function(event) {
+                                    if (event.event == 'child_added') {
+                                        var record = logsArray.$getRecord(event.key);
 
-                                    $(element).append(html).trigger('updated-html');
-                                }
+                                        $(element).append(rawToHtml(record.contents)).trigger('updated-html');
+                                    }
+                                });
                             });
                         }
                     } else {
-                        var value = concatLogChildren(log),
-                            sanitizedValue = encode(value),
-                            html = ansi_up.ansi_to_html(sanitizedValue);
+                        var value = concatLogChildren(log);
 
-                        $(element).html(html).trigger('updated-html');
+                        $(element).html(rawToHtml(value)).trigger('updated-html');
                     }
                 });
             }
