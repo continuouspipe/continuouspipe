@@ -1,4 +1,4 @@
-var bootstrap = require('./bootstrap'),
+var bootstrap = require('./src/bootstrap'),
     processorFactory = require('./src/worker-processor');
 
 bootstrap(function(queue, firebase, statsd) {
