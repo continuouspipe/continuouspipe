@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
                         'environment': $scope.environment.identifier,
                         'pod': $scope.pod.name || $scope.pod.identifier
                     })).then(function(response) {
-                        return LogFinder.find(response.data.identifier).then(function(log) {
+                        return LogFinder.find(response.data).then(function(log) {
                             log.$bindTo($scope, 'log').then(function (unbind) {
                                 var unwatch = $scope.$watch('log', function (log) {
                                     if (!log) {

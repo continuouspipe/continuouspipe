@@ -43,7 +43,16 @@ angular.module('continuousPipeRiver')
                 scope.$watch('rawLogsContent', function(log) {
                     if (log.path) {
                         if (logsArray === null) {
-                            LogFinder.getReference(log.path+'/children').then(function(reference) {
+                            if (typeof log.path == 'string') {
+                                log.path = {
+                                    identifier: log.path
+                                };
+                            }
+
+                            // Get path's children reference
+                            log.path.identifier = log.path.identifier+'/children';
+
+                            LogFinder.getReference(log.path).then(function(reference) {
                                 logsArray = $firebaseArray(reference);
                                 logsArray.$watch(function(event) {
                                     if (event.event == 'child_added') {
