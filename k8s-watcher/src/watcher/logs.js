@@ -1,3 +1,5 @@
+var LogWritter = require('./log-writter');
+
 module.exports = function() {
     /**
      * What the logs of a given pod.
@@ -17,7 +19,8 @@ module.exports = function() {
             }
 
             var lines = target.limit !== undefined ? target.limit : 1000,
-                hasData = false;
+                hasData = false,
+                logWritter = new LogWritter(log);
             
             stream = client.ns(target.namespace).po.log({
                 name: pod.metadata.name, 
@@ -31,38 +34,26 @@ module.exports = function() {
             stream.on('data', function(chunk) {
                 hasData = true;
 
-                log.push({
-                    type: 'text',
-                    contents: chunk.toString(),
-                });
+                logWritter.write(chunk.toString());
             });
 
             stream.on('close', function() {
                 if (hasData) {
-                    log.push({
-                        type: 'text',
-                        contents: '[stream closed]'
-                    });
+                    logWritter.write('[stream closed]');
                 }
 
                 callback(hasData);
             });
 
             stream.on('error', function(error) {
-                log.push({
-                    type: 'text',
-                    contents: '[stream error]'
-                });
+                logWritter.write('[stream error]');
 
                 callback(hasData);
             });
 
             stream.on('end', function(result) {
                 if (hasData) {
-                    log.push({
-                        type: 'text',
-                        contents: '[stream ended]'
-                    });
+                    logWritter.write('[stream ended]');
                 }
 
                 callback(hasData);
