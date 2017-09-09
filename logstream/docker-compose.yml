@@ -1,14 +1,3 @@
-frontend:
-    build: frontend
-    environment:
-        ROOT_URL: http://an-unknown-address.docker
-        FIREBASE_APP: continuous-pipe
-        PORT: 80
-    expose:
-        - 80
-        - 43130
-        - 8080
-
 api:
     build: api
     expose:
