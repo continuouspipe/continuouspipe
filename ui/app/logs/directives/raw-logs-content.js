@@ -1,5 +1,65 @@
 angular.module('continuousPipeRiver')
-    .directive('rawLogsContent', function($sce, $firebaseArray, LogFinder) {
+    .factory('HtmlWriter', function() {
+        function encode(r) {
+            return r.replace(/[\x26\x0A\<>'"]/g, function(r) {
+                return"&#"+r.charCodeAt(0)+";";
+            });
+        }
+
+        function rawToHtml(raw) {
+            return ansi_up.ansi_to_html(encode(raw));
+        }
+
+        var throttlePeriod = 100, // In milliseconds
+            throttle = function(func, limit) {
+            var inThrottle,
+                lastFunc,
+                lastRan;
+
+            return function() {
+                var context = this,
+                    args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                    inThrottle = true;
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now()
+                        }
+                    }, limit - (Date.now() - lastRan))
+                }
+            };
+        };
+
+        return function(element) {
+            var appendBuffer = '';
+
+            this.appendRaw = function(raw) {
+                appendBuffer += raw;
+
+                this.doAppend();
+            };
+
+            this.doAppend = throttle(function() {
+                var toAppend = appendBuffer;
+
+                if (toAppend != '') {
+                    appendBuffer = '';
+
+                    $(element).append(rawToHtml(toAppend)).trigger('updated-html');
+                }
+            }, 100);
+
+            this.updateRaw = throttle(function(raw) {
+                $(element).html(rawToHtml(raw)).trigger('updated-html');
+            }, throttlePeriod);
+        };
+    })
+    .directive('rawLogsContent', function($sce, $firebaseArray, LogFinder, HtmlWriter) {
         return {
             restrict: 'A',
             scope: {
@@ -30,35 +90,28 @@ angular.module('continuousPipeRiver')
 
                 var logsArray = null;
 
-                function encode(r) {
-                    return r.replace(/[\x26\x0A\<>'"]/g, function(r) {
-                        return"&#"+r.charCodeAt(0)+";";
-                    });
-                }
-
-                function rawToHtml(raw) {
-                    return ansi_up.ansi_to_html(encode(raw));
-                }
-
                 scope.$watch('rawLogsContent', function(log) {
+                    var htmlWriter = new HtmlWriter(element);
+
                     if (log.path) {
                         if (logsArray === null) {
-                            if (typeof log.path == 'string') {
-                                log.path = {
-                                    identifier: log.path
+                            var path = log.path;
+                            if (typeof path == 'string') {
+                                path = {
+                                    identifier: path
                                 };
                             }
 
                             // Get path's children reference
-                            log.path.identifier = log.path.identifier+'/children';
+                            path.identifier = path.identifier+'/children';
 
-                            LogFinder.getReference(log.path).then(function(reference) {
+                            LogFinder.getReference(path).then(function(reference) {
                                 logsArray = $firebaseArray(reference);
                                 logsArray.$watch(function(event) {
                                     if (event.event == 'child_added') {
                                         var record = logsArray.$getRecord(event.key);
 
-                                        $(element).append(rawToHtml(record.contents)).trigger('updated-html');
+                                        htmlWriter.appendRaw(record.contents);
                                     }
                                 });
                             });
@@ -66,7 +119,7 @@ angular.module('continuousPipeRiver')
                     } else {
                         var value = concatLogChildren(log);
 
-                        $(element).html(rawToHtml(value)).trigger('updated-html');
+                        htmlWriter.updateRaw(value);
                     }
                 });
             }
