@@ -66,7 +66,7 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(['$rootScope', '$state', '$http', function ($rootScope, $state, $http) {
+    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', function ($rootScope, $state, $http, $firebaseApplicationResolver) {
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -127,5 +127,11 @@ angular
 
             return message;
         };
+
+        $firebaseApplicationResolver.init('continuouspipe-watch-logs', {
+            apiKey: "AIzaSyBRRw-vWdMbylnupsE8OVZNp3d6t5hl7tE",
+            authDomain: "continuouspipe-watch-logs.firebaseapp.com",
+            databaseURL: "https://continuouspipe-watch-logs.firebaseio.com"
+        });
     }])
     ;
