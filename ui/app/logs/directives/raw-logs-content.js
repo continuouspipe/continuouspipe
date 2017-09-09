@@ -6,6 +6,8 @@ angular.module('continuousPipeRiver')
                 rawLogsContent: '='
             },
             link: function(scope, element) {
+                console.log('link raw logs content');
+
                 var concatLogChildren = function(log) {
                     var value = '';
 
@@ -41,18 +43,20 @@ angular.module('continuousPipeRiver')
                 }
 
                 scope.$watch('rawLogsContent', function(log) {
+                    console.log('watched', log);
                     if (log.path) {
                         if (logsArray === null) {
-                            if (typeof log.path == 'string') {
-                                log.path = {
-                                    identifier: log.path
+                            var path = log.path;
+                            if (typeof path == 'string') {
+                                path = {
+                                    identifier: path
                                 };
                             }
 
                             // Get path's children reference
-                            log.path.identifier = log.path.identifier+'/children';
+                            path.identifier = path.identifier+'/children';
 
-                            LogFinder.getReference(log.path).then(function(reference) {
+                            LogFinder.getReference(path).then(function(reference) {
                                 logsArray = $firebaseArray(reference);
                                 logsArray.$watch(function(event) {
                                     if (event.event == 'child_added') {
@@ -62,6 +66,8 @@ angular.module('continuousPipeRiver')
                                     }
                                 });
                             });
+                        } else {
+                            console.log('not doing anything...');
                         }
                     } else {
                         var value = concatLogChildren(log);
