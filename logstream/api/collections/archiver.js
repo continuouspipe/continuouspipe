@@ -7,6 +7,37 @@ module.exports = function(firebase, bucket) {
         });
     }
 
+    this.archiveReferences = function(object) {
+        var promises = [],
+            self = this;
+
+        for (var property in object) {
+            if (!object.hasOwnProperty(property)) {
+                continue;
+            }
+
+            if (typeof object[property] == "object") {
+                promises.push(self.archiveReferences(object[property]).then(
+                    (function(property) {
+                        return function(value) {
+                            return object[property] = value;
+                        };
+                    })(property)
+                ));
+            }
+        }
+
+        return Promise.all(promises).then(function() {
+            if (object.type != 'raw' || !object.path) {
+                return Promise.resolve(object);
+            }
+
+            var identifier = typeof object.path == 'string' ? object.path : object.path.identifier;
+
+            return self.archive(identifier);
+        });
+    }
+
     this.archive = function(identifier) {
         var self = this;
 
@@ -16,13 +47,15 @@ module.exports = function(firebase, bucket) {
                 return value;
             }
 
-            return bucket.write(self._archive_file_name(identifier), JSON.stringify(value)).then(function(publicFilePath) {
-                return firebase.write(identifier, {
-                    _id: identifier,
-                    archived: true,
-                    archive: publicFilePath
+            return self.archiveReferences(value).then(function(withArchivedReferencesValue) {
+                return bucket.write(self._archive_file_name(identifier), JSON.stringify(value)).then(function(publicFilePath) {
+                    return firebase.write(identifier, {
+                        _id: identifier,
+                        archived: true,
+                        archive: publicFilePath
+                    });
                 });
-            });
+            })
         });
     }
 
