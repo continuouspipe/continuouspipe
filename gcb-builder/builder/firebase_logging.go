@@ -9,6 +9,7 @@ import (
 	"github.com/zabawaba99/firego"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"net/url"
 )
 
 type FirebaseLoggedStepRunner struct {
@@ -131,8 +132,27 @@ func (r FirebaseLoggedStepRunner) wrapOutputIn(output io.Writer, title string) (
 	child := r.wrap(title)
 
 	if child != nil {
-		rawChild, err := child.Child("children").Push(map[string]string{
+		raws, err := r.firebaseClient.Ref("raws")
+		if err != nil {
+			fmt.Println(err)
+
+			return output, child
+		}
+
+		rawChild, err := raws.Push(map[string]string{
 			"type": "raw",
+			"logId": child.String(),
+		})
+
+		if err != nil {
+			fmt.Println(err)
+
+			return output, child
+		}
+
+		_, err = child.Child("children").Push(map[string]string{
+			"type": "raw",
+			"path": FirebasePathFromUrl(rawChild.String()),
 		})
 
 		if err != nil {
@@ -162,4 +182,21 @@ func (w FirebaseRawChildrenWriter) Write(p []byte) (n int, err error) {
 	})
 
 	return len(p), err
+}
+
+func FirebasePathFromUrl(urlString string) string {
+	u, err := url.Parse(urlString)
+	if err != nil {
+		return urlString
+	}
+
+	if u.Path[len(u.Path)-5:] == ".json" {
+		u.Path = u.Path[0:len(u.Path)-5]
+	}
+
+	if u.Path[len(u.Path)-1:] == "/" {
+		u.Path = u.Path[0:len(u.Path)-1]
+	}
+
+	return u.Path
 }

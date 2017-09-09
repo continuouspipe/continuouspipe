@@ -1,5 +1,5 @@
 IMAGE_NAME=gcr.io/continuous-pipe-1042/cloud-builder
-TAG=v7
+TAG=v8
 
 all: tests build push
 
