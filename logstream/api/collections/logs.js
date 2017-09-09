@@ -3,7 +3,7 @@ var uuid = require('node-uuid'),
     Raven = require('raven'),
     Archiver = require('./archiver'),
     Firebase = require('./firebase-io'),
-    Bucket = require('./bucket/io');
+    Bucket = require('../bucket/io');
 
 var LogsCollection = function(root, bucket) {
     var archiver = new Archiver(

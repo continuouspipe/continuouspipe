@@ -42,6 +42,10 @@ module.exports = function(firebase, bucket) {
         var self = this;
 
         return firebase.read(identifier).then(function(value) {
+            if (!value) {
+                return Promise.reject(new Error('Log "'+identifier+'" was not found'));
+            }
+
             // Return the log directly when already archived
             if (value.archived) {
                 return value;

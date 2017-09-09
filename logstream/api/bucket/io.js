@@ -20,8 +20,8 @@ module.exports = function(bucket) {
     };
 
     this.write = function(fileName, contents) {
-        return new Promise(fileName(resolve, reject) {
-            bucket.file(file)
+        return new Promise(function(resolve, reject) {
+            bucket.file(fileName)
                 .createWriteStream()
                 .on('error', function (error) {
                     reject(error);
