@@ -27,7 +27,12 @@ module.exports = function(firebase) {
             // Add the raw reference
             log.child('children').push({
                 type: 'raw',
-                path: '/raws/' + raw.key
+                path: {
+                    identifier: '/raws/' + raw.key,
+                    database: {
+                        name: process.env.FIREBASE_DATABASE_NAME
+                    }
+                }
             });
 
             // Add the events reference
