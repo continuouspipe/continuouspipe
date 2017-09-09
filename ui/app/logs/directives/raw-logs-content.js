@@ -1,13 +1,71 @@
 angular.module('continuousPipeRiver')
-    .directive('rawLogsContent', function($sce, $firebaseArray, LogFinder) {
+    .factory('HtmlWriter', function() {
+        function encode(r) {
+            return r.replace(/[\x26\x0A\<>'"]/g, function(r) {
+                return"&#"+r.charCodeAt(0)+";";
+            });
+        }
+
+        function rawToHtml(raw) {
+            return ansi_up.ansi_to_html(encode(raw));
+        }
+
+        var throttlePeriod = 100, // In milliseconds
+            throttle = function(func, limit) {
+            var inThrottle,
+                lastFunc,
+                lastRan;
+
+            return function() {
+                var context = this,
+                    args = arguments;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                    inThrottle = true;
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now()
+                        }
+                    }, limit - (Date.now() - lastRan))
+                }
+            };
+        };
+
+        return function(element) {
+            var appendBuffer = '';
+
+            this.appendRaw = function(raw) {
+                appendBuffer += raw;
+
+                this.doAppend();
+            };
+
+            this.doAppend = throttle(function() {
+                var toAppend = appendBuffer;
+
+                if (toAppend != '') {
+                    appendBuffer = '';
+
+                    $(element).append(rawToHtml(toAppend)).trigger('updated-html');
+                }
+            }, 100);
+
+            this.updateRaw = throttle(function(raw) {
+                $(element).html(rawToHtml(raw)).trigger('updated-html');
+            }, throttlePeriod);
+        };
+    })
+    .directive('rawLogsContent', function($sce, $firebaseArray, LogFinder, HtmlWriter) {
         return {
             restrict: 'A',
             scope: {
                 rawLogsContent: '='
             },
             link: function(scope, element) {
-                console.log('link raw logs content');
-
                 var concatLogChildren = function(log) {
                     var value = '';
 
@@ -32,18 +90,9 @@ angular.module('continuousPipeRiver')
 
                 var logsArray = null;
 
-                function encode(r) {
-                    return r.replace(/[\x26\x0A\<>'"]/g, function(r) {
-                        return"&#"+r.charCodeAt(0)+";";
-                    });
-                }
-
-                function rawToHtml(raw) {
-                    return ansi_up.ansi_to_html(encode(raw));
-                }
-
                 scope.$watch('rawLogsContent', function(log) {
-                    console.log('watched', log);
+                    var htmlWriter = new HtmlWriter(element);
+
                     if (log.path) {
                         if (logsArray === null) {
                             var path = log.path;
@@ -62,17 +111,15 @@ angular.module('continuousPipeRiver')
                                     if (event.event == 'child_added') {
                                         var record = logsArray.$getRecord(event.key);
 
-                                        $(element).append(rawToHtml(record.contents)).trigger('updated-html');
+                                        htmlWriter.appendRaw(record.contents);
                                     }
                                 });
                             });
-                        } else {
-                            console.log('not doing anything...');
                         }
                     } else {
                         var value = concatLogChildren(log);
 
-                        $(element).html(rawToHtml(value)).trigger('updated-html');
+                        htmlWriter.updateRaw(value);
                     }
                 });
             }
