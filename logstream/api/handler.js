@@ -67,6 +67,8 @@ var HttpHandlerFactory = function(LogsCollection) {
     var archiveLog = function(request, response) {
         return LogsCollection.archive(request.logId, function (error, log) {
             if (error !== null) {
+                console.log(error);
+                
                 response.writeHead(500);
                 response.end('Unable to archive the log');
 

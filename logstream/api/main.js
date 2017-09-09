@@ -4,7 +4,7 @@ var http2 = require('http2'),
     LogsCollection = require('./collections/logs.js'),
     HandlerFactory = require('./handler'),
     Firebase = require('firebase'),
-    gcloud = require('gcloud'),
+    gcloud = require('google-cloud'),
     Raven = require('raven');
 
 // Create the firebase connection
@@ -43,4 +43,4 @@ http.createServer(function(request, response) {
     response.writeHead(200, {"Content-Type": "text/html"});
     response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
     response.end();
-}).listen(80);
+}).listen(process.env.HTTP_PORT || 80);
