@@ -1,5 +1,4 @@
-
-module.exports = function(firebase) {
+module.exports = function() {
     /**
      * What the events of a given pod.
      *

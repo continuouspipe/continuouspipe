@@ -1,10 +1,10 @@
 var http = require('http'),
     WebSocket = require('ws'),
     url = require('url'),
-    handlerFactory = require('./api/handler'),
-    app = require('./app');
+    handlerFactory = require('./src/http-handler'),
+    bootstrap = require('./src/bootstrap');
 
-app(function(queue, firebase, statsd) {
+bootstrap(function(queue, firebase, statsd) {
     var handler = handlerFactory(queue, firebase, statsd);
 
     // Start the HTTP server

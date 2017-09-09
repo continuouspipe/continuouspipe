@@ -2,6 +2,13 @@
 
 Watch the logs or events of a given cluster. They will be sent to Firebase.
 
+## Environment variables
+
+Name | Required | Description
+`FIREBASE_DATABASE_NAME` | Yes | The name of the Firebase database to use for logging. Example: continuouspipe-watch-logs
+`FIREBASE_SERVICE_ACCOUNT` | Yes | The base64-encoded service account to authenticate to Firebase
+`KUBE_PROXY_HOSTNAME` | Yes | Hostname of the kube-proxy to use
+
 ## API
 
 ### Watch logs
@@ -32,7 +39,11 @@ Response:
 200 OK
 
 {
-    "log": "-KUvUFQ80nw5z2yL13CY"
+    "identifier": "-KUvUFQ80nw5z2yL13CY",
+    "database": {
+        "name": "[firebase-database-name]",
+        "authentication_token": "TOKEN"
+    }
 }
 ```
 
@@ -44,5 +55,5 @@ Path: `/flows/<flowUuid>/cluster/<cluster>/<namespace>/pod/<pod>`
 ## Local development
 
 ```
-supervisor 
+docker-compose run 
 ```

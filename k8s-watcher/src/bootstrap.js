@@ -1,7 +1,7 @@
 var raven = require('raven'),
     process = require('process'),
     kue = require('kue'),
-    Firebase = require('firebase'),
+    firebaseAdmin = require('firebase-admin'),
     StatsD = require('node-statsd');
 
 module.exports = function(callback) {
@@ -36,12 +36,27 @@ module.exports = function(callback) {
 
 
     // Create the firebase connection
-    var firebase_application = process.env.FIREBASE_APP;
+    var firebase_application = process.env.FIREBASE_DATABASE_NAME;
     if (!firebase_application) {
         console.log('[WARNING] No configured firebase application');
         var firebase = null;
     } else {
-        var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/');
+        var firebaseConfiguration = {
+            databaseURL: 'https://'+process.env.FIREBASE_DATABASE_NAME+'.firebaseio.com'
+        };
+
+        var firebaseServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+        if (firebaseServiceAccount) {
+            var decodedFirebaseServiceAccount = JSON.parse(Buffer.from(firebaseServiceAccount, 'base64'));
+            
+            firebaseConfiguration.credential = firebaseAdmin.credential.cert({
+                projectId: decodedFirebaseServiceAccount.project_id,
+                clientEmail: decodedFirebaseServiceAccount.client_email,
+                privateKey: decodedFirebaseServiceAccount.private_key
+            });
+        }
+
+        var firebase = firebaseAdmin.initializeApp(firebaseConfiguration);
     }
 
     // Create the Statsd connection

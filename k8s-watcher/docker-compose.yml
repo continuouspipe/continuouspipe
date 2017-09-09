@@ -13,7 +13,8 @@ api:
         PORT: 80
         SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
         REDIS_HOST: redis
-        FIREBASE_APP: continuous-pipe
+        FIREBASE_DATABASE_NAME: continuouspipe-watch-logs
+        FIREBASE_SERVICE_ACCOUNT: 
         STATSD_HOST: statsd.hostedgraphite.com
         STATSD_PORT: 8125
         STATSD_PREFIX: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
@@ -29,7 +30,8 @@ worker:
     environment:
         SENTRY_DSN: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
         REDIS_HOST: redis
-        FIREBASE_APP: continuous-pipe
+        FIREBASE_DATABASE_NAME: continuouspipe-watch-logs
+        FIREBASE_SERVICE_ACCOUNT: 
         STATSD_HOST: statsd.hostedgraphite.com
         STATSD_PORT: 8125
         STATSD_PREFIX: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
