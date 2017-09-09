@@ -3,6 +3,8 @@
 namespace ContinuousPipe\Billing\Plan\Recurly;
 
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\Plan\PlanManager;
+use ContinuousPipe\Billing\Plan\Repository\PlanRepository;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
@@ -10,16 +12,13 @@ use JMS\Serializer\EventDispatcher\ObjectEvent;
 class AddRecurlysInvoicesUrlToSerializedBillingProfiles implements EventSubscriberInterface
 {
     /**
-     * @var SubscriptionClient
+     * @var PlanManager
      */
-    private $subscriptionClient;
+    private $planManager;
 
-    /**
-     * @param SubscriptionClient $subscriptionClient
-     */
-    public function __construct(SubscriptionClient $subscriptionClient)
+    public function __construct(PlanManager $planManager)
     {
-        $this->subscriptionClient = $subscriptionClient;
+        $this->planManager = $planManager;
     }
 
     /**
@@ -42,19 +41,8 @@ class AddRecurlysInvoicesUrlToSerializedBillingProfiles implements EventSubscrib
         /** @var UserBillingProfile $object */
         $object = $event->getObject();
 
-        if (null !== ($subscription = $this->getSubscription($object))) {
-            $event->getVisitor()->addData('invoices_url', $subscription->getHostedDetailsUrl());
+        if (null !== ($url = $this->planManager->getInvoicesUrl($object))) {
+            $event->getVisitor()->addData('invoices_url', $url);
         }
-    }
-
-    private function getSubscription(UserBillingProfile $billingProfile)
-    {
-        $subscriptions = $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
-
-        if (count($subscriptions) == 0) {
-            return null;
-        }
-
-        return $subscriptions[0];
     }
 }

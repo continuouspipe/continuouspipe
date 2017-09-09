@@ -9,7 +9,6 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Plan\PlanManager;
-use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Security\User\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -39,11 +38,6 @@ class BillingProfileController
     private $validator;
 
     /**
-     * @var SubscriptionClient
-     */
-    private $subscriptionClient;
-
-    /**
      * @var PlanManager
      */
     private $planManager;
@@ -52,13 +46,11 @@ class BillingProfileController
         UserBillingProfileRepository $userBillingProfileRepository,
         UserBillingProfileCreator $userBillingProfileCreator,
         ValidatorInterface $validator,
-        SubscriptionClient $subscriptionClient,
         PlanManager $planManager
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
         $this->userBillingProfileCreator = $userBillingProfileCreator;
         $this->validator = $validator;
-        $this->subscriptionClient = $subscriptionClient;
         $this->planManager = $planManager;
     }
 
@@ -172,16 +164,5 @@ class BillingProfileController
     public function changePlanAction(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user)
     {
         return $this->planManager->changePlan($billingProfile, $changeRequest, $user);
-    }
-
-    /**
-     * @Route("/billing-profile/{uuid}/subscriptions", methods={"GET"})
-     * @ParamConverter("billingProfile", converter="billingProfile")
-     * @Security("is_granted('READ', billingProfile)")
-     * @View
-     */
-    public function getSubscriptionsAction(UserBillingProfile $billingProfile)
-    {
-        return $this->subscriptionClient->findSubscriptionsForBillingProfile($billingProfile);
     }
 }

@@ -21,11 +21,5 @@
                  decorates="app.billing.activity_tracker">
             <argument type="service" id="app.billing.activity_tracker.traced.inner" />
         </service>
-
-        <service id="builder.billing.subscription_client.traced"
-                 class="ContinuousPipe\Billing\Subscription\TracedSubscriptionClient"
-                 decorates="builder.billing.subscription_client">
-            <argument type="service" id="builder.billing.subscription_client.traced.inner" />
-        </service>
     </services>
 </container>
