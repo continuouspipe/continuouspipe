@@ -37,6 +37,9 @@ variables:
     - name: K8S_WATCHER_URL
       condition: code_reference.branch == 'production'
       value: http://api.k8s-watcher-production.svc.cluster.local
+    - name: LOGSTREAM_URL
+      condition: code_reference.branch == 'production'
+      value: https://api.logstream-production.svc.cluster.local
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
@@ -62,6 +65,9 @@ variables:
     - name: K8S_WATCHER_URL
       condition: code_reference.branch != 'production'
       value: http://api.k8s-watcher-master.svc.cluster.local
+    - name: LOGSTREAM_URL
+      condition: code_reference.branch != 'production'
+      value: https://api.logstream-master.svc.cluster.local
 
 tasks:
     images:
@@ -109,9 +115,7 @@ tasks:
                             - name: AUTHENTICATOR_URL
                               value: ${AUTHENTICATOR_URL}
                             - name: LOGSTREAM_URL
-                              value: https://api.logstream.continuouspipe.io
-                            - name: LOGSTREAM_FRONTEND_URL
-                              value: http://logstream.continuouspipe.io
+                              value: ${LOGSTREAM_URL}
                             - name: BUILDER_URL
                               value: ${BUILDER_URL}
                             - name: PIPE_URL
