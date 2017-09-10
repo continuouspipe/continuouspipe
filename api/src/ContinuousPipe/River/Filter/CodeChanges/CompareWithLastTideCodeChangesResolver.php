@@ -38,27 +38,24 @@ class CompareWithLastTideCodeChangesResolver implements CodeChangesResolver
     public function hasChangesInFiles(UuidInterface $flowUuid, CodeReference $codeReference, array $fileGlobs) : bool
     {
         $flow = $this->flatFlowRepository->find($flowUuid);
-        $lastSuccessfulTides = $this->tideRepository->findLastSuccessfulByFlowUuidAndBranch($flowUuid, $codeReference->getBranch(), 1);
 
-        if (0 === count($lastSuccessfulTides)) {
-            $defaultBranch = $flow->getRepository()->getDefaultBranch();
-
-            if ($codeReference->getBranch() == $defaultBranch) {
-                return true;
-            }
-
-            $base = $defaultBranch;
+        if (null !== ($lastTide = $this->getLastSuccessfulTideForBranch($flowUuid, $codeReference->getBranch()))) {
+            $base = $lastTide->getCodeReference()->getCommitSha();
         } else {
-            $lastSuccessfulTide = current($lastSuccessfulTides);
-            $base = $lastSuccessfulTide->getCodeReference()->getCommitSha();
+            $base = $flow->getRepository()->getDefaultBranch();
         }
 
-        $changedFiles = $this->changesComparator->listChangedFiles($flow, $base, $codeReference->getCommitSha());
-        foreach ($fileGlobs as $glob) {
-            $regex = $this->globToRegex($glob);
+        return $this->hasFilesWatchedByGlobs(
+            $this->changesComparator->listChangedFiles($flow, $base, $codeReference->getCommitSha()),
+            $fileGlobs
+        );
+    }
 
-            foreach ($changedFiles as $changedFile) {
-                if (preg_match($regex, $changedFile)) {
+    private function hasFilesWatchedByGlobs(array $files, array $globs)
+    {
+        foreach ($globs as $glob) {
+            foreach ($files as $changedFile) {
+                if ($this->fileIsMatchingGlob($glob, $changedFile)) {
                     return true;
                 }
             }
@@ -73,11 +70,28 @@ class CompareWithLastTideCodeChangesResolver implements CodeChangesResolver
             [
                 '\\*\\*',
                 '\\*'
-            ], [
+            ],
+            [
                 '.*',
                 '[^\/]*',
             ],
             '#^'.preg_quote($glob, '#').'$#'
         );
+    }
+
+    private function getLastSuccessfulTideForBranch(UuidInterface $flowUuid, string $branch)
+    {
+        $lastSuccessfulTides = $this->tideRepository->findLastSuccessfulByFlowUuidAndBranch($flowUuid, $branch, 1);
+
+        if (count($lastSuccessfulTides) == 0) {
+            return null;
+        }
+
+        return $lastSuccessfulTides[0];
+    }
+
+    private function fileIsMatchingGlob(string $glob, string $changedFile) : bool
+    {
+        return preg_match($this->globToRegex($glob), $changedFile);
     }
 }
