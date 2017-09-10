@@ -76,7 +76,7 @@ class AddManagedClusterPolicies implements ClusterCreator
             new Cluster\ClusterPolicy('endpoint', [
                 // Endpoint enforcements
                 'type' => 'ingress',
-                'class' => 'nginx',
+                'ingress-class' => 'nginx',
 
                 'default-host-suffix' => $teamHostSuffix,
                 'host-rules' => [
