@@ -21,6 +21,7 @@ Feature:
     And the cluster "managed" should have the policy "managed"
     And the cluster "managed" should have the policy "endpoint"
     And the cluster "managed" should have the policy "resources"
+    And the cluster "managed" should have the policy "rbac"
 
   Scenario: I can't create a managed cluster without having a plan
     Given I am authenticated as user "samuel"

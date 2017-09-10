@@ -18,13 +18,22 @@ class AddManagedClusterPolicies implements ClusterCreator
     private $managedCloudFlareCredentials;
 
     /**
+     * @var string|null
+     */
+    private $rbacClusterRole;
+
+    /**
      * @param ClusterCreator $decoratedCreator
      * @param array $managedCloudFlareCredentials
      */
-    public function __construct(ClusterCreator $decoratedCreator, array $managedCloudFlareCredentials)
-    {
+    public function __construct(
+        ClusterCreator $decoratedCreator,
+        array $managedCloudFlareCredentials,
+        string $rbacClusterRole = null
+    ) {
         $this->decoratedCreator = $decoratedCreator;
         $this->managedCloudFlareCredentials = ManagedCloudFlareCredentials::fromArray($managedCloudFlareCredentials);
+        $this->rbacClusterRole = $rbacClusterRole;
     }
 
     /**
@@ -40,20 +49,19 @@ class AddManagedClusterPolicies implements ClusterCreator
     private function generatePolicies(Team $team) : array
     {
         $teamHostSuffix = $this->getTeamHostSuffix($team);
-
-        return [
+        $policies = [
             new Cluster\ClusterPolicy('default'),
             new Cluster\ClusterPolicy('managed'),
             new Cluster\ClusterPolicy('resources', [
                 // Default requests
                 'default-requests' => true,
-                'default-cpu-request' => '100m',
+                'default-cpu-request' => '50m',
                 'default-memory-request' => '256Mi',
 
                 // Default limits
                 'default-limits' => true,
                 'default-cpu-limit' => '500m',
-                'default-memory-limit' => '320Mi',
+                'default-memory-limit' => '256Mi',
 
                 // Maximum requests
                 'max-requests' => true,
@@ -90,6 +98,14 @@ class AddManagedClusterPolicies implements ClusterCreator
                 'ssl-certificate-cert' => 'automatic',
             ])
         ];
+
+        if (null !== $this->rbacClusterRole) {
+            $policies[] = new Cluster\ClusterPolicy('rbac', [
+                'cluster-role' => $this->rbacClusterRole,
+            ]);
+        }
+
+        return $policies;
     }
 
     private function getTeamHostSuffix(Team $team)
