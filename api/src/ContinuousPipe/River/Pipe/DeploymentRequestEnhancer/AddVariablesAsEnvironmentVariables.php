@@ -37,7 +37,13 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
         return $this->decoratedEnhancer->enhance($tide, $taskDetails, $deploymentRequest);
     }
 
-    private function addDefaultComponentEnvironmentVariables(Tide $tide, array $variables)
+    /**
+     * @param Tide $tide
+     * @param EnvironmentVariable[] $variables
+     *
+     * @return EnvironmentVariable[]
+     */
+    private function addDefaultComponentEnvironmentVariables(Tide $tide, array $variables) : array
     {
         $tideVariables = $tide->getConfiguration()['variables'];
 

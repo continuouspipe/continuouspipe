@@ -17,7 +17,7 @@ Feature:
       value: qwerty
       default_as_environment_variable: true
     """
-    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    And I have a "continuous-pipe.yml" file in my repository that contains:
     """
     defaults:
         cluster: foo
@@ -47,5 +47,155 @@ Feature:
       | SECRET | qwerty |
 
   Scenario: Condition is evaluated before using it for a deployed container
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: ENVIRONMENT
+      value: prod
+      default_as_environment_variable: true
+      condition: code_reference.branch == 'master'
+    - name: ENVIRONMENT
+      value: dev
+      default_as_environment_variable: true
+      condition: code_reference.branch != 'master'
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: busyboxy
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "foo" should be deployed with the following environment variables:
+      | name        | value |
+      | ENVIRONMENT | prod  |
+
   Scenario: Environment variable is overwritten by the tasks
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: ENV
+      value: prod
+      default_as_environment_variable: true
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: busyboxy
+
+        tests:
+            run:
+                commands:
+                    - echo foo
+                image: busybox
+                environment_variables:
+                - { name: ENV, value: dev }
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "foo" should be deployed with the following environment variables:
+      | name | value |
+      | ENV  | prod  |
+    And the component "run-tests" should be deployed with the following environment variables:
+      | name | value |
+      | ENV  | dev   |
+
   Scenario: Overwritten variable by pipeline is overwritten in the deployed container
+    Given I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    variables:
+        - name: ENV
+          value: prod
+          default_as_environment_variable: true
+        - name: SECRET
+          value: secret
+          default_as_environment_variable: true
+
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: busyboxy
+
+    pipelines:
+        - name: Master
+          condition: code_reference.branch == 'master'
+          variables:
+              - name: ENV
+                value: prod
+          tasks:
+              - deployment
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "app" should be deployed with the following environment variables:
+      | name   | value  |
+      | ENV    | prod   |
+      | SECRET | secret |
+
+  Scenario: Variable are among the manually defined ones
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: SECRET
+      value: qwerty
+      default_as_environment_variable: true
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: busyboxy
+                            environment_variables:
+                                - { name: TEST, value: foo }
+
+        tests:
+            run:
+                commands:
+                    - echo foo
+                image: busybox
+                environment_variables:
+                    - { name: TEST, value: bar }
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "foo" should be deployed with the following environment variables:
+      | name   | value  |
+      | SECRET | qwerty |
+      | TEST   | foo    |
+    And the component "run-tests" should be deployed with the following environment variables:
+      | name   | value  |
+      | SECRET | qwerty |
+      | TEST   | bar    |
