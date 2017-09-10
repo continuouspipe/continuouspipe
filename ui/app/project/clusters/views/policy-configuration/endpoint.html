@@ -12,11 +12,6 @@
         <input ng-model="policy.configuration['ingress-class']" ng-disabled="!isAdmin" required>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-show="policy.configuration.type == 'ingress'">
-        <label>Ingress host suffix</label>
-        <input ng-model="policy.configuration['ingress-host-suffix']" ng-disabled="!isAdmin">
-    </md-input-container>
-
     <md-input-container class="md-block">
         <md-checkbox ng-model="policy.configuration['cloudflare-by-default']" ng-change="onChange()" ng-disabled="!isAdmin" >
           CloudFlare enabled by default.
@@ -33,5 +28,27 @@
         <md-checkbox ng-model="policy.configuration['ssl-certificate-defaults']" ng-change="onChange()" ng-disabled="!isAdmin" >
           Add default SSL certificate
         </md-checkbox>
-    </md-input-container>    
+    </md-input-container> 
+
+    <md-input-container class="md-block" ng-show="policy.configuration.type == 'ingress'">
+        <label>Default host suffix</label>
+        <input ng-model="policy.configuration['default-host-suffix']" ng-disabled="!isAdmin">
+    </md-input-container>   
+    <md-subheader ng-show="policy.configuration.type == 'ingress'" class="md-no-sticky">Host rules</md-subheader>
+    <md-content ng-show="policy.configuration.type == 'ingress'" ng-repeat="(ruleIndex, rule) in policy.configuration['host-rules']" layout-gt-sm="row" layout="column">
+        <md-input-container class="md-block" flex-gt-sm="40" flex>
+            <label>Domain</label>
+            <input ng-model="rule.domain" ng-disabled="!isAdmin" required>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm="40" flex>
+            <label>Suffix</label>
+            <input ng-model="rule.suffix" ng-disabled="!isAdmin" required>
+        </md-input-container>
+        <md-input-container class="md-block">
+            <md-button ng-click="deleteHostRuleByIndex(ruleIndex)">
+                <md-icon>delete</md-icon>
+            </md-button>
+        </md-input-container>
+    </md-content>
+    <md-button ng-show="policy.configuration.type == 'ingress'" class="md-raised" ng-click="addHostRule()">Add rule</md-button>
 </div>
