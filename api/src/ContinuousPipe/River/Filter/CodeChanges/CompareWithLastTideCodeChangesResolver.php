@@ -43,6 +43,11 @@ class CompareWithLastTideCodeChangesResolver implements CodeChangesResolver
             $base = $lastTide->getCodeReference()->getCommitSha();
         } else {
             $base = $flow->getRepository()->getDefaultBranch();
+
+            // If no previous tide, and on default branch, vote for tide creation.
+            if ($codeReference->getRepository()->getDefaultBranch() == $codeReference->getBranch()) {
+                return true;
+            }
         }
 
         return $this->hasFilesWatchedByGlobs(
