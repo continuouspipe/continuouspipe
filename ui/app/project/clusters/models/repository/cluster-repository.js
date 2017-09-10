@@ -44,6 +44,12 @@ angular.module('continuousPipeRiver')
             return this.resource.save({bucket: getBucketUuid()}, cluster).$promise;
         };
 
+        this.createManaged = function() {
+            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/managed/create-cluster', {
+                slug: $projectContext.getCurrentProject().slug
+            }).save().$promise;  
+        };
+
         this.findProblems = function(project, cluster) {
             return $resource(RIVER_API_URL+'/teams/:project/clusters/:cluster/health').query({
                 project: project.slug,
