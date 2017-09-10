@@ -13,21 +13,25 @@ angular.module('continuousPipeRiver')
             };
         };
 
-        $scope.create = function(cluster) {
-            var source = 'manual';
+        var createCluster = function(cluster) {
+            if (cluster.type == 'managed') {
+                return ClusterRepository.createManaged();
+            }
+            
             if (cluster.type == 'gke') {
                 cluster = clusterFromGkeCluster(cluster.gke.cluster);
-                source = 'gke';
             }
 
-            $scope.isLoading = true;
+            return ClusterRepository.create(cluster);
+        };
 
-            ClusterRepository.create(cluster).then(function() {
+        $scope.create = function(cluster) {
+            $scope.isLoading = true;
+            createCluster(cluster).then(function() {
                 $state.go('clusters');
 
                 Intercom('trackEvent', 'added-cluster', {
-                    cluster: cluster,
-                    source: source
+                    type: cluster.type
                 });
             }, function(error) {
                 swal("Error !", $http.getError(error) || "An unknown error occured while creating cluster", "error");

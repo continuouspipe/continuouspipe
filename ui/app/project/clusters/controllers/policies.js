@@ -56,6 +56,18 @@ angular.module('continuousPipeRiver')
             }
         };
 
+        $scope.deleteHostRuleByIndex = function(index) {
+             $scope.policy.configuration['host-rules'].splice(index, 1);
+        };
+
+        $scope.addHostRule = function() {
+            if (!$scope.policy.configuration['host-rules']) {
+                $scope.policy.configuration['host-rules'] = [];
+            }
+            
+            $scope.policy.configuration['host-rules'].push({});
+        }
+
         $scope.onChange = function() {
             refresh();
         };
