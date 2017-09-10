@@ -40,8 +40,12 @@ class GKEClusterAccountCreator implements ClusterCreator
      */
     private $sharedClusterIdentifier;
 
-    public function __construct(ContainerEngineClusterRepository $containerEngineClusterRepository, string $serviceAccountFilePath, string $projectId, string $sharedClusterIdentifier, ClientInterface $httpClient = null)
-    {
+    public function __construct(
+        ContainerEngineClusterRepository $containerEngineClusterRepository,
+        string $serviceAccountFilePath,
+        string $projectId,
+        string $sharedClusterIdentifier
+    ) {
         $this->containerEngineClusterRepository = $containerEngineClusterRepository;
         $this->projectId = $projectId;
         $this->serviceAccountFilePath = $serviceAccountFilePath;
@@ -53,10 +57,6 @@ class GKEClusterAccountCreator implements ClusterCreator
             'https://www.googleapis.com/auth/cloud-platform',
             'https://www.googleapis.com/auth/compute.readonly'
         ));
-
-        if ($httpClient != null) {
-            $this->googleClient->setHttpClient($httpClient);
-        }
     }
 
     /**

@@ -241,6 +241,7 @@
                  decorates="app.managed.cluster_creator">
             <argument type="service" id="app.managed.cluster_creator.add_cluster_policies.inner" />
             <argument>%managed_cloud_flare_credentials%</argument>
+            <argument>%managed_google_rbac_cluster_role%</argument>
         </service>
 
         <service id="app.managed.cluster_creator.ensure_team_billing"
