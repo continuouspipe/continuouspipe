@@ -760,9 +760,11 @@ class RunContext implements Context
      */
     private function getDeployedComponentNamed($name)
     {
-        $matchingComponents = array_filter($this->getDeploymentRequest()->getSpecification()->getComponents(), function(Component $component) use ($name) {
-            return $component->getName() == $name;
-        });
+        $matchingComponents = array_reduce($this->traceablePipeClient->getRequests(), function(array $carry, DeploymentRequest $request) use ($name) {
+            return array_merge($carry, array_values(array_filter($request->getSpecification()->getComponents(), function(Component $component) use ($name) {
+                return $component->getName() == $name;
+            })));
+        }, []);
 
         if (0 == count($matchingComponents)) {
             throw new \RuntimeException(sprintf(

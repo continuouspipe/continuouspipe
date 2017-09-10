@@ -69,6 +69,14 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
             if (!isset($pipeline['filter']) && isset($configuration['filter'])) {
                 $pipeline['filter'] = $configuration['filter'];
             }
+
+            if (isset($configuration['variables'])) {
+                if (!isset($pipeline['variables'])) {
+                    $pipeline['variables'] = [];
+                }
+
+                $pipeline['variables'] = array_merge($configuration['variables'], $pipeline['variables']);
+            }
         }
 
         return $configuration;

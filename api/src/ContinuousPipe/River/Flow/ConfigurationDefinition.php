@@ -127,6 +127,7 @@ class ConfigurationDefinition implements ConfigurationInterface
                     ->scalarNode('condition')->end()
                     ->scalarNode('expression')->end()
                     ->scalarNode('encrypted_value')->end()
+                    ->booleanNode('default_as_environment_variable')->defaultFalse()->end()
                 ->end()
             ->end()
         ;
