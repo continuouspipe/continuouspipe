@@ -4,6 +4,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\CodeRepository;
 use ContinuousPipe\River\CodeRepository\GitHub\CodeReferenceResolver;
@@ -29,6 +30,7 @@ use GitHub\Integration\InstallationTokenResolver;
 use GitHub\Integration\TraceableInstallationRepository;
 use GitHub\Integration\TraceableInstallationTokenResolver;
 use GitHub\WebHook\Model\Repository;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Kernel;
@@ -124,6 +126,11 @@ class GitHubContext implements CodeRepositoryContext
      * @var TraceableInstallationTokenResolver
      */
     private $traceableInstallationTokenResolver;
+    /**
+     * @var CodeRepository\InMemoryBranchQuery
+     */
+    private $inMemoryBranchQuery;
+    private $repository;
 
     public function __construct(
         Kernel $kernel,
@@ -139,7 +146,8 @@ class GitHubContext implements CodeRepositoryContext
         InstallationTokenResolver $realInstallationTokenResolver,
         InMemoryCodeRepositoryRepository $inMemoryCodeRepositoryRepository,
         InstallationRepository $realCodeRepositoryRepository,
-        MatchingHandler $matchingHandler
+        MatchingHandler $matchingHandler,
+        CodeRepository\InMemoryBranchQuery $inMemoryBranchQuery
     ) {
         $this->kernel = $kernel;
         $this->fakePullRequestResolver = $fakePullRequestResolver;
@@ -156,6 +164,7 @@ class GitHubContext implements CodeRepositoryContext
         $this->realInstallationRepositoryRepository = $realCodeRepositoryRepository;
         $this->traceableInstallationRepository = $traceableInstallationRepository;
         $this->traceableInstallationTokenResolver = $traceableInstallationTokenResolver;
+        $this->inMemoryBranchQuery = $inMemoryBranchQuery;
     }
 
     /**
@@ -181,33 +190,31 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
-     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
+     * @When I request the GitHub installation token for the flow :flowUuid
      */
-    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
+    public function iRequestTheGithubInstallationTokenForTheFlow($flowUuid)
     {
-        ob_start();
-        $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/source-code/archive/'.$reference));
-        $content = ob_get_contents();
-        $this->response = new Response($content, $this->response->getStatusCode(), $this->response->headers->all());
-        ob_end_clean();
+        $this->response = $this->kernel->handle(Request::create('/github/flows/'.$flowUuid.'/installation-token'));
     }
 
     /**
-     * @Then I should receive the archive value :response
+     * @Then I should receive the installation token :token
      */
-    public function iShouldReceiveTheArchiveValue($response)
+    public function iShouldReceiveTheInstallationToken($token)
     {
-        $content = $this->response->getContent();
+        $this->assertResponseStatus(200);
 
-        if ($content != $response) {
-            var_dump($content);
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        if ($token != $json['token']) {
+            var_dump($json);
 
-            throw new \RuntimeException('Got unexpected response');
+            throw new \RuntimeException('Token not found');
         }
     }
 
     /**
      * @Given the GitHub account :account have the installation :installationIdentifier
+     * @Given the GitHub account :account has the installation :installationIdentifier
      */
     public function theGithubAccountHaveTheInstallation($account, $installationIdentifier)
     {
@@ -241,7 +248,7 @@ class GitHubContext implements CodeRepositoryContext
             new Repository(
                 new \GitHub\WebHook\Model\User('sroze'),
                 'docker-php-example',
-                'https://github.com/sroze/docker-php-example',
+                'https://api.github.com/repos/sroze/docker-php-example',
                 false,
                 $identifier ?: 37856553,
                 'master'
@@ -249,6 +256,7 @@ class GitHubContext implements CodeRepositoryContext
         );
 
         $this->inMemoryCodeRepositoryRepository->add($repository);
+        $this->repository = $repository;
 
         return $repository;
     }
@@ -276,6 +284,38 @@ class GitHubContext implements CodeRepositoryContext
     public function iHaveAFileInMyRepositoryThatContains($filePath, PyStringNode $string)
     {
         $this->thereIsAFileContaining($filePath, $string->getRaw());
+    }
+
+    /**
+     * @Given the code repository will return a :statusCode status code with the following response:
+     */
+    public function theCodeRepositoryWillReturnAStatusCodeWithTheFollowingResponse($statusCode, PyStringNode $string)
+    {
+        $contents = $string->getRaw();
+
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($statusCode, $contents) {
+            throw ServerException::create(
+                new \GuzzleHttp\Psr7\Request($httpMethod, $path),
+                new \GuzzleHttp\Psr7\Response($statusCode, ['Content-Type' => 'application/json'], $contents)
+            );
+        });
+    }
+
+    /**
+     * @Given the code repository will return a :statusCode status code for the file :filePath with the following response:
+     */
+    public function theCodeRepositoryWillReturnAStatusCodeWithTheFollowingResponseForThePath($statusCode, $filePath, PyStringNode $string)
+    {
+        $contents = $string->getRaw();
+
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod) use ($statusCode, $filePath, $contents) {
+            if (preg_match('#repos/([^/]+)/([^/]+)/contents/'.$filePath.'$#', $path)) {
+                throw ServerException::create(
+                    new \GuzzleHttp\Psr7\Request($httpMethod, $path),
+                    new \GuzzleHttp\Psr7\Response($statusCode, ['Content-Type' => 'application/json'], $contents)
+                );
+            }
+        });
     }
 
     public function thereIsAFileContaining(string $filePath, string $contents)
@@ -522,6 +562,18 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @When the pull request #:number is unlabeled
+     */
+    public function thePullRequestIsUnlabeled($number)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
+        $contents['number'] = $number;
+        $contents['action'] = 'unlabeled';
+
+        $this->sendWebHook('pull_request', json_encode($contents));
+    }
+
+    /**
      * @When the pull request #:number is labeled with head :branch and the commit :sha
      */
     public function thePullRequestIsLabeledWithHeadAndTheCommand($number, $branch, $sha)
@@ -645,11 +697,12 @@ class GitHubContext implements CodeRepositoryContext
      * @Given the pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number contains the tide-related commit
      * @Given the GitHub pull-request #:number titled :title contains the tide-related commit
+     * @Given there is a GitHub pull-request #:number titled :title for branch :branch
      */
-    public function aPullRequestContainsTheTideRelatedCommit($number, $title = null)
+    public function aPullRequestContainsTheTideRelatedCommit($number, $title = null, $branch = null)
     {
         $this->fakePullRequestResolver->willResolve([
-            new CodeRepository\PullRequest($number, $title),
+            CodeRepository\PullRequest::github($number, $this->repository->getAddress(), $title, isset($branch) ? new Branch($branch): null),
         ]);
     }
 
@@ -821,10 +874,19 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Then processing the webhook should be denied
+     * @Then I should not be allowed to see the installation token
      */
     public function iShouldDenyTheAccessToTheWebhook()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Then I should be told I need be authenticated
+     */
+    public function iShouldBeToldINeedToBeAuthenticated()
+    {
+        $this->assertResponseStatus(401);
     }
 
     /**
@@ -945,6 +1007,97 @@ class GitHubContext implements CodeRepositoryContext
         $contents['installation']['id'] = $installationIdentifier;
 
         $this->sendWebHook('integration_installation', json_encode($contents));
+    }
+
+    /**
+     * @When a GitHub repository is added to the installation :installationIdentifier
+     */
+    public function aGithubRepositoryIsAddedToTheIntegration($installationIdentifier)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('integration_repository-added.json'), true);
+
+        $contents['installation']['id'] = $installationIdentifier;
+
+        $this->sendWebHook('installation_repositories', json_encode($contents));
+    }
+
+    /**
+     * @When a GitHub repository is removed from the installation :installationIdentifier
+     */
+    public function aGithubRepositoryIsRemovedFromTheIntegration($installationIdentifier)
+    {
+        $contents = \GuzzleHttp\json_decode($this->readFixture('integration_repository-removed.json'), true);
+
+        $contents['installation']['id'] = $installationIdentifier;
+
+        $this->sendWebHook('installation_repositories', json_encode($contents));
+    }
+
+    /**
+     * @Given the following branches exists in the github repository:
+     */
+    public function theFollowingBranchesExistsInTheGithubRepository(TableNode $table)
+    {
+        $url = sprintf(
+            'https://api.github.com/repos/%s/%s/branches',
+            'sroze',
+            'docker-php-example'
+        );
+
+        $branches = array_map(function(array $b) {
+            $branch =  [
+                'name' => $b['name'],
+            ];
+            if (isset($b['sha']) && isset($b['commit-url'])) {
+                $branch['commit'] = [
+                    'sha' => $b['sha'],
+                    'url' => $b['commit-url'],
+                ];
+            }
+
+            if (isset($b['datetime'])) {
+                $branch['commit']['timestamp'] = $b['datetime'];
+            }
+
+            return $branch;
+        }, $table->getHash());
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode($branches)),
+        ]);
+        
+        $this->inMemoryBranchQuery->notOnlyInMemory();
+    }
+
+    /**
+     * @Given the following branches exists in the github repository and are paginated in the api response:
+     */
+    public function theFollowingBranchesExistsInTheGithubRepositoryAndArePaginatedInTheApiResponse(TableNode $table)
+    {
+        $url = sprintf(
+            'https://api.github.com/repos/%s/%s/branches',
+            'sroze',
+            'docker-php-example'
+        );
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, ['Link' =>  '<'.$url.'?page=2>; rel="next"'], \GuzzleHttp\json_encode([$table->getHash()[0]])),
+        ]);
+
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url) {
+                return $request->getUri() == $url.'?page=2';
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], \GuzzleHttp\json_encode(array_slice($table->getHash(), 1))),
+        ]);
+
+        $this->inMemoryBranchQuery->notOnlyInMemory();
     }
 
     /**

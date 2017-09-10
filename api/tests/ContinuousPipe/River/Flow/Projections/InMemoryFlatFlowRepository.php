@@ -23,7 +23,7 @@ class InMemoryFlatFlowRepository implements FlatFlowRepository
         if (!array_key_exists($teamSlug, $this->flowsByTeam)) {
             $this->flowsByTeam[$teamSlug] = [];
         }
-        $this->flowsByTeam[$teamSlug][] = $flow;
+        $this->flowsByTeam[$teamSlug][$flow->getUuid()->toString()] = $flow;
 
         return $flow;
     }
@@ -38,7 +38,7 @@ class InMemoryFlatFlowRepository implements FlatFlowRepository
             return [];
         }
 
-        return $this->flowsByTeam[$teamSlug];
+        return array_values($this->flowsByTeam[$teamSlug]);
     }
 
     /**

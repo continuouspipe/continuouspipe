@@ -2,4 +2,9 @@
 
 set -xe
 
-exec rabbitmq-cli-consumer -e "/app/app/console -e=prod --with-headers worker:consume" -i --strict-exit-code -c /usr/local/share/worker/configuration.conf
+EXTRA_ARGUMENTS=''
+if [ ! -z "$WORKER_CONNECTION_NAME" ]; then
+    EXTRA_ARGUMENTS=' --connection='$WORKER_CONNECTION_NAME
+fi
+
+exec /app/app/console -e=prod continuouspipe:message:pull-and-consume $EXTRA_ARGUMENTS

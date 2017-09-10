@@ -8,15 +8,13 @@ api:
         - blackfire
         - tideways
         - redis
-        - eventstore
     environment:
         - SENTRY_DSN=http://88f4608cec7f48cfbea4113626266785:ad54b9d69c984fc69e3933a961f434c2@sentry.tools.sroze.io/9
         - RIVER_UI_URL=http://localhost
         - AUTHENTICATOR_URL=https://authenticator-staging.continuouspipe.io
-        - BUILDER_URL=http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
+        - BUILDER_URL=https://builder.continuouspipe.io
         - PIPE_URL=https://pipe-staging.continuouspipe.io
         - LOGSTREAM_URL=https://api.logstream.continuouspipe.io
-        - LOGSTREAM_FRONTEND_URL=http://logstream.continuouspipe.io
         - RIVER_URL=http://localhost:80/app_dev.php
         - TIDEWAYS_API_KEY=bq8W3cebnQNuKgQA
         - APP_USER_LOCAL=true
@@ -24,7 +22,7 @@ api:
         - 80
     ports:
         - 81:80
-
+        - 444:443
 worker:
     build: .
     volumes:
@@ -34,7 +32,6 @@ worker:
         - rabbitmq
         - redis
         - tideways
-        - eventstore
     expose:
         - 80
     environment:
@@ -43,7 +40,6 @@ worker:
         - BUILDER_URL=builder_api.docker/app_dev.php
         - PIPE_URL=pipe_api.docker/app_dev.php
         - LOGSTREAM_URL=https://logstream-api.docker
-        - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
         - START_NGINX=false
         - START_WORKER=true
@@ -85,9 +81,3 @@ redis:
     expose:
         - 6379
 
-eventstore:
-    image: docker.io/eventstore/eventstore:release-3.8.1
-    environment:
-        - EVENTSTORE_RUN_PROJECTIONS=None
-    expose:
-        - 2113

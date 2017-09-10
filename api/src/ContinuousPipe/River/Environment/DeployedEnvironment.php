@@ -29,15 +29,24 @@ class DeployedEnvironment
     private $components = [];
 
     /**
-     * @param string      $identifier
-     * @param string      $cluster
-     * @param Component[] $components
+     * @JMS\Type("string")
+     *
+     * @var string
      */
-    public function __construct($identifier, $cluster, array $components = [])
+    private $status;
+
+    /**
+     * @param string $identifier
+     * @param string $cluster
+     * @param Component[] $components
+     * @param string $status
+     */
+    public function __construct($identifier, $cluster, array $components = [], string $status = null)
     {
         $this->identifier = $identifier;
         $this->cluster = $cluster;
         $this->components = $components;
+        $this->status = $status;
     }
 
     /**
@@ -54,5 +63,13 @@ class DeployedEnvironment
     public function getCluster()
     {
         return $this->cluster;
+    }
+
+    /**
+     * @return Component[]
+     */
+    public function getComponents()
+    {
+        return $this->components;
     }
 }

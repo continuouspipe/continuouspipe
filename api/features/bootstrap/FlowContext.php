@@ -9,7 +9,12 @@ use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
+use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
+use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
+use ContinuousPipe\River\Managed\Resources\ResourceUsage;
+use ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository;
 use ContinuousPipe\River\Pipeline\Pipeline;
 use ContinuousPipe\River\Tests\Pipe\FakeClient;
 use ContinuousPipe\River\Tests\Pipe\HookableClient;
@@ -37,6 +42,8 @@ use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use GitHub\WebHook\Model\Repository;
 use Symfony\Component\VarDumper\Test\VarDumperTestTrait;
 use Symfony\Component\Yaml\Yaml;
+use ContinuousPipe\Model\Component;
+use Jms\Serializer\SerializerInterface;
 
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -122,6 +129,16 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      */
     private $hookablePipeClient;
 
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @var TracedUsageHistoryRepository
+     */
+    private $tracedUsageHistoryRepository;
+
     public function __construct(
         FakeClient $pipeClient,
         HookableClient $hookablePipeClient,
@@ -131,7 +148,9 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         InMemoryCodeRepositoryRepository $codeRepositoryRepository,
         InMemoryAuthenticatorClient $authenticatorClient,
         TeamRepository $teamRepository,
-        MessageBus $eventBus
+        MessageBus $eventBus,
+        SerializerInterface $serializer,
+        TracedUsageHistoryRepository $tracedUsageHistoryRepository
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -142,6 +161,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->traceablePipeClient = $traceablePipeClient;
         $this->eventBus = $eventBus;
         $this->hookablePipeClient = $hookablePipeClient;
+        $this->serializer = $serializer;
+        $this->tracedUsageHistoryRepository = $tracedUsageHistoryRepository;
     }
 
     /**
@@ -545,6 +566,7 @@ EOF;
      * @Given I have a flow with a BitBucket repository :name owned by user :username
      * @Given I have a flow :uuid with a BitBucket repository :name owned by user :username
      * @Given I have a flow with a BitBucket repository named :name with slug :slug and owned by user :username
+     * @Given I have a flow :uuid with a BitBucket repository named :name with slug :slug and owned by user :username
      */
     public function iHaveAFlowWithABitBucketRepositoryOwnerByUser($name, $username, $uuid = null, $slug = null)
     {
@@ -579,6 +601,26 @@ EOF;
             true,
             'master'
         ));
+    }
+
+    /**
+     * @Given I have a flow :uuid with a Bitbucket repository :repository owned by :owner
+     */
+    public function iHaveAFlowWithABitbucketRepositoryOwnedBy($uuid, $repository, $owner)
+    {
+        $this->createFlow(
+            Uuid::fromString($uuid),
+            [],
+            null,
+            new CodeRepository\BitBucket\BitBucketCodeRepository(
+                Uuid::fromString($uuid),
+                new CodeRepository\BitBucket\BitBucketAccount($uuid, $owner, 'user'),
+                $repository,
+                "https://api.bitbucket.org/2.0/repositories/$owner/$repository",
+                'master',
+                false
+            )
+        );
     }
 
     /**
@@ -675,6 +717,14 @@ EOF;
     }
 
     /**
+     * @When I should be told that the resource has been created
+     */
+    public function iShouldBeToldThatTheResourceHasBeenCreated()
+    {
+        $this->assertResponseCode(201);
+    }
+
+    /**
      * @Then I should be told that I am not authenticated
      */
     public function iShouldBeToldThatIamNotAuthenticated()
@@ -702,6 +752,35 @@ EOF;
 
         if (!in_array($name, $deletedEnvironments)) {
             throw new \RuntimeException(sprintf('Environment not found in (%s)', implode(', ', $deletedEnvironments)));
+        }
+    }
+
+    /**
+     * @Then the environment :name should have been deleted from the cluster :cluster
+     */
+    public function theEnvironmentShouldHaveBeenDeletedFromTheCluster($name, $cluster)
+    {
+        $foundDeletions = [];
+        foreach ($this->traceablePipeClient->getDeletions() as $deletion) {
+            if ($deletion->getEnvironmentName() == $name && $deletion->getClusterIdentifier() == $cluster) {
+                return;
+            }
+
+            $foundDeletions[] = $deletion->getEnvironmentName().' (cluster: '.$deletion->getClusterIdentifier().')';
+        }
+
+        throw new \RuntimeException('No matching deletion found. Found: '.implode(', ', $foundDeletions));
+    }
+
+    /**
+     * @Then the environment :name should not have been deleted from the cluster :cluster
+     */
+    public function theEnvironmentShouldNotHaveBeenDeletedFromTheCluster($name, $cluster)
+    {
+        foreach ($this->traceablePipeClient->getDeletions() as $deletion) {
+            if ($deletion->getEnvironmentName() == $name && $deletion->getClusterIdentifier() == $cluster) {
+                throw new \RuntimeException('Found such deletion');
+            }
         }
     }
 
@@ -936,6 +1015,29 @@ EOF;
     }
 
     /**
+     * @Given the flow :uuid has flex activated
+     * @Given the flow :uuid has been flex activated with the same identifier :smallIdentifier
+     */
+    public function theFlowHasFlexActivated($uuid, $smallIdentifier = 'qwerty')
+    {
+        $this->eventBus->handle(new Flow\Event\FlowFlexed(Uuid::fromString($uuid), new FlexConfiguration($smallIdentifier)));
+        $this->currentFlow = $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+    }
+
+    /**
+     * @When I activate flex for the flow :uuid
+     */
+    public function iActivateFlexForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$uuid.'/features/flex',
+            'POST'
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
      * @Then the environment should be deleted
      */
     public function theEnvironmentShouldBeDeleted()
@@ -956,6 +1058,74 @@ EOF;
 
         if (0 != count($deletions)) {
             throw new \RuntimeException('Deleted environment(s) found');
+        }
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlow($flowUuid, $reference)
+    {
+        $this->iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, 'continuouspipe_builder_for_sources');
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference with the token for user :username
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithTheTokenForUser($flowUuid, $reference, $username)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference, 'GET', [], [], [], [
+                'HTTP_AUTHORIZATION' => 'Bearer '.$this->securityContext->tokenForUser($username)
+            ])
+        );
+    }
+
+    /**
+     * @When I request the archive of the repository for the flow :flowUuid and reference :reference without credentials
+     */
+    public function iRequestTheArchiveOfTheRepositoryForTheFlowWithoutCredentials($flowUuid, $reference)
+    {
+        $this->response = $this->getStreamedResponse(
+            Request::create('/flows/'.$flowUuid.'/source-code/archive/'.$reference)
+        );
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     */
+    private function getStreamedResponse(Request $request)
+    {
+        ob_start();
+        $response = $this->kernel->handle($request);
+
+        if ($response->getStatusCode() != 200) {
+            ob_end_flush();
+            return $response;
+        }
+
+        $content = ob_get_contents();
+        $response = new Response($content, $response->getStatusCode(), $response->headers->all());
+        ob_end_clean();
+
+        return $response;
+    }
+
+    /**
+     * @Then I should receive the archive value :response
+     */
+    public function iShouldReceiveTheArchiveValue($response)
+    {
+        $content = $this->response->getContent();
+
+        $this->assertResponseCode(200);
+
+        if ($content != $response) {
+            var_dump($this->response->getContent());
+
+            throw new \RuntimeException('Got unexpected response');
         }
     }
 
@@ -1017,12 +1187,60 @@ EOF;
     }
 
     /**
+     * @When I request the features of the flow :flowUuid
+     */
+    public function iRequestTheFeaturesOfTheFlow($flowUuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/features'
+        ));
+    }
+
+    /**
+     * @Then the feature :feature should not be :status
+     */
+    public function theFeatureShouldNotBe($feature, $status)
+    {
+        $this->assertResponseCode(200);
+        $this->assertFeatureHasStatus($feature, $status, false);
+    }
+
+    /**
+     * @Then the feature :feature should be :status
+     */
+    public function theFeatureShouldBeAvailable($feature, $status)
+    {
+        $this->assertResponseCode(200);
+        $this->assertFeatureHasStatus($feature, $status, true);
+    }
+
+    private function assertFeatureHasStatus($feature, $status, $expectedValue)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($json as $foundFeature) {
+            if ($foundFeature['feature'] == $feature) {
+                if ($foundFeature[$status] != $expectedValue) {
+                    throw new \RuntimeException(sprintf(
+                        'Expected status %s for feature %s but found %s',
+                        $expectedValue,
+                        $feature,
+                        $foundFeature[$status]
+                    ));
+                }
+            }
+        }
+
+    }
+
+    /**
      * @param int $code
      */
     private function assertResponseCode($code)
     {
         if ($this->response->getStatusCode() != $code) {
-            echo $this->response->getContent();
+            var_dump($this->response->getContent());
+
             throw new \RuntimeException(sprintf(
                 'Expected response code %d, but got %d',
                 $code,
@@ -1069,5 +1287,315 @@ EOF;
         }
 
         return $context;
+    }
+
+    /**
+     * @return null|Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @When I request the account's branches for the flow :uuid
+     */
+    public function iRequestTheAccountsBranchesForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            "/flows/$uuid/branches"
+        ));
+    }
+
+    /**
+     * @Then I should see the following branches:
+     */
+    public function iShouldSeeTheFollowingBranches(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        $expectedValues = $table->getRowsHash();
+        array_shift($expectedValues);
+
+        foreach ($json as $foundBranches) {
+            if (!array_key_exists($foundBranches['name'], $expectedValues)) {
+                throw new \RuntimeException(sprintf(
+                    'Expected the following branch to exist %s but not found',
+                    $foundBranches['name']
+                ));
+            }
+        }
+    }
+
+    /**
+     * @Given there is a pod named :podName in the flow :uuid and the cluster :clusterId and the namespace :namespace
+     */
+    public function thereIsAPodNamedInTheFlowAndTheClusterAndTheNamespace($podName, $uuid, $clusterId, $namespace)
+    {
+        $flow = $this->flowRepository->find(Uuid::fromString($uuid));
+        $team = $flow->getTeam();
+
+        $this->pipeClient->addPod($team, $podName, $clusterId, $namespace);
+    }
+
+    /**
+     * @When I delete the pod named :podName in the flow :uuid and the cluster :clusterId and the namespace :namespace
+     */
+    public function iDeleteThePodNamedInTheFlowAndTheClusterAndTheNamespace($podName, $uuid, $clusterId, $namespace)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf(
+                '/flows/%s/clusters/%s/namespaces/%s/pods/%s',
+                $uuid,
+                $clusterId,
+                $namespace,
+                $podName
+            ),
+            'DELETE'
+        ));
+    }
+
+    /**
+     * @Then the pod :podName should have been deleted
+     */
+    public function thePodShouldHaveBeenDeleted($podName)
+    {
+        $deletions = $this->traceablePipeClient->getPodDeletions();
+
+        if (!in_array($podName, $deletions)) {
+            throw new \RuntimeException(sprintf('Deleted pod not found in (%s)', implode(', ', $deletions)));
+        }
+    }
+
+    /**
+     * @Then the pod :podName should not have been deleted
+     */
+    public function thePodShouldNotHaveBeenDeleted($podName)
+    {
+        $deletions = $this->traceablePipeClient->getPodDeletions();
+
+        if (in_array($podName, $deletions)) {
+            throw new \RuntimeException(sprintf('Deleted pod found in (%s)', implode(', ', $deletions)));
+        }
+    }
+
+    /**
+     * @Given the environment :environmentName on the cluster :cluster has component :component with specification:
+     */
+    public function theEnvironmentOnTheClusterHasComponentWithSpecification($environmentName, $cluster, $component, PyStringNode $specification)
+    {
+        $environmentFound = false;
+
+        $environmentPromise = $this->traceablePipeClient->getEnvironments(
+            $cluster,
+            new Team('fake', 'fake')
+        );
+
+        /** @var Environment[] $environments */
+        $environments = $environmentPromise->wait(true);
+
+        foreach ($environments as $environment) {
+            if ($environmentName == $environment->getName()) {
+                $environmentFound = true;
+                $environment->addComponent(
+                    new Component(
+                        $component,
+                        $component,
+                        $this->serializer->deserialize($specification->getRaw(), Component\Specification::class, 'json')
+                    )
+                );
+            }
+        }
+
+        if (!$environmentFound) {
+            throw new \RuntimeException(sprintf('Environment (%s) not found', $environmentName));
+        }
+    }
+
+    /**
+     * @Then I should see limits for cpu of :cpu and memory of :memory
+     */
+    public function iShouldSeeLimitsForCpuOfAndMemoryOf($cpu, $memory)
+    {
+        $this->assertResponseCode(200);
+
+        /** @var Component\Resources $resources */
+        $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
+
+        $limits = $resources->getLimits();
+
+        if ($limits->getCpu() != $cpu) {
+            throw new \RuntimeException(sprintf('Expected cpu limit %s but got %s', $cpu, $limits->getCpu()));
+        }
+
+        if ($limits->getMemory() != $memory) {
+            throw new \RuntimeException(sprintf('Expected memory limit %s but got %s', $memory, $limits->getMemory()));
+        }
+    }
+
+    /**
+     * @Then I should see requests for cpu of :cpu and memory of :memory
+     */
+    public function iShouldSeeRequestsForCpuOfAndMemoryOf($cpu, $memory)
+    {
+        /** @var Component\Resources $resources */
+        $resources = $this->serializer->deserialize($this->response->getContent(), Component\Resources::class, 'json');
+
+        $requests = $resources->getRequests();
+
+        if ($requests->getCpu() != $cpu) {
+            throw new \RuntimeException(sprintf('Expected cpu requests %s but got %s', $cpu, $requests->getCpu()));
+        }
+
+        if ($requests->getMemory() != $memory) {
+            throw new \RuntimeException(sprintf('Expected memory requests %s but got %s', $memory, $requests->getMemory()));
+        }
+    }
+
+    /**
+     * @When the following :method request is sent to :path:
+     */
+    public function theFollowingRequestIsSentTo($method, $path, PyStringNode $string)
+    {
+        $this->response = $this->kernel->handle(Request::create($path, $method, [], [], [], ['CONTENT_TYPE' => 'application/json'], $string->getRaw()));
+    }
+
+    /**
+     * @Given the following resource usage history entry have been saved:
+     */
+    public function theFollowingResourceUsageHistoryEntryHaveBeenSaved(TableNode $table)
+    {
+        foreach ($table->getHash() as $row) {
+            $this->tracedUsageHistoryRepository->save(new ResourceUsageHistory(
+                Uuid::uuid4(),
+                Uuid::fromString($row['flow_uuid']),
+                $row['environment_identifier'],
+                new ResourceUsage(
+                    new Component\ResourcesRequest($row['requests_cpu'], $row['requests_memory']),
+                    new Component\ResourcesRequest($row['limits_cpu'], $row['limits_memory'])
+                ),
+                new \DateTime($row['datetime'])
+            ));
+        }
+    }
+
+    /**
+     * @When I request the resource usage of the flow :flowUuid from the :left to :right with a :internal interval
+     */
+    public function iRequestTheResourceUsageOfTheFlowFromTheToWithAInterval($flowUuid, $left, $right, $interval)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/usage/resources',
+            'GET',
+            [
+                'left' => $left,
+                'right' => $right,
+                'interval' => $interval
+            ]
+        ));
+    }
+
+    /**
+     * @Then I should see the following resource usage:
+     */
+    public function iShouldSeeTheFollowingResourceUsage(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+        $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $expectedUsage) {
+            $usage = $this->getUsageForDate($usageCollection, $expectedUsage['datetime']);
+
+            if (ResourceConverter::resourceToNumber($usage['cpu']) != ResourceConverter::resourceToNumber($expectedUsage['cpu'])) {
+                throw new \RuntimeException(sprintf(
+                    'Expected CPU usage to not match for date %s: %s instead of %s',
+                    $expectedUsage['datetime'],
+                    $usage['cpu'],
+                    $expectedUsage['cpu']
+                ));
+            }
+
+            if (ResourceConverter::resourceToNumber($usage['memory']) != ResourceConverter::resourceToNumber($expectedUsage['memory'])) {
+                throw new \RuntimeException(sprintf(
+                    'Expected memory usage to not match for date %s: %s instead of %s',
+                    $expectedUsage['datetime'],
+                    $usage['memory'],
+                    $expectedUsage['memory']
+                ));
+            }
+        }
+    }
+
+    private function getUsageForDate(array $usageCollection, string $dateTime)
+    {
+        $expectedDateTime = new \DateTime($dateTime);
+        $foundDates = [];
+
+        // Find the usage
+        foreach ($usageCollection as $usageRow) {
+            $usageDateTime = new \DateTime($usageRow['datetime']['left']);
+
+            if ($usageDateTime == $expectedDateTime) {
+                return $usageRow['usage'];
+            }
+
+            $foundDates[] = $usageRow['datetime']['left'];
+        }
+
+        throw new \RuntimeException('No usage found for this date. Found following dates: '.implode(', ', $foundDates));
+    }
+
+    /**
+     * @Then a resource usage entry for the environment :environment in the flow :flowUuid should have been saved
+     */
+    public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveBeenSaved($environment, $flowUuid)
+    {
+        $saved = $this->tracedUsageHistoryRepository->getSaved();
+        foreach ($saved as $history) {
+            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid)) && $history->getEnvironmentIdentifier() == $environment) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('Such usage history not found');
+    }
+
+    /**
+     * @When I request the tide usage of the flow :flowUuid from the :left to :right with a :internal interval
+     */
+    public function iRequestTheTideUsageOfTheFlowFromTheToWithAInterval($flowUuid, $left, $right, $interval)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/usage/tides',
+            'GET',
+            [
+                'left' => $left,
+                'right' => $right,
+                'interval' => $interval
+            ]
+        ));
+    }
+
+    /**
+     * @Then I should see the following tide usage:
+     */
+    public function iShouldSeeTheFollowingTideUsage(TableNode $table)
+    {
+        $this->assertResponseCode(200);
+        $usageCollection = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        foreach ($table->getHash() as $expectedUsage) {
+            $usage = $this->getUsageForDate($usageCollection, $expectedUsage['datetime']);
+
+            if ($usage['tides'] != $expectedUsage['tides']) {
+                throw new \RuntimeException(sprintf(
+                    'Expected %d tides but found %s',
+                    $expectedUsage['tides'],
+                    $usage['tides']
+                ));
+            }
+        }
     }
 }

@@ -1,9 +1,11 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault;
@@ -16,11 +18,15 @@ use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use Doctrine\Common\Collections\Collection;
+use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SecurityContext implements Context
@@ -42,6 +48,14 @@ class SecurityContext implements Context
      * @var PreviouslyKnownValuesVault
      */
     private $previouslyKnownValuesVault;
+    /**
+     * @var JWTManagerInterface
+     */
+    private $jwtManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     /**
      * @var Response|null
@@ -57,12 +71,16 @@ class SecurityContext implements Context
         TokenStorageInterface $tokenStorage,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         KernelInterface $kernel,
-        PreviouslyKnownValuesVault $previouslyKnownValuesVault
+        PreviouslyKnownValuesVault $previouslyKnownValuesVault,
+        JWTManagerInterface $jwtManager,
+        SerializerInterface $serializer
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
+        $this->jwtManager = $jwtManager;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -117,6 +135,15 @@ class SecurityContext implements Context
         $this->tokenStorage->setToken($token);
 
         $this->currentUser = $user;
+    }
+
+    /**
+     * @Given I am authenticated with the :role role
+     */
+    public function iAmAuthenticatedWithTheRole($role)
+    {
+        $token = new PreAuthenticatedToken($role, '', 'main', [$role]);
+        $this->tokenStorage->setToken($token);
     }
 
     /**
@@ -184,6 +211,25 @@ class SecurityContext implements Context
     }
 
     /**
+     * @Given the user :user is not in the team :team
+     */
+    public function theUserIsNotInTheTeam($user, $team)
+    {
+        $teams = $this->inMemoryAuthenticatorClient->findAllTeams();
+
+        if (!isset($teams[$team])) {
+            throw new \RuntimeException(sprintf('Team %s not found', $team));
+        }
+        $selectedTeam = $teams[$team];
+        $memberships = $selectedTeam->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
+            return $membership->getUser()->getUsername() === $user;
+        });
+        if ($memberships) {
+            $this->inMemoryAuthenticatorClient->deleteTeam($selectedTeam);
+        }
+    }
+
+    /**
      * @Given the team :team have the credentials of a cluster :cluster
      * @Given the team :team have the credentials of a cluster :cluster with address :address
      */
@@ -194,6 +240,21 @@ class SecurityContext implements Context
         $address = $address ?: 'https://1.2.3.4';
 
         $bucket->getClusters()->add(new Kubernetes($cluster, $address, 'v1', '', ''));
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+    }
+
+    /**
+     * @Given the cluster :clusterIdentifier of the team :team have the following policies:
+     */
+    public function theClusterOfTheTeamHaveTheFollowingPolicies($clusterIdentifier, $team, PyStringNode $string)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getClusters()->add(new Kubernetes($clusterIdentifier, 'https://1.2.3.4', 'v1', '', '',
+            $this->serializer->deserialize($string->getRaw(), 'array<'.Cluster\ClusterPolicy::class.'>', 'json')
+        ));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
@@ -210,6 +271,44 @@ class SecurityContext implements Context
         $bucket->getDockerRegistries()->add(new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
 
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
+    }
+
+    /**
+     * @Then the team :teamSlug should have one cluster named :clusterName
+     */
+    public function theTeamShouldHaveOneClusterNamed($teamSlug, $clusterName)
+    {
+        $clusters = $this->findMatchingClusters($teamSlug, $clusterName);
+
+        if ($clusters->count() != 1) {
+            throw new \RuntimeException(sprintf('Found %d clusters', $clusters->count()));
+        }
+    }
+
+    /**
+     * @Then the team :teamSlug should have a cluster named :clusterName
+     */
+    public function theTeamShouldHaveAClusterNamed($teamSlug, $clusterName)
+    {
+        $clusters = $this->findMatchingClusters($teamSlug, $clusterName);
+
+        if ($clusters->count() == 0) {
+            throw new \RuntimeException('Cluster was not found');
+        }
+    }
+
+    /**
+     * @Then the team :teamSlug should have docker credentials for :serverAddress with the username :username
+     */
+    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $serverAddress, $username)
+    {
+        $matchingRegistries = $this->findTeamBucket($teamSlug)->getDockerRegistries()->filter(function(DockerRegistry $registry) use ($serverAddress, $username) {
+            return $registry->getServerAddress() == $serverAddress && $registry->getUsername() == $username;
+        });
+
+        if ($matchingRegistries->count() == 0) {
+            throw new \RuntimeException('Found no matching registry');
+        }
     }
 
     /**
@@ -296,5 +395,24 @@ class SecurityContext implements Context
             $encryptedValue,
             $plainValue
         );
+    }
+
+    private function findMatchingClusters($teamSlug, $clusterName) : Collection
+    {
+        return $this->findTeamBucket($teamSlug)->getClusters()->filter(function(Cluster $cluster) use ($clusterName) {
+            return $cluster->getIdentifier() == $clusterName;
+        });
+    }
+
+    private function findTeamBucket($teamSlug) : Bucket
+    {
+        return $this->inMemoryAuthenticatorClient->findBucketByUuid(
+            $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
+        );
+    }
+
+    public function tokenForUser($username)
+    {
+        return $this->jwtManager->create(new \Symfony\Component\Security\Core\User\User($username, null));
     }
 }

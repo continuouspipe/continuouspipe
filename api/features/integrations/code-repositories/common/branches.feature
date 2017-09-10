@@ -8,6 +8,7 @@ Feature:
     And the tide starts
     And the deployment succeed
     When the branch "foo" with head "12345" is deleted
+    And the delayed messages are received
     Then the environment should be deleted
 
   Scenario: It should not remove any other branch environment

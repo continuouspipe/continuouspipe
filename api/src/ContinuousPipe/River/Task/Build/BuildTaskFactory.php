@@ -233,7 +233,11 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
         }
 
         if (isset($stepConfiguration['image']) && isset($stepConfiguration['tag'])) {
-            $step = $step->withImage(new Image($stepConfiguration['image'], $stepConfiguration['tag']));
+            $step = $step->withImage(new Image(
+                $stepConfiguration['image'],
+                $stepConfiguration['tag'],
+                isset($stepConfiguration['reuse']) ? $stepConfiguration['reuse'] : null
+            ));
         }
 
         if (isset($stepConfiguration['cache'])) {
@@ -330,6 +334,7 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                     ->thenInvalid('The tag %s of the Docker image is invalid.')
                 ->end()
             ->end()
+            ->booleanNode('reuse')->defaultNull()->end()
             ->scalarNode('build_directory')->defaultNull()->end()
             ->scalarNode('docker_file_path')->defaultNull()->end()
             ->enumNode('naming_strategy')
@@ -337,6 +342,20 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
                 ->defaultValue('branch')
             ->end()
             ->arrayNode(BuildContext::ENVIRONMENT_KEY)
+                ->beforeNormalization()
+                     ->ifArray()
+                     ->then(function ($array) {
+                         foreach ($array as $key => $value) {
+                             if (is_string($key) && !is_array($value)) {
+                                 $array[$key] = [
+                                     'name' => $key,
+                                     'value' => $value,
+                                 ];
+                             }
+                         }
+                         return $array;
+                     })
+                 ->end()
                 ->prototype('array')
                     ->children()
                         ->scalarNode('name')->isRequired()->end()

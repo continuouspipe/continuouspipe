@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\CodeRepository;
 
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use Github\Client;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Message\ResponseInterface;
 
 class GitHubRelativeFileSystem implements RelativeFileSystem
 {
@@ -41,14 +43,24 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
     public function exists($filePath)
     {
         try {
-            return $this->client->repo()->contents()->exists(
+            return $this->gitHubExists(
                 $this->repositoryDescription->getUsername(),
                 $this->repositoryDescription->getRepository(),
                 $filePath,
                 $this->reference
             );
         } catch (RequestException $e) {
-            return false;
+            if (null !== ($response = $e->getResponse())) {
+                if ($response->getStatusCode() == 404) {
+                    return false;
+                }
+            }
+
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from GitHub: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
     }
 
@@ -65,20 +77,57 @@ class GitHubRelativeFileSystem implements RelativeFileSystem
                 $this->reference
             );
         } catch (RequestException $e) {
-            throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
+            if (null !== ($response = $e->getResponse())) {
+                if ($response->getStatusCode() == 404) {
+                    throw new FileNotFound($e->getMessage(), $e->getCode(), $e);
+                }
+            }
+
+            throw new FileException(
+                sprintf('Unable to read file "%s". Response from GitHub: %s', $filePath, $this->formatException($e)),
+                $e->getCode(),
+                $e
+            );
         }
 
         if (!isset($contentsResult['content'])) {
-            throw new FileNotFound('The answer from GitHub was not understandable for the file '.$filePath);
+            throw new FileException('The answer from GitHub was not understandable for the file '.$filePath);
         }
 
         if (false === ($contents = base64_decode($contentsResult['content']))) {
-            throw new FileNotFound(sprintf(
+            throw new FileException(sprintf(
                 'Unable to decode base64 content of file "%s"',
                 $filePath
             ));
         }
 
         return $contents;
+    }
+
+    private function gitHubExists($username, $repository, $path, $reference = null)
+    {
+        $contentsApi = $this->client->repo()->contents();
+
+        $url = 'repos/'.rawurlencode($username).'/'.rawurlencode($repository).'/contents';
+        if (null !== $path) {
+            $url .= '/'.rawurlencode($path);
+        }
+
+        $method = (new \ReflectionObject($contentsApi))->getMethod('head');
+        $method->setAccessible(true);
+        $response = $method->invoke($contentsApi, $url, [
+            'ref' => $reference,
+        ]);
+
+        return $response->getStatusCode() == 200;
+    }
+
+    private function formatException(RequestException $e)
+    {
+        if (null !== ($response = $e->getResponse())) {
+            return $response->getStatusCode() . ' ' . $response->getReasonPhrase();
+        }
+
+        return $e->getMessage();
     }
 }

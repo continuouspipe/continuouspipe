@@ -9,65 +9,16 @@ use GitHub\WebHook\Model\Repository;
 use GitHub\WebHook\Model\User;
 use JMS\Serializer\Annotation as JMS;
 
-class IntegrationInstallationEvent extends AbstractEvent
+class IntegrationInstallationEvent extends InstallationEvent
 {
-
-    /**
-     * @var string
-     *
-     * @JMS\Type("string")
-     */
-    private $action;
-
-    /**
-     * @var Installation
-     *
-     * @JMS\Type("GitHub\Integration\Installation")
-     */
-    private $installation;
-
-    /**
-     * @var User
-     *
-     * @JMS\Type("GitHub\WebHook\Model\User")
-     */
-    private $sender;
-
     public function isCreatedAction(): bool
     {
-        return $this->action === 'created';
+        return $this->getAction() === 'created';
     }
 
     public function isDeletedAction(): bool
     {
-        return $this->action === 'deleted';
-    }
-
-    /**
-     * @return Installation
-     */
-    public function getInstallation(): Installation
-    {
-        return $this->installation;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSender()
-    {
-        return $this->sender;
-    }
-
-    /**
-     * Returns the repository related to this event.
-     *
-     * @return Repository
-     * @throws CodeRepositoryNotFound
-     */
-    public function getRepository()
-    {
-        throw new CodeRepositoryNotFound('Installation event is not connected to a specific repository.');
+        return $this->getAction() === 'deleted';
     }
 
     /**

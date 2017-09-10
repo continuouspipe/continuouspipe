@@ -222,6 +222,30 @@ Feature:
     And the component "image0" should be deployed as scaling
     And the component "image0" should be deployed with 5 replicas
 
+  Scenario: Explicit number of replicas defined as a variable
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    variables:
+    - name: REPLICAS
+      value: 5
+
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            scalability:
+                                enabled: true
+                                number_of_replicas: ${REPLICAS}
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should be deployed as scaling
+    And the component "image0" should be deployed with 5 replicas
+
   Scenario: HTTP Probes
     Given there is 1 application images in the repository
     And I have a "continuous-pipe.yml" file in my repository that contains:
@@ -373,3 +397,24 @@ Feature:
     """
     When a tide is started
     Then the component "my-database" should be deployed
+
+  Scenario: I can use a simplified volume syntax
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            volumes:
+                                - name: api-volume
+                                  capacity: 5Gi
+                                  mount_path: /var/lib/app
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should have a persistent volume mounted at "/var/lib/app"
+    And the component "image0" should have a persistent volume with a storage class "default"

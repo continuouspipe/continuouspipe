@@ -40,3 +40,8 @@ Feature:
     And the user "another-ghost" is a ghost
     When I retrieve the list tides of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see the tide "00000000-0000-0000-0000-000000000001"
+
+  Scenario: The tides should not expose the configuration
+    When I retrieve the list tides of the flow "00000000-0000-0000-0000-000000000000"
+    And I should see the tide "00000000-0000-0000-0000-000000000001"
+    And I should not see the configuration of the tide "00000000-0000-0000-0000-000000000001"

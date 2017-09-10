@@ -68,7 +68,8 @@ class TideViewFactory
             $tide->getConfiguration(),
             $createdAt,
             $tide->getGenerationUuid(),
-            $tide->getPipeline()
+            $tide->getPipeline(),
+            $tide->getFailureReason()
         );
 
         $view->setStartDate($startedAt);

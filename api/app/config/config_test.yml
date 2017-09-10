@@ -24,3 +24,18 @@ beberlei_metrics:
 
 parameters:
     github_secret: '3216994be6ee462571feb2e0bfeedc5ab82152b4'
+
+message:
+    connections:
+        default:
+            debug: true
+
+        main:
+            driver:
+                direct: ~
+        operations:
+            driver:
+                direct: ~
+        delayed:
+            driver:
+                direct: ~

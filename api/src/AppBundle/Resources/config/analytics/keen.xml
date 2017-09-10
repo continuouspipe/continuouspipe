@@ -18,6 +18,18 @@
                  methods="addEvent"
                  runner="tolerance.operation_runners.keen" />
         </service>
+        <service id="river.analytics.keen.asynchronous.client.calls_to_command"
+                 class="ContinuousPipe\River\Analytics\Keen\Asynchronous\Client\TransformCallsToCommand"
+                 decorates="river.keen.client">
+            <argument type="service" id="command_bus" />
+        </service>
+        <service id="river.analytics.keen.asynchronous.handler.add_event_handler"
+                 class="ContinuousPipe\River\Analytics\Keen\Asynchronous\Handler\AddEventHandler">
+            <argument type="service" id="river.analytics.keen.asynchronous.client.calls_to_command.inner" />
+
+            <tag name="asynchronous_command_handler"
+                 handles="ContinuousPipe\River\Analytics\Keen\Asynchronous\Command\AddEventCommand" />
+        </service>
 
         <service id="river.analytics.keen.listener.tide_report" class="ContinuousPipe\River\Analytics\Keen\TideReportListener">
             <argument type="service" id="river.keen.client" />

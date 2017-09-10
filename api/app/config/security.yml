@@ -12,7 +12,19 @@ security:
                     admin:
                         password: %admin_password%
                         roles: 'ROLE_ADMIN'
+                    '/C=UK/ST=London/O=ContinuousPipe/CN=FeatureTimeline':
+                        roles: ['ROLE_SYSTEM_FEATURE_TIMELINE']
+                        password: ''
+                    continuouspipe_builder_for_sources:
+                        roles: ['ROLE_DOWNLOAD_CODE_ARCHIVE']
+                    'system:resources_usage_updater':
+                        roles: ['ROLE_RESOURCE_USAGE_CREATOR']
 
+        chain:
+            chain:
+                providers:
+                    - in_memory
+                    - authenticator
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt|error)|css|images|js)/
@@ -26,25 +38,37 @@ security:
         api:
             pattern:   ^/
             stateless: true
+            x509:
+                user: DN
+                provider: in_memory
             lexik_jwt: ~
             anonymous: ~
-            provider: authenticator
+            provider: chain
             simple_preauth:
                 authenticator: api.api_key_authenticator
+                provider: authenticator
 
     access_control:
         # TODO: Secure with GitHub IPs
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/github/integration/webhook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/github/flows/([0-9-]+)/installation-token, roles: [ ROLE_SYSTEM_FEATURE_TIMELINE ]}
 
         # TODO: Secure with local IPs or API keys
         - { path: ^/builder/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/pipe/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/runner/notification, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # TODO: Remove this deprecated path; that is also a security hole
         - { path: ^/github/flows, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        - { path: ^/flows/([a-z0-9-]+)/source-code/archive, methods: [GET], roles: ROLE_DOWNLOAD_CODE_ARCHIVE }
 
         # TODO: Secure with Atlassian's IPs
         - { path: ^/connect/service/bitbucket/addon/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        # Managed services
+        - { path: ^/managed/resources$, roles: ROLE_RESOURCE_USAGE_CREATOR }
 
         # Required by GCE healthchecks
         - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

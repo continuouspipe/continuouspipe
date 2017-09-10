@@ -39,6 +39,22 @@ Feature:
       | name | value |
       | FOO  | BAR   |
 
+  Scenario: Build environment variables from hash
+    Given there is 1 application images in the repository
+    When a tide is started with the following configuration:
+    """
+    tasks:
+        build:
+            build:
+               environment:
+                   FOO: BAR
+               services:
+                   image0: {}
+    """
+    Then the build should be started with the following environment variables:
+      | name | value |
+      | FOO  | BAR   |
+
   Scenario: Build environment per service
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -170,3 +186,16 @@ Feature:
     And the build #2 should be started with the image name "quay.io/continuouspipe/php7-apache"
     And the build #2 should be started with the sub-directory "./php-apache/"
     And the build #2 should be started with the tag "latest"
+
+  Scenario: Force non-reuse of the built images
+    Given there is 1 application images in the repository
+    When a tide is started with the following configuration:
+    """
+    tasks:
+        build:
+            build:
+                services:
+                    image0:
+                        reuse: false
+    """
+    Then the build should be started without reusing the built docker image

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\DockerCompose\Parser;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 
 class V2CompatibilityParser implements ProjectParser
 {

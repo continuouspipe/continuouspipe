@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\River\LogStream\ArchiveLogs\Command;
 
+use ContinuousPipe\Message\Message;
+use ContinuousPipe\River\Message\OperationalMessage;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
-class ArchiveFlowLogsCommand
+class ArchiveFlowLogsCommand implements OperationalMessage
 {
     /**
      * @JMS\Type("Ramsey\Uuid\Uuid")

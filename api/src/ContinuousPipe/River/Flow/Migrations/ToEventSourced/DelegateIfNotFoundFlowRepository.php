@@ -8,6 +8,7 @@ use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DelegateIfNotFoundFlowRepository implements FlowRepository
 {
@@ -34,7 +35,7 @@ class DelegateIfNotFoundFlowRepository implements FlowRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         try {
             return $this->decorated->find($uuid);

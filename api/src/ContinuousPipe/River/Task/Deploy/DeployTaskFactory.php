@@ -37,26 +37,18 @@ class DeployTaskFactory implements TaskFactory
     private $componentFactory;
 
     /**
-     * @var string
-     */
-    private $defaultEnvironmentExpression;
-
-    /**
      * @param MessageBus       $commandBus
      * @param LoggerFactory    $loggerFactory
      * @param ComponentFactory $componentFactory
-     * @param string           $defaultEnvironmentExpression
      */
     public function __construct(
         MessageBus $commandBus,
         LoggerFactory $loggerFactory,
-        ComponentFactory $componentFactory,
-        $defaultEnvironmentExpression
+        ComponentFactory $componentFactory
     ) {
         $this->commandBus = $commandBus;
         $this->loggerFactory = $loggerFactory;
         $this->componentFactory = $componentFactory;
-        $this->defaultEnvironmentExpression = $defaultEnvironmentExpression;
     }
 
     /**
@@ -87,7 +79,7 @@ class DeployTaskFactory implements TaskFactory
 
         $node
             ->children()
-                ->scalarNode('cluster')->isRequired()->end()
+                ->scalarNode('cluster')->defaultValue('')->end()
                 ->arrayNode('environment')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -127,6 +119,11 @@ class DeployTaskFactory implements TaskFactory
                             ->arrayNode('specification')
                                 ->isRequired()
                                 ->addDefaultsIfNotSet()
+                                ->beforeNormalization()
+                                    ->always()->then(function ($configuration) {
+                                        return self::normalizeVolumesConfiguration($configuration);
+                                    })
+                                ->end()
                                 ->children()
                                     ->arrayNode('source')
                                         ->isRequired()
@@ -148,7 +145,7 @@ class DeployTaskFactory implements TaskFactory
                                         ->addDefaultsIfNotSet()
                                         ->children()
                                             ->booleanNode('enabled')->defaultTrue()->end()
-                                            ->integerNode('number_of_replicas')->defaultNull()->end()
+                                            ->scalarNode('number_of_replicas')->defaultNull()->end()
                                         ->end()
                                     ->end()
                                     ->arrayNode('runtime_policy')
@@ -159,11 +156,11 @@ class DeployTaskFactory implements TaskFactory
                                     ->arrayNode('volumes')
                                         ->prototype('array')
                                             ->children()
-                                                ->scalarNode('type')->isRequired()->end()
+                                                ->scalarNode('type')->defaultValue('persistent')->end()
                                                 ->scalarNode('name')->isRequired()->end()
                                                 ->scalarNode('path')->end()
                                                 ->scalarNode('capacity')->end()
-                                                ->scalarNode('storage_class')->end()
+                                                ->scalarNode('storage_class')->defaultValue('default')->end()
                                             ->end()
                                         ->end()
                                     ->end()
@@ -256,11 +253,9 @@ class DeployTaskFactory implements TaskFactory
         $services = [];
 
         foreach ($servicesConfiguration as $name => $configuration) {
-            if ($this->shouldSkipService($taskContext, $configuration)) {
-                continue;
+            if (null !== ($service = $this->componentFactory->createFromConfiguration($taskContext, $this->getIdentifier($name), $configuration))) {
+                $services[] = $service;
             }
-
-            $services[] = $this->componentFactory->createFromConfiguration($taskContext, $this->getIdentifier($name), $configuration);
         }
 
         return $services;
@@ -341,97 +336,15 @@ class DeployTaskFactory implements TaskFactory
                             ->end()
                         ->end()
                     ->end()
-                    ->arrayNode('cloud_flare_zone')
-                        ->children()
-                            ->scalarNode('zone_identifier')->isRequired()->end()
-                            ->scalarNode('record_suffix')->end()
-                            ->arrayNode('host')
-                                ->children()
-                                    ->scalarNode('expression')->isRequired()->end()
-                                ->end()
-                            ->end()
-                            ->scalarNode('backend_address')->end()
-                            ->integerNode('ttl')->end()
-                            ->booleanNode('proxied')->end()
-                            ->arrayNode('authentication')
-                                ->isRequired()
-                                ->children()
-                                    ->scalarNode('email')->isRequired()->end()
-                                    ->scalarNode('api_key')->isRequired()->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('httplabs')
-                        ->children()
-                            ->scalarNode('project_identifier')->isRequired()->end()
-                            ->scalarNode('api_key')->isRequired()->end()
-                            ->arrayNode('middlewares')
-                                ->prototype('variable')->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                    ->arrayNode('ingress')
-                        ->children()
-                            ->scalarNode('class')->isRequired()->end()
-                            ->arrayNode('host')
-                                ->children()
-                                    ->scalarNode('expression')->isRequired()->end()
-                                ->end()
-                            ->end()
-                            ->scalarNode('host_suffix')->end()
-                        ->end()
-                    ->end()
+                    ->append($this->getCloudflareNode())
+                    ->append($this->getHttplabsNode())
+                    ->append($this->getIngressNode())
+                    ->scalarNode('condition')->end()
                 ->end()
             ->end()
         ;
 
         return $node;
-    }
-
-    /**
-     * @param TaskContext $taskContext
-     * @param array       $configuration
-     *
-     * @return bool
-     */
-    private function shouldSkipService(TaskContext $taskContext, array $configuration)
-    {
-        if (array_key_exists('condition', $configuration)) {
-            return !$this->isConditionValid($configuration['condition'], new ArrayObject([
-                'code_reference' => new ArrayObject([
-                    'branch' => $taskContext->getCodeReference()->getBranch(),
-                    'sha' => $taskContext->getCodeReference()->getCommitSha(),
-                ]),
-            ]));
-        }
-
-        return $configuration['enabled'] === false;
-    }
-
-    /**
-     * @param string      $expression
-     * @param ArrayObject $context
-     *
-     * @return string
-     *
-     * @throws TideConfigurationException
-     */
-    private function isConditionValid($expression, ArrayObject $context)
-    {
-        $language = new ExpressionLanguage();
-
-        try {
-            return (bool) $language->evaluate($expression, $context->asArray());
-        } catch (SyntaxError $e) {
-            throw new TideConfigurationException(sprintf(
-                'The expression provided ("%s") is not valid: %s',
-                $expression,
-                $e->getMessage()
-            ), $e->getCode(), $e);
-        } catch (\InvalidArgumentException $e) {
-            throw new TideConfigurationException($e->getMessage(), $e->getCode(), $e);
-        }
     }
 
     /**
@@ -462,5 +375,104 @@ class DeployTaskFactory implements TaskFactory
     private function getIdentifier(string $name) : string
     {
         return (new Slugify())->slugify($name);
+    }
+
+    private function getCloudflareNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('cloud_flare_zone');
+
+        $node
+            ->children()
+                ->scalarNode('zone_identifier')->isRequired()->end()
+                ->scalarNode('record_suffix')->end()
+                ->arrayNode('host')
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('backend_address')->end()
+                ->integerNode('ttl')->end()
+                ->booleanNode('proxied')->end()
+                ->arrayNode('authentication')
+                    ->isRequired()
+                    ->children()
+                        ->scalarNode('email')->isRequired()->end()
+                        ->scalarNode('api_key')->isRequired()->end()
+                    ->end()
+                ->end()
+            ->end();
+
+        return $node;
+    }
+
+    private function getHttplabsNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('httplabs');
+
+        $node
+            ->children()
+                ->scalarNode('project_identifier')->isRequired()->end()
+                ->scalarNode('api_key')->isRequired()->end()
+                ->scalarNode('record_suffix')->end()
+                ->arrayNode('host')
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->arrayNode('middlewares')
+                    ->prototype('variable')->end()
+                ->end()
+            ->end();
+
+        return $node;
+    }
+
+    private function getIngressNode()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('ingress');
+
+        $node
+            ->children()
+                ->scalarNode('class')->end()
+                ->arrayNode('host')
+                    ->beforeNormalization()
+                        ->ifString()
+                        ->then(function ($hostname) {
+                            return [
+                                'expression' => '\''.$hostname.'\'',
+                            ];
+                        })
+                    ->end()
+                    ->children()
+                        ->scalarNode('expression')->isRequired()->end()
+                    ->end()
+                ->end()
+                ->scalarNode('host_suffix')->end()
+            ->end();
+
+        return $node;
+    }
+
+    public static function normalizeVolumesConfiguration($configuration)
+    {
+        if (isset($configuration['volumes']) && !isset($configuration['volume_mounts']) && is_array($configuration['volumes'])) {
+            $configuration['volume_mounts'] = [];
+
+            foreach ($configuration['volumes'] as $key => $volume) {
+                if (isset($volume['mount_path'])) {
+                    $configuration['volume_mounts'][]  = [
+                        'name' => $volume['name'],
+                        'mount_path'  => $volume['mount_path'],
+                    ];
+
+                    unset($configuration['volumes'][$key]['mount_path']);
+                }
+            }
+        }
+
+        return $configuration;
     }
 }

@@ -13,15 +13,18 @@ use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\PublicEndpoint;
 use ContinuousPipe\Pipe\Client\PublicEndpointPort;
+use ContinuousPipe\River\Environment\CallbackEnvironmentRepository;
+use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
+use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use JMS\Serializer\Serializer;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,23 +79,27 @@ class DeployContext implements Context
      * @var Serializer
      */
     private $serializer;
-
     /**
-     * @param EventStore $eventStore
-     * @param MessageBus $eventBus
-     * @param TraceableClient $traceablePipeClient
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param Kernel $kernel
-     * @param Serializer $serializer
+     * @var CallbackEnvironmentRepository
      */
-    public function __construct(EventStore $eventStore, MessageBus $eventBus, TraceableClient $traceablePipeClient, EnvironmentNamingStrategy $environmentNamingStrategy, Kernel $kernel, Serializer $serializer)
-    {
+    private $callbackEnvironmentRepository;
+
+    public function __construct(
+        EventStore $eventStore,
+        MessageBus $eventBus,
+        TraceableClient $traceablePipeClient,
+        EnvironmentNamingStrategy $environmentNamingStrategy,
+        Kernel $kernel,
+        Serializer $serializer,
+        CallbackEnvironmentRepository $callbackEnvironmentRepository
+    ) {
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
         $this->traceablePipeClient = $traceablePipeClient;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->kernel = $kernel;
         $this->serializer = $serializer;
+        $this->callbackEnvironmentRepository = $callbackEnvironmentRepository;
     }
 
     /**
@@ -103,6 +110,16 @@ class DeployContext implements Context
         $this->tideContext = $scope->getEnvironment()->getContext('TideContext');
         $this->flowContext = $scope->getEnvironment()->getContext('FlowContext');
         $this->tideTasksContext = $scope->getEnvironment()->getContext('Tide\TasksContext');
+    }
+
+    /**
+     * @Given the environment deletion will fail with the message :message
+     */
+    public function theEnvironmentDeletionWillFailWithTheMessage($message)
+    {
+        $this->callbackEnvironmentRepository->setDeleteEnvironmentCallback(function() use ($message) {
+            throw new DeployedEnvironmentException($message);
+        });
     }
 
     /**
@@ -128,19 +145,7 @@ class DeployContext implements Context
         $this->deployment = $this->getDeployment();
         $componentStatuses = $this->deployment->getComponentStatuses() ?: [];
         $componentStatuses[$name] = new ComponentStatus(true, false, false);
-        $publicEndpoints = $this->deployment->getPublicEndpoints() ?: [];
-
-        foreach ($table->getHash() as $row) {
-            if (array_key_exists('ports', $row)) {
-                $ports = array_map(function (string $port) {
-                    return new PublicEndpointPort((int)$port, PublicEndpointPort::PROTOCOL_TCP);
-                }, explode(',', $row['ports']));
-            } else {
-                $ports = [];
-            }
-
-            $publicEndpoints[] = new PublicEndpoint($row['name'], $row['address'], $ports);
-        }
+        $publicEndpoints = array_merge($this->deployment->getPublicEndpoints() ?: [], $this->endpointsFromTable($table));
 
         $this->deployment = new Deployment(
             $this->deployment->getUuid(),
@@ -276,8 +281,9 @@ class DeployContext implements Context
 
     /**
      * @When the second deploy succeed
+     * @When the second deploy succeed with the following public endpoints:
      */
-    public function theSecondDeploySucceed()
+    public function theSecondDeploySucceed(TableNode $endpointsTable = null)
     {
         $deployments = $this->traceablePipeClient->getDeployments();
         if (1 >= count($deployments)) {
@@ -286,7 +292,11 @@ class DeployContext implements Context
 
         /** @var DeployTask $task */
         $task = $this->tideTasksContext->getTasksOfType(DeployTask::class)[1];
-        $this->sendDeployTaskNotification($task, Deployment::STATUS_SUCCESS);
+        $this->sendDeployTaskNotification(
+            $task,
+            Deployment::STATUS_SUCCESS,
+            $endpointsTable !== null ? $this->endpointsFromTable($endpointsTable) : []
+        );
     }
 
     /**
@@ -556,6 +566,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -575,6 +586,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -593,6 +605,7 @@ class DeployContext implements Context
     {
         $foundName = $this->environmentNamingStrategy->getName(
             $this->tideContext->getCurrentTideAggregate(),
+            new Kubernetes('foo', 'https://1.2.3.4', 'v1', 'username', 'password'),
             $this->getDeployTask()->getConfiguration()->getEnvironmentName()
         );
 
@@ -701,11 +714,11 @@ class DeployContext implements Context
      * @param DeployTask $task
      * @param $status
      */
-    private function sendDeployTaskNotification(DeployTask $task, $status)
+    private function sendDeployTaskNotification(DeployTask $task, $status, array $publicEndpoints = [])
     {
         $events = $this->tideTasksContext->getTaskEvents($task);
-        $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) {
-            return $event instanceof DeploymentStarted;
+        $deploymentStartedEvents = array_values(array_filter($events->getEvents(), function($event) use ($task) {
+            return $event instanceof DeploymentStarted && $event->getTaskId() == $task->getIdentifier();
         }));
 
         if (0 === count($deploymentStartedEvents)) {
@@ -719,7 +732,8 @@ class DeployContext implements Context
             new Deployment(
                 $deploymentStartedEvent->getDeployment()->getUuid(),
                 $deploymentStartedEvent->getDeployment()->getRequest(),
-                $status
+                $status,
+                $publicEndpoints
             )
         );
     }
@@ -761,5 +775,26 @@ class DeployContext implements Context
         }
 
         return array_pop($deploymentRequests);
+    }
+
+    /**
+     * @param TableNode $table
+     * @return array
+     */
+    private function endpointsFromTable(TableNode $table): array
+    {
+        $endpoints = [];
+        foreach ($table->getHash() as $row) {
+            if (array_key_exists('ports', $row)) {
+                $ports = array_map(function (string $port) {
+                    return new PublicEndpointPort((int)$port, PublicEndpointPort::PROTOCOL_TCP);
+                }, explode(',', $row['ports']));
+            } else {
+                $ports = [];
+            }
+
+            $endpoints[] = new PublicEndpoint($row['name'], $row['address'], $ports);
+        }
+        return $endpoints;
     }
 }

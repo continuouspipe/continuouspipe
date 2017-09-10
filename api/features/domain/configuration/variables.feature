@@ -195,3 +195,93 @@ Feature:
                                 - name: BAR
                                   value: BAZ
     """
+
+  Scenario: Not found variable will not be replaced
+    Given I have a flow with the following configuration:
+    """
+    variables: []
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO}
+    """
+
+  Scenario: Uses the variable with an optional value
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: FOO
+      value: bar
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO?:my-cluster}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: bar
+    """
+
+  Scenario: I can use an optional value if variable is not found
+    Given I have a flow with the following configuration:
+    """
+    variables: []
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${FOO?:my-cluster}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: my-cluster
+    """
+  Scenario: I can use an empty value if variable is not found
+    Given I have a flow with the following configuration:
+    """
+    variables: []
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: my-cluster${UNSET_VAR?:}
+                services: []
+    """
+    When a tide is created
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: my-cluster
+                services: []
+    """

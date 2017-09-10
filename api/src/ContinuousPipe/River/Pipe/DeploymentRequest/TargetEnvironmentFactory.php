@@ -4,43 +4,19 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequest;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
 use ContinuousPipe\River\Tide;
 
-class TargetEnvironmentFactory
+interface TargetEnvironmentFactory
 {
-    /**
-     * @var EnvironmentNamingStrategy
-     */
-    private $environmentNamingStrategy;
-
-    /**
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     */
-    public function __construct(EnvironmentNamingStrategy $environmentNamingStrategy)
-    {
-        $this->environmentNamingStrategy = $environmentNamingStrategy;
-    }
-
     /**
      * Create the target environment descriptor.
      *
      * @param Tide                          $tide
      * @param EnvironmentAwareConfiguration $configuration
      *
+     * @throws DeploymentRequestException
+     *
      * @return Target
      */
-    public function create(Tide $tide, EnvironmentAwareConfiguration $configuration)
-    {
-        return new Target(
-            $this->environmentNamingStrategy->getName(
-                $tide,
-                $configuration->getEnvironmentName()
-            ),
-            $configuration->getClusterIdentifier(),
-            [
-                'flow' => (string) $tide->getFlowUuid(),
-            ]
-        );
-    }
+    public function create(Tide $tide, EnvironmentAwareConfiguration $configuration) : Target;
 }

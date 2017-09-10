@@ -3,15 +3,15 @@
 namespace ContinuousPipe\River\Handler;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\River\CommandBus\DelayedCommandBus;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
-use ContinuousPipe\River\Task\Deploy\Naming\EnvironmentNamingStrategy;
+use ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\EnvironmentNamingStrategy;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
 use Psr\Log\LoggerInterface;
 use ContinuousPipe\River\Command\DeleteEnvironments;
+use SimpleBus\Message\Bus\MessageBus;
 
 class DeleteEnvironmentsHandler
 {
@@ -46,34 +46,32 @@ class DeleteEnvironmentsHandler
     private $eventStore;
 
     /**
-     * @var DelayedCommandBus
+     * @var MessageBus
      */
-    private $delayedCommandBus;
+    private $commandBus;
 
     /**
      * @var int
      */
     private $retryInterval;
 
-    /**
-     * @param Client                    $client
-     * @param TideRepository            $tideRepository
-     * @param EnvironmentNamingStrategy $environmentNamingStrategy
-     * @param ClusterIdentifierResolver $clusterIdentifierResolver
-     * @param LoggerInterface           $systemLogger
-     * @param EventStore                $eventStore
-     * @param DelayedCommandBus         $delayedCommandBus
-     * @param int                       $retryInterval
-     */
-    public function __construct(Client $client, TideRepository $tideRepository, EnvironmentNamingStrategy $environmentNamingStrategy, ClusterIdentifierResolver $clusterIdentifierResolver, LoggerInterface $systemLogger, EventStore $eventStore, DelayedCommandBus $delayedCommandBus, $retryInterval)
-    {
+    public function __construct(
+        Client $client,
+        TideRepository $tideRepository,
+        EnvironmentNamingStrategy $environmentNamingStrategy,
+        ClusterIdentifierResolver $clusterIdentifierResolver,
+        LoggerInterface $systemLogger,
+        EventStore $eventStore,
+        MessageBus $commandBus,
+        int $retryInterval
+    ) {
         $this->client = $client;
         $this->tideRepository = $tideRepository;
         $this->environmentNamingStrategy = $environmentNamingStrategy;
         $this->clusterIdentifierResolver = $clusterIdentifierResolver;
         $this->systemLogger = $systemLogger;
         $this->eventStore = $eventStore;
-        $this->delayedCommandBus = $delayedCommandBus;
+        $this->commandBus = $commandBus;
         $this->retryInterval = $retryInterval;
     }
 
@@ -88,7 +86,11 @@ class DeleteEnvironmentsHandler
         );
 
         if ($this->oneOfTheTidesHasStatus($tides, [Tide::STATUS_PENDING, Tide::STATUS_RUNNING])) {
-            $this->delayedCommandBus->publish($command, $this->retryInterval);
+            $this->commandBus->handle(new DeleteEnvironments(
+                $command->getFlowUuid(),
+                $command->getCodeReference(),
+                (new \DateTime())->add(new \DateInterval('PT'.$this->retryInterval.'S'))
+            ));
 
             return;
         }

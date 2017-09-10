@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e2af69145e75f21b3fa07daf39507b5",
+    "content-hash": "8c9783fcb27a9fc095fc3b091ba9c004",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -255,16 +255,16 @@
         },
         {
             "name": "continuous-pipe/events",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/events.git",
-                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9"
+                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/events/zipball/3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
-                "reference": "3f6c6c9f6d410427ef58068e0ae0dd6e10a5a4b9",
+                "url": "https://api.github.com/repos/continuouspipe/events/zipball/603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
+                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
                 "shasum": ""
             },
             "type": "library",
@@ -274,23 +274,101 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/events/tree/master",
+                "source": "https://github.com/continuouspipe/events/tree/0.2.0",
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
-            "time": "2017-02-27T13:57:10+00:00"
+            "time": "2017-03-02T13:13:17+00:00"
         },
         {
-            "name": "continuous-pipe/model",
-            "version": "2.4.0",
+            "name": "continuous-pipe/flex",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:continuouspipe/model.git",
-                "reference": "37538f9afd6d111d6c7159ff559ce6ba9caa1693"
+                "url": "https://github.com/continuouspipe/flex.git",
+                "reference": "ee2faeb972aaae03d3ddebde9ee39462be0762e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/model/zipball/37538f9afd6d111d6c7159ff559ce6ba9caa1693",
-                "reference": "37538f9afd6d111d6c7159ff559ce6ba9caa1693",
+                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/ee2faeb972aaae03d3ddebde9ee39462be0762e4",
+                "reference": "ee2faeb972aaae03d3ddebde9ee39462be0762e4",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^1.0",
+                "symfony/dotenv": "^3.3",
+                "symfony/finder": "^2.7 || ^3.0"
+            },
+            "require-dev": {
+                "behat/behat": "^3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ContinuousPipe\\Flex\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ContinuousPipe\\Flex\\": "tests/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/flex/tree/master",
+                "issues": "https://github.com/continuouspipe/flex/issues"
+            },
+            "time": "2017-08-03 11:14:45"
+        },
+        {
+            "name": "continuous-pipe/message",
+            "version": "dev-feature/CD-595-add-a-router-for-messages",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/message.git",
+                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
+                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
+                "shasum": ""
+            },
+            "require": {
+                "google/cloud": "^0.36.0",
+                "tolerance/tolerance": "^0.4.1"
+            },
+            "require-dev": {
+                "jms/serializer": "^1.8",
+                "phpspec/phpspec": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "": "tests/"
+                }
+            },
+            "support": {
+                "source": "https://github.com/continuouspipe/message/tree/feature/CD-595-add-a-router-for-messages",
+                "issues": "https://github.com/continuouspipe/message/issues"
+            },
+            "time": "2017-09-02 12:27:44"
+        },
+        {
+            "name": "continuous-pipe/model",
+            "version": "2.4.6",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:continuouspipe/model.git",
+                "reference": "7cb3ccf72684ea5fc591ab7991fb41643857de14"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/continuouspipe/model/zipball/7cb3ccf72684ea5fc591ab7991fb41643857de14",
+                "reference": "7cb3ccf72684ea5fc591ab7991fb41643857de14",
                 "shasum": ""
             },
             "require-dev": {
@@ -304,10 +382,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/model/tree/2.4.0",
+                "source": "https://github.com/continuouspipe/model/tree/master",
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
-            "time": "2017-04-05T08:32:19+00:00"
+            "time": "2017-08-23T07:35:47+00:00"
         },
         {
             "name": "continuous-pipe/platform-bundle",
@@ -345,16 +423,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.7.0",
+            "version": "2.9.5",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "99b31d3f20fed35ead9baf999781b77de69224d6"
+                "reference": "6284ec26006616e80040b4cc67e8a9598766bd71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/99b31d3f20fed35ead9baf999781b77de69224d6",
-                "reference": "99b31d3f20fed35ead9baf999781b77de69224d6",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/6284ec26006616e80040b4cc67e8a9598766bd71",
+                "reference": "6284ec26006616e80040b4cc67e8a9598766bd71",
                 "shasum": ""
             },
             "require": {
@@ -375,10 +453,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.7.0",
+                "source": "https://github.com/continuouspipe/security/tree/2.9.5",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-03-15T10:23:10+00:00"
+            "time": "2017-09-01T10:33:49+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -1628,21 +1706,21 @@
         },
         {
             "name": "google/apiclient",
-            "version": "v2.1.2",
+            "version": "v2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "360e656f48c3262a6f7fefc0207521efa66caedf"
+                "reference": "43996f09df274158fd04fce98e8a82effe5f3717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/360e656f48c3262a6f7fefc0207521efa66caedf",
-                "reference": "360e656f48c3262a6f7fefc0207521efa66caedf",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/43996f09df274158fd04fce98e8a82effe5f3717",
+                "reference": "43996f09df274158fd04fce98e8a82effe5f3717",
                 "shasum": ""
             },
             "require": {
                 "firebase/php-jwt": "~2.0|~3.0|~4.0",
-                "google/apiclient-services": "^0.9",
+                "google/apiclient-services": "^0.11",
                 "google/auth": "^0.11",
                 "guzzlehttp/guzzle": "~5.2|~6.0",
                 "guzzlehttp/psr7": "^1.2",
@@ -1683,24 +1761,27 @@
             "keywords": [
                 "google"
             ],
-            "time": "2017-01-11T19:44:46+00:00"
+            "time": "2017-03-22T18:32:04+00:00"
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.9",
+            "version": "v0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "c400c655d1b7ca412ad4dd344e569c6865e74a83"
+                "reference": "48c554aee06f2fd5700d7bdfa4fa6b82d184eb52"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/c400c655d1b7ca412ad4dd344e569c6865e74a83",
-                "reference": "c400c655d1b7ca412ad4dd344e569c6865e74a83",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/48c554aee06f2fd5700d7bdfa4fa6b82d184eb52",
+                "reference": "48c554aee06f2fd5700d7bdfa4fa6b82d184eb52",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
             },
             "type": "library",
             "autoload": {
@@ -1717,7 +1798,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2017-01-11T18:53:21+00:00"
+            "time": "2017-03-13T17:40:44+00:00"
         },
         {
             "name": "google/auth",
@@ -1766,6 +1847,125 @@
                 "oauth2"
             ],
             "time": "2016-11-02T14:59:14+00:00"
+        },
+        {
+            "name": "google/cloud",
+            "version": "v0.36.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GoogleCloudPlatform/google-cloud-php.git",
+                "reference": "eebf5291ab903647c7e8422f1b2361355db66b59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GoogleCloudPlatform/google-cloud-php/zipball/eebf5291ab903647c7e8422f1b2361355db66b59",
+                "reference": "eebf5291ab903647c7e8422f1b2361355db66b59",
+                "shasum": ""
+            },
+            "require": {
+                "google/auth": "~0.9|^1.0",
+                "guzzlehttp/guzzle": "^5.3|^6.0",
+                "guzzlehttp/psr7": "^1.2",
+                "monolog/monolog": "~1",
+                "php": ">=5.5",
+                "psr/http-message": "1.0.*",
+                "ramsey/uuid": "~3",
+                "rize/uri-template": "~0.3"
+            },
+            "replace": {
+                "google/cloud-bigquery": "0.2.2",
+                "google/cloud-core": "1.8.0",
+                "google/cloud-datastore": "1.0.0",
+                "google/cloud-error-reporting": "0.4.1",
+                "google/cloud-language": "0.4.0",
+                "google/cloud-logging": "1.3.1",
+                "google/cloud-monitoring": "0.4.1",
+                "google/cloud-pubsub": "0.6.1",
+                "google/cloud-spanner": "0.4.0",
+                "google/cloud-speech": "0.6.1",
+                "google/cloud-storage": "1.1.3",
+                "google/cloud-trace": "0.3.1",
+                "google/cloud-translate": "1.0.0",
+                "google/cloud-videointelligence": "0.3.1",
+                "google/cloud-vision": "0.4.0"
+            },
+            "require-dev": {
+                "erusev/parsedown": "^1.6",
+                "google/gax": "^0.21.0",
+                "google/proto-client": "^0.21.0",
+                "league/json-guard": "^0.3",
+                "phpdocumentor/reflection": "^3.0",
+                "phpseclib/phpseclib": "^2",
+                "phpunit/phpunit": "4.8.*",
+                "squizlabs/php_codesniffer": "2.*",
+                "symfony/console": "^3.0",
+                "symfony/lock": "3.3.x-dev#1ba6ac9",
+                "vierbergenlars/php-semver": "^3.0"
+            },
+            "suggest": {
+                "google/gax": "Required to support gRPC",
+                "google/proto-client": "Required to support gRPC",
+                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
+            },
+            "bin": [
+                "src/Core/bin/google-cloud-batch"
+            ],
+            "type": "library",
+            "extra": {
+                "component": {
+                    "id": "google-cloud",
+                    "target": "git@github.com:jdpedrie-gcp/google-cloud-php.git",
+                    "path": "src",
+                    "entry": "ServiceBuilder.php"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Google\\Cloud\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "John Pedrie",
+                    "email": "john@pedrie.com"
+                },
+                {
+                    "name": "Dave Supplee",
+                    "email": "dwsupplee@gmail.com"
+                }
+            ],
+            "description": "Google Cloud Client Library",
+            "homepage": "http://github.com/GoogleCloudPlatform/google-cloud-php",
+            "keywords": [
+                "big query",
+                "bigquery",
+                "cloud",
+                "datastore",
+                "gcs",
+                "google",
+                "google api",
+                "google api client",
+                "google apis",
+                "google apis client",
+                "google cloud",
+                "google cloud platform",
+                "language",
+                "natural language",
+                "pub sub",
+                "pubsub",
+                "spanner",
+                "speech",
+                "stackdriver logging",
+                "storage",
+                "translate",
+                "translation",
+                "vision"
+            ],
+            "time": "2017-08-02T20:02:30+00:00"
         },
         {
             "name": "guzzle/guzzle",
@@ -3121,6 +3321,89 @@
                 "jwt"
             ],
             "time": "2016-10-31T20:09:32+00:00"
+        },
+        {
+            "name": "league/flysystem",
+            "version": "1.0.40",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/flysystem.git",
+                "reference": "3828f0b24e2c1918bb362d57a53205d6dc8fde61"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/3828f0b24e2c1918bb362d57a53205d6dc8fde61",
+                "reference": "3828f0b24e2c1918bb362d57a53205d6dc8fde61",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "conflict": {
+                "league/flysystem-sftp": "<1.0.6"
+            },
+            "require-dev": {
+                "ext-fileinfo": "*",
+                "mockery/mockery": "~0.9",
+                "phpspec/phpspec": "^2.2",
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-fileinfo": "Required for MimeType",
+                "league/flysystem-aws-s3-v2": "Allows you to use S3 storage with AWS SDK v2",
+                "league/flysystem-aws-s3-v3": "Allows you to use S3 storage with AWS SDK v3",
+                "league/flysystem-azure": "Allows you to use Windows Azure Blob storage",
+                "league/flysystem-cached-adapter": "Flysystem adapter decorator for metadata caching",
+                "league/flysystem-copy": "Allows you to use Copy.com storage",
+                "league/flysystem-eventable-filesystem": "Allows you to use EventableFilesystem",
+                "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
+                "league/flysystem-sftp": "Allows you to use SFTP server storage via phpseclib",
+                "league/flysystem-webdav": "Allows you to use WebDAV storage",
+                "league/flysystem-ziparchive": "Allows you to use ZipArchive adapter",
+                "spatie/flysystem-dropbox": "Allows you to use Dropbox storage"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Flysystem\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Frank de Jonge",
+                    "email": "info@frenky.net"
+                }
+            ],
+            "description": "Filesystem abstraction: Many filesystems, one API.",
+            "keywords": [
+                "Cloud Files",
+                "WebDAV",
+                "abstraction",
+                "aws",
+                "cloud",
+                "copy.com",
+                "dropbox",
+                "file systems",
+                "files",
+                "filesystem",
+                "filesystems",
+                "ftp",
+                "rackspace",
+                "remote",
+                "s3",
+                "sftp",
+                "storage"
+            ],
+            "time": "2017-04-28T10:15:08+00:00"
         },
         {
             "name": "lexik/jwt-authentication-bundle",
@@ -4624,6 +4907,50 @@
             "time": "2015-07-23T19:00:41+00:00"
         },
         {
+            "name": "rize/uri-template",
+            "version": "0.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rize/UriTemplate.git",
+                "reference": "35cee84ae1c4fe0a6599392d7ca13977ff664bee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rize/UriTemplate/zipball/35cee84ae1c4fe0a6599392d7ca13977ff664bee",
+                "reference": "35cee84ae1c4fe0a6599392d7ca13977ff664bee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Rize\\UriTemplate": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marut K",
+                    "homepage": "http://twitter.com/rezigned"
+                }
+            ],
+            "description": "PHP URI Template (RFC 6570) supports both expansion & extraction",
+            "keywords": [
+                "RFC 6570",
+                "template",
+                "uri"
+            ],
+            "time": "2017-02-21T15:25:22+00:00"
+        },
+        {
             "name": "sensio/distribution-bundle",
             "version": "v4.0.38",
             "target-dir": "Sensio/Bundle/DistributionBundle",
@@ -5240,16 +5567,16 @@
         },
         {
             "name": "sroze/kubernetes-client",
-            "version": "1.7.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/kubernetes-client.git",
-                "reference": "fe619e37de2b60da4af3b2c133fbd79e0666308d"
+                "reference": "124720d35c30f46b5829d4137d7c28726f2308c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/fe619e37de2b60da4af3b2c133fbd79e0666308d",
-                "reference": "fe619e37de2b60da4af3b2c133fbd79e0666308d",
+                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/124720d35c30f46b5829d4137d7c28726f2308c1",
+                "reference": "124720d35c30f46b5829d4137d7c28726f2308c1",
                 "shasum": ""
             },
             "require": {
@@ -5270,33 +5597,34 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-03-26T19:21:16+00:00"
+            "time": "2017-08-18 11:28:30"
         },
         {
             "name": "sroze/log-stream",
-            "version": "0.4.4",
+            "version": "0.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/logstream-client.git",
-                "reference": "770e28b64b364c4d98741be758e29597660b3a8a"
+                "reference": "d22060dcdf01cd746808aeaa9cf085e182589cca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/770e28b64b364c4d98741be758e29597660b3a8a",
-                "reference": "770e28b64b364c4d98741be758e29597660b3a8a",
+                "url": "https://api.github.com/repos/sroze/logstream-client/zipball/d22060dcdf01cd746808aeaa9cf085e182589cca",
+                "reference": "d22060dcdf01cd746808aeaa9cf085e182589cca",
                 "shasum": ""
             },
             "require": {
                 "predis/predis": "~1.0",
-                "symfony/serializer": "^2.8|^3.0"
+                "symfony/serializer": "^2.8|^3.0",
+                "tolerance/tolerance": "^0.4.0"
             },
             "require-dev": {
                 "behat/behat": "^3.0",
                 "behat/symfony2-extension": "^2.1",
-                "phpspec/phpspec": "2.3.x@dev",
-                "symfony/config": "^2.8|^3.0",
-                "symfony/dependency-injection": "^2.8|^3.0",
-                "symfony/http-kernel": "^2.8|^3.0"
+                "phpspec/phpspec": "~4.0",
+                "symfony/config": "^2.8|~3.0",
+                "symfony/dependency-injection": "^2.8|~3.0",
+                "symfony/http-kernel": "^2.8|~3.0"
             },
             "suggest": {
                 "sroze/tolerance": "To handle fault tolerant LogStream"
@@ -5308,7 +5636,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-02-07T16:16:19+00:00"
+            "time": "2017-08-27T13:35:52+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -5433,6 +5761,63 @@
                 "minification"
             ],
             "time": "2016-11-22T11:42:57+00:00"
+        },
+        {
+            "name": "symfony/dotenv",
+            "version": "v3.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dotenv.git",
+                "reference": "f6e82cd0386f303f78aaa58a40a41b247927dfae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dotenv/zipball/f6e82cd0386f303f78aaa58a40a41b247927dfae",
+                "reference": "f6e82cd0386f303f78aaa58a40a41b247927dfae",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "symfony/process": "^3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Dotenv\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Registers environment variables from a .env file",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "dotenv",
+                "env",
+                "environment"
+            ],
+            "time": "2017-07-03T07:16:11+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -5946,66 +6331,6 @@
             "time": "2016-11-14T01:06:16+00:00"
         },
         {
-            "name": "symfony/psr-http-message-bridge",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/psr-http-message-bridge.git",
-                "reference": "66085f246d3893cbdbcec5f5ad15ac60546cf0de"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/psr-http-message-bridge/zipball/66085f246d3893cbdbcec5f5ad15ac60546cf0de",
-                "reference": "66085f246d3893cbdbcec5f5ad15ac60546cf0de",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "psr/http-message": "~1.0",
-                "symfony/http-foundation": "~2.3|~3.0"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7|~3.0"
-            },
-            "suggest": {
-                "psr/http-message-implementation": "To use the HttpFoundation factory",
-                "zendframework/zend-diactoros": "To use the Zend Diactoros factory"
-            },
-            "type": "symfony-bridge",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Bridge\\PsrHttpMessage\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "PSR HTTP message bridge",
-            "homepage": "http://symfony.com",
-            "keywords": [
-                "http",
-                "http-message",
-                "psr-7"
-            ],
-            "time": "2016-09-14T18:37:20+00:00"
-        },
-        {
             "name": "symfony/security-acl",
             "version": "v3.0.0",
             "source": {
@@ -6264,22 +6589,17 @@
         },
         {
             "name": "tolerance/tolerance",
-            "version": "dev-master",
+            "version": "0.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Tolerance/Tolerance.git",
-                "reference": "326efada25a80bfe5ddbfc0f374458867c8dba71"
+                "reference": "19cba680fe8d13478e6ad9821e56026a1433353f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/326efada25a80bfe5ddbfc0f374458867c8dba71",
-                "reference": "326efada25a80bfe5ddbfc0f374458867c8dba71",
+                "url": "https://api.github.com/repos/Tolerance/Tolerance/zipball/19cba680fe8d13478e6ad9821e56026a1433353f",
+                "reference": "19cba680fe8d13478e6ad9821e56026a1433353f",
                 "shasum": ""
-            },
-            "require": {
-                "ramsey/uuid": "^3.1",
-                "symfony/psr-http-message-bridge": "^1.0",
-                "zendframework/zend-diactoros": "^1.3"
             },
             "replace": {
                 "sroze/tolerance": "self.version"
@@ -6312,7 +6632,7 @@
                 "MIT"
             ],
             "description": "Fault tolerance library and micro-services helpers",
-            "time": "2017-03-22 17:23:15"
+            "time": "2017-08-27T14:29:49+00:00"
         },
         {
             "name": "twig/twig",
@@ -6517,56 +6837,6 @@
                 "zf2"
             ],
             "time": "2016-10-24T13:23:32+00:00"
-        },
-        {
-            "name": "zendframework/zend-diactoros",
-            "version": "1.3.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/zendframework/zend-diactoros.git",
-                "reference": "83e8d98b9915de76c659ce27d683c02a0f99fa90"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/83e8d98b9915de76c659ce27d683c02a0f99fa90",
-                "reference": "83e8d98b9915de76c659ce27d683c02a0f99fa90",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.4 || ^7.0",
-                "psr/http-message": "~1.0"
-            },
-            "provide": {
-                "psr/http-message-implementation": "~1.0.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.6 || ^5.5",
-                "zendframework/zend-coding-standard": "~1.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.3-dev",
-                    "dev-develop": "1.4-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Zend\\Diactoros\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "description": "PSR HTTP Message implementations",
-            "homepage": "https://github.com/zendframework/zend-diactoros",
-            "keywords": [
-                "http",
-                "psr",
-                "psr-7"
-            ],
-            "time": "2017-01-23T04:53:24+00:00"
         },
         {
             "name": "zendframework/zend-eventmanager",
@@ -8268,6 +8538,66 @@
             "time": "2015-03-17T06:36:52+00:00"
         },
         {
+            "name": "symfony/psr-http-message-bridge",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/psr-http-message-bridge.git",
+                "reference": "66085f246d3893cbdbcec5f5ad15ac60546cf0de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/psr-http-message-bridge/zipball/66085f246d3893cbdbcec5f5ad15ac60546cf0de",
+                "reference": "66085f246d3893cbdbcec5f5ad15ac60546cf0de",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "psr/http-message": "~1.0",
+                "symfony/http-foundation": "~2.3|~3.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7|~3.0"
+            },
+            "suggest": {
+                "psr/http-message-implementation": "To use the HttpFoundation factory",
+                "zendframework/zend-diactoros": "To use the Zend Diactoros factory"
+            },
+            "type": "symfony-bridge",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Bridge\\PsrHttpMessage\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "PSR HTTP message bridge",
+            "homepage": "http://symfony.com",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr-7"
+            ],
+            "time": "2016-09-14T18:37:20+00:00"
+        },
+        {
             "name": "webmozart/assert",
             "version": "1.2.0",
             "source": {
@@ -8316,14 +8646,66 @@
                 "validate"
             ],
             "time": "2016-11-23T20:04:58+00:00"
+        },
+        {
+            "name": "zendframework/zend-diactoros",
+            "version": "1.3.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-diactoros.git",
+                "reference": "83e8d98b9915de76c659ce27d683c02a0f99fa90"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-diactoros/zipball/83e8d98b9915de76c659ce27d683c02a0f99fa90",
+                "reference": "83e8d98b9915de76c659ce27d683c02a0f99fa90",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 || ^7.0",
+                "psr/http-message": "~1.0"
+            },
+            "provide": {
+                "psr/http-message-implementation": "~1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.6 || ^5.5",
+                "zendframework/zend-coding-standard": "~1.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3-dev",
+                    "dev-develop": "1.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Zend\\Diactoros\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "description": "PSR HTTP Message implementations",
+            "homepage": "https://github.com/zendframework/zend-diactoros",
+            "keywords": [
+                "http",
+                "psr",
+                "psr-7"
+            ],
+            "time": "2017-01-23T04:53:24+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "tolerance/tolerance": 20,
-        "continuous-pipe/worker-bundle": 20
+        "continuous-pipe/worker-bundle": 20,
+        "sroze/kubernetes-client": 20,
+        "continuous-pipe/message": 20,
+        "continuous-pipe/flex": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

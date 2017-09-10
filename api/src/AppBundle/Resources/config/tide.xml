@@ -14,6 +14,7 @@
         <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="logger"/>
         </service>
 
         <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />
@@ -97,6 +98,7 @@
         <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\DelegatesToSupportingTaskRunner">
             <argument type="collection">
                 <argument type="service" id="river.task.manual_approval.runner" />
+                <argument type="service" id="river.task.delete.runner" />
                 <argument type="service" id="river.task.build_factory" />
                 <argument type="service" id="river.tide.task_runner.start_method" />
                 <argument type="service" id="river.task.deploy_runner" />
@@ -172,14 +174,14 @@
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
         </service>
 
-        <service id="river.view.storage.firebase_client" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.predis_cached"/>
+        <service id="river.view.storage.firebase_client.main" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
             <argument type="service" id="river.view.storage.firebase.database_factory" />
         </service>
 
         <service id="river.view.storage.firebase_client.predis_cached"
-                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient"
-                 decorates="river.view.storage.firebase_client">
-            <argument type="service" id="river.view.storage.firebase_client.predis_cached.inner" />
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient">
+            <argument type="service" id="river.view.storage.firebase_client.main" />
             <argument type="service" id="river.predis_cache" />
             <argument type="service" id="logger" />
         </service>
@@ -195,6 +197,21 @@
                  runner="tolerance.operation_runners.firebase" />
         </service>
 
+        <!-- Firebase as asynchronous -->
+        <service id="river.view.storage.firebase_client.asychronous.calls_to_commands"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\TransformCallsToCommandsClient"
+                 decorates="river.view.storage.firebase_client.main">
+            <argument type="service" id="command_bus" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.asychronous.handle_commands" class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Handler\DoFirebaseUpdates">
+            <argument type="service" id="river.view.storage.firebase_client.asychronous.calls_to_commands.inner" />
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Command\UpdateFirebaseCommand" />
+        </service>
+
+        <!-- View storage -->
         <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">
             <argument type="collection">
                 <argument type="service" id="river.view.tide_repository" />
@@ -203,7 +220,6 @@
         </service>
 
         <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
-            <argument type="service" id="river.view.storage" />
             <argument type="service" id="service_container" />
 
             <tag name="event_bus_middleware" />
@@ -218,7 +234,7 @@
         <!-- Concurrency -->
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="river.queue.delayed_command_bus" />
+            <argument type="service" id="command_bus" />
             <argument>%retry_interval%</argument>
         </service>
 
@@ -252,8 +268,10 @@
         </service>
 
         <service id="predis_client" class="Predis\Client">
-            <argument>redis://%redis_host%</argument>
+            <factory class="ContinuousPipe\River\Cache\Redis\RedisClientFactory" method="create"/>
+            <argument>%redis_host%</argument>
         </service>
+
         <service id="river.cache" class="Doctrine\Common\Cache\PredisCache">
             <argument type="service" id="predis_client" />
         </service>

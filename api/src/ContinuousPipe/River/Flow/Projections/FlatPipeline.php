@@ -10,16 +10,19 @@ use JMS\Serializer\Annotation as JMS;
 class FlatPipeline
 {
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("uuid")
      */
     private $uuid;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      */
     private $name;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("ContinuousPipe\River\Flow\Projections\FlatFlow")
      */
     private $flow;

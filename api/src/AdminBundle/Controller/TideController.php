@@ -2,8 +2,10 @@
 
 namespace AdminBundle\Controller;
 
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceCalculator;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Managed\Resources\ResourceUsageResolver;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
@@ -40,17 +42,21 @@ class TideController
     private $uiUrl;
 
     /**
-     * @param TideRepository     $tideRepository
-     * @param EventStore         $eventStore
+     * @param TideRepository $tideRepository
+     * @param EventStore $eventStore
      * @param PaginatorInterface $paginator
-     * @param string             $uiUrl
+     * @param string $uiUrl
      */
-    public function __construct(TideRepository $tideRepository, EventStore $eventStore, PaginatorInterface $paginator, string $uiUrl)
-    {
+    public function __construct(
+        TideRepository $tideRepository,
+        EventStore $eventStore,
+        PaginatorInterface $paginator,
+        string $uiUrl
+    ) {
         $this->tideRepository = $tideRepository;
         $this->eventStore = $eventStore;
-        $this->uiUrl = $uiUrl;
         $this->paginator = $paginator;
+        $this->uiUrl = $uiUrl;
     }
 
     /**

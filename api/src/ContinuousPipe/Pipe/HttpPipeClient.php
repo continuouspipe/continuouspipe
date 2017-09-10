@@ -9,11 +9,13 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
 use JMS\Serializer\Serializer;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class HttpPipeClient implements Client
 {
@@ -56,15 +58,20 @@ class HttpPipeClient implements Client
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
-        $response = $this->client->request('post', $this->baseUrl.'/deployments', [
-            'body' => $this->serializer->serialize($deploymentRequest, 'json'),
-            'headers' => $this->getRequestHeaders($user),
-        ]);
+        try {
+            $response = $this->client->request('post', $this->baseUrl . '/deployments', [
+                'body' => $this->serializer->serialize($deploymentRequest, 'json'),
+                'headers' => $this->getRequestHeadersForUser($user),
+            ]);
+        } catch (RequestException $e) {
+            throw new PipeClientException('Something went wrong while starting the deployment: '.$e->getMessage(), $e->getCode(), $e);
+        }
 
-        $contents = $this->getResponseContents($response);
-        $deployment = $this->serializer->deserialize($contents, Deployment::class, 'json');
-
-        return $deployment;
+        try {
+            return $this->serializer->deserialize($this->getResponseContents($response), Deployment::class, 'json');
+        } catch (\InvalidArgumentException $e) {
+            throw new PipeClientException('Response from pipe is not understandable: '.$e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -79,15 +86,47 @@ class HttpPipeClient implements Client
             $target->getEnvironmentName()
         );
 
-        $this->client->request('delete', $url, [
-            'headers' => $this->getRequestHeaders($authenticatedUser),
-        ]);
+        try {
+            $this->client->request('delete', $url, [
+                'headers' => $this->getRequestHeadersForUser($authenticatedUser),
+            ]);
+        } catch (RequestException $e) {
+            throw new PipeClientException('Something went wrong while deleting environment: '.$e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        $url = sprintf(
+            $this->baseUrl.'/teams/%s/clusters/%s/namespaces/%s/pods/%s',
+            $team->getSlug(),
+            $clusterIdentifier,
+            $namespace,
+            $podName
+        );
+
+        try {
+            $this->client->request('delete', $url, [
+                'headers' => $this->getRequestHeadersForUser($authenticatedUser),
+            ]);
+        } catch (RequestException $e) {
+            if (null !== ($response = $e->getResponse())) {
+                if ($response->getStatusCode() == 404) {
+                    throw new PodNotFound(sprintf('Pod %s not found', $podName));
+                }
+            }
+
+            throw new PipeClientException('Something went wrong while deleting the pod: '.$e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($clusterIdentifier, Team $team)
     {
         $url = sprintf(
             $this->baseUrl.'/teams/%s/clusters/%s/environments',
@@ -95,13 +134,13 @@ class HttpPipeClient implements Client
             $clusterIdentifier
         );
 
-        return $this->requestEnvironmentList($authenticatedUser, $url);
+        return $this->requestEnvironmentList($url);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels)
     {
         $queryFilters = [
             'labels' => $labels,
@@ -110,21 +149,27 @@ class HttpPipeClient implements Client
         $url = sprintf($this->baseUrl.'/teams/%s/clusters/%s/environments', $team->getSlug(), $clusterIdentifier);
         $url .= '?'.http_build_query($queryFilters);
 
-        return $this->requestEnvironmentList($authenticatedUser, $url);
+        return $this->requestEnvironmentList($url);
     }
 
     /**
-     * @param User $user
+     * @param User|UserInterface $user
      *
      * @return array
      */
-    private function getRequestHeaders(User $user)
+    private function getRequestHeadersForUser($user)
     {
-        $token = $this->jwtManager->create(new SecurityUser($user));
+        if ($user instanceof User) {
+            $user = new SecurityUser($user);
+        }
+
+        if (!$user instanceof UserInterface) {
+            throw new \InvalidArgumentException('Expected to have a user object');
+        }
 
         return [
             'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$token,
+            'Authorization' => 'Bearer '.$this->jwtManager->create($user),
         ];
     }
 
@@ -148,13 +193,14 @@ class HttpPipeClient implements Client
      * @param string $url
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Array of Environment objects.
      */
-    private function requestEnvironmentList(User $user, $url)
+    private function requestEnvironmentList($url)
     {
         $httpPromise = $this->client->requestAsync('get', $url, [
-            'headers' => $this->getRequestHeaders($user),
+            'headers' => $this->getRequestHeadersForUser(new \Symfony\Component\Security\Core\User\User('system:river', null)),
         ]);
 
         $environmentPromise = $httpPromise->then(
@@ -165,11 +211,13 @@ class HttpPipeClient implements Client
                 return $environments;
             },
             function (RequestException $e) {
-                if ($e->getResponse()->getStatusCode() == 404) {
-                    throw new ClusterNotFound('Unable to get the environment list');
+                if (null !== ($response = $e->getResponse())) {
+                    if ($response->getStatusCode() == 404) {
+                        throw new ClusterNotFound('Unable to get the environment list');
+                    }
                 }
 
-                throw $e;
+                throw new PipeClientException($e->getMessage(), $e->getCode(), $e);
             }
         );
 

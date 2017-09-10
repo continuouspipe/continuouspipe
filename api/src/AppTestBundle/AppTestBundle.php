@@ -16,7 +16,6 @@ class AppTestBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new RemoveAutomaticTideStartCompilerPass());
-        $container->addCompilerPass(new ReplaceAsynchronousHandlerWithRegularOnesPass());
         $container->addCompilerPass(new ReplaceAuthenticatorCache());
     }
 }

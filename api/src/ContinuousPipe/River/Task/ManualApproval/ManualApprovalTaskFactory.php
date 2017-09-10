@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Task\ManualApproval;
 
 use ContinuousPipe\River\EventCollection;
-use ContinuousPipe\River\Task\ManualApproval\Event\TaskCreated;
+use ContinuousPipe\River\Task\TaskCreated;
 use ContinuousPipe\River\Task\TaskContext;
 use ContinuousPipe\River\Task\TaskFactory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;

@@ -3,7 +3,10 @@
 namespace ContinuousPipe\River\EventStore;
 
 use EventStore\EventStore as EventStoreClient;
+use EventStore\Http\GuzzleHttpClient;
 use EventStore\WritableEvent;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\CurlMultiHandler;
 use JMS\Serializer\SerializerInterface;
 
 class HttpEventStoreAdapter implements EventStore
@@ -54,7 +57,14 @@ class HttpEventStoreAdapter implements EventStore
     private function client()
     {
         if (null === $this->client) {
-            $this->client = new EventStoreClient('http://'.$this->eventStoreHost.':2113');
+            $this->client = new EventStoreClient('http://'.$this->eventStoreHost.':2113', new GuzzleHttpClient(
+                new Client([
+                    'connect_timeout' => 1,
+                    'read_timeout' => 5,
+                    'timeout' => 10,
+                    'handler' => new CurlMultiHandler(),
+                ])
+            ));
         }
 
         return $this->client;

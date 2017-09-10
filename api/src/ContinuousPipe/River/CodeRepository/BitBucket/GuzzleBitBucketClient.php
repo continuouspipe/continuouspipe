@@ -3,6 +3,8 @@
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
 use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest;
+use ContinuousPipe\River\CodeRepository\Branch;
+use ContinuousPipe\River\CodeRepository\Commit;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use JMS\Serializer\SerializerInterface;
@@ -49,6 +51,7 @@ class GuzzleBitBucketClient implements BitBucketClient
             $response = $this->client->request('GET', '/1.0/repositories/'.$codeRepository->getApiSlug().'/src/'.$reference.'/'.$filePath);
         } catch (RequestException $e) {
             $message = $e->getMessage();
+
             if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
                 $message = 'The file "'.$filePath.'" is not found in "'.$reference.'" of the repository';
             }
@@ -159,5 +162,58 @@ class GuzzleBitBucketClient implements BitBucketClient
         }
 
         return $pullRequests;
+    }
+
+    public function getBranches(BitBucketCodeRepository $codeRepository)
+    {
+        try {
+            return $this->readBranches(
+                '/2.0/repositories/' . $codeRepository->getApiSlug() . '/refs/branches',
+                $codeRepository->getAddress()
+            );
+        } catch (RequestException $e) {
+            $message = $e->getMessage();
+            if ($e->getResponse() && $e->getResponse()->getStatusCode() == 404) {
+                $message = 'Branches not found for the repository';
+            }
+
+            throw new BitBucketClientException($message, $e->getCode(), $e);
+        }
+    }
+
+    private function readBranches(string $link, string $address)
+    {
+        try {
+            $response = $this->client->request('GET', $link);
+        } catch (RequestException $e) {
+            throw new BitBucketClientException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        $json = $this->readJson($response);
+
+        $branches = array_map(
+            function (array $b) use ($address) {
+                $branch = Branch::bitbucket($b['name'], $address);
+
+                if (isset($b['target']['hash']) && isset($b['target']['links']['html']['href'])) {
+                    return $branch->withLatestCommit(
+                        new Commit(
+                            $b['target']['hash'],
+                            $b['target']['links']['html']['href'],
+                            isset($b['target']['date']) ? new \DateTime($b['target']['date']) : null
+                        )
+                    );
+                }
+
+                return $branch;
+            },
+            $json['values']
+        );
+
+        if (isset($json['next'])) {
+            return array_merge($branches, $this->readBranches($json['next'], $address));
+        }
+
+        return $branches;
     }
 }

@@ -4,6 +4,7 @@ namespace AdminBundle\Controller;
 
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
 use ContinuousPipe\River\Flow\Migrations\ToEventSourced\Migrator;
+use ContinuousPipe\River\Migrations\GetEventStoreToSQLStore\FlowEventsMigrator;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -27,7 +28,7 @@ class MigrationsController
     /**
      * @var Migrator
      */
-    private $migrator;
+    private $toEventsMigrator;
 
     /**
      * @var UrlGeneratorInterface
@@ -38,23 +39,29 @@ class MigrationsController
      * @var MessageBus
      */
     private $eventBus;
+    /**
+     * @var FlowEventsMigrator
+     */
+    private $flowEventsMigrator;
 
     /**
      * @param Session $session
-     * @param Migrator $migrator
+     * @param Migrator $toEventsMigrator
      * @param UrlGeneratorInterface $urlGenerator
      * @param MessageBus $eventBus
      */
     public function __construct(
         Session $session,
-        Migrator $migrator,
+        Migrator $toEventsMigrator,
         UrlGeneratorInterface $urlGenerator,
-        MessageBus $eventBus
+        MessageBus $eventBus,
+        FlowEventsMigrator $flowEventsMigrator
     ) {
         $this->session = $session;
-        $this->migrator = $migrator;
+        $this->toEventsMigrator = $toEventsMigrator;
         $this->urlGenerator = $urlGenerator;
         $this->eventBus = $eventBus;
+        $this->flowEventsMigrator = $flowEventsMigrator;
     }
 
     /**
@@ -72,9 +79,13 @@ class MigrationsController
     public function migrateAction(Request $request, string $migration)
     {
         if ($migration == 'to-event-sourced') {
-            $count = $this->migrator->migrate();
+            $count = $this->toEventsMigrator->migrate();
 
             $this->session->getFlashBag()->add('success', 'Migration successful. Migrated ' . $count . ' flows!');
+        } elseif ($migration == 'geteventstore-to-sql') {
+            $count = $this->flowEventsMigrator->migrate();
+
+            $this->session->getFlashBag()->add('success', 'Migration successful. Migrated ' . $count . ' events!');
         } elseif ($migration == 'recover-flow') {
             $this->eventBus->handle(new FlowRecovered(
                 Uuid::fromString($request->request->get('_uuid'))

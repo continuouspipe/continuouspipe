@@ -28,7 +28,6 @@ class AppExtension extends Extension
         $loader->load('events.xml');
         $loader->load('tasks.xml');
         $loader->load('notifications.xml');
-        $loader->load('queue.xml');
         $loader->load('pipeline.xml');
         $loader->load('alerts.xml');
         $loader->load('security.xml');
@@ -46,11 +45,18 @@ class AppExtension extends Extension
         $loader->load('run/logging.xml');
         $loader->load('wait/task.xml');
         $loader->load('wait/logging.xml');
-        $loader->load('manual-approval.xml');
+        $loader->load('tasks/manual-approval.xml');
+        $loader->load('tasks/delete.xml');
         $loader->load('analytics/keen.xml');
+        $loader->load('analytics/logitio.xml');
         $loader->load('recover/timed-out-tides.xml');
         $loader->load('recover/cancel.xml');
         $loader->load('github/integration.xml');
         $loader->load('command.xml');
+        $loader->load('branches.xml');
+        $loader->load('flex.xml');
+        $loader->load('quayio.xml');
+        $loader->load('managed.xml');
+        $loader->load('cluster-policies.xml');
     }
 }

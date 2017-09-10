@@ -15,7 +15,7 @@ pipelines:
 variables:
     - name: BUILDER_URL
       condition: code_reference.branch == 'production'
-      value: http://eu--west1--b-builder-continuouspipe-io-arbp8o5f7a1t.runscope.net
+      value: https://builder.continuouspipe.io
     - name: AUTHENTICATOR_URL
       condition: code_reference.branch == 'production'
       value: https://authenticator.continuouspipe.io
@@ -27,14 +27,23 @@ variables:
       value: https://ui.continuouspipe.io
     - name: RIVER_HOST
       condition: code_reference.branch == 'production'
-      value: river-continuouspipe-io-8h5eecqzu4bp.runscope.net
+      value: river.continuouspipe.io
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
+    - name: REDIS_HOST
+      condition: code_reference.branch == 'production'
+      value: redis-sentinel-0.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-production.svc.cluster.local:26379
+    - name: K8S_WATCHER_URL
+      condition: code_reference.branch == 'production'
+      value: http://api.k8s-watcher-production.svc.cluster.local
+    - name: LOGSTREAM_URL
+      condition: code_reference.branch == 'production'
+      value: https://api.logstream-production.svc.cluster.local
 
     - name: BUILDER_URL
       condition: code_reference.branch != 'production'
-      value: http://eu--west1--b-builder--staging-continuouspipe-io-arbp8o5f7a1t.runscope.net
+      value: https://builder-staging.continuouspipe.io
     - name: AUTHENTICATOR_URL
       condition: code_reference.branch != 'production'
       value: https://authenticator-staging.continuouspipe.io
@@ -46,10 +55,19 @@ variables:
       value: https://ui-staging.continuouspipe.io
     - name: RIVER_HOST
       condition: code_reference.branch != 'production'
-      value: river--staging-continuouspipe-io-8h5eecqzu4bp.runscope.net
+      value: river-staging.continuouspipe.io
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch != 'production'
       value: rabbitmq.stack-master.svc.cluster.local
+    - name: REDIS_HOST
+      condition: code_reference.branch != 'production'
+      value: redis-sentinel-0.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-master.svc.cluster.local:26379
+    - name: K8S_WATCHER_URL
+      condition: code_reference.branch != 'production'
+      value: http://api.k8s-watcher-master.svc.cluster.local
+    - name: LOGSTREAM_URL
+      condition: code_reference.branch != 'production'
+      value: https://api.logstream-master.svc.cluster.local
 
 tasks:
     images:
@@ -83,22 +101,21 @@ tasks:
                 api:
                     endpoints:
                         -
-                            name: https
-                            type: NodePort
+                            name: ingress
+                            ingress:
+                                class: nginx
+                                host: ${RIVER_HOST}
                             ssl_certificates:
-                                -
-                                    name: continuouspipeio
-                                    cert: ${WILDCARD_SSL_CERT}
-                                    key: ${WILDCARD_SSL_KEY}
+                                - name: auto
+                                  cert: automatic
+                                  key: automatic
 
                     specification:
                         environment_variables: &ENV
                             - name: AUTHENTICATOR_URL
                               value: ${AUTHENTICATOR_URL}
                             - name: LOGSTREAM_URL
-                              value: https://api.logstream.continuouspipe.io
-                            - name: LOGSTREAM_FRONTEND_URL
-                              value: http://logstream.continuouspipe.io
+                              value: ${LOGSTREAM_URL}
                             - name: BUILDER_URL
                               value: ${BUILDER_URL}
                             - name: PIPE_URL
@@ -132,7 +149,7 @@ tasks:
                             - name: HOSTED_GRAPHITE_API_KEY
                               value: ${HOSTED_GRAPHITE_API_KEY}
                             - name: K8S_WATCHER_URL
-                              value: http://api.k8s-watcher-master.svc.cluster.local
+                              value: ${K8S_WATCHER_URL}
                             - name: K8S_HEALTH_CHECKER_URL
                               value: http://health-checker.chc-master.svc.cluster.local
                             - name: ZIPKIN_BASE_URL
@@ -145,6 +162,38 @@ tasks:
                               value: ${HOSTED_GRAPHITE_API_KEY}
                             - name: GITHUB_SECRET
                               value: ${GITHUB_SECRET}
+                            - name: GITHUB_INTEGRATION_ID
+                              value: ${GITHUB_INTEGRATION_ID}
+                            - name: GITHUB_INTEGRATION_KEY_NAME
+                              value: ${GITHUB_INTEGRATION_KEY_NAME}
+                            - name: GOOGLE_PUB_SUB_MAIN_TOPIC
+                              value: ${GOOGLE_PUB_SUB_TOPIC}
+                            - name: GOOGLE_PUB_SUB_MAIN_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_SUBSCRIPTION_NAME}
+                            - name: GOOGLE_PUB_SUB_OPERATIONS_TOPIC
+                              value: ${GOOGLE_PUB_SUB_OPERATIONS_TOPIC}
+                            - name: GOOGLE_PUB_SUB_OPERATIONS_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_OPERATIONS_SUBSCRIPTION_NAME}
+                            - name: GOOGLE_PUB_SUB_DELAYED_TOPIC
+                              value: ${GOOGLE_PUB_SUB_DELAYED_TOPIC}
+                            - name: GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME}
+                            - name: LOGITIO_API_KEY
+                              value: ${LOGITIO_API_KEY}
+                            - name: FLEX_CLUSTER_ADDRESS
+                              value: ${FLEX_CLUSTER_ADDRESS}
+                            - name: FLEX_QUAY_IO_ACCESS_TOKEN
+                              value: ${FLEX_QUAY_IO_ACCESS_TOKEN}
+                            - name: FLEX_QUAY_IO_ORGANISATION
+                              value: ${FLEX_QUAY_IO_ORGANISATION}
+                            - name: FLEX_CLOUD_FLARE_ZONE
+                              value: ${FLEX_CLOUD_FLARE_ZONE}
+                            - name: FLEX_CLOUD_FLARE_EMAIL
+                              value: ${FLEX_CLOUD_FLARE_EMAIL}
+                            - name: FLEX_CLOUD_FLARE_API_KEY
+                              value: ${FLEX_CLOUD_FLARE_API_KEY}
+                            - name: REDIS_HOST
+                              value: ${REDIS_HOST}
 
                     deployment_strategy:
                         readiness_probe:
@@ -169,6 +218,51 @@ tasks:
                             1002:
                               name: START_WORKER
                               value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: main
+
+                worker_operations:
+                    specification:
+                        accessibility:
+                            from_cluster: false
+                        source:
+                            from_service: api
+                        environment_variables:
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: operations
+
+                worker_delayed:
+                    specification:
+                        accessibility:
+                            from_cluster: false
+                        source:
+                            from_service: api
+                        environment_variables:
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: delayed
 
                 tideways:
                     specification:
@@ -176,21 +270,6 @@ tasks:
                             limits:
                                 cpu: 50m
                                 memory: 100Mi
-
-                redis:
-                    deployment_strategy:
-                        readiness_probe:
-                            type: tcp
-                            port: 6379
-
-                    specification:
-                        resources:
-                            requests:
-                                cpu: 50m
-                                memory: 100Mi
-                            limits:
-                                cpu: 250m
-                                memory: 250Mi
 
                 cron:
                     specification:
@@ -211,28 +290,6 @@ tasks:
 
                         accessibility:
                             from_cluster: false
-
-                eventstore:
-                    specification:
-                        volumes:
-                            - type: persistent
-                              name: eventstore-volume
-                              capacity: 5Gi
-                              storage_class: default
-
-                        volume_mounts:
-                            - name: eventstore-volume
-                              mount_path: /var/lib/eventstore
-
-                        resources:
-                            requests:
-                                cpu: 50m
-                                memory: 150Mi
-
-                    deployment_strategy:
-                        readiness_probe:
-                            type: tcp
-                            port: 2113
 
     migrations:
         run:

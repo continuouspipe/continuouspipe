@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\Client\ComponentStatus;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentFailed;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
@@ -16,6 +17,7 @@ use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use ContinuousPipe\River\Task\EventDrivenTask;
 use ContinuousPipe\River\Task\TaskQueued;
 use ContinuousPipe\River\Tide\Configuration\WildcardObject;
+use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
 use Ramsey\Uuid\Uuid;
@@ -79,20 +81,28 @@ class DeployTask extends EventDrivenTask
 
     public function startDeployment(Tide $tide, DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient)
     {
-        $logger = $this->loggerFactory->from($this->context->getLog());
-        $log = $logger->child(new Text('Deploying environment'))->getLog();
+        $tideLogger = $this->loggerFactory->from($this->context->getLog());
+        $taskLogger = $tideLogger->child(new Text('Deploying environment'));
+        $log = $taskLogger->getLog();
 
         $this->context->setTaskLog($log);
         $this->events->raiseAndApply(TaskQueued::fromContext($this->context));
 
-        $deploymentRequest = $deploymentRequestFactory->create(
-            $tide,
-            new TaskDetails($this->context->getTaskId(), $log->getId()),
-            $this->configuration
-        );
+        try {
+            $deploymentRequest = $deploymentRequestFactory->create(
+                $tide,
+                new TaskDetails($this->context->getTaskId(), $log->getId()),
+                $this->configuration
+            );
+        } catch (DeploymentRequestException $e) {
+            $taskLogger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+
+            throw $e;
+        }
 
         try {
             $deployment = $pipeClient->start($deploymentRequest, $tide->getUser());
+
             $this->events->raiseAndApply(new DeploymentStarted(
                 $this->context->getTideUuid(),
                 $deployment,
@@ -105,7 +115,7 @@ class DeployTask extends EventDrivenTask
                 $this->getIdentifier()
             ));
 
-            $logger->child(new Text(sprintf(
+            $tideLogger->child(new Text(sprintf(
                 'Something went wrong when starting the deployment: %s',
                 $e->getMessage()
             )));

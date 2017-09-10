@@ -14,6 +14,8 @@ interface Client
      * @param DeploymentRequest $deploymentRequest
      * @param User              $user
      *
+     * @throws PipeClientException
+     *
      * @return Deployment
      */
     public function start(DeploymentRequest $deploymentRequest, User $user);
@@ -22,31 +24,46 @@ interface Client
      * @param DeploymentRequest\Target $target
      * @param Team                     $team
      * @param User                     $authenticatedUser
+     *
+     * @throws PipeClientException
      */
     public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser);
+
+    /**
+     * Delete a Pod.
+     *
+     * @param Team $team
+     * @param User $authenticatedUser
+     * @param string $clusterIdentifier
+     * @param string $namespace
+     * @param string $podName
+     *
+     * @throws PipeClientException
+     */
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName);
 
     /**
      * List environments for that given flow.
      *
      * @param string $clusterIdentifier
      * @param Team   $team
-     * @param User   $authenticatedUser
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser);
+    public function getEnvironments($clusterIdentifier, Team $team);
 
     /**
      * @param string $clusterIdentifier
      * @param Team   $team
-     * @param User   $authenticatedUser
      * @param array  $labels
      *
      * @throws ClusterNotFound
+     * @throws PipeClientException
      *
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels);
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels);
 }

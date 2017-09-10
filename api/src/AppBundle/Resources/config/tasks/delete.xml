@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.task.delete_factory" class="ContinuousPipe\River\Task\Delete\DeleteTaskFactory">
+            <tag name="river.task_factory" task="delete" />
+        </service>
+
+        <service id="river.task.delete.runner" class="ContinuousPipe\River\Task\Delete\DeleteRunner">
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.flow.environment_client" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy"/>
+            <argument type="service" id="river.pipe.deployment_request.target_cluster_resolver"/>
+        </service>
+    </services>
+</container>

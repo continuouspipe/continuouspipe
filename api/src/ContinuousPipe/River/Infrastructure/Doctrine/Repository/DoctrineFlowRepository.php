@@ -12,6 +12,7 @@ use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\UserRepository;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineFlowRepository implements FlowRepository
 {
@@ -100,7 +101,7 @@ class DoctrineFlowRepository implements FlowRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         $dto = $this->getDtoByUuid($uuid);
 
@@ -135,13 +136,13 @@ class DoctrineFlowRepository implements FlowRepository
     }
 
     /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @return FlowDto
      *
      * @throws FlowNotFound
      */
-    public function getDtoByUuid(Uuid $uuid)
+    public function getDtoByUuid(UuidInterface $uuid)
     {
         $dto = $this->getEntityRepository()->find((string) $uuid);
         if (null === $dto) {

@@ -27,10 +27,10 @@
         "nelmio/cors-bundle": "^1.4",
         "doctrine/doctrine-migrations-bundle": "^1.0",
         "raven/raven": "^0.12.1",
-        "sroze/log-stream": "~0.4.4",
-        "tolerance/tolerance": "dev-master",
-        "continuous-pipe/model": "~2.4.0",
-        "continuous-pipe/security": "~2.7.0",
+        "sroze/log-stream": "~0.4.5",
+        "tolerance/tolerance": "^0.4.0",
+        "continuous-pipe/model": "~2.4.6",
+        "continuous-pipe/security": "~2.9.5",
         "simple-bus/rabbitmq-bundle-bridge": "~3.1.0",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",
@@ -52,11 +52,15 @@
         "adlogix/guzzle-atlassian-connect-middleware": "~1.1.2",
         "twig/twig": "^1.12",
         "continuous-pipe/worker-bundle": "dev-master",
-        "google/apiclient": "^2.1",
+        "google/apiclient": "^2.1.3",
         "lcobucci/jwt": "^3.2",
         "continuous-pipe/platform-bundle": "~1.0.0",
-        "continuous-pipe/events": "~0.1.0",
-        "sroze/kubernetes-client": "~1.7.1"
+        "continuous-pipe/events": "~0.2.0",
+        "sroze/kubernetes-client": "dev-master",
+        "continuous-pipe/message": "dev-feature/CD-595-add-a-router-for-messages",
+        "symfony/dotenv": "^3.3",
+        "continuous-pipe/flex": "dev-master",
+        "google/cloud": "^0.36.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
@@ -105,7 +109,6 @@
                 "builder_base_url": "BUILDER_URL",
                 "pipe_base_url": "PIPE_URL",
                 "logstream_url": "LOGSTREAM_URL",
-                "logstream_frontend_url": "LOGSTREAM_FRONTEND_URL",
                 "keen_project_id": "KEEN_PROJECT_ID",
                 "keen_write_key": "KEEN_WRITE_KEY",
                 "redis_host": "REDIS_HOST",
@@ -118,9 +121,24 @@
                 "bitbucket_oauth_key": "BITBUCKET_OAUTH_KEY",
                 "bitbucket_oauth_secret": "BITBUCKET_OAUTH_SECRET",
                 "github_secret": "GITHUB_SECRET",
+                "github_integration.id": "GITHUB_INTEGRATION_ID",
+                "github_integration_key_name": "GITHUB_INTEGRATION_KEY_NAME",
                 "authenticator_api_key": "AUTHENTICATOR_API_KEY",
                 "admin_password": "ADMIN_PASSWORD",
-                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY"
+                "hosted_graphite_api_key": "HOSTED_GRAPHITE_API_KEY",
+                "google_pub_sub_main_topic": "GOOGLE_PUB_SUB_MAIN_TOPIC",
+                "google_pub_sub_main_subscription_name": "GOOGLE_PUB_SUB_MAIN_SUBSCRIPTION_NAME",
+                "google_pub_sub_operations_topic": "GOOGLE_PUB_SUB_OPERATIONS_TOPIC",
+                "google_pub_sub_operations_subscription_name": "GOOGLE_PUB_SUB_OPERATIONS_SUBSCRIPTION_NAME",
+                "google_pub_sub_delayed_topic": "GOOGLE_PUB_SUB_DELAYED_TOPIC",
+                "google_pub_sub_delayed_subscription_name": "GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME",
+                "logitio_api_key": "LOGITIO_API_KEY",
+                "flex_cluster_address": "FLEX_CLUSTER_ADDRESS",
+                "flex_quay_io_access_token": "FLEX_QUAY_IO_ACCESS_TOKEN",
+                "flex_quay_io_organisation": "FLEX_QUAY_IO_ORGANISATION",
+                "flex_cloud_flare_zone": "FLEX_CLOUD_FLARE_ZONE",
+                "flex_cloud_flare_email": "FLEX_CLOUD_FLARE_EMAIL",
+                "flex_cloud_flare_api_key": "FLEX_CLOUD_FLARE_API_KEY"
             }
         }]
     },
@@ -143,7 +161,15 @@
         },
         {
             "type": "vcs",
+            "url": "https://github.com/continuouspipe/message"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/continuouspipe/events"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/continuouspipe/flex"
         }
     ]
 }

@@ -4,7 +4,9 @@ namespace ContinuousPipe\River\CodeRepository\DockerCompose;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
 use ContinuousPipe\DockerCompose\Parser\ProjectParser;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
@@ -37,36 +39,23 @@ class RepositoryComponentsResolver implements ComponentsResolver
      */
     public function resolve(FlatFlow $flow, CodeReference $codeReference)
     {
-        try {
-            return $this->resolveWithFilesystem(
-                $this->fileSystemResolver->getFileSystem($flow, $codeReference),
-                $codeReference
-            );
-        } catch (CodeRepositoryException $e) {
-            throw new ResolveException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-    /**
-     * @param RelativeFileSystem $fileSystem
-     * @param CodeReference      $codeReference
-     *
-     * @return array
-     */
-    private function resolveWithFilesystem(RelativeFileSystem $fileSystem, CodeReference $codeReference)
-    {
-        $dockerComposeComponents = [];
+        $fileSystem = $this->fileSystemResolver->getFileSystem($flow, $codeReference);
 
         try {
-            foreach ($this->projectParser->parse($fileSystem, $codeReference->getBranch()) as $name => $raw) {
-                if (!is_array($raw)) {
-                    continue;
-                }
-                
-                $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
-            }
+            $components = $this->projectParser->parse($fileSystem, $codeReference->getBranch());
         } catch (DockerComposeException $e) {
             throw new ResolveException($e->getMessage(), $e->getCode(), $e);
+        } catch (FileNotFound $e) {
+            return [];
+        }
+
+        $dockerComposeComponents = [];
+        foreach ($components as $name => $raw) {
+            if (!is_array($raw)) {
+                continue;
+            }
+
+            $dockerComposeComponents[] = DockerComposeComponent::fromParsed($name, $raw);
         }
 
         return $dockerComposeComponents;

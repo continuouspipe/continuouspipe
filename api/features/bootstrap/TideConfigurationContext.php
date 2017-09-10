@@ -27,6 +27,11 @@ class TideConfigurationContext implements Context
     private $configuration;
 
     /**
+     * @var \Throwable|null
+     */
+    private $configurationGenerationException;
+
+    /**
      * @param TideConfigurationFactory $tideConfigurationFactory
      */
     public function __construct(TideConfigurationFactory $tideConfigurationFactory)
@@ -47,11 +52,40 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGenerated()
     {
-        $flow = $this->flowContext->createFlow();
+        $flow = $this->getFlow();
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
             'sha1'
         ))->getConfiguration();
+    }
+
+    /**
+     * @When the configuration of the tide is tentatively generated
+     */
+    public function theConfigurationOfTheTideIsTentativelyGenerated()
+    {
+        try {
+            $this->theConfigurationOfTheTideIsGenerated();
+        } catch (\Throwable $e) {
+            $this->configurationGenerationException = $e;
+        }
+    }
+
+    /**
+     * @Then the configuration generated should fail with :message
+     */
+    public function theConfigurationGeneratedShouldFailWith($message)
+    {
+        if (null === $this->configurationGenerationException) {
+            throw new \RuntimeException('No exception found while generating configuration');
+        }
+
+        if ($this->configurationGenerationException->getMessage() != $message) {
+            throw new \RuntimeException(sprintf(
+                'Found message "%s" instead',
+                $this->configurationGenerationException->getMessage()
+            ));
+        }
     }
 
     /**
@@ -67,9 +101,7 @@ class TideConfigurationContext implements Context
      */
     public function theConfigurationOfTheTideIsGeneratedForTheBranchAndTheCommit($branch, $sha1)
     {
-        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
-            $flow = $this->flowContext->createFlow();
-        }
+        $flow = $this->getFlow();
 
         $this->configuration = $this->tideConfigurationFactory->getConfiguration(Flow\Projections\FlatFlow::fromFlow($flow), new CodeReference(
             $flow->getCodeRepository(),
@@ -87,6 +119,8 @@ class TideConfigurationContext implements Context
         $intersection = $this->array_intersect_recursive($expectedConfiguration, $this->configuration);
 
         if ($intersection != $expectedConfiguration) {
+            print_r($intersection);
+
             throw new \RuntimeException(sprintf(
                 'Expected to have at least this configuration but found: %s',
                 PHP_EOL.Yaml::dump($this->configuration)
@@ -155,5 +189,17 @@ class TideConfigurationContext implements Context
             }
         }
         return $array1;
+    }
+
+    /**
+     * @return Flow
+     */
+    private function getFlow(): Flow
+    {
+        if (null === ($flow = $this->flowContext->getCurrentFlow())) {
+            $flow = $this->flowContext->createFlow();
+            return $flow;
+        }
+        return $flow;
     }
 }

@@ -18,7 +18,7 @@
         </service>
 
         <service id="river.event_bus.middleware.user_activity_context_data_collector" class="ContinuousPipe\River\EventBus\UserActivityContextDataCollectorMiddleware" public="false">
-            <argument type="service" id="river.repository.flow.event_based" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.view.tide_repository" />
 
             <tag name="command_bus_middleware" priority="1000" />

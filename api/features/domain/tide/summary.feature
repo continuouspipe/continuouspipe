@@ -6,7 +6,7 @@ Feature:
   Background:
     Given I am authenticated as "samuel"
     And the team "samuel" exists
-    And I have a flow in the team "samuel"
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "samuel"
     And the user "samuel" is "USER" of the team "samuel"
     And there is 1 application images in the repository
 
@@ -55,3 +55,45 @@ Feature:
       | name     | address |
       | zed      | 1.2.3.4 |
       | zedhttps | 9.8.7.6 |
+
+  Scenario: If there's a deploy task, I should see the environment name
+    Given a tide is started for the branch "my-feature" with a deploy task
+    And the deployment succeed
+    When I ask the summary of the tide
+    Then I should see the "00000000-0000-0000-0000-000000000000-my-feature" environment
+
+  Scenario: If there's a deploy task, I should see the environment name even if deployment failed
+    Given a tide is started for the branch "my-feature" with a deploy task
+    When I ask the summary of the tide
+    Then I should see the "00000000-0000-0000-0000-000000000000-my-feature" environment
+
+  Scenario: It returns the deployed services of all the deployment tasks
+    Given a tide is started with the following configuration:
+    """
+    tasks:
+        database:
+            deploy:
+                cluster: fake/foo
+                services:
+                    database:
+                        specification:
+                            source:
+                                image: foo:bar
+
+        app:
+            deploy:
+                cluster: fake/foo
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo:bar
+    """
+    And the first deploy succeed
+    And the second deploy succeed with the following public endpoints:
+      | name     | address | ports  |
+      | app      | 1.2.3.4 | 80     |
+    When I ask the summary of the tide
+    Then I should see in the list the following deployed services:
+      | name     | address |
+      | app      | 1.2.3.4 |

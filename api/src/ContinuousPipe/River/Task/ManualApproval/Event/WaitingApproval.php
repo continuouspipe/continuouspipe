@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\River\Task\ManualApproval\Event;
 
+use ContinuousPipe\River\Task\AbstractTaskEvent;
 use Ramsey\Uuid\UuidInterface;
 
-class WaitingApproval extends ManualApprovalEvent
+class WaitingApproval extends AbstractTaskEvent
 {
     private $logIdentifier;
     private $label;

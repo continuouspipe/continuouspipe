@@ -39,7 +39,12 @@
                 / {{ tide.codeReference.repository.name }}</td>
             <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
             <td>{{ tide.creationDate | date }}</td>
-            <td>{{ tide.status }}</td>
+            <td>
+                {{ tide.status }}
+                {% if tide.failureReason is not null %}
+                ({{ tide.failureReason }})
+                {% endif %}
+            </td>
             <td><a href="{{ path('admin_tide', {'team': tide.team.slug, 'flow': tide.flowUuid, 'uuid': tide.uuid}) }}" class="btn btn-default">View</a></td>
         </tr>
     {% endfor %}

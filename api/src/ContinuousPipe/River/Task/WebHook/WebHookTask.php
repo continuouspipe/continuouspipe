@@ -80,13 +80,21 @@ class WebHookTask extends EventDrivenTask
                 $this->getIdentifier(),
                 $webHook
             ));
+
+            $logger->child(new Text(sprintf('Webhook sent to "%s"', $webHook->getUrl())));
         } catch (WebHookException $e) {
             $this->events->raiseAndApply(new WebHookFailed(
                 $context->getTideUuid(),
                 $this->getIdentifier(),
                 $webHook,
-                $e
+                $e->getMessage()
             ));
+
+            $logger->child(new Text(sprintf(
+                'Sending webhook to "%s" failed: %s',
+                $webHook->getUrl(),
+                $e->getMessage()
+            )));
         }
     }
 

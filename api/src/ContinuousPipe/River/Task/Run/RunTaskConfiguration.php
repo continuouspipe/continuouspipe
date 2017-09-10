@@ -73,7 +73,7 @@ class RunTaskConfiguration implements EnvironmentAwareConfiguration
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getClusterIdentifier()
     {

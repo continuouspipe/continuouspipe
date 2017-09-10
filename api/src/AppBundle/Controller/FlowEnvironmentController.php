@@ -3,11 +3,14 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Request\WatchRequest;
+use ContinuousPipe\River\Managed\Resources\Calculation\ResourceCalculator;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
-use ContinuousPipe\River\Flow\EnvironmentClient;
+use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Managed\Resources\ResourceUsageResolver;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\User\User;
 use ContinuousPipe\Watcher\Watcher;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -25,7 +28,7 @@ use ContinuousPipe\Watcher\WatcherException;
 class FlowEnvironmentController
 {
     /**
-     * @var EnvironmentClient
+     * @var DeployedEnvironmentRepository
      */
     private $environmentClient;
 
@@ -40,12 +43,15 @@ class FlowEnvironmentController
     private $watcher;
 
     /**
-     * @param EnvironmentClient $environmentClient
-     * @param BucketRepository  $bucketRepository
-     * @param Watcher           $watcher
+     * @param DeployedEnvironmentRepository $environmentClient
+     * @param BucketRepository              $bucketRepository
+     * @param Watcher                       $watcher
      */
-    public function __construct(EnvironmentClient $environmentClient, BucketRepository $bucketRepository, Watcher $watcher)
-    {
+    public function __construct(
+        DeployedEnvironmentRepository $environmentClient,
+        BucketRepository $bucketRepository,
+        Watcher $watcher
+    ) {
         $this->environmentClient = $environmentClient;
         $this->watcher = $watcher;
         $this->bucketRepository = $bucketRepository;
@@ -63,14 +69,25 @@ class FlowEnvironmentController
 
     /**
      * @Route("/flows/{uuid}/environments/{name}", methods={"DELETE"})
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('DELETE', flow)")
      * @View
      */
-    public function deleteAction(FlatFlow $flow, Request $request, $name)
+    public function deleteAction(FlatFlow $flow, Request $request, User $user, $name)
     {
         $environment = new DeployedEnvironment($name, $request->query->get('cluster'));
 
-        $this->environmentClient->delete($flow, $environment);
+        $this->environmentClient->delete($flow->getTeam(), $user, $environment);
+    }
+
+    /**
+     * @Route("/flows/{uuid}/clusters/{clusterIdentifier}/namespaces/{namespace}/pods/{podName}", methods={"DELETE"})
+     * @Security("is_granted('DELETE', flow)")
+     * @View
+     */
+    public function deletePodAction(FlatFlow $flow, $clusterIdentifier, $namespace, $podName)
+    {
+        $this->environmentClient->deletePod($flow, $clusterIdentifier, $namespace, $podName);
     }
 
     /**

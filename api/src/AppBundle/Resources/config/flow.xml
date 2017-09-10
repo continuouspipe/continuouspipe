@@ -23,10 +23,18 @@
             <argument>%event_store_host%</argument>
         </service>
 
-        <service id="river.event_store" alias="river.event_store.http_adapter" />
+        <service id="river.event_store.events_adapter" class="ContinuousPipe\River\EventStore\ContinuousPipeEventsAdapter">
+            <argument type="service" id="app.event_store"/>
+        </service>
+
+        <service id="river.event_store" class="ContinuousPipe\River\EventStore\FallbackToNonEmptyEventStore">
+            <argument type="service" id="river.event_store.events_adapter" />
+            <argument type="service" id="river.event_store.http_adapter" />
+            <argument type="service" id="logger" />
+        </service>
 
         <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
-            <argument type="service" id="river.event_store.http_adapter" />
+            <argument type="service" id="river.event_store" />
         </service>
 
         <service id="river.repository.flow" alias="river.repository.flow.event_based" />
@@ -55,6 +63,7 @@
             <argument type="service" id="security.user_context" />
             <argument type="service" id="event_bus"/>
             <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="river.flow.transaction_manager"/>
         </service>
 
         <service id="river.flow.projections.flat_flow.save_on_event" class="ContinuousPipe\River\Flow\Projections\Generation\SaveFlatFlowOnFlowEvent">
@@ -66,6 +75,9 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineCreated" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineDeleted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchPinned" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchUnpinned" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowFlexed" />
         </service>
 
         <service id="river.event_bus.middleware.flow_event_store" class="ContinuousPipe\River\Flow\Event\Storage\StoreFlowEventsMiddleware">
@@ -81,9 +93,24 @@
             <argument type="service" id="event_bus" />
         </service>
 
+        <service id="river.flow.migrations.events_migrator" class="ContinuousPipe\River\Migrations\GetEventStoreToSQLStore\FlowEventsMigrator">
+            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository.from_aggregate"/>
+            <argument type="service" id="river.event_store.http_adapter"/>
+            <argument type="service" id="river.event_store.events_adapter" />
+        </service>
+
         <service id="river.flow.configuration.missing_variables.configuration_resolver" class="ContinuousPipe\River\Flow\MissingVariables\ConfigurationMissingVariableResolver">
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.flow.aggregate_repository" class="ContinuousPipe\River\Flow\Aggregate\FlowAggregateRepository">
+            <argument type="service" id="river.repository.flow" />
+        </service>
+        <service id="river.flow.transaction_manager" class="ContinuousPipe\Events\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="river.flow.aggregate_repository" />
+            <argument type="service" id="event_bus" />
         </service>
     </services>
 </container>

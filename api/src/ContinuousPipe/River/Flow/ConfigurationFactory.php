@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Flow;
 
+use ContinuousPipe\River\CodeRepository\FileSystem\FileException;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\FileSystemResolver;
@@ -66,12 +67,19 @@ class ConfigurationFactory implements TideConfigurationFactory
         ];
 
         // Read configuration from YML
-        $continuousPipeFileExists = $fileSystem->exists(self::FILENAME);
+        try {
+            $continuousPipeFileExists = $fileSystem->exists(self::FILENAME);
+        } catch (FileException $e) {
+            throw new TideConfigurationException(sprintf('Could not check the existence of the configuration file `%s`: '.$e->getMessage(), self::FILENAME), $e->getCode(), $e);
+        }
+
         if ($continuousPipeFileExists) {
             try {
                 $configs[] = Yaml::parse($fileSystem->getContents(self::FILENAME));
+            } catch (FileException $e) {
+                throw new TideConfigurationException(sprintf('Unable to read configuration file: %s', $e->getMessage()), $e->getCode(), $e);
             } catch (YamlException $e) {
-                throw new TideConfigurationException(sprintf('Unable to read YAML configuration: %s', $e->getMessage()), $e->getCode(), $e);
+                throw new TideConfigurationException(sprintf('YAML seems invalid: %s', $e->getMessage()), $e->getCode(), $e);
             }
         }
 

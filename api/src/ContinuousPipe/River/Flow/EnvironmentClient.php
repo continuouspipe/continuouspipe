@@ -4,13 +4,18 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\PipeClientException;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
+use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
 use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise;
 use Psr\Log\LoggerInterface;
@@ -71,35 +76,12 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      */
     public function findByFlow(FlatFlow $flow)
     {
-        $promises = [];
-
-        foreach ($this->findClusterIdentifiers($flow) as $clusterIdentifier) {
-            $clusterEnvironmentsPromise = $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)->then(
-                function (array $clusterEnvironments) use ($clusterIdentifier) {
-                    // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
-                    return array_map(function (Environment $environment) use ($clusterIdentifier) {
-                        return new DeployedEnvironment(
-                            $environment->getIdentifier(),
-                            $clusterIdentifier,
-                            $environment->getComponents()
-                        );
-                    }, $clusterEnvironments);
-                },
-                function (\Throwable $e) use ($clusterIdentifier) {
-                    $this->logger->warning(
-                        'Fetching environment list from Pipe failed.',
-                        ['exception' => $e, 'cluster' => $clusterIdentifier]
-                    );
-
-                    return [];
-                }
-            );
-
-            $promises[] = $clusterEnvironmentsPromise;
-        }
-
         $environments = array_reduce(
-            Promise\unwrap($promises),
+            Promise\unwrap(
+                array_map(function (string $clusterIdentifier) use ($flow) {
+                    return $this->findByFlowAndCluster($flow, $clusterIdentifier);
+                }, $this->findClusterIdentifiers($flow))
+            ),
             function ($carry, array $item) {
                 return array_merge($carry, $item);
             },
@@ -112,27 +94,84 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * {@inheritdoc}
      */
-    public function delete(FlatFlow $flow, DeployedEnvironment $environment)
+    public function findByFlowAndCluster(FlatFlow $flow, string $clusterIdentifier) : PromiseInterface
     {
-        $this->pipeClient->deleteEnvironment(
-            new Client\DeploymentRequest\Target(
-                $environment->getIdentifier(),
-                $environment->getCluster()
-            ),
-            $flow->getTeam(),
-            $this->userContext->getCurrent()
+        return $this->findEnvironmentsLabelledByFlow($flow, $clusterIdentifier)->then(
+            function (array $clusterEnvironments) use ($clusterIdentifier) {
+                // Convert Pipe's `Environment` objects to `DeployedEnvironment`s
+                return array_map(function (Environment $environment) use ($clusterIdentifier) {
+                    return new DeployedEnvironment(
+                        $environment->getIdentifier(),
+                        $clusterIdentifier,
+                        $environment->getComponents(),
+                        $environment->getStatus()
+                    );
+                }, $clusterEnvironments);
+            },
+            function (\Throwable $e) use ($clusterIdentifier) {
+                $this->logger->warning(
+                    'Fetching environment list from Pipe failed.',
+                    ['exception' => $e, 'cluster' => $clusterIdentifier]
+                );
+
+                return [];
+            }
         );
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function delete(Team $team, User $user, DeployedEnvironment $environment)
+    {
+        try {
+            $this->pipeClient->deleteEnvironment(
+                new Client\DeploymentRequest\Target(
+                    $environment->getIdentifier(),
+                    $environment->getCluster()
+                ),
+                $team,
+                $user
+            );
+        } catch (PipeClientException $e) {
+            throw new DeployedEnvironmentException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deletePod(FlatFlow $flow, string $clusterIdentifier, string $namespace, string $podName)
+    {
+        try {
+            $this->pipeClient->deletePod(
+                $flow->getTeam(),
+                $this->userContext->getCurrent(),
+                $clusterIdentifier,
+                $namespace,
+                $podName
+            );
+        } catch (PipeClientException $e) {
+            throw new DeployedEnvironmentException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
      * @param FlatFlow $flow
+     *
+     * @throws DeployedEnvironmentException
      *
      * @return string[]
      */
     private function findClusterIdentifiers(FlatFlow $flow)
     {
         $teamBucketUuid = $flow->getTeam()->getBucketUuid();
-        $credentialsBucket = $this->bucketRepository->find($teamBucketUuid);
+
+        try {
+            $credentialsBucket = $this->bucketRepository->find($teamBucketUuid);
+        } catch (BucketNotFound $e) {
+            throw new DeployedEnvironmentException($e->getMessage(), $e->getCode(), $e);
+        }
 
         return $credentialsBucket->getClusters()->map(function (Cluster $cluster) {
             return $cluster->getIdentifier();
@@ -145,18 +184,23 @@ class EnvironmentClient implements DeployedEnvironmentRepository
      * @param FlatFlow $flow
      * @param string   $clusterIdentifier
      *
+     * @throws DeployedEnvironmentException
+     *
      * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
      */
     private function findEnvironmentsLabelledByFlow(FlatFlow $flow, $clusterIdentifier)
     {
-        return $this->pipeClient->getEnvironmentsLabelled(
-            $clusterIdentifier,
-            $flow->getTeam(),
-            $this->userContext->getCurrent(),
-            [
-                'flow' => (string) $flow->getUuid(),
-            ]
-        );
+        try {
+            return $this->pipeClient->getEnvironmentsLabelled(
+                $clusterIdentifier,
+                $flow->getTeam(),
+                [
+                    'flow' => (string)$flow->getUuid(),
+                ]
+            );
+        } catch (PipeClientException $e) {
+            throw new DeployedEnvironmentException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**

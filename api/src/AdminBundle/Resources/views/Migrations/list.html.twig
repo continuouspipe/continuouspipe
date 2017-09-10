@@ -35,6 +35,17 @@
                 </form>
             </td>
         </tr>
+        <tr>
+            <td>
+                <p><strong>GetEventStore to SQL-based event store</strong></p>
+                <p>Migrate the events stored in GetEventStore to the SQL-backed event store.</p>
+            </td>
+            <td>
+                <form action="{{ path('admin_migrate', {'migration': 'geteventstore-to-sql'}) }}" method="POST">
+                    <button class="btn btn-danger">Migrate</button>
+                </form>
+            </td>
+        </tr>
     </tbody>
 </table>
 {% endblock %}

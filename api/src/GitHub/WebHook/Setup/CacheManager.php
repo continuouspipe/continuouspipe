@@ -2,7 +2,7 @@
 
 namespace GitHub\WebHook\Setup;
 
-use ContinuousPipe\River\Event\GitHub\IntegrationInstallationDeleted;
+use ContinuousPipe\River\Event\GitHub\InstallationEvent;
 use GitHub\Integration\InstallationRepositoryWithCacheInvalidation;
 use Psr\Log\LoggerInterface;
 
@@ -24,7 +24,7 @@ class CacheManager
         $this->logger = $logger;
     }
 
-    public function notify(IntegrationInstallationDeleted $event)
+    public function notify(InstallationEvent $event)
     {
         foreach ($this->installationRepositories as $repository) {
             if ($repository instanceof InstallationRepositoryWithCacheInvalidation) {

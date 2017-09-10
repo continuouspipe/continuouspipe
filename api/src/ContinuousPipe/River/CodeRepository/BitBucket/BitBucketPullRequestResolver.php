@@ -2,12 +2,13 @@
 
 namespace ContinuousPipe\River\CodeRepository\BitBucket;
 
+use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest as BitBucketPullRequest;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\CodeRepository;
+use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\CodeRepository\CodeRepositoryException;
 use ContinuousPipe\River\CodeRepository\PullRequest;
 use ContinuousPipe\River\CodeRepository\PullRequestResolver;
-use ContinuousPipe\River\View\Tide;
-use ContinuousPipe\AtlassianAddon\BitBucket\PullRequest as BitBucketPullRequest;
 use Ramsey\Uuid\UuidInterface;
 
 class BitBucketPullRequestResolver implements PullRequestResolver
@@ -30,28 +31,60 @@ class BitBucketPullRequestResolver implements PullRequestResolver
      */
     public function findPullRequestWithHeadReference(UuidInterface $flowUuid, CodeReference $codeReference): array
     {
-        $repository = $codeReference->getRepository();
-        if (!$repository instanceof BitBucketCodeRepository) {
-            throw new CodeRepositoryException('This pull-request comment manipulator only supports BitBucket repositories');
-        }
+        $pullRequests = $this->fetchAll($codeReference->getRepository());
 
-        $pullRequests = $this->bitBucketClientFactory->createForCodeRepository($repository)->getOpenedPullRequests($repository);
+        $matchingPullRequests = array_values(
+            array_filter(
+                $pullRequests,
+                function (BitBucketPullRequest $pullRequest) use ($codeReference) {
+                    return $codeReference->getBranch() == $pullRequest->getSource()->getBranch()->getName()
+                    || strpos($codeReference->getCommitSha(), $pullRequest->getSource()->getCommit()->getHash()) === 0;
+                }
+            )
+        );
 
-        $matchingPullRequests = array_values(array_filter($pullRequests, function (BitBucketPullRequest $pullRequest) use ($codeReference) {
-            return $codeReference->getBranch() == $pullRequest->getSource()->getBranch()->getName()
-                || strpos($codeReference->getCommitSha(), $pullRequest->getSource()->getCommit()->getHash()) === 0;
-        }));
-
-        return array_map(function (BitBucketPullRequest $pullRequest) {
-            return new PullRequest($pullRequest->getId(), $pullRequest->getTitle());
-        }, $matchingPullRequests);
+        return $this->toPullRequests($matchingPullRequests, $codeReference->getRepository()->getAddress());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supports(UuidInterface $flowUuid, CodeReference $codeReference): bool
+    public function supports(UuidInterface $flowUuid, CodeRepository $repository): bool
     {
-        return $codeReference->getRepository() instanceof BitBucketCodeRepository;
+        return $repository instanceof BitBucketCodeRepository;
+    }
+
+    /**
+     * @return PullRequest[]
+     */
+    public function findAll(UuidInterface $flowUuid, CodeRepository $repository): array
+    {
+        return $this->toPullRequests($this->fetchAll($repository), $repository->getAddress());
+    }
+
+    private function toPullRequests($matchingPullRequests, string $address)
+    {
+        return array_map(
+            function (BitBucketPullRequest $pullRequest) use ($address) {
+                return PullRequest::bitbucket(
+                    $pullRequest->getId(),
+                    $address,
+                    $pullRequest->getTitle(),
+                    new Branch($pullRequest->getSource()->getBranch()->getName())
+                );
+            },
+            $matchingPullRequests
+        );
+    }
+
+    private function fetchAll(CodeRepository $repository)
+    {
+        if (!$repository instanceof BitBucketCodeRepository) {
+            throw new CodeRepositoryException(
+                'This pull-request resolver only supports BitBucket repositories'
+            );
+        }
+
+        return $this->bitBucketClientFactory->createForCodeRepository($repository)->getOpenedPullRequests($repository);
     }
 }

@@ -36,11 +36,23 @@ class HttpWatcher implements Watcher
     public function logs(Cluster\Kubernetes $kubernetes, string $namespace, string $pod)
     {
         try {
-            $response = $this->httpClient->request('post', $this->baseUrl.'/v1/watch/logs', [
+            if (null !== ($serviceAccount = $kubernetes->getCredentials()->getGoogleCloudServiceAccount())) {
+                $watcherCredentials = [
+                    'google_cloud_service_account' => $serviceAccount,
+                ];
+            } else {
+                $watcherCredentials = [
+                    'username' => $kubernetes->getCredentials()->getUsername(),
+                    'password' => $kubernetes->getCredentials()->getPassword(),
+                ];
+            }
+
+            $response = $this->httpClient->request('post', $this->baseUrl . '/v1/watch/logs', [
                 'json' => [
                     'cluster' => [
                         'address' => $kubernetes->getAddress(),
                         'version' => 'v1',
+                        'credentials' => $watcherCredentials,
                         'username' => $kubernetes->getUsername(),
                         'password' => $kubernetes->getPassword(),
                     ],
@@ -56,7 +68,7 @@ class HttpWatcher implements Watcher
                     $message = $json['message'];
                 }
                 if (array_key_exists('code', $json)) {
-                    $code = (int) $json['code'];
+                    $code = (int)$json['code'];
 
                     if ($code == 404) {
                         $message = sprintf('The pod "%s" is not found. It might have been already replaced by another one or has been deleted.', $pod);
@@ -73,7 +85,12 @@ class HttpWatcher implements Watcher
 
         $json = $this->getJson($response);
 
-        return TreeLog::fromId($json['logId']);
+        // Backward compatibility
+        if (isset($json['logId'])) {
+            $json['identifier'] = $json['logId'];
+        }
+
+        return $json;
     }
 
     /**
@@ -81,7 +98,7 @@ class HttpWatcher implements Watcher
      *
      * @throws WatcherException
      *
-     * @return ResponseInterface $response
+     * @return array
      */
     private function getJson(ResponseInterface $response)
     {

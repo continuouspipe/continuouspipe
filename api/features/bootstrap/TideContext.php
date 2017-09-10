@@ -4,8 +4,9 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Message\Debug\TracedMessageProducer;
+use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
+use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Command\StartTideCommand;
@@ -21,16 +22,12 @@ use ContinuousPipe\River\Pipeline\TideGenerationRequest;
 use ContinuousPipe\River\Pipeline\TideGenerationTrigger;
 use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand;
-use ContinuousPipe\River\Recover\TimedOutTides\TimedOutTideRepository;
-use ContinuousPipe\River\Tests\CodeRepository\PredictableCommitResolver;
-use ContinuousPipe\River\Tests\Queue\TracedDelayedCommandBus;
 use ContinuousPipe\River\Tests\View\PredictableTimeResolver;
 use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideTaskView;
 use ContinuousPipe\Security\Team\Team;
-use LogStream\Node\Container;
-use LogStream\Node\Text;
+use ContinuousPipe\Security\User\User;
 use LogStream\Tree\TreeLog;
 use phpseclib\Crypt\Random;
 use Ramsey\Uuid\Uuid;
@@ -47,7 +44,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 
 class TideContext implements Context
 {
@@ -106,10 +102,6 @@ class TideContext implements Context
     private $view;
 
     /**
-     * @var TracedDelayedCommandBus
-     */
-    private $tracedDelayedMessageProducer;
-    /**
      * @var PredictableTimeResolver
      */
     private $predictableTimeResolver;
@@ -117,6 +109,14 @@ class TideContext implements Context
      * @var \ContinuousPipe\River\Repository\TideRepository
      */
     private $tideRepository;
+    /**
+     * @var TracedMessageProducer
+     */
+    private $tracedMessageProducer;
+    /**
+     * @var DelayedMessagesBuffer
+     */
+    private $delayedMessagesBuffer;
 
     public function __construct(
         MessageBus $commandBus,
@@ -125,9 +125,10 @@ class TideContext implements Context
         TideFactory $tideFactory,
         TideRepository $viewTideRepository,
         Kernel $kernel,
-        TracedDelayedCommandBus $tracedDelayedMessageProducer,
+        TracedMessageProducer $tracedMessageProducer,
         PredictableTimeResolver $predictableTimeResolver,
-        \ContinuousPipe\River\Repository\TideRepository $tideRepository
+        \ContinuousPipe\River\Repository\TideRepository $tideRepository,
+        DelayedMessagesBuffer $delayedMessagesBuffer
     ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -135,9 +136,10 @@ class TideContext implements Context
         $this->tideFactory = $tideFactory;
         $this->viewTideRepository = $viewTideRepository;
         $this->kernel = $kernel;
-        $this->tracedDelayedMessageProducer = $tracedDelayedMessageProducer;
         $this->predictableTimeResolver = $predictableTimeResolver;
         $this->tideRepository = $tideRepository;
+        $this->tracedMessageProducer = $tracedMessageProducer;
+        $this->delayedMessagesBuffer = $delayedMessagesBuffer;
     }
 
     /**
@@ -155,6 +157,14 @@ class TideContext implements Context
     public function transformDateTime($value)
     {
         return \DateTime::createFromFormat(\DateTime::ISO8601, $value);
+    }
+
+    /**
+     * @When the delayed messages are received
+     */
+    public function theDelayedMessagesAreReceived()
+    {
+        $this->delayedMessagesBuffer->flushDelayedMessages();
     }
 
     /**
@@ -755,11 +765,7 @@ EOF;
      */
     public function theDeployedEnvironmentNameShouldBePrefixedByTheFlowIdentifier()
     {
-        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
-        $environmentNames = array_map(function (DeploymentStarted $event) {
-            return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
-        }, $deploymentStartedEvents);
-
+        $environmentNames = $this->getDeployedEnvironmentNames();
         $flowUuid = (string) $this->flowContext->getCurrentFlow()->getUuid();
         $matchingEnvironmentNames = array_filter($environmentNames, function ($environmentName) use ($flowUuid) {
             return substr($environmentName, 0, strlen($flowUuid)) == $flowUuid;
@@ -771,6 +777,37 @@ EOF;
                 implode(', ', $environmentNames)
             ));
         }
+    }
+
+    /**
+     * @When the deployed environment name should be :name
+     */
+    public function theDeployedEnvironmentNameShouldBe($name)
+    {
+        $environmentNames = $this->getDeployedEnvironmentNames();
+
+        if (count($environmentNames) == 0) {
+            throw new \RuntimeException('No environment deployed');
+        }
+        
+        foreach ($environmentNames as $environmentName) {
+            if ($environmentName != $name) {
+                throw new \RuntimeException(sprintf(
+                    'Found %s but expected %s',
+                    $environmentName,
+                    $name
+                ));
+            }
+        }
+    }
+
+    private function getDeployedEnvironmentNames()
+    {
+        $deploymentStartedEvents = $this->getEventsOfType(DeploymentStarted::class);
+
+        return array_map(function (DeploymentStarted $event) {
+            return $event->getDeployment()->getRequest()->getTarget()->getEnvironmentName();
+        }, $deploymentStartedEvents);
     }
 
     public function aTideIsStartedWithTasks(array $tasks, string $branch = 'master')
@@ -895,7 +932,7 @@ EOF;
                 [
                     'deploy' => [
                         'cluster' => 'fake/foo',
-                        'services' => []
+                        'services' => [],
                     ]
                 ]
             ]
@@ -1124,7 +1161,7 @@ EOF;
      */
     public function theStartOfThePendingTidesOfTheBranchShouldBeDelayed($branch)
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) use ($branch) {
             if (!$message instanceof RunPendingTidesCommand) {
                 return false;
@@ -1143,7 +1180,7 @@ EOF;
      */
     public function theEnvironmentDeletionShouldBePostponed()
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) {
             return $message instanceof DeleteEnvironments;
         });
@@ -1158,7 +1195,7 @@ EOF;
      */
     public function theTideLogArchiveCommandShouldBeDelayed()
     {
-        $messages = $this->tracedDelayedMessageProducer->getMessages();
+        $messages = $this->tracedMessageProducer->getProducedMessages();
         $matchingMessages = array_filter($messages, function($message) {
             return $message instanceof ArchiveTideCommand;
         });
@@ -1217,6 +1254,17 @@ EOF;
     }
 
     /**
+     * @Given the :branch branch in the repository for the flow :flow has the following tides:
+     */
+    public function theBranchInTheRepositoryForTheFlowHasTheFollowingTides($branch, $flow, TableNode $table)
+    {
+        foreach ($table->getHash() as $tide) {
+            $uuid = Uuid::fromString($tide['tide']);
+            $this->iHaveATide($uuid, $branch);
+        }
+    }
+
+    /**
      * @Given I have a tide :uuid
      */
     public function iHaveATide($uuid, $branch = null, $commit = null)
@@ -1257,7 +1305,7 @@ EOF;
      */
     public function theSpotTimedOutTidesCommandShouldBeScheduled()
     {
-        $delayedCommands = $this->tracedDelayedMessageProducer->getMessages();
+        $delayedCommands = $this->tracedMessageProducer->getProducedMessages();
         $matchingCommands = array_filter($delayedCommands, function($command) {
             return $command instanceof SpotTimedOutTidesCommand;
         });
@@ -1272,13 +1320,9 @@ EOF;
      */
     public function iShouldNotSeeTheTide($uuid)
     {
-        $this->assertResponseStatus(200);
-        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
-            return $tide['uuid'] == $uuid;
-        });
+        $tide = $this->getTideFromResponse($uuid);
 
-        if (count($matchingTides) != 0) {
+        if ($tide !== null) {
             throw new \RuntimeException(sprintf('Found tide %s', $uuid));
         }
     }
@@ -1288,14 +1332,24 @@ EOF;
      */
     public function iShouldSeeTheTide($uuid)
     {
-        $this->assertResponseStatus(200);
-        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
-        $matchingTides = array_filter($tides, function(array $tide) use ($uuid) {
-            return $tide['uuid'] == $uuid;
-        });
+        $tide = $this->getTideFromResponse($uuid);
 
-        if (count($matchingTides) == 0) {
+        if (null === $tide) {
             throw new \RuntimeException(sprintf('Tide %s not found', $uuid));
+        }
+    }
+
+    /**
+     * @When I should not see the configuration of the tide :tideUuid
+     */
+    public function iShouldNotSeeTheConfigurationOfTheTide($tideUuid)
+    {
+        if (null === ($tide = $this->getTideFromResponse($tideUuid))) {
+            throw new \RuntimeException('Tide not found');
+        }
+
+        if (isset($tide['configuration'])) {
+            throw new \RuntimeException('Got the tide configuration as well');
         }
     }
 
@@ -1306,6 +1360,29 @@ EOF;
     public function iShouldBeToldThatIDonTHaveThePermissionsTheListTheTides()
     {
         $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @Given there is the following tides:
+     */
+    public function thereIsTheFollowingTides(TableNode $table)
+    {
+        foreach ($table->getHash() as $tideRow) {
+            $tide = Tide::create(
+                Uuid::uuid4(),
+                Uuid::fromString($tideRow['flow_uuid']),
+                new CodeReference(new GitHubCodeRepository(1234, 'address', 'orga', 'name', false)),
+                TreeLog::fromId('1234'),
+                new Team('slug', 'name'),
+                new User('username', Uuid::uuid4()),
+                [],
+                new \DateTime($tideRow['datetime'])
+            );
+
+            $tide->setStatus($tideRow['status']);
+
+            $this->viewTideRepository->save($tide);
+        }
     }
 
     /**
@@ -1395,6 +1472,21 @@ EOF;
         }
 
         return $tides[0];
+    }
+
+    private function getTideFromResponse(string $tideUuid)
+    {
+        $this->assertResponseStatus(200);
+        $tides = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        $matchingTides = array_filter($tides, function(array $tide) use ($tideUuid) {
+            return $tide['uuid'] == $tideUuid;
+        });
+
+        if (count($matchingTides) == 0) {
+            return null;
+        }
+
+        return current($matchingTides);
     }
 
     private function getTideUuid()
@@ -1542,5 +1634,13 @@ EOF;
         return array_map(function(array $tide) {
             return $this->tideRepository->find(Uuid::fromString($tide['uuid']));
         }, $json);
+    }
+
+    /**
+     * @When I create a tide :tide for the flow :flow for branch :branch and commit :commit
+     */
+    public function iCreateATideForBranchAndCommit($tide, $flow, $branch, $commit)
+    {
+        $this->createTide($branch, $commit, Uuid::fromString($tide));
     }
 }

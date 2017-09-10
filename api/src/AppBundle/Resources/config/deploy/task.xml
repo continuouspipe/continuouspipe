@@ -11,7 +11,6 @@
             <argument type="service" id="river.task.deploy.configuration.component_factory" />
             <argument type="service" id="river.task.deploy.deployment_request_factory"/>
             <argument type="service" id="river.pipe_client"/>
-            <argument>%default_environment_expression%</argument>
 
             <tag name="river.task_factory" task="deploy" />
         </service>
@@ -22,24 +21,23 @@
         </service>
 
         <!-- Naming strategies -->
-        <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Task\Deploy\Naming\ExpressionResolverNamingStrategy">
+        <service id="river.task.deploy.naming.expression_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\ExpressionResolverNamingStrategy">
             <argument type="service" id="river.task_filter.context_factory" />
         </service>
 
         <service id="river.task.deploy.naming.default_environment_expression"
-                 class="ContinuousPipe\River\Task\Deploy\Naming\DefaultEnvironmentExpressionDecorator"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\DefaultEnvironmentExpressionDecorator"
                  decorates="river.task.deploy.naming.expression_resolver">
             <argument type="service" id="river.task.deploy.naming.default_environment_expression.inner" />
-            <argument>%default_environment_expression%</argument>
         </service>
 
         <service id="river.task.deploy.naming.slugify"
-                 class="ContinuousPipe\River\Task\Deploy\Naming\SlugifyNamingStrategyDecorator"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\SlugifyNamingStrategyDecorator"
                  decorates="river.task.deploy.naming.expression_resolver">
             <argument type="service" id="river.task.deploy.naming.slugify.inner" />
         </service>
 
-        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Task\Deploy\Naming\LimitedLengthNamingStrategy">
+        <service id="river.task.deploy.naming.environment_strategy" class="ContinuousPipe\River\Pipe\DeploymentRequest\EnvironmentName\LimitedLengthNamingStrategy">
             <argument type="service" id="river.task.deploy.naming.expression_resolver" />
         </service>
 
@@ -47,7 +45,7 @@
             <argument type="service" id="router" />
             <argument type="service" id="river.pipe.target_environment_factory" />
             <argument>%river_host%</argument>
-            <argument>%use_ssl%%</argument>
+            <argument>%use_ssl%</argument>
         </service>
 
         <service id="river.task.deploy.deployment_request_factory.enhanced"
@@ -58,8 +56,51 @@
         </service>
 
         <service id="river.task.deploy.configuration.component_factory" class="ContinuousPipe\River\Task\Deploy\Configuration\ComponentFactory">
-            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
+            <argument type="service" id="river.task.deploy.configuration.composite_configurator" />
             <argument type="service" id="jms_serializer" />
+        </service>
+
+        <service id="river.task.deploy.configuration.composite_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CompositeConfigurator">
+            <argument type="collection">
+                <argument type="service" id="river.task.deploy.configuration.ingress_configurator" />
+                <argument type="service" id="river.task.deploy.configuration.httplabs_configurator" />
+                <argument type="service" id="river.task.deploy.configuration.cloudflare_configurator" />
+            </argument>
+        </service>
+
+        <service id="river.task.deploy.configuration.ingress_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\IngressConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.httplabs_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HttplabsConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.cloudflare_configurator" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\CloudflareConfigurator">
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+        </service>
+
+        <service id="river.task.deploy.configuration.hostname_resolver" class="ContinuousPipe\River\Task\Deploy\Configuration\Endpoint\HostnameResolver">
+            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
+        </service>
+
+        <!-- SSL certificates -->
+        <service id="river.ssl_certificates.generation.generates_while_creating_deployment_request"
+                 class="ContinuousPipe\River\SslCertificate\Generation\GenerateWhileCreatingDeploymentRequest"
+                 decorates="river.task.deploy.deployment_request_factory">
+            <argument type="service" id="river.ssl_certificates.generation.generates_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.ssl_certificates.manager" />
+        </service>
+
+        <service id="river.ssl_certificates.manager" class="ContinuousPipe\River\SslCertificate\SslCertificateManager">
+            <argument type="service" id="river.ssl_certificates.repository"/>
+            <argument type="service" id="river.ssl_certificates.generator"/>
+        </service>
+        <service id="river.ssl_certificates.generator" class="ContinuousPipe\River\SslCertificate\SslGenerator">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.ssl_certificates.repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineSslCertificateRepository">
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
     </services>
 </container>

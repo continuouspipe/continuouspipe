@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation as JMS;
 class GitHubCodeRepository extends AbstractCodeRepository
 {
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      * @JMS\Accessor(getter="getAddress")
      *
@@ -17,6 +18,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $address;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      * @JMS\Accessor(getter="getOrganisation")
      *
@@ -25,6 +27,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $organisation;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      * @JMS\Accessor(getter="getName")
      *
@@ -33,6 +36,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $name;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("boolean")
      * @JMS\Accessor(getter="isPrivate")
      *
@@ -41,6 +45,7 @@ class GitHubCodeRepository extends AbstractCodeRepository
     private $private = false;
 
     /**
+     * @JMS\Groups({"Default"})
      * @JMS\Type("string")
      * @JMS\Accessor(getter="getDefaultBranch")
      *

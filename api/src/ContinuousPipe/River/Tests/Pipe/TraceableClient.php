@@ -15,6 +15,11 @@ class TraceableClient implements Client
     private $deletions = [];
 
     /**
+     * @var string[]
+     */
+    private $podDeletions = [];
+
+    /**
      * @var DeploymentRequest[]
      */
     private $requests = [];
@@ -62,17 +67,26 @@ class TraceableClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
     {
-        return $this->client->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
+        $this->client->deletePod($team, $authenticatedUser, $clusterIdentifier, $namespace, $podName);
+        $this->podDeletions[] = $podName;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    public function getEnvironments($clusterIdentifier, Team $team)
     {
-        return $this->client->getEnvironmentsLabelled($clusterIdentifier, $team, $authenticatedUser, $labels);
+        return $this->client->getEnvironments($clusterIdentifier, $team);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels)
+    {
+        return $this->client->getEnvironmentsLabelled($clusterIdentifier, $team, $labels);
     }
 
     /**
@@ -81,6 +95,14 @@ class TraceableClient implements Client
     public function getDeletions()
     {
         return $this->deletions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPodDeletions()
+    {
+        return $this->podDeletions;
     }
 
     /**

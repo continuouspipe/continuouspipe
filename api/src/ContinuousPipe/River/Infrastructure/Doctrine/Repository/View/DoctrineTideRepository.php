@@ -8,6 +8,7 @@ use ContinuousPipe\River\Infrastructure\Doctrine\Entity\View\TideDto;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideList;
 use ContinuousPipe\River\View\TideRepository;
 use Doctrine\ORM\EntityManager;
 use LogStream\Tree\TreeLog;
@@ -57,13 +58,34 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByFlowUuid(Uuid $uuid)
+    public function findByFlowUuid(UuidInterface $uuid)
     {
         $queryBuilder = $this
             ->getEntityRepository()
             ->createQueryBuilder('dto')
             ->where('dto.flowUuid = :flowUuid')
             ->setParameter('flowUuid', (string) $uuid)
+            ->orderBy('dto.tide.creationDate', 'DESC')
+        ;
+
+        return new DoctrineTideList($queryBuilder, function (TideDto $dto) {
+            return $dto->toTide();
+        });
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowBetween(UuidInterface $uuid, \DateTimeInterface $left, \DateTimeInterface $right) : TideList
+    {
+        $queryBuilder = $this
+            ->getEntityRepository()
+            ->createQueryBuilder('dto')
+            ->where('dto.flowUuid = :flowUuid')
+            ->andWhere('dto.tide.creationDate BETWEEN :left AND :right')
+            ->setParameter('flowUuid', (string) $uuid)
+            ->setParameter('left', $left)
+            ->setParameter('right', $right)
             ->orderBy('dto.tide.creationDate', 'DESC')
         ;
 
@@ -109,7 +131,7 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByCodeReference(Uuid $flowUuid, CodeReference $codeReference)
+    public function findByCodeReference(UuidInterface $flowUuid, CodeReference $codeReference)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
@@ -125,14 +147,14 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findByBranch(Uuid $flowUuid, $branch)
+    public function findByBranch(UuidInterface $flowUuid, $branch, $limit = null)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
             'tide.codeReference.branch' => $branch,
         ], [
             'tide.creationDate' => 'DESC',
-        ]);
+        ], $limit);
 
         return array_map(function (TideDto $dto) {
             return $dto->toTide();
@@ -142,7 +164,7 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         return $this->findDto($uuid)->toTide();
     }
@@ -150,7 +172,7 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findRunningByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    public function findRunningByFlowUuidAndBranch(UuidInterface $flowUuid, $branch)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
@@ -166,7 +188,7 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findPendingByFlowUuidAndBranch(Uuid $flowUuid, $branch)
+    public function findPendingByFlowUuidAndBranch(UuidInterface $flowUuid, $branch)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
@@ -200,7 +222,7 @@ class DoctrineTideRepository implements TideRepository
     /**
      * {@inheritdoc}
      */
-    public function findRunningByFlowUuid(Uuid $flowUuid)
+    public function findRunningByFlowUuid(UuidInterface $flowUuid)
     {
         $dtos = $this->getEntityRepository()->findBy([
             'flowUuid' => (string) $flowUuid,
@@ -240,7 +262,6 @@ class DoctrineTideRepository implements TideRepository
         $query->setParameters(['uuid' => $flowUuid->toString(), 'startDate' => $from->format('Y-m-d')]);
         return (int) $query->getSingleScalarResult();
     }
-
 
     /**
      * @param UuidInterface $uuid

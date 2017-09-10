@@ -5,12 +5,12 @@ namespace ContinuousPipe\River\Pipe;
 interface EnvironmentAwareConfiguration
 {
     /**
-     * @return string
+     * @return string|null
      */
     public function getEnvironmentName();
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getClusterIdentifier();
 }

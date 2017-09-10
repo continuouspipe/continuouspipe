@@ -241,6 +241,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the environment should have been deployed on the cluster :clusterIdentifier
+     */
+    public function theComponentShouldHaveBeenDeployedOnTheCluster($clusterIdentifier)
+    {
+        $foundCluster = $this->getDeploymentRequest()->getTarget()->getClusterIdentifier();
+
+        if ($foundCluster != $clusterIdentifier) {
+            throw new \RuntimeException(sprintf(
+                'Found cluster "%s" instead',
+                $foundCluster
+            ));
+        }
+    }
+
+    /**
      * @Then the component :name should be deployed as not scaling
      */
     public function theComponentShouldBeDeployedAsNotScaling($name)
@@ -313,6 +328,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should not be deployed with an endpoint named :endpointName
+     */
+    public function theComponentShouldNotBeDeployedWithAnEndpointNamed($name, $endpointName)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $matching = array_filter($component->getEndpoints(), function(Component\Endpoint $endpoint) use ($endpointName) {
+            return $endpoint->getName() == $endpointName;
+        });
+
+        if (count($matching) !== 0) {
+            throw new \RuntimeException('Endpoint found');
+        }
+    }
+
+    /**
      * @Then the component :name should be deployed with the following environment variables:
      */
     public function theComponentShouldBeDeployedWithTheFollowingEnvironmentVariables($name, TableNode $table)
@@ -354,6 +384,24 @@ class RunContext implements Context
                 $numberOfCertificates
             ));
         }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with a SSL certificate for the hostname :hostname
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithSslCertificateForTheHostname($endpointName, $name, $hostname)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        foreach ($endpoint->getSslCertificates() as $certificate) {
+            $sslMetadata = openssl_x509_parse(base64_decode($certificate->getCert()));
+
+            if ($sslMetadata['subject']['CN'] == $hostname) {
+                return;
+            }
+        }
+
+        throw new \RuntimeException('No matching SSL certificate found');
     }
 
     /**
@@ -436,6 +484,24 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :componentName should be an ingress without http rule
+     */
+    public function theEndpointOfTheComponentShouldBeAnIngressWithoutHttpRule($componentName, $endpointName)
+    {
+        $endpoint = $this->getEndpointOfComponent($componentName, $endpointName);
+
+        if (null === ($ingress = $endpoint->getIngress())) {
+            throw new \RuntimeException('The ingress configuration is null');
+        }
+
+        foreach ($ingress->getRules() as $rule) {
+            if ($rule->getHttp() !== null) {
+                throw new \RuntimeException('Found an HTTP rule');
+            }
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs configuration for the project :project and API key :apiKey
      */
     public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsConfigurationForTheProjectAndApiKey($endpointName, $name, $project, $apiKey)
@@ -448,6 +514,22 @@ class RunContext implements Context
 
         if ($httpLabsConfiguration->getProjectIdentifier() != $project || $httpLabsConfiguration->getApiKey() != $apiKey) {
             throw new \RuntimeException('HttpLabs configuration not matching');
+        }
+    }
+
+    /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with an HttpLabs host :host
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithAnHttplabsHost($endpointName, $name, $host)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if (null === ($httpLabsConfiguration = $endpoint->getHttpLabs())) {
+            throw new \RuntimeException('The HttpLabs configuration is null');
+        }
+
+        if ($httpLabsConfiguration->getIncoming() != $host) {
+            throw new \RuntimeException('HttpLabs host configuration does not match');
         }
     }
 

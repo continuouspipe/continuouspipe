@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 
@@ -14,6 +15,8 @@ interface DeploymentRequestFactory
      * @param Tide                    $tide
      * @param TaskDetails             $taskDetails
      * @param DeployTaskConfiguration $configuration
+     *
+     * @throws DeploymentRequestException
      *
      * @return DeploymentRequest
      */

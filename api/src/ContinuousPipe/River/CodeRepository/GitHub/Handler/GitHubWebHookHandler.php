@@ -104,8 +104,9 @@ class GitHubWebHookHandler
     private function handlePullRequestEvent(UuidInterface $flowUuid, PullRequestEvent $event)
     {
         $codeReference = $this->codeReferenceResolver->fromPullRequestEvent($event);
-        $pullRequest = new PullRequest(
+        $pullRequest = PullRequest::github(
             $event->getNumber(),
+            $codeReference->getRepository()->getAddress(),
             $event->getPullRequest()->getTitle()
         );
 
@@ -116,6 +117,8 @@ class GitHubWebHookHandler
         } elseif ($event->getAction() == PullRequestEvent::ACTION_SYNCHRONIZED) {
             $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         } elseif ($event->getAction() == PullRequestEvent::ACTION_LABELED) {
+            $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
+        } elseif ($event->getAction() == PullRequestEvent::ACTION_UNLABELED) {
             $this->eventBus->handle(new PullRequestSynchronized($flowUuid, $codeReference, $pullRequest));
         }
     }

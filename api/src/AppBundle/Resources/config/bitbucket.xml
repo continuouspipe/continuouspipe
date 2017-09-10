@@ -53,14 +53,15 @@
             <argument type="service" id="river.bitbucket.client_factory" />
         </service>
 
-        <service id="river.code_repository.bitbucket.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\BitBucket\Builder\BitBucketBuildRequestSourceResolver">
-            <argument type="service" id="atlassian_addon.installation_repository" />
-            <argument type="service" id="logger" />
-        </service>
-
         <!-- Notifications -->
         <service id="river.notifications.notifier.bitbucket.build_status" class="ContinuousPipe\River\CodeRepository\BitBucket\Notifications\BitBucketBuildStatusNotifier">
             <argument type="service" id="river.bitbucket.client_factory" />
+        </service>
+        
+        <service id="river.bitbucket.code_archive_streamer" class="ContinuousPipe\River\CodeRepository\BitBucket\BitBucketCodeArchiveStreamer">
+            <argument type="service" id="river.code_repository.bitbucket.explorer.http_client" />
+            <argument type="service" id="atlassian_addon.installation_repository" />
+            <argument type="service" id="logger" />
         </service>
     </services>
 </container>

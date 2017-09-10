@@ -67,4 +67,12 @@ class Target
     {
         return $this->environmentLabels;
     }
+
+    public function withClusterIdentifier(string $clusterIdentifier) : self
+    {
+        $target = clone $this;
+        $target->clusterIdentifier = $clusterIdentifier;
+
+        return $target;
+    }
 }

@@ -128,7 +128,7 @@ Feature:
                                     api_key: 123456
                                     project_identifier: 7890
                                     middlewares:
-                                        - template: https://api.httplabs.io/projects/13d1ab08-0eca-4289-aa8b-132bc569fe3f/templates/basic_authentication
+                                        - name: basic_authentication
                                           config:
                                               realm: This is secure!
                                               username: username
@@ -143,6 +143,64 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration that have 1 middleware
+
+  Scenario: HttpLabs proxy with specific dns name
+    When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+                                    host:
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.httplabs.net"'
+
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs host "my-very-long-shi-02b27a5635-certeo.inviqa-001.httplabs.net"
+
+  Scenario: HttpLabs proxy with specific dns name using record suffix
+    When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                httplabs:
+                                    api_key: 123456
+                                    project_identifier: 7890
+                                    record_suffix: "-certeo.inviqa-001.httplabs.net"
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs configuration for the project "7890" and API key "123456"
+    And the endpoint "http" of the component "app" should be deployed with an HttpLabs host "my-very-long-shiny-new-02b27a5635-certeo.inviqa-001.httplabs.net"
 
   Scenario: Add endpoints annotations
     When a tide is started with the following configuration:
@@ -570,3 +628,169 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
+
+  @smoke
+  Scenario: A self-signed SSL certificate can be generated automatically for the hostname
+    When a tide is started for the branch "my-feature" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: app
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-12357-flex.continuouspipe.net"'
+
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+
+                                ssl_certificates:
+                                    - name: automatic
+                                      cert: automatic
+                                      key: automatic
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "app"
+    And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
+    And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"
+
+  Scenario: A self-signed SSL certificate can be generated automatically for the hostname, regardless the name
+    When a tide is started for the branch "my-feature" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: app
+                                ingress:
+                                    class: nginx
+                                    host:
+                                        expression: 'code_reference.branch ~ "-12357-flex.continuouspipe.net"'
+                                cloud_flare_zone:
+                                    zone_identifier: 123456
+                                    authentication:
+                                        email: sam@example.com
+                                        api_key: qwerty1234567890
+                                ssl_certificates:
+                                    - name: app
+                                      cert: automatic
+                                      key: automatic
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "app"
+    And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
+    And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"
+
+  Scenario: I can use directly the host, without an expression
+    When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            -
+                                name: http
+                                ingress:
+                                    class: nginx
+                                    host: docs.continuouspipe.io
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"
+
+  Scenario: Non-matching condition means the endpoint is not used
+    When a tide is started for the branch "master" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            - name: production
+                              ingress:
+                                class: nginx
+                                host: docs.continuouspipe.io
+                              condition: code_reference.branch == 'production'
+                            - name: http
+                              ingress:
+                                class: nginx
+                                host_suffix: -12357-flex.continuouspipe.net
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the component "app" should not be deployed with an endpoint named "production"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-12357-flex.continuouspipe.net"
+
+  Scenario: Matching condition means the endpoint is used
+    When a tide is started for the branch "production" with the following configuration:
+    """
+    tasks:
+        first:
+            deploy:
+                cluster: foo
+                services:
+                    app:
+                        endpoints:
+                            - name: production
+                              ingress:
+                                class: nginx
+                                host: docs.continuouspipe.io
+                              condition: code_reference.branch == 'production'
+                            - name: http
+                              ingress:
+                                class: nginx
+                                host_suffix: -12357-flex.continuouspipe.net
+
+                        specification:
+                            source:
+                                image: my/app
+                            ports:
+                                - 80
+    """
+    Then the component "app" should be deployed
+    And the component "app" should be deployed with an endpoint named "http"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "production-12357-flex.continuouspipe.net"
+    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"

@@ -3,8 +3,8 @@
 namespace ContinuousPipe\DockerCompose\Parser;
 
 use ContinuousPipe\DockerCompose\DockerComposeException;
-use ContinuousPipe\DockerCompose\FileNotFound;
-use ContinuousPipe\DockerCompose\RelativeFileSystem;
+use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
+use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use Symfony\Component\Yaml\Exception\ParseException;
 
 class FileParser

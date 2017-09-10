@@ -10,5 +10,36 @@
                  decorates="river.commit_resolver">
             <argument type="service" id="river.commit_resolver.predictable.inner" />
         </service>
+
+        <service id="river.code_repository.branch_query.in_memory"
+                 class="ContinuousPipe\River\CodeRepository\InMemoryBranchQuery"
+                 decorates="river.code_repository.branch_query"
+                 decoration-priority="3" >
+                <argument type="service" id="river.code_repository.branch_query.in_memory.inner"/>
+        </service>
+
+        <service id="river.code_repository.local_filesystem_resolver" class="ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver" />
+
+        <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.local_filesystem_resolver" />
+                <argument type="service" id="river.bitbucket.file_system_resolver" />
+                <argument type="service" id="river.github.file_system_resolver" />
+            </argument>
+        </service>
+
+        <service id="river.code_repository.code_archive_streamer.overwritten"
+                 class="ContinuousPipe\River\CodeRepository\OverwrittenArchiveStreamer"
+                 decorates="river.code_repository.code_archive_streamer"
+                 decoration-priority="5"> <!-- This will decorates before the other default decorators -->
+            <argument type="service" id="river.code_repository.code_archive_streamer.overwritten.inner" />
+        </service>
+
+        <service id="river.code_repository.partially_overwritten_filesystem_resolver"
+                 class="ContinuousPipe\River\CodeRepository\FileSystem\PartiallyOverwrittenFileSystemResolver"
+                 decorates="river.file_system_resolver"
+                 decoration-priority="5">
+            <argument type="service" id="river.code_repository.partially_overwritten_filesystem_resolver.inner" />
+        </service>
     </services>
 </container>

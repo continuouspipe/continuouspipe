@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Task\Run\RunRequest;
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
 use ContinuousPipe\River\Task\Run\RunTaskConfiguration;
@@ -66,6 +67,8 @@ class DeploymentRequestFactory
      * @param TaskDetails          $taskDetails
      * @param RunTaskConfiguration $configuration
      *
+     * @throws DeploymentRequestException
+     *
      * @return DeploymentRequest
      */
     public function createDeploymentRequest(Tide $tide, TaskDetails $taskDetails, RunTaskConfiguration $configuration)
@@ -87,6 +90,7 @@ class DeploymentRequestFactory
 
         return $this->deploymentRequestEnhancer->enhance(
             $tide,
+            $taskDetails,
             $request
         );
     }
@@ -166,6 +170,6 @@ class DeploymentRequestFactory
      */
     private function createComponentName(TaskDetails $taskDetails)
     {
-        return (new Slugify())->slugify($taskDetails->getIdentifier());
+        return (new Slugify())->slugify('run-'.$taskDetails->getIdentifier());
     }
 }

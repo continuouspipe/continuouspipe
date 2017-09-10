@@ -49,36 +49,29 @@ class HookableClient implements Client
     }
 
     /**
-     * List environments for that given flow.
-     *
-     * @param string $clusterIdentifier
-     * @param Team $team
-     * @param User $authenticatedUser
-     *
-     * @throws ClusterNotFound
-     *
-     * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
+     * {@inheritdoc}
      */
-    public function getEnvironments($clusterIdentifier, Team $team, User $authenticatedUser)
+    public function deletePod(Team $team, User $authenticatedUser, string $clusterIdentifier, string $namespace, string $podName)
     {
-        $result = $this->decoratedClient->getEnvironments($clusterIdentifier, $team, $authenticatedUser);
+        $this->decoratedClient->deletePod($team, $authenticatedUser, $clusterIdentifier, $namespace, $podName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getEnvironments($clusterIdentifier, Team $team)
+    {
+        $result = $this->decoratedClient->getEnvironments($clusterIdentifier, $team);
 
         return $this->executeHooks($result);
     }
 
     /**
-     * @param string $clusterIdentifier
-     * @param Team $team
-     * @param User $authenticatedUser
-     * @param array $labels
-     *
-     * @throws ClusterNotFound
-     *
-     * @return PromiseInterface Returns an array of \ContinuousPipe\Model\Environment objects when unwrapped.
+     * {@inheritdoc}
      */
-    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, User $authenticatedUser, array $labels)
+    public function getEnvironmentsLabelled($clusterIdentifier, Team $team, array $labels)
     {
-        $result = $this->decoratedClient->getEnvironmentsLabelled($clusterIdentifier, $team, $authenticatedUser, $labels);
+        $result = $this->decoratedClient->getEnvironmentsLabelled($clusterIdentifier, $team, $labels);
 
         return $this->executeHooks($result);
     }

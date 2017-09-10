@@ -117,6 +117,14 @@ class Tide
      */
     private $pipeline;
 
+    /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
+     *
+     * @var string|null
+     */
+    private $failureReason;
+
     private function __construct()
     {
     }
@@ -134,11 +142,23 @@ class Tide
      * @param \DateTime          $creationDate
      * @param UuidInterface|null $generationUuid
      * @param FlatPipeline|null  $pipeline
+     * @param string|null        $failureReason
      *
      * @return Tide
      */
-    public static function create(UuidInterface $uuid, UuidInterface $flowUuid, CodeReference $codeReference, Log $log, Team $team, User $user, array $configuration, \DateTime $creationDate, UuidInterface $generationUuid = null, FlatPipeline $pipeline = null)
-    {
+    public static function create(
+        UuidInterface $uuid,
+        UuidInterface $flowUuid,
+        CodeReference $codeReference,
+        Log $log,
+        Team $team,
+        User $user,
+        array $configuration,
+        \DateTime $creationDate,
+        UuidInterface $generationUuid = null,
+        FlatPipeline $pipeline = null,
+        string $failureReason = null
+    ) {
         $tide = new self();
         $tide->uuid = $uuid;
         $tide->flowUuid = $flowUuid;
@@ -150,6 +170,7 @@ class Tide
         $tide->configuration = $configuration;
         $tide->generationUuid = $generationUuid;
         $tide->pipeline = $pipeline;
+        $tide->failureReason = $failureReason;
 
         return $tide;
     }
@@ -296,5 +317,13 @@ class Tide
     public function getPipeline()
     {
         return $this->pipeline;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFailureReason()
+    {
+        return $this->failureReason;
     }
 }
