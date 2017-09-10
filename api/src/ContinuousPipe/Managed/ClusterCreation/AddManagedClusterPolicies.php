@@ -55,7 +55,7 @@ class AddManagedClusterPolicies implements ClusterCreator
             new Cluster\ClusterPolicy('resources', [
                 // Default requests
                 'default-requests' => true,
-                'default-cpu-request' => '100m',
+                'default-cpu-request' => '50m',
                 'default-memory-request' => '256Mi',
 
                 // Default limits
