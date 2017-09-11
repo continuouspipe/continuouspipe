@@ -32,11 +32,17 @@
             <argument type="service" id="river.pipe.deployment_request.target_cluster_resolver"/>
         </service>
 
-        <service id="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\ReplaceDeployedEndpointsVariables">
+        <service id="river.pipe.deployment_request_enhancer.replace_deployed_endpoints"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\ReplaceDeployedEndpointsVariables">
             <argument type="service" id="river.tide_event_store" />
         </service>
 
         <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />
+        <service id="river.pipe.deployment_request_enhancer.add_variables_as_environment_variables"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\AddVariablesAsEnvironmentVariables"
+                 decorates="river.pipe.deployment_request_enhancer">
+            <argument type="service" id="river.pipe.deployment_request_enhancer.add_variables_as_environment_variables.inner" />
+        </service>
 
         <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
     </services>
