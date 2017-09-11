@@ -6,9 +6,16 @@ angular.module('continuousPipeRiver')
         $scope.tidesPerPipeline = [];
         $scope.isLoading = true;
         $scope.tides = [];
+        $scope.pipelineSelected = {
+            selected: null,
+            pipelines: $scope.pipelines
+        }
 
         $scope.checkName = function(pipelineName, checkAgainst) {
-
+            if (checkAgainst == undefined) {
+                pipelineInfo.id = undefined;
+                $scope.chosenPipeline();
+            }
             return function(tide) {
                 return tide.pipeline.uuid === checkAgainst.uuid;
             }
@@ -18,6 +25,8 @@ angular.module('continuousPipeRiver')
         $scope.chosenPipeline = function(pipelines) {
             const newPipelines = pipelines.sort((a, b) => a.name !== b.name ? a.name < b.name ? -1 : 1 : 0);
             if (pipelineInfo.id == undefined) {
+                console.log($scope)
+                $scope.pipelineSelected.selected = $scope.pipelines[0];
                 return newPipelines[0];
             } else {
                 for(const pipeline in pipelines) {

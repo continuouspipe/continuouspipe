@@ -18,12 +18,12 @@
     </div>
 </md-content>
 <md-content flex id="content" ng-if="!isLoading && tides.length != 0">
-    <md-subheader class="md-primary">Pipelines</md-subheader>
+    <md-subheader class="md-primary">Available pipelines</md-subheader>
     <div class="pipeline-content-container">
-        <pipeline-overview class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+        <pipeline-overview ng-class="{'pipelineSelected': pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
     </div>
 
-    <md-subheader class="md-primary">Please select a pipeline to view tides</md-subheader>
+    <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{pipelineSelected.selected.name}}</span></md-subheader>
     <ul class="tide-list">
         <li class="header">
             <a>
@@ -33,9 +33,7 @@
             <div class="tide-creation-date">Creation date</div>
             </a>
         </li>
-        <li>
-            
-        </li>
+
         <li ng-repeat="tide in tides | orderBy: '-creation_date' | filter:checkName(tide.pipeline, chosenPipeline(pipelines))" ng-class="['status-'+tide.status]">
             <a ui-sref="tide.logs({tideUuid: tide.uuid})">
                 <div class="tide-status status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</div>

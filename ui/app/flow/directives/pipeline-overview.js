@@ -14,6 +14,7 @@ angular.module('continuousPipeRiver')
             templateUrl: 'flow/views/directives/pipeline-overview.html',
             controller: function ($scope, PipelineRepository, pipelineInfo) {
                 $scope.isLoading = true;
+
                 $authenticatedFirebaseDatabase.get($scope.flow).then(function (database) {
                     var lastTides = $firebaseArray(
                         database.ref()
@@ -44,8 +45,9 @@ angular.module('continuousPipeRiver')
                     PipelineRepository.delete($scope.flow.uuid, pipelineId);
                 };
 
-                $scope.testPipeline = function (pipelineId) {
-                    pipelineInfo.changePipeline(pipelineId);
+                $scope.updatePipeline = function (pipeline) {
+                    $scope.$parent.pipelineSelected.selected = pipeline;
+                    pipelineInfo.changePipeline(pipeline.uuid);
                 };
             }
         };

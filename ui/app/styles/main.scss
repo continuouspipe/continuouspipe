@@ -22,10 +22,26 @@
     flex-grow: 1;
     flex-basis: 0;
     align-items: stretch;
+
+    &:focus,
+    &:active {
+        border: 0;
+        outline: 0;
+    }
+
+    &.pipelineSelected .pipeline-card {
+        transform: scale(1.05);
+    }
 }
 
 .pipeline-card {
     width: 100%;
+    transition: all 0.1s ease-in-out;
+
+    &:focus,
+    &:active {
+        outline: 0;
+    }
     
     & .card-content {
         height: 100%;
@@ -64,6 +80,12 @@
     }
 }
 
+.md-subheader {
+    &--large {
+        font-size: 16px;
+        font-weight: bold;
+    }
+}
 
 .mobile-only {
     @include largeScreen {
