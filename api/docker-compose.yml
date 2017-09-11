@@ -15,7 +15,6 @@ api:
         - BUILDER_URL=https://builder.continuouspipe.io
         - PIPE_URL=https://pipe-staging.continuouspipe.io
         - LOGSTREAM_URL=https://api.logstream.continuouspipe.io
-        - LOGSTREAM_FRONTEND_URL=http://logstream.continuouspipe.io
         - RIVER_URL=http://localhost:80/app_dev.php
         - TIDEWAYS_API_KEY=bq8W3cebnQNuKgQA
         - APP_USER_LOCAL=true
@@ -41,7 +40,6 @@ worker:
         - BUILDER_URL=builder_api.docker/app_dev.php
         - PIPE_URL=pipe_api.docker/app_dev.php
         - LOGSTREAM_URL=https://logstream-api.docker
-        - LOGSTREAM_FRONTEND_URL=https://logstream-frontend.docker
         - RIVER_URL=river_api.docker/app_dev.php
         - START_NGINX=false
         - START_WORKER=true
@@ -56,12 +54,6 @@ database:
         MYSQL_PASSWORD: river
     expose:
         - 3306
-
-rabbitmq:
-    image: rabbitmq:3-management
-    expose:
-        - 15672
-        - 5672
 
 blackfire:
     image: blackfire/blackfire

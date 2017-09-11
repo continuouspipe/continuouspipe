@@ -127,6 +127,19 @@ class ConfigurationDefinition implements ConfigurationInterface
                     ->scalarNode('condition')->end()
                     ->scalarNode('expression')->end()
                     ->scalarNode('encrypted_value')->end()
+                    ->arrayNode('as_environment_variable')
+                        ->beforeNormalization()
+                            ->always()
+                            ->then(function ($value) {
+                                if (is_scalar($value) && $value) {
+                                    $value = ['*'];
+                                }
+
+                                return $value;
+                            })
+                        ->end()
+                        ->prototype('scalar')->end()
+                    ->end()
                 ->end()
             ->end()
         ;

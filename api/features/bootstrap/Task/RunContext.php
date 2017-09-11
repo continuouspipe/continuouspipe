@@ -347,15 +347,7 @@ class RunContext implements Context
      */
     public function theComponentShouldBeDeployedWithTheFollowingEnvironmentVariables($name, TableNode $table)
     {
-        $component = $this->getDeployedComponentNamed($name);
-        $foundEnvironmentVariablesAsHash = [];
-        foreach ($component->getSpecification()->getEnvironmentVariables() as $environmentVariable) {
-            if (array_key_exists($environmentVariable->getName(), $foundEnvironmentVariablesAsHash)) {
-                throw new \RuntimeException(sprintf('Variable "%s" defined at least 2 times', $environmentVariable->getName()));
-            }
-
-            $foundEnvironmentVariablesAsHash[$environmentVariable->getName()] = $environmentVariable->getValue();
-        }
+        $foundEnvironmentVariablesAsHash = $this->getComponentEnvironmentVariablesAsHash($name);
 
         foreach ($table->getHash() as $row) {
             if (!array_key_exists($row['name'], $foundEnvironmentVariablesAsHash)) {
@@ -365,6 +357,20 @@ class RunContext implements Context
             $foundValue = $foundEnvironmentVariablesAsHash[$row['name']];
             if ($foundValue != $row['value']) {
                 throw new \RuntimeException(sprintf('Found value "%s" instead of "%s" for the variable "%s"', $foundValue, $row['value'], $row['name']));
+            }
+        }
+    }
+
+    /**
+     * @Then the component :name should be deployed without the following environment variables:
+     */
+    public function theComponentShouldBeDeployedWithoutTheFollowingEnvironmentVariables($name, TableNode $table)
+    {
+        $foundEnvironmentVariablesAsHash = $this->getComponentEnvironmentVariablesAsHash($name);
+
+        foreach ($table->getHash() as $row) {
+            if (array_key_exists($row['name'], $foundEnvironmentVariablesAsHash)) {
+                throw new \RuntimeException(sprintf('Variable "%s" not found in %s', $row['name'], implode(array_keys($foundEnvironmentVariablesAsHash))));
             }
         }
     }
@@ -760,9 +766,11 @@ class RunContext implements Context
      */
     private function getDeployedComponentNamed($name)
     {
-        $matchingComponents = array_filter($this->getDeploymentRequest()->getSpecification()->getComponents(), function(Component $component) use ($name) {
-            return $component->getName() == $name;
-        });
+        $matchingComponents = array_reduce($this->traceablePipeClient->getRequests(), function(array $carry, DeploymentRequest $request) use ($name) {
+            return array_merge($carry, array_values(array_filter($request->getSpecification()->getComponents(), function(Component $component) use ($name) {
+                return $component->getName() == $name;
+            })));
+        }, []);
 
         if (0 == count($matchingComponents)) {
             throw new \RuntimeException(sprintf(
@@ -817,5 +825,26 @@ class RunContext implements Context
         }
 
         return $endpoint;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array
+     */
+    private function getComponentEnvironmentVariablesAsHash(string $name): array
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $foundEnvironmentVariablesAsHash = [];
+
+        foreach ($component->getSpecification()->getEnvironmentVariables() as $environmentVariable) {
+            if (array_key_exists($environmentVariable->getName(), $foundEnvironmentVariablesAsHash)) {
+                throw new \RuntimeException(sprintf('Variable "%s" defined at least 2 times', $environmentVariable->getName()));
+            }
+
+            $foundEnvironmentVariablesAsHash[$environmentVariable->getName()] = $environmentVariable->getValue();
+        }
+
+        return $foundEnvironmentVariablesAsHash;
     }
 }

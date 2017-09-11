@@ -69,8 +69,48 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
             if (!isset($pipeline['filter']) && isset($configuration['filter'])) {
                 $pipeline['filter'] = $configuration['filter'];
             }
+
+            if (isset($configuration['variables'])) {
+                if (!isset($pipeline['variables'])) {
+                    $pipeline['variables'] = [];
+                }
+
+                $pipeline['variables'] = $this->mergeVariables($configuration['variables'], $pipeline['variables']);
+            }
         }
 
         return $configuration;
+    }
+
+    private function mergeVariables(array $target, array $source) : array
+    {
+        foreach ($source as $variable) {
+            if (null !== ($index = $this->variableIndex($target, $variable['name']))) {
+                foreach ($variable as $key => $value) {
+                    $target[$index][$key] = $value;
+                }
+            } else {
+                $target[] = $variable;
+            }
+        }
+
+        return $target;
+    }
+
+    /**
+     * @param array $variables
+     * @param string $name
+     *
+     * @return int|null
+     */
+    private function variableIndex(array $variables, string $name)
+    {
+        foreach ($variables as $index => $variable) {
+            if ($variable['name'] == $name) {
+                return $index;
+            }
+        }
+
+        return null;
     }
 }
