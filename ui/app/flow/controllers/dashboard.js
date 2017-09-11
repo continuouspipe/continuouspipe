@@ -8,6 +8,7 @@ angular.module('continuousPipeRiver')
         $scope.tides = [];
         $scope.pipelineSelected = {
             selected: null,
+            multipleOptions: true,
             pipelines: $scope.pipelines
         }
 
@@ -23,6 +24,12 @@ angular.module('continuousPipeRiver')
         }
 
         $scope.chosenPipeline = function(pipelines) {
+            if (pipelines.length === 1) {
+                $scope.pipelineSelected.selected = $scope.pipelines[0];
+                $scope.pipelineSelected.multipleOptions = false;
+                return pipelines[0];
+            }
+
             var newPipelines = pipelines.sort(function(a, b) {
                 if (a.name !== b.name) {
                     if (a.name < b.name) {

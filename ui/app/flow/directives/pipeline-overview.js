@@ -14,6 +14,7 @@ angular.module('continuousPipeRiver')
             templateUrl: 'flow/views/directives/pipeline-overview.html',
             controller: function ($scope, PipelineRepository, pipelineInfo) {
                 $scope.isLoading = true;
+                $scope.multlipleOptions = $scope.$parent.pipelineSelected.multlipleOptions;
 
                 $authenticatedFirebaseDatabase.get($scope.flow).then(function (database) {
                     var lastTides = $firebaseArray(
