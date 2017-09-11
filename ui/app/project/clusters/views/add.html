@@ -12,6 +12,7 @@
             <md-radio-group ng-model="cluster.type">
                 <md-radio-button value="gke">Google Container Engine</md-radio-button>
                 <md-radio-button value="kubernetes">My own Kubernetes cluster</md-radio-button>
+                <md-radio-button value="managed">Managed by ContinuousPipe</md-radio-button>
             </md-radio-group>
         </div>
 
@@ -85,6 +86,12 @@
                     <md-option ng-repeat="cluster in googleClusters" ng-value="cluster">{{ cluster.name }}</md-option>
                 </md-select>
             </md-input-container>
+        </div>
+
+        <!-- Managed cluster -->
+        <md-subheader class="md-primary" ng-if="cluster.type == 'managed'">Managed cluster</md-subheader>
+        <div class="form-container" ng-if="cluster.type == 'managed'">
+            <p>This Kubernetes cluster will be provided to you by ContinuousPipe. You need a Managed plan to access such clusters. <a href="https://docs.continouspipe.io/managed/">Learn more</a>.</p>
         </div>
     </form>
 </md-content>

@@ -4,7 +4,10 @@ angular.module('continuousPipeRiver')
     .controller('TideLogsController', function(TideRepository, EnvironmentRepository, TideSummaryRepository, LogFinder, EndpointOpener, $scope, $state, $http, flow, tide, summary, user, project, $authenticatedFirebaseDatabase, $firebaseArray) {
         $scope.tide = tide;
         $scope.summary = summary;
-        $scope.log = LogFinder.find(tide.log_id);
+
+        LogFinder.find(tide.log_id).then(function(log) {
+            $scope.log = log;
+        });
 
         var timeOutIdentifier = null,
             reloadSummaryIfNotCompleted = function() {

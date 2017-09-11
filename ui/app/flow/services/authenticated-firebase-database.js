@@ -42,4 +42,41 @@ angular.module('continuousPipeRiver')
                 return firebase.database();
             });
         };
+    })
+    .service('$firebaseApplicationResolver', function($firebaseAuth) {
+        var applications = {};
+
+        this.init = function(name, configuration) {
+            applications[name] = firebase.initializeApp(configuration, name);
+        };
+
+        this.get = function(descriptor) {
+            if (!descriptor) {
+                return Promise.resolve(firebase);
+            }
+
+            if (!descriptor.name) {
+                throw new Error('Application "' + descriptor.name + '" has not be initialized before');
+            } else if (!(descriptor.name in applications)) {
+                throw new Error('Unable to figure out which application to use');
+            }
+
+            var application = applications[descriptor.name];
+            var promise = Promise.resolve(application);
+
+            if (descriptor.authentication_token) {
+                promise = $firebaseAuth(application.auth()).$signInWithCustomToken(descriptor.authentication_token).then(function() {
+                    return application;
+                });
+            }
+
+            return promise;
+        };
+    })
+    .service('$firebaseDatabaseResolver', function($firebaseApplicationResolver) {
+        this.get = function(descriptor) {
+            return $firebaseApplicationResolver.get(descriptor).then(function(application) {
+                return application.database();
+            });
+        };
     });

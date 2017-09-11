@@ -14,21 +14,21 @@ angular.module('continuousPipeRiver')
                         'environment': $scope.environment.identifier,
                         'pod': $scope.pod.name || $scope.pod.identifier
                     })).then(function(response) {
-                        var log = LogFinder.find(response.data.identifier);
+                        return LogFinder.find(response.data).then(function(log) {
+                            log.$bindTo($scope, 'log').then(function (unbind) {
+                                var unwatch = $scope.$watch('log', function (log) {
+                                    if (!log) {
+                                        return;
+                                    }
 
-                        log.$bindTo($scope, 'log').then(function(unbind) {
-                            var unwatch = $scope.$watch('log', function(log) {
-                                if (!log) {
-                                    return;
-                                }
+                                    $scope.timedOut = $scope.timedOut || log.timedOut;
 
-                                $scope.timedOut = $scope.timedOut || log.timedOut;
-
-                                if (log.status == 'finished') {
-                                    console.log('Unbind log');
-                                    unbind();
-                                    unwatch();
-                                }
+                                    if (log.status == 'finished') {
+                                        console.log('Unbind log');
+                                        unbind();
+                                        unwatch();
+                                    }
+                                });
                             });
                         });
                     });
