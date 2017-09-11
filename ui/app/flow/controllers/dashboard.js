@@ -23,13 +23,21 @@ angular.module('continuousPipeRiver')
         }
 
         $scope.chosenPipeline = function(pipelines) {
-            const newPipelines = pipelines.sort((a, b) => a.name !== b.name ? a.name < b.name ? -1 : 1 : 0);
+            var newPipelines = pipelines.sort(function(a, b) {
+                if (a.name !== b.name) {
+                    if (a.name < b.name) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }                 
+                return 0;
+            });
             if (pipelineInfo.id == undefined) {
-                console.log($scope)
                 $scope.pipelineSelected.selected = $scope.pipelines[0];
                 return newPipelines[0];
             } else {
-                for(const pipeline in pipelines) {
+                for(var pipeline in pipelines) {
                     if (pipelines[pipeline].uuid === pipelineInfo.id) {
                         return pipelines[pipeline];
                     } 
@@ -87,7 +95,7 @@ angular.module('continuousPipeRiver')
 
     .factory('pipelineInfo', 
         function() {
-            const factory = {};
+            var factory = {};
 
             factory.changePipeline = function(pipelineId) {
                 factory.id = pipelineId;
