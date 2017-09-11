@@ -91,19 +91,20 @@
             <argument type="service" id="river.github.client_factory" />
             <argument type="service" id="logger" />
             <argument type="service" id="river.pull_request_resolver" />
-            <argument type="service" id="river.repository.flow" />
         </service>
 
         <service id="river.task_filter.context_factory.cached"
                  class="ContinuousPipe\River\Filter\CachedContextFactory"
-                 decorates="river.task_filter.context_factory">
+                 decorates="river.task_filter.context_factory"
+                 decoration-priority="10">
             <argument type="service" id="river.task_filter.context_factory.cached.inner" />
             <argument type="service" id="river.cache" />
         </service>
         
         <service id="river.task_filter.context_factory.noncached"
                  class="ContinuousPipe\River\Filter\NonCachableContextFactory"
-                 decorates="river.task_filter.context_factory.cached">
+                 decorates="river.task_filter.context_factory"
+                 decoration-priority="5">
             <argument type="service" id="river.task_filter.context_factory.noncached.inner" />
         </service>
 

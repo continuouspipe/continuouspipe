@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Filter;
 
+use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tide\Configuration\ArrayObject;
 use Ramsey\Uuid\UuidInterface;
 use ContinuousPipe\River\CodeReference;
@@ -23,15 +24,11 @@ class NonCachableContextFactory implements ContextFactory
     /**
      * {@inheritdoc}
      */
-    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null)
+    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null) : ArrayObject
     {
         $context = $this->decoratedContext->create($flowUuid, $codeReference);
 
         if (null !== $tide) {
-            $context['tide'] = new ArrayObject([
-                'uuid' => (string) $tide->getUuid(),
-            ]);
-
             $context['tasks'] = $this->createTasksView($tide->getTasks()->getTasks());
         }
 
@@ -41,7 +38,7 @@ class NonCachableContextFactory implements ContextFactory
     /**
      * @param Task[] $tasks
      *
-     * @return object
+     * @return TaskListView
      */
     private function createTasksView(array $tasks)
     {

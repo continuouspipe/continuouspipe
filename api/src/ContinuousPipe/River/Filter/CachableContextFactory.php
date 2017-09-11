@@ -34,28 +34,21 @@ class CachableContextFactory implements ContextFactory
     private $pullRequestResolver;
 
     /**
-     * @var FlowRepository
-     */
-    private $flowRepository;
-
-    /**
      * @param ClientFactory       $gitHubClientFactory
      * @param LoggerInterface     $logger
      * @param PullRequestResolver $pullRequestResolver
-     * @param FlowRepository      $flowRepository
      */
-    public function __construct(ClientFactory $gitHubClientFactory, LoggerInterface $logger, PullRequestResolver $pullRequestResolver, FlowRepository $flowRepository)
+    public function __construct(ClientFactory $gitHubClientFactory, LoggerInterface $logger, PullRequestResolver $pullRequestResolver)
     {
         $this->gitHubClientFactory = $gitHubClientFactory;
         $this->logger = $logger;
         $this->pullRequestResolver = $pullRequestResolver;
-        $this->flowRepository = $flowRepository;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null)
+    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null) : ArrayObject
     {
         $context = [
             'code_reference' => new ArrayObject([
@@ -72,29 +65,9 @@ class CachableContextFactory implements ContextFactory
             $context['tide'] = new ArrayObject([
                 'uuid' => (string) $tide->getUuid(),
             ]);
-
-            $context['tasks'] = $this->createTasksView($tide->getTasks()->getTasks());
         }
 
         return new ArrayObject($context);
-    }
-
-    /**
-     * @param Task[] $tasks
-     *
-     * @return object
-     */
-    private function createTasksView(array $tasks)
-    {
-        $view = new TaskListView();
-
-        foreach ($tasks as $task) {
-            $taskId = $task->getIdentifier();
-
-            $view->add($taskId, $task->getExposedContext());
-        }
-
-        return $view;
     }
 
     /**

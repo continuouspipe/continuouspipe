@@ -28,13 +28,13 @@ class CachedContextFactory implements ContextFactory
     /**
      * {@inheritdoc}
      */
-    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null)
+    public function create(UuidInterface $flowUuid, CodeReference $codeReference, Tide $tide = null) : Tide\Configuration\ArrayObject
     {
         if (null === $tide) {
             return $this->decoratedContext->create($flowUuid, $codeReference);
         }
 
-        $cacheKey = "tide-filter-context:" . $tide->getUuid();
+        $cacheKey = "tide-filter-context:" . $tide->getUuid()->toString();
 
         if (false === ($cachedData = $this->cache->fetch($cacheKey))) {
             $cachedData = $this->decoratedContext->create($flowUuid, $codeReference, $tide);
