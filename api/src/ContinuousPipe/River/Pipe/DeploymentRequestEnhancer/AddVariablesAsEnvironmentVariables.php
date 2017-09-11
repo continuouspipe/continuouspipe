@@ -80,7 +80,7 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
 
     private function shouldBeAddedAsDefault(Component $component, array $tideVariable) : bool
     {
-        foreach ($tideVariable['default_as_environment_variable'] as $serviceName) {
+        foreach ($tideVariable['as_environment_variable'] as $serviceName) {
             if ($serviceName == '*' || $serviceName == $component->getName()) {
                 return true;
             }

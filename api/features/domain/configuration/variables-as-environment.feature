@@ -15,7 +15,7 @@ Feature:
       value: wow
     - name: SECRET
       value: qwerty
-      default_as_environment_variable: true
+      as_environment_variable: true
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -52,11 +52,11 @@ Feature:
     variables:
     - name: ENVIRONMENT
       value: prod
-      default_as_environment_variable: true
+      as_environment_variable: true
       condition: code_reference.branch == 'master'
     - name: ENVIRONMENT
       value: dev
-      default_as_environment_variable: true
+      as_environment_variable: true
       condition: code_reference.branch != 'master'
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
@@ -85,7 +85,7 @@ Feature:
     variables:
     - name: ENV
       value: prod
-      default_as_environment_variable: true
+      as_environment_variable: true
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -124,10 +124,10 @@ Feature:
     variables:
         - name: ENV
           value: prod
-          default_as_environment_variable: true
+          as_environment_variable: true
         - name: SECRET
           value: secret
-          default_as_environment_variable: true
+          as_environment_variable: true
 
     defaults:
         cluster: foo
@@ -163,7 +163,7 @@ Feature:
     variables:
     - name: SECRET
       value: qwerty
-      default_as_environment_variable: true
+      as_environment_variable: true
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """
@@ -206,10 +206,10 @@ Feature:
     variables:
     - name: SUPER_SECRET
       value: wow
-      default_as_environment_variable: ['foo']
+      as_environment_variable: ['foo']
     - name: SECRET
       value: qwerty
-      default_as_environment_variable: true
+      as_environment_variable: true
     """
     And I have a "continuous-pipe.yml" file in my repository that contains:
     """

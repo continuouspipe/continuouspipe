@@ -127,7 +127,7 @@ class ConfigurationDefinition implements ConfigurationInterface
                     ->scalarNode('condition')->end()
                     ->scalarNode('expression')->end()
                     ->scalarNode('encrypted_value')->end()
-                    ->arrayNode('default_as_environment_variable')
+                    ->arrayNode('as_environment_variable')
                         ->beforeNormalization()
                             ->always()
                             ->then(function ($value) {
