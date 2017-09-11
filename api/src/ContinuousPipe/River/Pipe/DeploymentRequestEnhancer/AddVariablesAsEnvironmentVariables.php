@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
+use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\River\Task\TaskDetails;
@@ -30,6 +31,7 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
         foreach ($deploymentRequest->getSpecification()->getComponents() as $component) {
             $component->getSpecification()->setEnvironmentVariables($this->addDefaultComponentEnvironmentVariables(
                 $tide,
+                $component,
                 $component->getSpecification()->getEnvironmentVariables()
             ));
         }
@@ -40,15 +42,16 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
     /**
      * @param Tide $tide
      * @param EnvironmentVariable[] $variables
+     * @param Component $component
      *
      * @return EnvironmentVariable[]
      */
-    private function addDefaultComponentEnvironmentVariables(Tide $tide, array $variables) : array
+    private function addDefaultComponentEnvironmentVariables(Tide $tide, Component $component, array $variables) : array
     {
         $tideVariables = $tide->getConfiguration()['variables'];
 
         foreach ($tideVariables as $tideVariable) {
-            if ($tideVariable['default_as_environment_variable']) {
+            if ($this->shouldBeAddedAsDefault($component, $tideVariable)) {
                 if (!$this->hasEnvironmentVariable($variables, $tideVariable['name'])) {
                     $variables[] = new EnvironmentVariable($tideVariable['name'], $tideVariable['value']);
                 }
@@ -68,6 +71,17 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
     {
         foreach ($variables as $variable) {
             if ($variable->getName() == $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function shouldBeAddedAsDefault(Component $component, array $tideVariable) : bool
+    {
+        foreach ($tideVariable['default_as_environment_variable'] as $serviceName) {
+            if ($serviceName == '*' || $serviceName == $component->getName()) {
                 return true;
             }
         }

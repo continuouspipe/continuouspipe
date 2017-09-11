@@ -199,3 +199,57 @@ Feature:
       | name   | value  |
       | SECRET | qwerty |
       | TEST   | bar    |
+
+  Scenario: Variables can be exposed to only a specific set of services
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: SUPER_SECRET
+      value: wow
+      default_as_environment_variable: ['foo']
+    - name: SECRET
+      value: qwerty
+      default_as_environment_variable: true
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: busyboxy
+                    bar:
+                        specification:
+                            source:
+                                image: busyboxy
+
+        tests:
+            run:
+                commands:
+                    - echo foo
+                image: busybox
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "foo" should be deployed with the following environment variables:
+      | name         | value  |
+      | SECRET       | qwerty |
+      | SUPER_SECRET | wow    |
+    And the component "bar" should be deployed with the following environment variables:
+      | name   | value  |
+      | SECRET | qwerty |
+    And the component "bar" should be deployed without the following environment variables:
+      | name         | value  |
+      | SUPER_SECRET | foo    |
+    And the component "run-tests" should be deployed with the following environment variables:
+      | name   | value  |
+      | SECRET | qwerty |
+    And the component "run-tests" should be deployed without the following environment variables:
+      | name         | value  |
+      | SUPER_SECRET | wow    |
