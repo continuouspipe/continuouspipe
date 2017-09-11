@@ -43,6 +43,17 @@
             </md-input-container>
 
             <md-input-container>
+                <md-button class="md-fab md-mini md-black" ng-click="changeExposedAsEnvironment($event, key)">
+                    <md-tooltip md-direction="left">
+                        <span ng-if="variable.as_environment_variable === true">Variable will be injected as environment variable in all the containers</span>
+                        <span ng-if="variable.as_environment_variable.length">Variable will be injected as environment variable to some of your containers</span>
+                        <span ng-if="!variable.as_environment_variable">Variable will NOT be injected as environment variable</span>
+                    </md-tooltip>
+                    <md-icon ng-if="variable.as_environment_variable === true">cloud_done</md-icon>
+                    <md-icon ng-if="variable.as_environment_variable.length">cloud</md-icon>
+                    <md-icon ng-if="!variable.as_environment_variable">cloud_off</md-icon>
+                </md-button>
+
                 <md-button class="md-fab md-mini md-primary" aria-label="Encrypt the value" ng-click="encryptByKey(key)" ng-show="!variable.encrypted_value">
                     <md-tooltip md-direction="left">Encrypt variable's value</md-tooltip>
                     <md-icon>enhanced_encryption</md-icon>
