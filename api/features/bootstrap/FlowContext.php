@@ -12,6 +12,7 @@ use ContinuousPipe\River\EventStore\EventStore;
 use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
+use ContinuousPipe\River\Managed\Resources\Discrepancies\RepairResourcesDiscrepancies;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 use ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository;
@@ -138,6 +139,10 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var TracedUsageHistoryRepository
      */
     private $tracedUsageHistoryRepository;
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
 
     public function __construct(
         FakeClient $pipeClient,
@@ -150,7 +155,8 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         TeamRepository $teamRepository,
         MessageBus $eventBus,
         SerializerInterface $serializer,
-        TracedUsageHistoryRepository $tracedUsageHistoryRepository
+        TracedUsageHistoryRepository $tracedUsageHistoryRepository,
+        MessageBus $commandBus
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
@@ -163,6 +169,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->hookablePipeClient = $hookablePipeClient;
         $this->serializer = $serializer;
         $this->tracedUsageHistoryRepository = $tracedUsageHistoryRepository;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -1479,6 +1486,8 @@ EOF;
                 new \DateTime($row['datetime'])
             ));
         }
+
+        $this->tracedUsageHistoryRepository->clearHistory();
     }
 
     /**
@@ -1495,6 +1504,14 @@ EOF;
                 'interval' => $interval
             ]
         ));
+    }
+
+    /**
+     * @When I attempt to repair the resources discrepancies between :left and :right for the flow :flowUuid
+     */
+    public function iAttemptToRepairResourcesDiscrepanciesBetweenAnd($left, $right, $flowUuid)
+    {
+        $this->commandBus->handle(new RepairResourcesDiscrepancies(new \DateTime($left), new \DateTime($right), Uuid::fromString($flowUuid)));
     }
 
     /**
@@ -1549,18 +1566,35 @@ EOF;
 
     /**
      * @Then a resource usage entry for the environment :environment in the flow :flowUuid should have been saved
+     * @Then a resource usage entry for the environment :environment in the flow :flowUuid for the date :date should have been saved
      */
-    public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveBeenSaved($environment, $flowUuid)
+    public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveBeenSaved($environment, $flowUuid, $date = null)
     {
-        $this->getSavedHistoryEntry($environment, $flowUuid);
+        if (null === $this->getSavedHistoryEntry($environment, $flowUuid, $date)) {
+            throw new \RuntimeException('Entry not found');
+        }
+    }
+
+    /**
+     * @Then a resource usage entry for the environment :environment in the flow :flowUuid should not have been saved
+     * @Then a resource usage entry for the environment :environment in the flow :flowUuid for the date :date should not have been saved
+     */
+    public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldNotHaveBeenSaved($environment, $flowUuid, $date = null)
+    {
+        if (null !== ($entry = $this->getSavedHistoryEntry($environment, $flowUuid, $date))) {
+            var_dump($entry);
+
+            throw new \RuntimeException('Entry IS found');
+        }
     }
 
     /**
      * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a memory limit of :value
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid for the date :date should have a memory limit of :value
      */
-    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryLimitOf($environment, $flowUuid, $value)
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryLimitOf($environment, $flowUuid, $value, $date = null)
     {
-        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getLimits()->getMemory();
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid, $date)->getResourcesUsage()->getLimits()->getMemory();
 
         if ($value != $foundValue) {
             throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
@@ -1569,10 +1603,11 @@ EOF;
 
     /**
      * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a CPU limit of :value
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid for the date :date should have a CPU limit of :value
      */
-    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuLimitOf($environment, $flowUuid, $value)
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuLimitOf($environment, $flowUuid, $value, $date = null)
     {
-        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getLimits()->getCpu();
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid, $date)->getResourcesUsage()->getLimits()->getCpu();
 
         if ($value != $foundValue) {
             throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
@@ -1581,10 +1616,11 @@ EOF;
 
     /**
      * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a memory request of :value
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid for the date :date should have a memory request of :value
      */
-    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryRequestOfMi($environment, $flowUuid, $value)
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryRequestOfMi($environment, $flowUuid, $value, $date = null)
     {
-        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getRequests()->getMemory();
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid, $date)->getResourcesUsage()->getRequests()->getMemory();
 
         if ($value != $foundValue) {
             throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
@@ -1593,10 +1629,11 @@ EOF;
 
     /**
      * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a CPU request of :value
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid for the date :date should have a CPU request of :value
      */
-    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuRequestOf($environment, $flowUuid, $value)
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuRequestOf($environment, $flowUuid, $value, $date = null)
     {
-        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getRequests()->getCpu();
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid, $date)->getResourcesUsage()->getRequests()->getCpu();
 
         if ($value != $foundValue) {
             throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
@@ -1640,15 +1677,28 @@ EOF;
         }
     }
 
-    private function getSavedHistoryEntry(string $environment, string $flowUuid): ResourceUsageHistory
+    /**
+     * @param string $environment
+     * @param string $flowUuid
+     *
+     * @return ResourceUsageHistory|null
+     */
+    private function getSavedHistoryEntry(string $environment, string $flowUuid, string $date = null)
     {
         $saved = $this->tracedUsageHistoryRepository->getSaved();
         foreach ($saved as $history) {
-            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid)) && $history->getEnvironmentIdentifier() == $environment) {
+            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid))
+                &&
+                $history->getEnvironmentIdentifier() == $environment
+                && (
+                    $date === null ||
+                    new \DateTime($date) == $history->getDateTime()
+                )
+            ) {
                 return $history;
             }
         }
 
-        throw new \RuntimeException('Such usage history not found');
+        return null;
     }
 }

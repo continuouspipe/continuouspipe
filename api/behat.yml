@@ -41,17 +41,18 @@ default:
                     - @river.code_repository.code_archive_streamer.overwritten
                     - @river.code_repository.partially_overwritten_filesystem_resolver
                 - FlowContext:
-                    - @river.pipe_client.fake
-                    - @river.hookable_pipe_client
-                    - @river.pipe_client
-                    - @kernel
-                    - @river.repository.flow
-                    - @repository_river.code_repository_repository
-                    - @security.authenticator.client.in_memory
-                    - @authenticator.team_repository
-                    - @event_bus
-                    - @jms_serializer
-                    - @river.managed.resources.history_repository.traced
+                    pipeClient: @river.pipe_client.fake
+                    hookablePipeClient: @river.hookable_pipe_client
+                    traceablePipeClient: @river.pipe_client
+                    kernel: @kernel
+                    flowRepository: @river.repository.flow
+                    codeRepositoryRepository: @repository_river.code_repository_repository
+                    authenticatorClient: @security.authenticator.client.in_memory
+                    teamRepository: @authenticator.team_repository
+                    eventBus: @event_bus
+                    serializer: @jms_serializer
+                    tracedUsageHistoryRepository: @river.managed.resources.history_repository.traced
+                    commandBus: @command_bus
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -193,17 +194,18 @@ default:
                     - @river.code_repository.code_archive_streamer.overwritten
                     - @river.code_repository.partially_overwritten_filesystem_resolver
                 - FlowContext:
-                    - @river.pipe_client.fake
-                    - @river.hookable_pipe_client
-                    - @river.pipe_client
-                    - @kernel
-                    - @river.repository.flow
-                    - @repository_river.code_repository_repository
-                    - @security.authenticator.client.in_memory
-                    - @authenticator.team_repository
-                    - @event_bus
-                    - @jms_serializer
-                    - @river.managed.resources.history_repository.traced
+                    pipeClient: @river.pipe_client.fake
+                    hookablePipeClient: @river.hookable_pipe_client
+                    traceablePipeClient: @river.pipe_client
+                    kernel: @kernel
+                    flowRepository: @river.repository.flow
+                    codeRepositoryRepository: @repository_river.code_repository_repository
+                    authenticatorClient: @security.authenticator.client.in_memory
+                    teamRepository: @authenticator.team_repository
+                    eventBus: @event_bus
+                    serializer: @jms_serializer
+                    tracedUsageHistoryRepository: @river.managed.resources.history_repository.traced
+                    commandBus: @command_bus
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -305,17 +307,18 @@ default:
                     - @river.code_repository.code_archive_streamer.overwritten
                     - @river.code_repository.partially_overwritten_filesystem_resolver
                 - FlowContext:
-                    - @river.pipe_client.fake
-                    - @river.hookable_pipe_client
-                    - @river.pipe_client
-                    - @kernel
-                    - @river.repository.flow
-                    - @repository_river.code_repository_repository
-                    - @security.authenticator.client.in_memory
-                    - @authenticator.team_repository
-                    - @event_bus
-                    - @jms_serializer
-                    - @river.managed.resources.history_repository.traced
+                    pipeClient: @river.pipe_client.fake
+                    hookablePipeClient: @river.hookable_pipe_client
+                    traceablePipeClient: @river.pipe_client
+                    kernel: @kernel
+                    flowRepository: @river.repository.flow
+                    codeRepositoryRepository: @repository_river.code_repository_repository
+                    authenticatorClient: @security.authenticator.client.in_memory
+                    teamRepository: @authenticator.team_repository
+                    eventBus: @event_bus
+                    serializer: @jms_serializer
+                    tracedUsageHistoryRepository: @river.managed.resources.history_repository.traced
+                    commandBus: @command_bus
                 - Task\BuildContext:
                     - @builder.client
                     - @builder.client.traceable
@@ -383,17 +386,18 @@ smoke:
                     - @lexik_jwt_authentication.jwt_manager
                     - @jms_serializer
                 - FlowContext:
-                    - @river.pipe_client.fake
-                    - @river.hookable_pipe_client
-                    - @river.pipe_client
-                    - @kernel
-                    - @river.repository.flow
-                    - @repository_river.code_repository_repository
-                    - @security.authenticator.client.in_memory
-                    - @authenticator.team_repository
-                    - @event_bus
-                    - @jms_serializer
-                    - @river.managed.resources.history_repository.traced
+                    pipeClient: @river.pipe_client.fake
+                    hookablePipeClient: @river.hookable_pipe_client
+                    traceablePipeClient: @river.pipe_client
+                    kernel: @kernel
+                    flowRepository: @river.repository.flow
+                    codeRepositoryRepository: @repository_river.code_repository_repository
+                    authenticatorClient: @security.authenticator.client.in_memory
+                    teamRepository: @authenticator.team_repository
+                    eventBus: @event_bus
+                    serializer: @jms_serializer
+                    tracedUsageHistoryRepository: @river.managed.resources.history_repository.traced
+                    commandBus: @command_bus
                 - TideContext:
                     - @command_bus
                     - @event_bus

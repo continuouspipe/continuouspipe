@@ -91,4 +91,9 @@ class ResourceUsage
             )
         );
     }
+
+    public function isZero() : bool
+    {
+        return $this == self::zero();
+    }
 }

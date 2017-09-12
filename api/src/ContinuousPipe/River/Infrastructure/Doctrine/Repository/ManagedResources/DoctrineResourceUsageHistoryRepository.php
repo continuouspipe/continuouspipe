@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Infrastructure\Doctrine\Repository\ManagedResources;
 
+use ContinuousPipe\River\Managed\Resources\Calculation\Interval;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourcesException;
@@ -37,5 +38,25 @@ class DoctrineResourceUsageHistoryRepository implements ResourceUsageHistoryRepo
         return $this->entityManager->getRepository(ResourceUsageHistory::class)->findBy([
             'flowUuid' => $flowUuid,
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findByFlowAndDateInterval(UuidInterface $flowUuid, Interval $interval): array
+    {
+        return $this->entityManager->getRepository(ResourceUsageHistory::class)
+            ->createQueryBuilder('h')
+            ->where([
+                'h.flowUuid = :flowUuid',
+                'h.dateTime BETWEEN :left AND :right'
+            ])
+            ->setParameters([
+                'flowUuid' => $flowUuid->toString(),
+                'left' => $interval->getLeft(),
+                'right' => $interval->getRight(),
+            ])
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -7,12 +7,14 @@ use AppBundle\Request\Managed\UsedResourcesRequest;
 use ContinuousPipe\Model\Component\ResourcesRequest;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
+use ContinuousPipe\River\Managed\Resources\Calculation\Interval;
 use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshot;
 use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCalculator;
 use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCollection;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
+use ContinuousPipe\River\Managed\Resources\UsageProjection\FlowUsageProjector;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -58,6 +60,10 @@ class UsageController
      * @var TimeResolver
      */
     private $timeResolver;
+    /**
+     * @var FlowUsageProjector
+     */
+    private $flowUsageProjector;
 
     public function __construct(
         ResourceUsageHistoryRepository $usageHistoryRepository,
@@ -65,7 +71,8 @@ class UsageController
         TideRepository $tideRepository,
         TeamRepository $teamRepository,
         LoggerInterface $logger,
-        TimeResolver $timeResolver
+        TimeResolver $timeResolver,
+        FlowUsageProjector $flowUsageProjector
     ) {
         $this->usageHistoryRepository = $usageHistoryRepository;
         $this->flatFlowRepository = $flatFlowRepository;
@@ -73,6 +80,7 @@ class UsageController
         $this->logger = $logger;
         $this->teamRepository = $teamRepository;
         $this->timeResolver = $timeResolver;
+        $this->flowUsageProjector = $flowUsageProjector;
     }
 
     /**
@@ -114,7 +122,7 @@ class UsageController
      */
     public function getResourcesUsageAction(FlatFlow $flow, Request $request)
     {
-        return $this->getResourcesUsage(
+        return $this->flowUsageProjector->getResourcesUsage(
             $flow,
             new \DateTime($request->get('left', '-30days')),
             new \DateTime($request->get('right', 'now')),
@@ -163,7 +171,7 @@ class UsageController
         $usages = array_reduce($flows, function (array $carry, FlatFlow $flow) use ($left, $right, $interval) {
             $flowUsages = $this->mergeUsages(array_merge(
                 $this->getTideUsage($flow, $left, $right, $interval),
-                $this->getResourcesUsage($flow, $left, $right, $interval)
+                $this->flowUsageProjector->getResourcesUsage($flow, $left, $right, $interval)
             ));
 
             return array_merge(
@@ -202,31 +210,13 @@ class UsageController
         throw new \InvalidArgumentException('No label on the namespace');
     }
 
-    private function foreachInterval(\DateTime $left, \DateTime $right, \DateInterval $interval, callable $intervalCallable)
-    {
-        $results = [];
-        $cursor = $left;
-
-        while ($cursor < $right) {
-            $cursorEnd = clone $cursor;
-            $cursorEnd->add($interval);
-
-            $results[] = $intervalCallable($cursor, $cursorEnd);
-
-            // Move cursor
-            $cursor = $cursorEnd;
-        }
-
-        return $results;
-    }
-
     private function getTideUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval): array
     {
         $tideCollection = new ArrayCollection(
             $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
         );
 
-        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
+        return (new Interval($left, $right))->foreachInterval($interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
             return [
                 'datetime' => [
                     'left' => clone $left,
@@ -238,44 +228,6 @@ class UsageController
                             return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
                         })
                         ->count(),
-                ],
-            ];
-        });
-    }
-
-    private function getResourcesUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval) : array
-    {
-        $history = $this->usageHistoryRepository->findByFlow($flow->getUuid());
-        $usageCalculator = new UsageSnapshotCalculator();
-        $snapshotsCollection = new UsageSnapshotCollection();
-
-        // From the history to point-in-time snapshot
-        foreach ($history as $entry) {
-            $usageCalculator->updateWith($entry);
-
-            $snapshotsCollection->add(
-                $entry->getDateTime(),
-                $usageCalculator->snapshot()
-            );
-        }
-
-        return $this->foreachInterval($left, $right, $interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($snapshotsCollection) {
-            $previousUsage = $snapshotsCollection->lastBefore($left) ?: ResourceUsage::zero();
-
-            if (null === ($usageInInterval = $snapshotsCollection->highestUsageInInterval($left, $right))) {
-                $usageInInterval = $previousUsage;
-            }
-
-            $resources = $usageInInterval->max($previousUsage)->getLimits();
-
-            return [
-                'datetime' => [
-                    'left' => clone $left,
-                    'right' => clone $right,
-                ],
-                'usage' => [
-                    'cpu' => $resources->getCpu(),
-                    'memory' => $resources->getMemory(),
                 ],
             ];
         });
