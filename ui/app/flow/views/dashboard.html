@@ -18,7 +18,6 @@
     </div>
 </md-content>
 <md-content flex id="content" ng-if="!isLoading && tides.length != 0">
-    <md-subheader class="md-primary">Available pipelines</md-subheader>
     <div class="pipeline-content-container">
         <pipeline-overview ng-class="{'pipelineSelected': pipelineSelected.multipleOptions && pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
     </div>
