@@ -93,6 +93,7 @@
             <argument type="service" id="river.pull_request_resolver" />
         </service>
 
+        <!--
         <service id="river.task_filter.context_factory.cached"
                  class="ContinuousPipe\River\Filter\CachedContextFactory"
                  decorates="river.task_filter.context_factory"
@@ -100,7 +101,7 @@
             <argument type="service" id="river.task_filter.context_factory.cached.inner" />
             <argument type="service" id="river.cache" />
         </service>
-        
+        -->
         <service id="river.task_filter.context_factory.noncached"
                  class="ContinuousPipe\River\Filter\NonCachableContextFactory"
                  decorates="river.task_filter.context_factory"

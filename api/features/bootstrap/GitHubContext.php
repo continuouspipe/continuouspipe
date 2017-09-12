@@ -539,24 +539,34 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @When the pull request #:number is synchronized
+     * @When the pull request #:number for branch :headRef is synchronized
      */
-    public function thePullRequestIsSynchronized($number)
+    public function thePullRequestIsSynchronized($number, $headRef = null)
     {
         $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'synchronize';
+
+        if ($headRef !== null) {
+            $contents['pull_request']['head']['ref'] = $headRef;
+        }
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }
 
     /**
      * @When the pull request #:number is labeled
+     * @When the pull request #:number for branch :headRef is labeled
      */
-    public function thePullRequestIsLabeled($number)
+    public function thePullRequestIsLabeled($number, $headRef = null)
     {
         $contents = \GuzzleHttp\json_decode($this->readFixture('pull_request-created.json'), true);
         $contents['number'] = $number;
         $contents['action'] = 'labeled';
+
+        if ($headRef !== null) {
+            $contents['pull_request']['head']['ref'] = $headRef;
+        }
 
         $this->sendWebHook('pull_request', json_encode($contents));
     }
@@ -590,18 +600,39 @@ class GitHubContext implements CodeRepositoryContext
 
     /**
      * @Given the pull request #:number have the label :label
+     * @Given the pull request #:number for branch :branch have the label :label
      */
-    public function thePullRequestHaveTheLabel($number, $label)
+    public function thePullRequestHaveTheLabel($number, $label, $branch = null)
     {
-        $this->thePullRequestHaveTheLabels($number, $label);
+        $this->thePullRequestHaveTheLabels($number, $label, $branch);
     }
 
     /**
      * @Given the pull request #:number have the labels :labelsString
+     * @Given the pull request #:number for branch :branch have the labels :labelsString
      */
-    public function thePullRequestHaveTheLabels($number, $labelsString)
+    public function thePullRequestHaveTheLabels($number, $labelsString, $branch = null)
     {
-        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $labelsString) {
+        $this->gitHubHttpClient->addHook(function($path, $body, $httpMethod, $headers) use ($number, $labelsString, $branch) {
+            if ($httpMethod == 'GET' && preg_match('#/pulls$#', $path)) {
+                return new \Guzzle\Http\Message\Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json',
+                    ],
+                    json_encode([
+                        [
+                            'id' => $number,
+                            'number' => $number,
+                            'head' => [
+                                'ref' => $branch,
+                            ]
+                        ],
+                    ])
+                );
+            }
+
+
             if ($httpMethod == 'GET' && preg_match('#/issues/'.$number.'/labels$#', $path)) {
                 $labels = array_map(function($label) use ($path) {
                     return [

@@ -52,5 +52,4 @@ class NonCachableContextFactory implements ContextFactory
 
         return $view;
     }
-
 }
