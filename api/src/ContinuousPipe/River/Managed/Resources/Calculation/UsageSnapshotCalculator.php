@@ -44,4 +44,12 @@ class UsageSnapshotCalculator
             $limits->toResourcesRequest()
         );
     }
+
+    /**
+     * @return ResourceUsage[]
+     */
+    public function getUsagePerEnvironment(): array
+    {
+        return $this->usagePerEnvironment;
+    }
 }

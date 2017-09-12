@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Managed\Resources;
 
+use ContinuousPipe\River\Managed\Resources\Calculation\Interval;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use Ramsey\Uuid\UuidInterface;
@@ -45,10 +46,23 @@ class TracedUsageHistoryRepository implements ResourceUsageHistoryRepository
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function findByFlowAndDateInterval(UuidInterface $flowUuid, Interval $interval): array
+    {
+        return $this->decoratedRepository->findByFlowAndDateInterval($flowUuid, $interval);
+    }
+
+    /**
      * @return ResourceUsageHistory[]
      */
     public function getSaved(): array
     {
         return $this->saved;
+    }
+
+    public function clearHistory()
+    {
+        $this->saved = [];
     }
 }
