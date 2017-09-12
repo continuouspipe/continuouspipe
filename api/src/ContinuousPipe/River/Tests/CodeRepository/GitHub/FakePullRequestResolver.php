@@ -16,7 +16,6 @@ class FakePullRequestResolver implements PullRequestResolver
      * @var PullRequestResolver
      */
     private $innerResolver;
-    private $inMemoryOnly = true;
 
     /**
      * FakePullRequestResolver constructor.
@@ -33,10 +32,6 @@ class FakePullRequestResolver implements PullRequestResolver
     {
         if (count($this->resolution) > 0) {
             return $this->resolution;
-        }
-
-        if ($this->inMemoryOnly) {
-            return [];
         }
 
         return $this->innerResolver->findPullRequestWithHeadReference($flowUuid, $codeReference);
@@ -69,15 +64,6 @@ class FakePullRequestResolver implements PullRequestResolver
             return $this->resolution;
         }
 
-        if ($this->inMemoryOnly) {
-            return [];
-        }
-
         return $this->innerResolver->findAll($flowUuid, $repository);
-    }
-
-    public function notInMemoryOnly()
-    {
-        $this->inMemoryOnly = false;
     }
 }

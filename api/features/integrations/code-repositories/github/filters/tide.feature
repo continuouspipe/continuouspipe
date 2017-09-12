@@ -36,8 +36,8 @@ Feature:
     tasks: [{build: {services: []}}]
     filter: '"Ready for QA" in pull_request.labels'
     """
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is synchronized
+    And the pull request #1 for branch "foo" have the label "Ready for QA"
+    When the pull request #1 for branch "foo" is synchronized
     Then the tide should be created
 
   Scenario: Filter on the branch name
@@ -46,8 +46,8 @@ Feature:
     tasks: [{build: {services: []}}]
     filter: 'code_reference.branch == "master" || "Ready for QA" in pull_request.labels'
     """
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is synchronized
+    And the pull request #1 for branch "foo" have the label "Ready for QA"
+    When the pull request #1 for branch "foo" is synchronized
     Then the tide should be created
 
   Scenario: When a PR is labeled, it should start the tide
@@ -56,8 +56,8 @@ Feature:
     tasks: [{build: {services: []}}]
     filter: '"Ready for QA" in pull_request.labels'
     """
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is labeled
+    And the pull request #1 for branch "foo" have the label "Ready for QA"
+    When the pull request #1 for branch "foo" is labeled
     Then the tide should be created
 
   Scenario: Uses a pull-request filter on pipelines
@@ -72,8 +72,8 @@ Feature:
         condition: '"Ready for QA" in pull_request.labels'
     """
     And the GitHub pull-request #1 contains the tide-related commit
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is labeled
+    And the pull request #1 for branch "foo" have the label "Ready for QA"
+    When the pull request #1 for branch "foo" is labeled
     Then the tide should be created
     And the tide should not be failed
 
@@ -89,6 +89,6 @@ Feature:
         condition: 'pull_request.title matches "#^something#"'
     """
     And the GitHub pull-request #1 titled "something-is-good" contains the tide-related commit
-    When the pull request #1 is synchronized
+    When the pull request #1 for branch "foo" is synchronized
     Then the tide should be created
     And the tide should not be failed

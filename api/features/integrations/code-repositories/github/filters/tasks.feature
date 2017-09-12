@@ -71,8 +71,8 @@ Feature:
             filter:
                 expression: "'Ready for QA' in pull_request.labels"
     """
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is labeled
+    And the pull request #1 for branch "master" have the label "Ready for QA"
+    When the pull request #1 for branch "master" is labeled
     And the tide starts
     Then the tide should be created
     And the build task succeed
@@ -97,8 +97,8 @@ Feature:
             filter:
                 expression: "'Ready for QA' in pull_request.labels"
     """
-    And the pull request #1 have the label "Ready for QA"
-    When the pull request #1 is synchronized
+    And the pull request #1 for branch "master" have the label "Ready for QA"
+    When the pull request #1 for branch "master" is synchronized
     And the tide starts
     Then the tide should be created
     And the build task succeed
