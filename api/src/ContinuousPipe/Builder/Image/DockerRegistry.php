@@ -87,7 +87,7 @@ class DockerRegistry implements Registry
 
             if ($response->getStatusCode() == 401 && null === $token) {
                 // Manifest requests requires authentication.
-                $token = $this->fetchToken($this->fetchAuthDetails($response), $credentials);
+                $token = $this->fetchToken($this->fetchAuthDetails($response), $credentials, $image);
 
                 return $this->requestManifest($image, $credentials, $token);
             }
@@ -110,12 +110,14 @@ class DockerRegistry implements Registry
         return array_column($matches, 2, 1);
     }
 
-    private function fetchToken(array $authDetails, DockerRegistryCredentials $credentials): string
+    private function fetchToken(array $authDetails, DockerRegistryCredentials $credentials, Image $image): string
     {
         try {
             $tokenResponse = $this->client->request(
                 'get',
-                sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'], $authDetails['scope']),
+                sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'],
+                    $this->scopeNeeded($authDetails, $image)
+                ),
                 [
                     'headers' => [
                         'Authorization' => 'Basic ' . base64_encode(
@@ -152,5 +154,12 @@ class DockerRegistry implements Registry
         }
 
         return $serverAddress;
+    }
+
+    private function scopeNeeded(array $authDetails, Image $image)
+    {
+        return isset($authDetails['scope'])
+            ? $authDetails['scope']
+            : sprintf('repository:%s:pull', $image->getTwoPartName());
     }
 }
