@@ -21,6 +21,14 @@
                         </form>
                     </td>
                 </tr>
+                <tr>
+                    <th>Repair resource discrepancies</th>
+                    <td>
+                        <form action="{{ path('admin_flow_repair_resources_discrepancies', {'team': team.slug, 'flow': flow.uuid}) }}" method="POST">
+                            <button class="btn btn-primary">Repair</button>
+                        </form>
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
