@@ -219,3 +219,9 @@ Feature:
     When a tide is started
     Then the build task should be started
     And a log containing "Generating configuration" should not be created
+
+  Scenario: It fails when it can't generate configuration
+    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has flex activated
+    When a tide is started for the branch "master"
+    And the tide should be failed

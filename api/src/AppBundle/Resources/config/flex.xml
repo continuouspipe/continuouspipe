@@ -11,14 +11,10 @@
             <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
             <argument type="service" id="logger" />
         </service>
-        <service id="river.flex.cluster_resolver" class="ContinuousPipe\River\Flex\Cluster\ClusterResolver">
-            <argument>%flex_cluster_address%</argument>
-        </service>
         <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="security.authenticator.client" />
-            <argument type="service" id="river.flex.cluster_resolver" />
             <argument type="service" id="river.flow.transaction_manager" />
             <argument type="service" id="quay.client"/>
 

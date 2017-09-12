@@ -32,10 +32,6 @@ class DoActivateFlex
      */
     private $bucketRepository;
     /**
-     * @var ClusterResolver
-     */
-    private $clusterResolver;
-    /**
      * @var TransactionManager
      */
     private $flowTransactionManager;
@@ -48,14 +44,12 @@ class DoActivateFlex
         FlowRepository $flowRepository,
         BucketRepository $bucketRepository,
         AuthenticatorClient $authenticatorClient,
-        ClusterResolver $clusterResolver,
         TransactionManager $flowTransactionManager,
         QuayClient $quayClient
     ) {
         $this->flowRepository = $flowRepository;
         $this->authenticatorClient = $authenticatorClient;
         $this->bucketRepository = $bucketRepository;
-        $this->clusterResolver = $clusterResolver;
         $this->flowTransactionManager = $flowTransactionManager;
         $this->quayClient = $quayClient;
     }
@@ -64,13 +58,6 @@ class DoActivateFlex
     {
         $flow = $this->flowRepository->find($command->getFlowUuid());
         $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
-
-        if (!$this->hasFlexCluster($bucket)) {
-            $this->authenticatorClient->addClusterToBucket(
-                $bucket->getUuid(),
-                $this->clusterResolver->getCluster()
-            );
-        }
 
         if (null === ($registry = $this->getFlexDockerRegistryCredentials($flow->getTeam(), $bucket))) {
             $registry = $this->generateRobotAccount($flow->getTeam());
@@ -96,16 +83,7 @@ class DoActivateFlex
             $flow->activateFlex();
         });
     }
-
-    private function hasFlexCluster(Bucket $bucket)
-    {
-        $flexClusters = $bucket->getClusters()->filter(function (Cluster $cluster) {
-            return $cluster->getIdentifier() == 'flex';
-        });
-
-        return $flexClusters->count() > 0;
-    }
-
+    
     private function generateRobotAccount(Team $team) : DockerRegistry
     {
         $robotAccountName = $this->getDockerRegistryRobotAccountName($team);
