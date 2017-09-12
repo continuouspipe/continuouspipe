@@ -47,10 +47,10 @@ class DoctrineResourceUsageHistoryRepository implements ResourceUsageHistoryRepo
     {
         return $this->entityManager->getRepository(ResourceUsageHistory::class)
             ->createQueryBuilder('h')
-            ->where([
+            ->where(
                 'h.flowUuid = :flowUuid',
                 'h.dateTime BETWEEN :left AND :right'
-            ])
+            )
             ->setParameters([
                 'flowUuid' => $flowUuid->toString(),
                 'left' => $interval->getLeft(),
