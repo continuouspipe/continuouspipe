@@ -1552,14 +1552,55 @@ EOF;
      */
     public function aResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveBeenSaved($environment, $flowUuid)
     {
-        $saved = $this->tracedUsageHistoryRepository->getSaved();
-        foreach ($saved as $history) {
-            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid)) && $history->getEnvironmentIdentifier() == $environment) {
-                return;
-            }
-        }
+        $this->getSavedHistoryEntry($environment, $flowUuid);
+    }
 
-        throw new \RuntimeException('Such usage history not found');
+    /**
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a memory limit of :value
+     */
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryLimitOf($environment, $flowUuid, $value)
+    {
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getLimits()->getMemory();
+
+        if ($value != $foundValue) {
+            throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
+        }
+    }
+
+    /**
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a CPU limit of :value
+     */
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuLimitOf($environment, $flowUuid, $value)
+    {
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getLimits()->getCpu();
+
+        if ($value != $foundValue) {
+            throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
+        }
+    }
+
+    /**
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a memory request of :value
+     */
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveAMemoryRequestOfMi($environment, $flowUuid, $value)
+    {
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getRequests()->getMemory();
+
+        if ($value != $foundValue) {
+            throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
+        }
+    }
+
+    /**
+     * @Then the resource usage entry for the environment :environment in the flow :flowUuid should have a CPU request of :value
+     */
+    public function theResourceUsageEntryForTheEnvironmentInTheFlowShouldHaveACpuRequestOf($environment, $flowUuid, $value)
+    {
+        $foundValue = $this->getSavedHistoryEntry($environment, $flowUuid)->getResourcesUsage()->getRequests()->getCpu();
+
+        if ($value != $foundValue) {
+            throw new \RuntimeException(sprintf('Found "%s" instead', $foundValue));
+        }
     }
 
     /**
@@ -1597,5 +1638,17 @@ EOF;
                 ));
             }
         }
+    }
+
+    private function getSavedHistoryEntry(string $environment, string $flowUuid): ResourceUsageHistory
+    {
+        $saved = $this->tracedUsageHistoryRepository->getSaved();
+        foreach ($saved as $history) {
+            if ($history->getFlowUuid()->equals(Uuid::fromString($flowUuid)) && $history->getEnvironmentIdentifier() == $environment) {
+                return $history;
+            }
+        }
+
+        throw new \RuntimeException('Such usage history not found');
     }
 }

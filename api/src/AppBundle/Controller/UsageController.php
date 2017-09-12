@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Request\Managed\UsedResourcesNamespace;
 use AppBundle\Request\Managed\UsedResourcesRequest;
+use ContinuousPipe\Model\Component\ResourcesRequest;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshot;
@@ -100,10 +101,7 @@ class UsageController
             Uuid::uuid4(),
             $flowFromNamespace->getUuid(),
             $namespace->getName(),
-            new ResourceUsage(
-                $request->getRequests(),
-                $request->getLimits()
-            ),
+            $this->usageFromRequest($request),
             $this->timeResolver->resolve()
         ));
     }
@@ -320,5 +318,25 @@ class UsageController
 
             return $usage;
         }, $this->aggregateUsageEntriesByDateTime($usages));
+    }
+
+    private function usageFromRequest(UsedResourcesRequest $request): ResourceUsage
+    {
+        return new ResourceUsage(
+            $this->resourcesOrZero($request->getRequests()),
+            $this->resourcesOrZero($request->getLimits())
+        );
+    }
+
+    private function resourcesOrZero(ResourcesRequest $request = null)
+    {
+        if (null === $request) {
+            return new ResourcesRequest(0, 0);
+        }
+
+        return new ResourcesRequest(
+            $request->getCpu() ?: 0,
+            $request->getMemory() ?: 0
+        );
     }
 }
