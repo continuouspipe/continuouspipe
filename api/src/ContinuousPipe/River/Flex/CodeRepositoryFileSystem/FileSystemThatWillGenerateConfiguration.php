@@ -54,7 +54,7 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
      */
     public function getContents($filePath)
     {
-        if (in_array($filePath, self::GENERATED_FILES)) {
+        if (!$this->decoratedFileSystem->exists($filePath) && in_array($filePath, self::GENERATED_FILES)) {
             if (null !== ($generated = $this->generateFile($filePath))) {
                 return $generated;
             }

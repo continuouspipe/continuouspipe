@@ -32,6 +32,15 @@
             </argument>
         </service>
 
+        <service id="river.file_system_resolver.cached.cache" class="Doctrine\Common\Cache\ArrayCache" />
+        <service id="river.file_system_resolver.cached"
+                 class="ContinuousPipe\River\CodeRepository\Caches\CachedFileSystemResolver"
+                 decorates="river.file_system_resolver"
+                 decoration-priority="5">
+            <argument type="service" id="river.file_system_resolver.cached.inner" />
+            <argument type="service" id="river.file_system_resolver.cached.cache" />
+        </service>
+
         <service id="river.pull_request_comment_manipulator" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\DelegatesToPullRequestCommentManipulatorThatSupports">
             <argument type="collection">
                 <argument type="service" id="river.bitbucket.pull_request_comment_manipulator" />
