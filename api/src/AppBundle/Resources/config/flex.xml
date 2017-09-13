@@ -20,6 +20,18 @@
 
             <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
         </service>
+        <service id="river.flex.activation.deactivate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DeactivateFlexHandler">
+            <argument type="service" id="river.flow.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\DeactivateFlex" />
+        </service>
+
+        <!-- Automatic flex activation -->
+        <service id="river.flex.activate_by_default_for_new_flows" class="ContinuousPipe\River\Flex\AsFeature\ActivateFlexWhenFlowIsCreated">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
+        </service>
 
         <!-- Configuration generation -->
         <service id="river.flex.configuration_generation.generator_for_flow" class="ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow">

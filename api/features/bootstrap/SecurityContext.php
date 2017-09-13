@@ -18,6 +18,7 @@ use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Collection;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
@@ -175,6 +176,18 @@ class SecurityContext implements Context
         }
 
         return $team;
+    }
+
+    /**
+     * @Given the team :team do not have any docker registry
+     */
+    public function theTeamDoNotHaveAnyDockerRegistry($team)
+    {
+        $registries = $this->findTeamBucket($team)->getDockerRegistries();
+
+        foreach ($registries as $registry) {
+            $registries->removeElement($registry);
+        }
     }
 
     /**

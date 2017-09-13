@@ -78,6 +78,7 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchPinned" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchUnpinned" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowFlexed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowUnflexed" />
         </service>
 
         <service id="river.event_bus.middleware.flow_event_store" class="ContinuousPipe\River\Flow\Event\Storage\StoreFlowEventsMiddleware">

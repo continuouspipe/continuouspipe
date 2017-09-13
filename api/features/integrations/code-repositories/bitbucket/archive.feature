@@ -7,6 +7,6 @@ Feature:
   Scenario: I can proxy authenticated requests to BitBucket
     Given there is the add-on installed for the BitBucket repository "my-example" owned by user "foo"
     And I have a flow "00000000-0000-0000-0000-000000000000" with a BitBucket repository named "My example" with slug "my-example" and owned by user "foo"
-    And the BitBucket URL "https://bitbucket.org/foo/my-example/get/sha1.tar.gz" will return "OK" with the header "Authorization"
+    And the BitBucket URL "https://bitbucket.org/foo/my-example/get/sha1.tar.gz" will return the content of the fixtures file "empty.tgz" with the header "Authorization"
     When I request the archive of the repository for the flow "00000000-0000-0000-0000-000000000000" and reference "sha1"
-    Then I should receive the archive value "OK"
+    Then I should receive a targz archive

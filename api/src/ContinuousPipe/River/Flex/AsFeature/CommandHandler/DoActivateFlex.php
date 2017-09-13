@@ -2,11 +2,11 @@
 
 namespace ContinuousPipe\River\Flex\AsFeature\CommandHandler;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use ContinuousPipe\QuayIo\QuayClient;
 use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
 use ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex;
-use ContinuousPipe\River\Flex\Cluster\ClusterResolver;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
@@ -83,7 +83,7 @@ class DoActivateFlex
             $flow->activateFlex();
         });
     }
-    
+
     private function generateRobotAccount(Team $team) : DockerRegistry
     {
         $robotAccountName = $this->getDockerRegistryRobotAccountName($team);
@@ -99,7 +99,7 @@ class DoActivateFlex
 
     private function getDockerRegistryRobotAccountName(Team $team) : string
     {
-        return 'project-'.$team->getSlug();
+        return 'project-'.(new Slugify())->slugify($team->getSlug());
     }
 
     private function getFlexDockerRegistryCredentials(Team $team, Bucket $bucket)

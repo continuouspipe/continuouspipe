@@ -6,9 +6,11 @@ use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Archive\FileSystemArchive;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
 use ContinuousPipe\River\EventStore\EventStore;
+use ContinuousPipe\River\Flex\AsFeature\Command\DeactivateFlex;
 use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Infrastructure\Firebase\Pipeline\View\Storage\InMemoryPipelineViewStorage;
 use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
@@ -26,6 +28,7 @@ use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Psr7\Stream;
 use Ramsey\Uuid\Uuid;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\River\FlowContext as RiverFlowContext;
@@ -1032,6 +1035,14 @@ EOF;
     }
 
     /**
+     * @Given the flow :uuid has flex deactivated
+     */
+    public function theFlowHasFlexDeactivated($uuid)
+    {
+        $this->eventBus->handle(new Flow\Event\FlowUnflexed(Uuid::fromString($uuid)));
+    }
+
+    /**
      * @When I activate flex for the flow :uuid
      */
     public function iActivateFlexForTheFlow($uuid)
@@ -1130,10 +1141,30 @@ EOF;
         $this->assertResponseCode(200);
 
         if ($content != $response) {
-            var_dump($this->response->getContent());
+            var_dump($content, 'vs', $response);
 
             throw new \RuntimeException('Got unexpected response');
         }
+    }
+
+    /**
+     * @Then I should receive the archive of the fixtures file :fileName
+     */
+    public function iShouldReceiveTheArchiveOfTheFixturesFile($fileName)
+    {
+        $this->iShouldReceiveTheArchiveValue(file_get_contents(__DIR__.'/../fixtures/'.$fileName));
+    }
+
+    /**
+     * @Then I should receive a targz archive
+     */
+    public function iShouldReceiveATargzArchive()
+    {
+        $this->assertResponseCode(200);
+
+        $content = $this->response->getContent();
+
+        FileSystemArchive::fromStream(\GuzzleHttp\Psr7\stream_for($content), FileSystemArchive::TAR_GZ);
     }
 
     /**
@@ -1201,6 +1232,14 @@ EOF;
         $this->response = $this->kernel->handle(Request::create(
             '/flows/'.$flowUuid.'/features'
         ));
+    }
+
+    /**
+     * @When I de-activate flex for the flow :uuid
+     */
+    public function iDeActivateFlexForTheFlow($uuid)
+    {
+        $this->commandBus->handle(new DeactivateFlex(Uuid::fromString($uuid)));
     }
 
     /**

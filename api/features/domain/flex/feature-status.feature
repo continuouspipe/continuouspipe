@@ -9,20 +9,12 @@ Feature:
     And the user "samuel" is "USER" of the team "samuel"
     And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "samuel"
 
-  Scenario: Flex cannot be activated
+  Scenario: Flex is activated by default
     When I request the features of the flow "00000000-0000-0000-0000-000000000000"
-    Then the feature "flex" should not be available
-    And the feature "flex" should not be enabled
+    And the feature "flex" should be enabled
 
-  Scenario: Flex can be activated
+  Scenario: Flex can be de-activated
     Given the code repository contains the fixtures folder "flex-skeleton"
-    When I request the features of the flow "00000000-0000-0000-0000-000000000000"
-    Then the feature "flex" should be available
+    When I de-activate flex for the flow "00000000-0000-0000-0000-000000000000"
+    And I request the features of the flow "00000000-0000-0000-0000-000000000000"
     Then the feature "flex" should not be enabled
-
-  Scenario: Flex is enabled
-    Given the code repository contains the fixtures folder "flex-skeleton"
-    And the flow "00000000-0000-0000-0000-000000000000" has flex activated
-    When I request the features of the flow "00000000-0000-0000-0000-000000000000"
-    Then the feature "flex" should be available
-    Then the feature "flex" should be enabled

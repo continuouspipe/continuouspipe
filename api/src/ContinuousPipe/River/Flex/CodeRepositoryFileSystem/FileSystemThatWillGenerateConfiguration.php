@@ -42,8 +42,12 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
      */
     public function exists($filePath)
     {
-        if (in_array($filePath, self::GENERATED_FILES)) {
-            return true;
+        try {
+            if (null !== ($generated = $this->generateFileIfNeeded($filePath))) {
+                return true;
+            }
+        } catch (FileNotFound $e) {
+            // Ignoring file not found exceptions...
         }
 
         return $this->decoratedFileSystem->exists($filePath);
@@ -54,13 +58,27 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
      */
     public function getContents($filePath)
     {
+        if (null !== ($generated = $this->generateFileIfNeeded($filePath))) {
+            return $generated;
+        }
+
+        return $this->decoratedFileSystem->getContents($filePath);
+    }
+
+    /**
+     * @param string $filePath
+     *
+     * @return null|string
+     */
+    private function generateFileIfNeeded(string $filePath)
+    {
         if (!$this->decoratedFileSystem->exists($filePath) && in_array($filePath, self::GENERATED_FILES)) {
             if (null !== ($generated = $this->generateFile($filePath))) {
                 return $generated;
             }
         }
 
-        return $this->decoratedFileSystem->getContents($filePath);
+        return null;
     }
 
     private function generateFile(string $filePath)

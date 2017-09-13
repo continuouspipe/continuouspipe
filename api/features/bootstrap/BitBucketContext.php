@@ -243,6 +243,14 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the BitBucket URL :url will return the content of the fixtures file :fileName with the header :headerName
+     */
+    public function theBitbucketUrlWillReturnTheContentOfTheFixturesFileWithTheHeader($url, $fileName, $headerName)
+    {
+        $this->theBitbucketUrlWillReturnWithTheHeader($url, file_get_contents(__DIR__.'/../fixtures/'.$fileName), $headerName);
+    }
+
+    /**
      * @Then the addresses of the environment should be commented on the pull-request
      */
     public function theAddressesOfTheEnvironmentShouldBeCommentedOnThePullRequest()

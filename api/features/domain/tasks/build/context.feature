@@ -21,14 +21,14 @@ Feature:
             build:
                 services:
                     first:
-                        image: sroze/image
+                        image: docker.io/sroze/image
                         build_directory: ./sub-directory
                         docker_file_path: ./foo/Dockerfile-bar
     """
     When a tide is started
     Then the build should be started with the sub-directory "./sub-directory"
     And the build should be started with Dockerfile path "./foo/Dockerfile-bar" in the context
-    And the build should be started with the image name "sroze/image"
+    And the build should be started with the image name "docker.io/sroze/image"
 
   Scenario: Build environment variables
     Given there is 1 application images in the repository
@@ -63,7 +63,7 @@ Feature:
             build:
                 services:
                     first:
-                        image: sroze/image
+                        image: docker.io/sroze/image
                         build_directory: ./sub-directory
                         docker_file_path: ./foo/Dockerfile-bar
                         environment:
@@ -100,13 +100,13 @@ Feature:
                         steps:
                             - docker_file_path: ./Buildfile
                             - docker_file_path: ./Dockerfile
-                              image: sroze/image
+                              image: docker.io/sroze/image
     """
     When a tide is started with the UUID "00000000-0000-0000-0000-000000000000"
     Then the build should be started with 2 steps
     And the step #0 of the build should be started with the Dockerfile path "./Buildfile"
     And the step #1 of the build should be started with the Dockerfile path "./Dockerfile"
-    And the step #1 of the build should be started with the image name "sroze/image"
+    And the step #1 of the build should be started with the image name "docker.io/sroze/image"
 
   Scenario:
     Given I have a "continuous-pipe.yml" file in my repository that contains:

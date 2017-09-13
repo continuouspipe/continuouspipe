@@ -23,6 +23,7 @@ Feature:
     Then I should not see the "team-missing-cluster" alert
 
   Scenario: A team without any docker registry should have an alert
+    Given the team "samuel" do not have any docker registry
     When I load the alerts of the flow "00000000-0000-0000-0000-000000000000"
     Then I should see the "team-missing-docker-registry" alert
 
