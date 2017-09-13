@@ -10,14 +10,6 @@ Feature:
     When the configuration of the tide is generated
     Then the generated configuration should contain at least:
     """
-    variables:
-        - name: CLOUD_FLARE_ZONE
-          encrypted_value: em9uZQ==
-        - name: CLOUD_FLARE_EMAIL
-          encrypted_value: ZW1haWw=
-        - name: CLOUD_FLARE_API_KEY
-          encrypted_value: YXBpX2tleQ==
-
     tasks:
         00_images:
             build:
@@ -31,26 +23,6 @@ Feature:
                     app:
                         endpoints:
                             - name: app
-                              cloud_flare_zone:
-                                  zone_identifier: zone
-                                  authentication:
-                                      email: email
-                                      api_key: api_key
-                              ingress:
-                                  class: nginx
-                                  host_suffix: '-abc123-flex.continuouspipe.net'
-    """
-
-  Scenario: The environment name is based on the flow UUID
-    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
-    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
-    And the code repository contains the fixtures folder "flex-skeleton"
-    When the configuration of the tide is generated
-    Then the generated configuration should contain at least:
-    """
-    defaults:
-        environment:
-            name: "'00000000-0000-0000-0000-000000000000-' ~ code_reference.branch"
     """
 
   Scenario: It adds a database when Symfony has Doctrine enabled
