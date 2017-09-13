@@ -1,0 +1,42 @@
+<md-dialog>
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Variable "{{ variable.name }}" as environment variable</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon>close</md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <p>You can automatically make the variable "{{ variable.name }}" accessible as environment variable in your containers. To do so, select one of the following options:</p>
+
+        <md-radio-group ng-model="visibility">
+          <md-radio-button value="all" class="md-primary">Accessible by all containers</md-radio-button>
+          <md-radio-button value="names">Accessible to a subset of the containers</md-radio-button>
+          <md-radio-button value="none">Not accessible</md-radio-button>
+        </md-radio-group>
+
+        <div class="containerNamesForm" ng-if="visibility == 'names'">
+          <div class="md-block">
+              <label>Container names</label>
+              <md-chips ng-model="containerNames" required>
+          </div>
+        </div>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>
+      <span flex></span>
+      <md-button ng-click="change()">
+        Change
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
