@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
+    .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $mdDialog, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.flow = flow;
         $scope.variables = [];
 
@@ -127,6 +127,16 @@ angular.module('continuousPipeRiver')
                         yamlVariable.condition = variable.condition;
                     }
 
+                    if (
+                        variable.as_environment_variable && (
+                            variable.as_environment_variable === true 
+                            ||
+                            variable.as_environment_variable.length
+                        )
+                    ) {
+                        yamlVariable.as_environment_variable = variable.as_environment_variable;
+                    }
+
                     return yamlVariable;
                 });
 
@@ -136,12 +146,29 @@ angular.module('continuousPipeRiver')
         $scope.addVariable = function(name) {
             $scope.variables.push({
                 name: name || '',
-                value: ''
+                value: '',
+                as_environment_variable: true
             });
         };
 
         $scope.removeVariableByKey = function(key) {
             $scope.variables.splice(key, 1);
+        };
+
+        $scope.changeExposedAsEnvironment = function(event, key) {
+            var scope = $scope.$new();
+            scope.variable = $scope.variables[key];
+
+            $mdDialog.show({
+                controller: 'ChangeVariableVisibilityController',
+                templateUrl: 'flow/views/configuration/dialogs/variable-as-environment.html',
+                parent: angular.element(document.body),
+                targetEvent: event,
+                clickOutsideToClose: true,
+                scope: scope
+            }).then(function(as_environment_variable) {
+                $scope.variables[key].as_environment_variable = as_environment_variable;
+            });
         };
 
         $scope.encryptByKey = function(key) {
@@ -187,6 +214,34 @@ angular.module('continuousPipeRiver')
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the flow", "error");
                 });
             });
+        };
+    })
+    .controller('ChangeVariableVisibilityController', function($mdDialog, $scope) {
+        $scope.containerNames = [];
+
+        if (!$scope.variable.as_environment_variable) {
+            $scope.visibility = 'none';
+        } else if ($scope.variable.as_environment_variable === true) {
+            $scope.visibility = 'all';
+        } else {
+            $scope.visibility = 'names';
+            $scope.containerNames = $scope.variable.as_environment_variable || [];
+        }
+
+        $scope.cancel = function() {
+            $mdDialog.cancel();
+        };
+
+        $scope.change = function() {
+            var answer = false;
+
+            if ($scope.visibility == 'all') {
+                answer = true;
+            } else if ($scope.visibility == 'names') {
+                answer = $scope.containerNames;
+            }
+
+            $mdDialog.hide(answer);
         };
     })
     .controller('FlowConfigurationChecklistController', function($scope, $rootScope, $http, $state, AlertsRepository, AlertManager, FeaturesRepository, flow) {
