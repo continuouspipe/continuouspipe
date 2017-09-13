@@ -9,7 +9,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
-                    - @security.encryption.vault
+                    - @security.encryption.vault.previously_known
                     - @lexik_jwt_authentication.jwt_manager
                     - @jms_serializer
                 - TideConfigurationContext:
@@ -162,7 +162,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
-                    - @security.encryption.vault
+                    - @security.encryption.vault.previously_known
                     - @lexik_jwt_authentication.jwt_manager
                     - @jms_serializer
                 - TideConfigurationContext:
@@ -275,7 +275,7 @@ default:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
-                    - @security.encryption.vault
+                    - @security.encryption.vault.previously_known
                     - @lexik_jwt_authentication.jwt_manager
                     - @jms_serializer
                 - TideConfigurationContext:
@@ -382,7 +382,7 @@ smoke:
                     - @security.token_storage
                     - @security.authenticator.client.in_memory
                     - @kernel
-                    - @security.encryption.vault
+                    - @security.encryption.vault.previously_known
                     - @lexik_jwt_authentication.jwt_manager
                     - @jms_serializer
                 - FlowContext:
