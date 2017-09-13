@@ -1,11 +1,13 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository) {
+    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository, PreferedPipelineStorage) {
         $scope.flow = flow;
 
         $scope.selectPipeline = function(pipeline) {
             $scope.selectedPipeline = pipeline;
+
+            PreferedPipelineStorage.saveForFlow(flow.uuid, pipeline.uuid);
         };
 
         $scope.isLoading = true;
@@ -21,6 +23,16 @@ angular.module('continuousPipeRiver')
                     array: $firebaseArray(reference),
                     limit: limit
                 };
+            };
+
+            var indexOfPipeline = function(pipelines, pipelineUuid) {
+                for (var i = 0; i < pipelines.length; i++) {
+                    if (pipelines[i].uuid == pipelineUuid) {
+                        return i;
+                    }
+                }
+
+                return -1;
             };
 
             var tidesPerPipelineCache = {};
@@ -51,12 +63,42 @@ angular.module('continuousPipeRiver')
             );
 
             return $scope.pipelines.$loaded(function() {
-                if ($scope.pipelines.length) {
-                    $scope.selectPipeline($scope.pipelines[0]);
+                var preferredPipeline = PreferedPipelineStorage.getForFlow(flow.uuid),
+                    pipelineIndex = 
+                        preferredPipeline ? indexOfPipeline($scope.pipelines, preferredPipeline) :
+                        ($scope.pipelines.length ? 0 : -1)
+                    ;
+
+                if (pipelineIndex !== -1) {
+                    $scope.selectPipeline($scope.pipelines[pipelineIndex]);
                 }
             });
         }).then(function () {
             $scope.isLoading = false;
         }));
+    })
+    .service('PreferedPipelineStorage', function() {
+        var getPreferenceMapping = function() {
+            try {
+                return JSON.parse(localStorage.getItem('prefered_pipelines')) || {};
+            } catch (e) {
+                return {};
+            }
+        };
+
+        var savePreferenceMapping = function(mapping) {
+            localStorage.setItem('prefered_pipelines', JSON.stringify(mapping));
+        };
+
+        this.getForFlow = function(flowUuid) {
+            return getPreferenceMapping()[flowUuid];
+        };
+
+        this.saveForFlow = function(flowUuid, pipelineUuid) {
+            var mapping = getPreferenceMapping();
+            mapping[flowUuid] = pipelineUuid;
+
+            savePreferenceMapping(mapping);
+        };
     })
 ;
