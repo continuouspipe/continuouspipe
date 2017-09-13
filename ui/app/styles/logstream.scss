@@ -149,8 +149,42 @@ pre {
     }
 
     &.type-raw {
-        position: relative;
         margin: 0;
+        position: relative;
+
+        .fullscreen-button {
+            position: absolute;
+            right: 80px;
+            bottom: 10px;
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        &.fullscreen {
+            position: fixed;
+            height: 100vh;
+            width: 100vw;
+            top:0;
+            left:0;
+            overflow: scroll;
+            z-index: 75;
+
+            & pre {
+                max-height: none;
+            }
+
+            & .follow-button,
+            & .fullscreen-button {
+                position: fixed;
+                bottom: 12px;
+                right: 12px;
+            }
+
+            & .fullscreen-button { right: 82px; }
+
+        }
 
         pre {
             max-height: 400px;

@@ -11,6 +11,10 @@ angular.module('continuousPipeRiver')
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
                 $scope.follow = true;
+                $scope.fullscreen = {
+                    text: 'Expand',
+                    enabled: false
+                }
                 $scope.displayChildrenOf = [];
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
@@ -22,6 +26,16 @@ angular.module('continuousPipeRiver')
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
                 };
+
+                $scope.fullscreen = function(enabled) {
+                    if(!enabled) {
+                        $scope.fullscreen.text = 'Exit fullscreen',
+                        $scope.fullscreen.enabled = true;
+                    } else {
+                        $scope.fullscreen.text = 'Expand',
+                        $scope.fullscreen.enabled = false;
+                    }
+                }
 
                 var loadArchive = function () {
                     if (!$scope.parent || !$scope.parent.archived) {
