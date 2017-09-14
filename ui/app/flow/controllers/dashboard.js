@@ -1,113 +1,104 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository, pipelineInfo) {
+    .controller('FlowDashboardController', function ($scope, $remoteResource, $q, flow, $firebaseArray, $authenticatedFirebaseDatabase, PipelineRepository, PreferedPipelineStorage) {
         $scope.flow = flow;
-        $scope.tidesPerPipeline = [];
-        $scope.isLoading = true;
-        $scope.tides = [];
-        $scope.pipelineSelected = {
-            selected: null,
-            multipleOptions: true,
-            pipelines: $scope.pipelines
-        }
 
-        $scope.checkName = function(pipelineName, checkAgainst) {
-            if (checkAgainst == undefined) {
-                pipelineInfo.id = undefined;
-                $scope.chosenPipeline();
-            }
-            return function(tide) {
-                return tide.pipeline.uuid === checkAgainst.uuid;
-            }
-            
-        }
+        $scope.selectPipeline = function(pipeline) {
+            $scope.selectedPipeline = pipeline;
 
-        $scope.chosenPipeline = function(pipelines) {
-            if (pipelines.length === 1) {
-                $scope.pipelineSelected.selected = $scope.pipelines[0];
-                $scope.pipelineSelected.multipleOptions = false;
-                return pipelines[0];
-            }
-
-            var newPipelines = pipelines.sort(function(a, b) {
-                if (a.name !== b.name) {
-                    if (a.name < b.name) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                }                 
-                return 0;
-            });
-            if (pipelineInfo.id == undefined) {
-                $scope.pipelineSelected.selected = $scope.pipelines[0];
-                return newPipelines[0];
-            } else {
-                for(var pipeline in pipelines) {
-                    if (pipelines[pipeline].uuid === pipelineInfo.id) {
-                        return pipelines[pipeline];
-                    } 
-                }
-            }
-        }
-
-        var mergeTidesIntoOneArray = function () {
-            var tides = [];
-
-            for (var pipelineUuid in $scope.tidesPerPipeline) {
-                $scope.tidesPerPipeline[pipelineUuid].forEach(function (tide) {
-                    tides.push(tide);
-                });
-            }
-
-            $scope.tides = tides;
+            PreferedPipelineStorage.saveForFlow(flow.uuid, pipeline.uuid);
         };
 
-        var watchPipelineTides = function (database) {
-            var promises = [];
+        $scope.isLoading = true;
+        $remoteResource.load('pipelines', $authenticatedFirebaseDatabase.get(flow).then(function (database) {
+            var loadPipelinesTide = function(pipeline, limit) {
+                var reference = database.ref()
+                    .child('flows/' + flow.uuid + '/tides/by-pipelines/' + pipeline.uuid)
+                    .orderByChild('creation_date')
+                    .limitToLast(limit);
 
-            $scope.pipelines.forEach(function (pipeline) {
-                $scope.tidesPerPipeline[pipeline.uuid] = $firebaseArray(
-                    database.ref()
-                        .child('flows/' + flow.uuid + '/tides/by-pipelines/' + pipeline.uuid)
-                        .orderByChild('creation_date')
-                        .limitToLast(10)
+                return {
+                    ref: reference,
+                    array: $firebaseArray(reference),
+                    limit: limit
+                };
+            };
+
+            var indexOfPipeline = function(pipelines, pipelineUuid) {
+                for (var i = 0; i < pipelines.length; i++) {
+                    if (pipelines[i].uuid == pipelineUuid) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            };
+
+            var tidesPerPipelineCache = {};
+            $scope.tidesForPipeline = function(pipeline) {
+                if (!(pipeline.uuid in tidesPerPipelineCache)) {
+                    tidesPerPipelineCache[pipeline.uuid] = loadPipelinesTide(pipeline, 10);
+                }
+
+                return tidesPerPipelineCache[pipeline.uuid].array;
+            };
+
+            $scope.loadMoreTides = function(pipeline) {
+                var view = loadPipelinesTide(
+                    pipeline,
+                    tidesPerPipelineCache[pipeline.uuid].limit + 20
                 );
 
-                $scope.tidesPerPipeline[pipeline.uuid].$watch(mergeTidesIntoOneArray);
-
-                promises.push($scope.tidesPerPipeline[pipeline.uuid].$loaded);
-            });
-
-            return $q.all(promises);
-        };
-
-        $remoteResource.load('tides', $authenticatedFirebaseDatabase.get(flow).then(function (database) {
+                $scope.isLoadingMore = true;
+                view.array.$loaded(function() {
+                    tidesPerPipelineCache[pipeline.uuid] = view;
+                    $scope.isLoadingMore = false;
+                });
+            };
+            
+            // Load pipelines
             $scope.pipelines = $firebaseArray(
                 database.ref().child('flows/' + flow.uuid + '/pipelines')
             );
 
-            return $scope.pipelines.$loaded(function () {
-                $scope.pipelines.$watch(function () {
-                    watchPipelineTides(database);
-                });
+            return $scope.pipelines.$loaded(function() {
+                var preferredPipeline = PreferedPipelineStorage.getForFlow(flow.uuid),
+                    pipelineIndex = 
+                        preferredPipeline ? indexOfPipeline($scope.pipelines, preferredPipeline) :
+                        ($scope.pipelines.length ? 0 : -1)
+                    ;
 
-                return watchPipelineTides(database);
+                if (pipelineIndex !== -1) {
+                    $scope.selectPipeline($scope.pipelines[pipelineIndex]);
+                }
             });
         }).then(function () {
             $scope.isLoading = false;
         }));
     })
-
-    .factory('pipelineInfo', 
-        function() {
-            var factory = {};
-
-            factory.changePipeline = function(pipelineId) {
-                factory.id = pipelineId;
+    .service('PreferedPipelineStorage', function() {
+        var getPreferenceMapping = function() {
+            try {
+                return JSON.parse(localStorage.getItem('prefered_pipelines')) || {};
+            } catch (e) {
+                return {};
             }
+        };
 
-            return factory;
-        } 
-    );
+        var savePreferenceMapping = function(mapping) {
+            localStorage.setItem('prefered_pipelines', JSON.stringify(mapping));
+        };
+
+        this.getForFlow = function(flowUuid) {
+            return getPreferenceMapping()[flowUuid];
+        };
+
+        this.saveForFlow = function(flowUuid, pipelineUuid) {
+            var mapping = getPreferenceMapping();
+            mapping[flowUuid] = pipelineUuid;
+
+            savePreferenceMapping(mapping);
+        };
+    })
+;

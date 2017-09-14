@@ -8,21 +8,25 @@
     </div>
 </md-toolbar>
 <md-content flex id="content" ng-if="isLoading">
-    <remote-resource resource-name="tides"></remote-resource>
+    <remote-resource resource-name="pipelines"></remote-resource>
 </md-content>
-<md-content flex id="content" ng-if="!isLoading && tides.length == 0">
+<md-content flex id="content" ng-if="!isLoading && pipelines.length == 0">
     <div class="zero-content-help">
         <i class="cp-icon-commit" style="font-size: 60px;"></i>
         <h3>Push something to your repository! Or manually run a deployment.</h3>
         <p>By default, a tide starts automatically when you push to your code repository. Learn how to <a href="https://continuouspipe.io/docs/configure/introduction/" target="_blank">configure your flow</a> to <a href="https://continuouspipe.io/docs/configure/images/" target="_blank">build your Docker images</a>, <a href="https://continuouspipe.io/docs/configure/deployments/" target="_blank">deploy your services</a> or manage the <a href="https://continuouspipe.io/docs/configure/notifications/">notifications</a>.</p>
     </div>
 </md-content>
-<md-content flex id="content" ng-if="!isLoading && tides.length != 0">
+<md-content flex id="content" class="flow-dashboard" ng-if="!isLoading && pipelines.length != 0">
     <div class="pipeline-content-container">
+<<<<<<< HEAD
         <pipeline-overview ng-class="{'pipelineSelected': pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+=======
+        <pipeline-overview ng-repeat="pipeline in pipelines | orderBy:'name'" ng-class="{'pipelineSelected': pipeline === selectedPipeline}" ng-click="selectPipeline(pipeline)" class="pipeline-content" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+>>>>>>> 29ecde5ee9d3354d6d9ef18394b8da393aaf9c9c
     </div>
 
-    <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{pipelineSelected.selected.name}}</span></md-subheader>
+    <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{ selectedPipeline.name }}</span></md-subheader>
     <ul class="tide-list">
         <li class="header">
             <a>
@@ -33,7 +37,7 @@
             </a>
         </li>
 
-        <li ng-repeat="tide in tides | orderBy: '-creation_date' | filter:checkName(tide.pipeline, chosenPipeline(pipelines))" ng-class="['status-'+tide.status]">
+        <li ng-repeat="tide in tidesForPipeline(selectedPipeline) | orderBy: '-creation_date'" ng-class="['status-'+tide.status]">
             <a ui-sref="tide.logs({tideUuid: tide.uuid})">
                 <div class="tide-status status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</div>
                 <div class="tide-source">
@@ -52,4 +56,10 @@
             </a>
         </li>
     </ul>
+    <div class="more">
+        <md-button class="md-raised" ng-click="loadMoreTides(selectedPipeline)" ng-disabled="isLoadingMore">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoadingMore"></md-progress-circular>
+            Load more
+        </md-button>
+    </div>
 </md-content>

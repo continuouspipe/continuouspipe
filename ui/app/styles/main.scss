@@ -755,7 +755,7 @@ body {
     }
 
     ul.tide-list {
-        margin: 0 0 2em 0;
+        margin: 0;
         padding: 0;
         list-style: none;
 
@@ -809,6 +809,21 @@ body {
 
             code {
                 font-size: 12px;
+            }
+        }
+    }
+
+    .flow-dashboard {
+        .more {
+            text-align: center;
+            padding: 20px;
+
+            > button {
+                display: inline-flex;
+
+                md-progress-circular {
+                    margin: 0 10px;
+                }
             }
         }
     }
