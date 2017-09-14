@@ -427,12 +427,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "421b62b9d5b2161c36f207bd5d06bfafc00b68ce"
+                "reference": "aa14df14589f278f5dcd6c364de17785521e17ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/421b62b9d5b2161c36f207bd5d06bfafc00b68ce",
-                "reference": "421b62b9d5b2161c36f207bd5d06bfafc00b68ce",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/aa14df14589f278f5dcd6c364de17785521e17ca",
+                "reference": "aa14df14589f278f5dcd6c364de17785521e17ca",
                 "shasum": ""
             },
             "require": {
@@ -444,6 +444,7 @@
             },
             "require-dev": {
                 "defuse/php-encryption": "^2.0",
+                "google/apiclient": "^2.1.3",
                 "phpspec/phpspec": "~3.0.0"
             },
             "type": "library",
@@ -456,7 +457,7 @@
                 "source": "https://github.com/continuouspipe/security/tree/kms-vault-is-cachable",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-13 16:08:08"
+            "time": "2017-09-14 13:58:55"
         },
         {
             "name": "continuous-pipe/worker-bundle",
