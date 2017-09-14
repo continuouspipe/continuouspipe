@@ -53,6 +53,12 @@
     }
 }
 
+.fullscreen-tabs {
+    [id^=tab-content] {
+        transform: none;
+    }
+}
+
 .pipeline-card {
     width: 100%;
     transition: all 0.1s ease-in-out;

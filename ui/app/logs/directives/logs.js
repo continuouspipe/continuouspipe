@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
                 $scope.fullscreen = {
                     text: 'Expand',
                     enabled: false
-                }
+                };
                 $scope.displayChildrenOf = [];
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
@@ -35,7 +35,7 @@ angular.module('continuousPipeRiver')
                         $scope.fullscreen.text = 'Expand',
                         $scope.fullscreen.enabled = false;
                     }
-                }
+                };
 
                 var loadArchive = function () {
                     if (!$scope.parent || !$scope.parent.archived) {
@@ -68,17 +68,40 @@ angular.module('continuousPipeRiver')
             compile: function(element) {
                 return RecursionHelper.compile(element);
             }
-        }
+        };
     }])
     .directive('proxy', function() {
         return {
             restrict: 'E',
             scope: {
                 log: '=',
+                parent: '=',
                 template: '@',
+                scope: '@',
                 follow: '@'
             },
-            template: '<ng-include src="template" />'
-        }
+            template: '<ng-include src="template" />',
+            controller: ['$scope', function ($scope) {
+                $scope.follow = true;
+                $scope.fullscreen = {
+                    text: 'Expand',
+                    enabled: false
+                };
+                $scope.$root.fullscreen = {
+                    enabled: false
+                };
+                $scope.fullscreen = function(enabled) {
+                    if(!enabled) {
+                        $scope.fullscreen.text = 'Exit fullscreen';
+                        $scope.fullscreen.enabled = true;
+                        $scope.$parent.fullscreen.enabled = true;
+                    } else {
+                        $scope.fullscreen.text = 'Expand';
+                        $scope.fullscreen.enabled = false;
+                        $scope.$parent.fullscreen.enabled = false;
+                    }
+                };
+            }]
+        };
     })
 ;
