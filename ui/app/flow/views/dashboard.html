@@ -19,7 +19,7 @@
 </md-content>
 <md-content flex id="content" ng-if="!isLoading && tides.length != 0">
     <div class="pipeline-content-container">
-        <pipeline-overview ng-class="{'pipelineSelected': pipelineSelected.multipleOptions && pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+        <pipeline-overview ng-class="{'pipelineSelected': pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
     </div>
 
     <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{pipelineSelected.selected.name}}</span></md-subheader>
