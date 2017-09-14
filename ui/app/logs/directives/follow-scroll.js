@@ -16,6 +16,13 @@ angular.module('continuousPipeRiver')
                         doScrollToBottom(tab);
                     }
 
+                    if(element[0].parentNode.classList.contains('fullscreen')) {
+                        var newElem = element[0].parentNode;
+                        doScrollToBottom($(newElem));
+                        return;                
+                    }
+                    
+
                     doScrollToBottom(element);
                 };
 
