@@ -180,7 +180,7 @@
                  decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
                  decoration-priority="5">
             <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
-            <argument type="service" id="river.predis_cache" />
+            <argument type="service" id="river.cache" />
             <argument type="service" id="logger" />
         </service>
 
@@ -197,7 +197,7 @@
         <service id="river.view.storage.firebase_client.predis_cached"
                  class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient">
             <argument type="service" id="river.view.storage.firebase_client.main" />
-            <argument type="service" id="river.predis_cache" />
+            <argument type="service" id="river.cache" />
             <argument type="service" id="logger" />
         </service>
 
@@ -287,8 +287,19 @@
             <argument>%redis_host%</argument>
         </service>
 
-        <service id="river.cache" class="Doctrine\Common\Cache\PredisCache">
+        <service id="river.apcu_cache" class="Doctrine\Common\Cache\ApcuCache">
+            <argument>river</argument>
+        </service>
+
+        <service id="river.predis_cache" class="Doctrine\Common\Cache\PredisCache">
             <argument type="service" id="predis_client" />
+        </service>
+
+        <service id="river.cache" class="Doctrine\Common\Cache\ChainCache">
+            <argument type="collection">
+                <argument type="service" id="river.apcu_cache" />
+                <argument type="service" id="river.predis_cache" />
+            </argument>
         </service>
 
         <service id="river.tide.concurrency.locker.predis_locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\PredisMutexLocker">
