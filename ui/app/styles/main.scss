@@ -34,7 +34,7 @@
 
     &.pipelineSelected .pipeline-card {
         opacity: 1;
-        transform: scale(1.025);
+        transform: scale(1);
     }
 
     @include smallScreen {
@@ -63,6 +63,7 @@
     width: 100%;
     transition: all 0.1s ease-in-out;
     opacity: 0.5;
+    transform: scale(0.975);
 
     &:focus,
     &:active {
