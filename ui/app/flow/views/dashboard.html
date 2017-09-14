@@ -19,11 +19,7 @@
 </md-content>
 <md-content flex id="content" class="flow-dashboard" ng-if="!isLoading && pipelines.length != 0">
     <div class="pipeline-content-container">
-<<<<<<< HEAD
-        <pipeline-overview ng-class="{'pipelineSelected': pipeline === pipelineSelected.selected}" class="pipeline-content" ng-repeat="pipeline in pipelines | orderBy:'name'" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
-=======
         <pipeline-overview ng-repeat="pipeline in pipelines | orderBy:'name'" ng-class="{'pipelineSelected': pipeline === selectedPipeline}" ng-click="selectPipeline(pipeline)" class="pipeline-content" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
->>>>>>> 29ecde5ee9d3354d6d9ef18394b8da393aaf9c9c
     </div>
 
     <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{ selectedPipeline.name }}</span></md-subheader>
