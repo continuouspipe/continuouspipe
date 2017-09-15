@@ -103,13 +103,16 @@ class CredentialsBucketContext implements Context
      */
     public function iCreateANewDockerRegistryWithTheFollowingConfiguration($bucket, TableNode $table)
     {
-        $content = json_encode($table->getHash()[0]);
+        $registry = $table->getHash()[0];
+        if (isset($registry['attributes'])) {
+            $registry['attributes'] = json_decode($registry['attributes'], true);
+        }
 
         $this->response = $this->kernel->handle(Request::create(
             sprintf('/api/bucket/%s/docker-registries', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
-            $content
+            json_encode($registry)
         ));
     }
 
@@ -635,17 +638,27 @@ class CredentialsBucketContext implements Context
      */
     public function theListShouldContainTheCredentialForServer($serverAddress)
     {
-        $decoded = json_decode($this->response->getContent(), true);
-        if (!is_array($decoded)) {
-            throw new \RuntimeException('Expected to get an array in the JSON response');
+        if (null === $this->registryFromResponse($serverAddress)) {
+            throw new \RuntimeException('No matching credentials found');
+        }
+    }
+
+    /**
+     * @Then the registry :registry should have the attribute :attributeName valued :attributeValue
+     */
+    public function theRegistryShouldHaveTheAttributeValued($registry, $attributeName, $attributeValue)
+    {
+        $registry = $this->registryFromResponse($registry);
+
+        if (!isset($registry['attributes'][$attributeName])) {
+            throw new \RuntimeException(sprintf('Attribute "%s" not found', $attributeName));
         }
 
-        $matchingCredentials = array_filter($decoded, function(array $row) use ($serverAddress) {
-            return $row['serverAddress'] == $serverAddress;
-        });
-
-        if (0 == count($matchingCredentials)) {
-            throw new \RuntimeException('No matching credentials found');
+        if ($registry['attributes'][$attributeName] != $attributeValue) {
+            throw new \RuntimeException(sprintf(
+                'Found value "%s" instead',
+                $registry['attributes'][$attributeName]
+            ));
         }
     }
 
@@ -718,6 +731,22 @@ class CredentialsBucketContext implements Context
                 $serverAddress
             ));
         }
+    }
+
+    private function registryFromResponse(string $address)
+    {
+        $decoded = json_decode($this->response->getContent(), true);
+        if (!is_array($decoded)) {
+            throw new \RuntimeException('Expected to get an array in the JSON response');
+        }
+
+        foreach ($decoded as $row) {
+            if ($row['serverAddress'] == $address || $row['full_address'] == $address) {
+                return $row;
+            }
+        }
+
+        return null;
     }
 
     /**

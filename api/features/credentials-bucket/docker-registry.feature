@@ -55,3 +55,20 @@ Feature:
       | serverAddress | username | password | email                 |
       | docker.io     | foo      | bar      | samuel.roze@gmail.com |
     Then the new credentials should have been saved successfully
+
+  Scenario: I can create Docker registries with the full path
+    Given I am authenticated as user "samuel"
+    When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | full_address    | username | password | email                 |
+      | quay.io/foo/bar | foo      | bar      | samuel.roze@gmail.com |
+    Then the new credentials should have been saved successfully
+
+  @smoke
+  Scenario: I can create Docker registries with attributes
+    Given I am authenticated as user "samuel"
+    When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | full_address    | username | password | email                 | attributes                        |
+      | quay.io/foo/bar | foo      | bar      | samuel.roze@gmail.com | {"created-by": "continuous-pipe"} |
+    And I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
+    Then the list should contain the credential for server "quay.io"
+    And the registry "quay.io/foo/bar" should have the attribute "created-by" valued "continuous-pipe"
