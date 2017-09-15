@@ -298,16 +298,50 @@ class SecurityContext implements Context
     }
 
     /**
-     * @Then the team :teamSlug should have docker credentials for :serverAddress with the username :username
+     * @Then the team :teamSlug should have docker credentials for :address with the username :username
      */
-    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $serverAddress, $username)
+    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $address, $username)
     {
-        $matchingRegistries = $this->findTeamBucket($teamSlug)->getDockerRegistries()->filter(function(DockerRegistry $registry) use ($serverAddress, $username) {
-            return $registry->getServerAddress() == $serverAddress && $registry->getUsername() == $username;
-        });
+        $registry = $this->registryFromTeam($teamSlug, $address);
 
-        if ($matchingRegistries->count() == 0) {
-            throw new \RuntimeException('Found no matching registry');
+        if ($registry->getUsername() != $username) {
+            throw new \RuntimeException(sprintf(
+                'Found username "%s" instead',
+                $registry->getUsername()
+            ));
+        }
+    }
+
+    private function registryFromTeam(string $teamSlug, string $address)
+    {
+        foreach ($this->findTeamBucket($teamSlug)->getDockerRegistries() as $registry) {
+            if ($registry->getServerAddress() == $address || $registry->getFullAddress() == $address) {
+                return $registry;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @Then the team :teamSlug should have docker credentials for :address with the attribute :attributeName valued :attributeValue
+     */
+    public function theTeamShouldHaveDockerCredentialsForWithTheAttributeValued($teamSlug, $address, $attributeName, $attributeValue)
+    {
+        $registry = $this->registryFromTeam($teamSlug, $address);
+
+        if (!isset($registry->getAttributes()[$attributeName])) {
+            throw new \RuntimeException(sprintf(
+                'Attribute "%s" not found',
+                $attributeName
+            ));
+        }
+
+        if ($registry->getAttributes()[$attributeName] != $attributeValue) {
+            throw new \RuntimeException(sprintf(
+                'Value "%s" found instead',
+                $registry->getAttributes()[$attributeName]
+            ));
         }
     }
 

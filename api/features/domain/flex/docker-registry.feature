@@ -15,4 +15,5 @@ Feature:
     Then a quay.io repository "flow-00000000-0000-0000-0000-000000000000" should be created
     And a quay.io robot account "project-sam" should have been created
     And the quay.io user "continuouspipe-flex+project-sam" should have been granted access to the "continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" repository
-    And the team "sam" should have docker credentials for "quay.io" with the username "continuouspipe-flex+project-sam"
+    And the team "sam" should have docker credentials for "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" with the username "continuouspipe-flex+project-sam"
+    And the team "sam" should have docker credentials for "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" with the attribute "managed" valued "true"

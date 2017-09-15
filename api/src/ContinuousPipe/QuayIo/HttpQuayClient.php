@@ -75,7 +75,8 @@ class HttpQuayClient implements QuayClient
         }
 
         return new Repository(
-            $repository['namespace'].'/'.$repository['name']
+            $repository['namespace'].'/'.$repository['name'],
+            $repository['visibility'] ?? null
         );
     }
 

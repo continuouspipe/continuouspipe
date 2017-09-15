@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe31f75a8667581f519f499c5d90179a",
+    "content-hash": "78f500ad6a6e3ed857305ea7bd5f0b3b",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -423,16 +423,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-kms-vault-is-cachable",
+            "version": "2.9.6",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "aa14df14589f278f5dcd6c364de17785521e17ca"
+                "reference": "6a87723b31a7ccc7275afec12f5d3a7bb4eb41c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/aa14df14589f278f5dcd6c364de17785521e17ca",
-                "reference": "aa14df14589f278f5dcd6c364de17785521e17ca",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/6a87723b31a7ccc7275afec12f5d3a7bb4eb41c2",
+                "reference": "6a87723b31a7ccc7275afec12f5d3a7bb4eb41c2",
                 "shasum": ""
             },
             "require": {
@@ -454,10 +454,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/kms-vault-is-cachable",
+                "source": "https://github.com/continuouspipe/security/tree/2.9.6",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-14 13:58:55"
+            "time": "2017-09-15T14:35:31+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8703,7 +8703,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,

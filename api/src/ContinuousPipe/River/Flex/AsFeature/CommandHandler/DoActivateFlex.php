@@ -5,6 +5,7 @@ namespace ContinuousPipe\River\Flex\AsFeature\CommandHandler;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use ContinuousPipe\QuayIo\QuayClient;
 use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
+use ContinuousPipe\QuayIo\RobotAccount;
 use ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex;
 use ContinuousPipe\River\Flex\Cluster\ClusterResolver;
 use ContinuousPipe\River\Flow;
@@ -72,19 +73,31 @@ class DoActivateFlex
             );
         }
 
-        if (null === ($registry = $this->getFlexDockerRegistryCredentials($flow->getTeam(), $bucket))) {
-            $registry = $this->generateRobotAccount($flow->getTeam());
+        try {
+            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString());
+        } catch (RepositoryAlreadyExists $e) {
+            $repository = $e->getRepository();
+        }
+
+        $fullRegistryAddress = 'quay.io/'.$repository->getName();
+        if (null === ($registry = $this->getFlexDockerRegistryCredentials($bucket, $fullRegistryAddress))) {
+            $robot = $this->generateRobotAccount($flow->getTeam());
+            $registry = new DockerRegistry(
+                $robot->getUsername(),
+                $robot->getPassword(),
+                $robot->getEmail(),
+                null,
+                $fullRegistryAddress,
+                [
+                    'managed' => true,
+                    'visibility' => $repository->getVisibility(),
+                ]
+            );
 
             $this->authenticatorClient->addDockerRegistryToBucket(
                 $bucket->getUuid(),
                 $registry
             );
-        }
-
-        try {
-            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString());
-        } catch (RepositoryAlreadyExists $e) {
-            $repository = $e->getRepository();
         }
 
         $this->quayClient->allowUserToAccessRepository(
@@ -106,17 +119,11 @@ class DoActivateFlex
         return $flexClusters->count() > 0;
     }
 
-    private function generateRobotAccount(Team $team) : DockerRegistry
+    private function generateRobotAccount(Team $team) : RobotAccount
     {
         $robotAccountName = $this->getDockerRegistryRobotAccountName($team);
-        $robot = $this->quayClient->createRobotAccount($robotAccountName);
 
-        return new DockerRegistry(
-            $robot->getUsername(),
-            $robot->getPassword(),
-            $robot->getEmail(),
-            'quay.io'
-        );
+        return $this->quayClient->createRobotAccount($robotAccountName);
     }
 
     private function getDockerRegistryRobotAccountName(Team $team) : string
@@ -124,10 +131,10 @@ class DoActivateFlex
         return 'project-'.$team->getSlug();
     }
 
-    private function getFlexDockerRegistryCredentials(Team $team, Bucket $bucket)
+    private function getFlexDockerRegistryCredentials(Bucket $bucket, string $fullAddress)
     {
-        $quayCredentials = $bucket->getDockerRegistries()->filter(function (DockerRegistry $credentials) {
-            return $credentials->getServerAddress() == 'quay.io';
+        $quayCredentials = $bucket->getDockerRegistries()->filter(function (DockerRegistry $credentials) use ($fullAddress) {
+            return $credentials->getFullAddress() == $fullAddress;
         });
 
         return !$quayCredentials->isEmpty() ? $quayCredentials->first() : null;

@@ -42,6 +42,7 @@ class QuayHttpHandler extends MatchingHandler
                         'kind' => 'image',
                         'namespace' => $jsonBody['namespace'],
                         'name' => $jsonBody['repository'],
+                        'visibility' => $jsonBody['visibility'] ?? 'public',
                     ]));
                 },
             ],
