@@ -119,21 +119,37 @@ class CredentialsBucketController
     }
 
     /**
-     * @Route("/docker-registries/{serverAddress}", methods={"DELETE"})
+     * @Route("/docker-registries/{address}", methods={"DELETE"}, requirements={"address"=".+"})
      * @View
      */
-    public function deleteDockerRegistryAction(Bucket $bucket, $serverAddress)
+    public function deleteDockerRegistryAction(Bucket $bucket, $address)
     {
-        $registries = $bucket->getDockerRegistries();
-        $matchingRegistries = $registries->filter(function (DockerRegistry $dockerRegistry) use ($serverAddress) {
-            return $dockerRegistry->getServerAddress() == $serverAddress;
-        });
-
-        foreach ($matchingRegistries as $registry) {
-            $registries->removeElement($registry);
+        if (null === ($registry = $this->getRegistryWithAddress($bucket, $address))) {
+            throw new NotFoundHttpException(sprintf('Registry "%s" not found', $address));
         }
 
+        $bucket->getDockerRegistries()->removeElement($registry);
         $this->bucketRepository->save($bucket);
+    }
+
+    /**
+     * @Route("/docker-registries/{address}", methods={"PATCH"}, requirements={"address"=".+"})
+     * @View
+     */
+    public function patchDockerRegistryAction(Bucket $bucket, string $address, Request $request)
+    {
+        if (null === ($registry = $this->getRegistryWithAddress($bucket, $address))) {
+            throw new NotFoundHttpException(sprintf('Registry "%s" not found', $address));
+        }
+
+        $updatedRegistry = $this->applyPatch($registry, \GuzzleHttp\json_decode($request->getContent(), true));
+
+        $bucket->getDockerRegistries()->removeElement($registry);
+        $bucket->getDockerRegistries()->add($updatedRegistry);
+
+        $this->bucketRepository->save($bucket);
+
+        return $updatedRegistry;
     }
 
     /**
@@ -309,5 +325,22 @@ class CredentialsBucketController
             'json',
             $deserializationContext
         );
+    }
+
+    private function getRegistryWithAddress(Bucket $bucket, string $address)
+    {
+        foreach ($bucket->getDockerRegistries() as $registry) {
+            if ($registry->getFullAddress() == $address) {
+                return $registry;
+            }
+        }
+
+        foreach ($bucket->getDockerRegistries() as $registry) {
+            if ($registry->getServerAddress() == $address) {
+                return $registry;
+            }
+        }
+
+        return null;
     }
 }
