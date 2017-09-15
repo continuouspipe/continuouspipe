@@ -31,7 +31,7 @@ class RunPendingTidesCommand implements FlowCommand, DelayedMessage
      */
     private $runAt;
 
-    public function __construct(Uuid $flowUuid, $branch, \DateTimeInterface $runAt = null)
+    public function __construct(UuidInterface $flowUuid, $branch, \DateTimeInterface $runAt = null)
     {
         $this->flowUuid = $flowUuid;
         $this->branch = $branch;

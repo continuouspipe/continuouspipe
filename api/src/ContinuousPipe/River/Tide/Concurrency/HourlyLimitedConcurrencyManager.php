@@ -46,6 +46,10 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var TransactionManager
      */
     private $transactionManager;
+    /**
+     * @var int
+     */
+    private $retryStartInterval;
 
     public function __construct(
         TideConcurrencyManager $decoratedConcurrencyManager,
@@ -54,7 +58,8 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         AuthenticatorClient $authenticatorClient,
         LoggerFactory $loggerFactory,
         LoggerInterface $logger,
-        TransactionManager $transactionManager
+        TransactionManager $transactionManager,
+        int $retryStartInterval
     ) {
         $this->decoratedConcurrencyManager = $decoratedConcurrencyManager;
         $this->tideViewRepository = $tideViewRepository;
@@ -63,32 +68,29 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
         $this->transactionManager = $transactionManager;
+        $this->retryStartInterval = $retryStartInterval;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function shouldTideStart(Tide $tide)
+    public function tideStartRecommendation(Tide $tide) : StartingTideRecommendation
     {
         $limits = $this->getLimitByTide($tide);
 
         if ($this->hasReachedLimits($tide, $limits)) {
-            $this->transactionManager->apply($tide->getUuid(), function (TideAggregate $tide) use ($limits) {
-                $tide->notifyPendingReason($this->loggerFactory, sprintf('You\'ve used your %d tides per hour usage limit. This tide will start automatically in a moment.', $limits));
+            $reason = sprintf('You\'ve used your %d tides per hour usage limit. This tide will start automatically in a moment.', $limits);
+            $this->transactionManager->apply($tide->getUuid(), function (TideAggregate $tide) use ($reason) {
+                $tide->notifyPendingReason($this->loggerFactory, $reason);
             });
 
-            return false;
+            return StartingTideRecommendation::postponeTo(
+                (new \DateTime())->add(new \DateInterval('PT'.$this->retryStartInterval.'S')),
+                $reason
+            );
         }
 
-        return $this->decoratedConcurrencyManager->shouldTideStart($tide);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function postPoneTideStart(Tide $tide)
-    {
-        return $this->decoratedConcurrencyManager->postPoneTideStart($tide);
+        return $this->decoratedConcurrencyManager->tideStartRecommendation($tide);
     }
 
     private function hasReachedLimits(Tide $tide, $limit) : bool
