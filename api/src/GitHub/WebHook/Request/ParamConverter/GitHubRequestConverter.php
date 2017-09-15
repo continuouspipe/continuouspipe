@@ -2,6 +2,7 @@
 
 namespace GitHub\WebHook\Request\ParamConverter;
 
+use GitHub\WebHook\EventClassNotFound;
 use GitHub\WebHook\GitHubRequest;
 use GitHub\WebHook\RequestDeserializer;
 use GitHub\WebHook\Security\InvalidRequest;
@@ -49,6 +50,8 @@ class GitHubRequestConverter implements ParamConverterInterface
         try {
             $event = $this->requestDeserializer->deserialize($request);
         } catch (InvalidRequest $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        } catch (EventClassNotFound $e) {
             throw new BadRequestHttpException($e->getMessage(), $e);
         }
 

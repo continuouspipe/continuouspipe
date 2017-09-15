@@ -41,7 +41,7 @@ class WebHookController
         $flows = $this->flowRepository->findByCodeRepository($repository);
 
         if (empty($flows)) {
-            $this->logger->warning('No flows found for this repository', [
+            $this->logger->info('No flows found for this repository', [
                 'repository_type' => $repository->getType(),
                 'repository_identifier' => $repository->getIdentifier(),
             ]);

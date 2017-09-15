@@ -97,7 +97,7 @@ class UsageController
         try {
             $flowFromNamespace = $this->flowFromNamespace($namespace);
         } catch (\InvalidArgumentException $e) {
-            $this->logger->error('Cannot get flow from resource request', [
+            $this->logger->info('Cannot get flow from resource request', [
                 'namespace' => $request->getNamespace()->getName(),
                 'exception' => $e,
             ]);

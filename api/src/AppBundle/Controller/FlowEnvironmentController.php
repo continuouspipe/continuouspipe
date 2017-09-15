@@ -117,7 +117,7 @@ class FlowEnvironmentController
             return new JsonResponse([
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),
-            ], $e->getCode());
+            ], $e->getCode() ?: 500);
         }
     }
 }

@@ -91,7 +91,12 @@ class HttpPipeClient implements Client
                 'headers' => $this->getRequestHeadersForUser($authenticatedUser),
             ]);
         } catch (RequestException $e) {
-            throw new PipeClientException('Something went wrong while deleting environment: '.$e->getMessage(), $e->getCode(), $e);
+            if ($e->getCode() == 404) {
+                // Environment was not found.
+                return;
+            }
+
+            throw new PipeClientException('Could not delete the environment', $e->getCode(), $e);
         }
     }
 

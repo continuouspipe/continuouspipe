@@ -52,7 +52,7 @@ class BitBucketEventHandler
                 )
             ));
         } else {
-            $this->logger->warning('Event of type {type} was not handled', [
+            $this->logger->info('BitBucket event was not handled', [
                 'type' => get_class($event),
             ]);
         }
