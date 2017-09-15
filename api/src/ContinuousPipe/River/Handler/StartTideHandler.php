@@ -6,6 +6,7 @@ use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\Repository\TideNotFound;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
+use ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand;
 use ContinuousPipe\River\TideConfigurationException;
 use ContinuousPipe\River\View\TideRepository as ViewTideRepository;
 use LogStream\Log;
@@ -39,19 +40,31 @@ class StartTideHandler
      * @var LoggerFactory
      */
     private $loggerFactory;
+    /**
+     * @var MessageBus
+     */
+    private $commandBus;
+    /**
+     * @var int
+     */
+    private $retryStartInterval;
 
     public function __construct(
         ViewTideRepository $viewTideRepository,
         Tide\Concurrency\TideConcurrencyManager $concurrencyManager,
         LoggerInterface $logger,
         Tide\Transaction\TransactionManager $transactionManager,
-        LoggerFactory $loggerFactory
+        LoggerFactory $loggerFactory,
+        MessageBus $commandBus,
+        int $retryStartInterval
     ) {
         $this->viewTideRepository = $viewTideRepository;
         $this->concurrencyManager = $concurrencyManager;
         $this->logger = $logger;
         $this->transactionManager = $transactionManager;
         $this->loggerFactory = $loggerFactory;
+        $this->commandBus = $commandBus;
+        $this->retryStartInterval = $retryStartInterval;
     }
 
     /**
@@ -69,11 +82,26 @@ class StartTideHandler
             return;
         }
 
-        if ($this->concurrencyManager->shouldTideStart($tide)) {
-            $this->startTide($command);
-        } else {
-            $this->concurrencyManager->postPoneTideStart($tide);
+        $recommendation = $this->concurrencyManager->tideStartRecommendation($tide);
+
+        if ($recommendation->shouldPostpone()) {
+            $this->commandBus->handle(new RunPendingTidesCommand(
+                $tide->getFlowUuid(),
+                $tide->getCodeReference()->getBranch(),
+                $recommendation->shouldPostponeTo()
+            ));
+
+            $this->logger->info('Decided to postpone tide start', [
+                'reason' => $recommendation->reason(),
+                'run_at' => $recommendation->shouldPostponeTo(),
+                'tide_uuid' => $tide->getUuid()->toString(),
+                'flow_uuid' => $tide->getFlowUuid()->toString()
+            ]);
+
+            return;
         }
+
+        $this->startTide($command);
     }
 
     private function startTide(StartTideCommand $command)

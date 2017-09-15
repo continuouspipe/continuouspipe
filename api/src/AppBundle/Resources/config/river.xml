@@ -17,6 +17,8 @@
             <argument type="service" id="logger" />
             <argument type="service" id="river.tide.transaction_manager" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="command_bus" />
+            <argument>%retry_interval%</argument>
 
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
         </service>
