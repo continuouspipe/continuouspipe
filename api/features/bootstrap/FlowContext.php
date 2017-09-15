@@ -1678,6 +1678,26 @@ EOF;
     }
 
     /**
+     * @When I change the visibility of the registry :registryAddress of the flow :flowUuid to :visibility
+     */
+    public function iChangeTheVisibilityOfTheRegistryOfTheTeamTo($registryAddress, $flowUuid, $visibility)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$flowUuid.'/resources/registry/'.urlencode($registryAddress).'/visibility',
+            'POST',
+            [], [], [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            json_encode([
+                'visibility' => $visibility,
+            ])
+        ));
+
+        $this->assertResponseCode(204);
+    }
+
+    /**
      * @param string $environment
      * @param string $flowUuid
      *

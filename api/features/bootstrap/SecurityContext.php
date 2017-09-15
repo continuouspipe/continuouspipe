@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -265,12 +266,22 @@ class SecurityContext implements Context
      */
     public function theTeamHaveTheCredentialsOfADockerRegistry($team, $registry, $username = null)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $this->addRegistryToTeam($team, new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
+    }
 
-        $bucket->getDockerRegistries()->add(new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
+    /**
+     * @Given the team :team have the credentials of the following Docker registry:
+     */
+    public function theTeamHaveTheCredentialsOfTheFollowingDockerRegistry($team, TableNode $table)
+    {
+        $registryAsArray = $table->getHash()[0];
+        if (isset($registryAsArray['attributes'])) {
+            $registryAsArray['attributes'] = json_decode($registryAsArray['attributes'], true);
+        }
 
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        $registry = $this->serializer->deserialize(json_encode($registryAsArray), DockerRegistry::class, 'json');
+
+        $this->addRegistryToTeam($team, $registry);
     }
 
     /**
@@ -443,6 +454,16 @@ class SecurityContext implements Context
         return $this->inMemoryAuthenticatorClient->findBucketByUuid(
             $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
         );
+    }
+
+    private function addRegistryToTeam(string $team, DockerRegistry $registry)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getDockerRegistries()->add($registry);
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
 
     public function tokenForUser($username)

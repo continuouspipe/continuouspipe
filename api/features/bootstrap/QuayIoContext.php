@@ -62,6 +62,18 @@ class QuayIoContext implements Context
         });
     }
 
+    /**
+     * @Then the quay.io repository :repository should have been changed to a private repository
+     */
+    public function theQuayIoRepositoryShouldHaveBeenChangedToAPrivateRepository($repository)
+    {
+        $this->assertOneRequestMatching(function(Request $request) use ($repository) {
+            $repository = str_replace(['/', '+'], ['\\/', '\\+'], $repository);
+
+            return $request->getMethod() == 'POST' && preg_match('#\/repository\/'.$repository.'\/change-visibility$#', $request->getUri());
+        });
+    }
+
     private function assertOneRequestMatching(callable $matchingAssertion)
     {
         foreach ($this->quayIoHttpHistory as $request) {

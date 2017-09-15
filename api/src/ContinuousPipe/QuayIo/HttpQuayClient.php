@@ -93,6 +93,19 @@ class HttpQuayClient implements QuayClient
         );
     }
 
+    public function changeVisibility(string $repositoryName, string $visibility)
+    {
+        $this->request(
+            'post',
+            $this->baseUrl . '/repository/'.$repositoryName.'/change-visibility',
+            [
+                'json' => [
+                    'visibility' => $visibility,
+                ]
+            ]
+        );
+    }
+
     private function request(string $method, string $url, array $options = []): ResponseInterface
     {
         try {
