@@ -11,6 +11,10 @@ angular.module('continuousPipeRiver')
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
                 $scope.follow = true;
+                $scope.isFullscreen = {
+                    text: 'Expand',
+                    enabled: false
+                };
                 $scope.displayChildrenOf = [];
                 $scope.shouldDisplayChildrenOf = function(logId) {
                     return $scope.level == 1 || $scope.displayChildrenOf[logId];
@@ -21,6 +25,16 @@ angular.module('continuousPipeRiver')
 
                 $scope.toggleChildrenDisplay = function(logId) {
                     $scope.displayChildrenOf[logId] = !$scope.displayChildrenOf[logId];
+                };
+
+                $scope.fullscreen = function(enabled) {
+                    if(!enabled) {
+                        $scope.isFullscreen.text = 'Exit fullscreen',
+                        $scope.isFullscreen.enabled = true;
+                    } else {
+                        $scope.isFullscreen.text = 'Expand',
+                        $scope.isFullscreen.enabled = false;
+                    }
                 };
 
                 var loadArchive = function () {
@@ -54,17 +68,23 @@ angular.module('continuousPipeRiver')
             compile: function(element) {
                 return RecursionHelper.compile(element);
             }
-        }
+        };
     }])
     .directive('proxy', function() {
         return {
             restrict: 'E',
             scope: {
                 log: '=',
+                parent: '=',
                 template: '@',
+                scope: '@',
                 follow: '@'
             },
-            template: '<ng-include src="template" />'
-        }
+            template: '<ng-include src="template" />',
+            controller: ['$scope', function ($scope) {
+                $scope.fullscreen = $scope.$parent.fullscreen;
+                $scope.isFullscreen = $scope.$parent.isFullscreen;
+            }]
+        };
     })
 ;
