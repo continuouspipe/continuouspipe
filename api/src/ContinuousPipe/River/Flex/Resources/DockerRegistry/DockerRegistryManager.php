@@ -103,7 +103,7 @@ class DockerRegistryManager
      *
      * @throws FlexResourcesException
      */
-    public function changeVisibility(DockerRegistry $registry, string $visibility)
+    public function changeVisibility(Flow\Projections\FlatFlow $flow, DockerRegistry $registry, string $visibility)
     {
         if (strpos($registry->getFullAddress(), 'quay.io/') !== 0) {
             throw new FlexResourcesException('Only supports quay.io docker registries');
@@ -111,7 +111,23 @@ class DockerRegistryManager
 
         $name = substr($registry->getFullAddress(), strlen('quay.io/'));
 
-        $this->quayClient->changeVisibility($name, $visibility);
+        try {
+            $this->quayClient->changeVisibility($name, $visibility);
+        } catch (QuayException $e) {
+            throw new FlexResourcesException('Could not change repository\'s visibility', $e->getCode(), $e);
+        }
+
+        try {
+            $this->authenticatorClient->updateRegistryAttributes(
+                $flow->getTeam()->getBucketUuid(),
+                $registry->getFullAddress(),
+                array_merge($registry->getAttributes(), [
+                    'visibility' => $visibility,
+                ])
+            );
+        } catch (AuthenticatorException $e) {
+            throw new FlexResourcesException('Could not update the registry\'s attributes', $e->getCode(), $e);
+        }
     }
 
     private function generateRobotAccount(Team $team) : RobotAccount

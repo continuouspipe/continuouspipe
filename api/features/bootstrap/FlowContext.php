@@ -1698,6 +1698,16 @@ EOF;
     }
 
     /**
+     * @Then the attribute :attributeName of the registry :registryAddress of the flow :flowUuid should have been updated with the value :attributeValue
+     */
+    public function theAttributeOfTheRegistryOfTheFlowShouldHaveBeenUpdatedWithTheValue($attributeName, $registryAddress, $flowUuid, $attributeValue)
+    {
+        $team = $this->flowRepository->find(Uuid::fromString($flowUuid))->getTeam();
+
+        $this->securityContext->theTeamShouldHaveDockerCredentialsForWithTheAttributeValued($team->getSlug(), $registryAddress, $attributeName, $attributeValue);
+    }
+
+    /**
      * @param string $environment
      * @param string $flowUuid
      *

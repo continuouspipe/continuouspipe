@@ -65,7 +65,7 @@ class FlowResourcesController
             throw new BadRequestHttpException($e->getMessage(), $e->getCode(), $e);
         }
 
-        $this->dockerRegistryManager->changeVisibility($registry, $requestContents['visibility']);
+        $this->dockerRegistryManager->changeVisibility($flow, $registry, $requestContents['visibility']);
     }
 
     /**

@@ -25,3 +25,4 @@ Feature:
       | quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000 | continuouspipe-flex+project-sam | password | {"flow": "00000000-0000-0000-0000-000000000000"} |
     When I change the visibility of the registry "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000" to "private"
     Then the quay.io repository "continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" should have been changed to a private repository
+    And the attribute "visibility" of the registry "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000" should have been updated with the value "private"
