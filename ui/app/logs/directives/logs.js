@@ -11,7 +11,7 @@ angular.module('continuousPipeRiver')
             templateUrl: 'logs/views/logs.ng.html',
             controller: ['$scope', function ($scope) {
                 $scope.follow = true;
-                $scope.fullscreen = {
+                $scope.isFullscreen = {
                     text: 'Expand',
                     enabled: false
                 };
@@ -29,11 +29,11 @@ angular.module('continuousPipeRiver')
 
                 $scope.fullscreen = function(enabled) {
                     if(!enabled) {
-                        $scope.fullscreen.text = 'Exit fullscreen',
-                        $scope.fullscreen.enabled = true;
+                        $scope.isFullscreen.text = 'Exit fullscreen',
+                        $scope.isFullscreen.enabled = true;
                     } else {
-                        $scope.fullscreen.text = 'Expand',
-                        $scope.fullscreen.enabled = false;
+                        $scope.isFullscreen.text = 'Expand',
+                        $scope.isFullscreen.enabled = false;
                     }
                 };
 
@@ -82,25 +82,8 @@ angular.module('continuousPipeRiver')
             },
             template: '<ng-include src="template" />',
             controller: ['$scope', function ($scope) {
-                $scope.follow = true;
-                $scope.fullscreen = {
-                    text: 'Expand',
-                    enabled: false
-                };
-                $scope.$root.fullscreen = {
-                    enabled: false
-                };
-                $scope.fullscreen = function(enabled) {
-                    if(!enabled) {
-                        $scope.fullscreen.text = 'Exit fullscreen';
-                        $scope.fullscreen.enabled = true;
-                        $scope.$parent.fullscreen.enabled = true;
-                    } else {
-                        $scope.fullscreen.text = 'Expand';
-                        $scope.fullscreen.enabled = false;
-                        $scope.$parent.fullscreen.enabled = false;
-                    }
-                };
+                $scope.fullscreen = $scope.$parent.fullscreen;
+                $scope.isFullscreen = $scope.$parent.isFullscreen;
             }]
         };
     })
