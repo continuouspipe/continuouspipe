@@ -72,3 +72,14 @@ Feature:
     And I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
     Then the list should contain the credential for server "quay.io"
     And the registry "quay.io/foo/bar" should have the attribute "created-by" valued "continuous-pipe"
+
+  Scenario: I can update a Docker registry
+    Given I am authenticated as user "samuel"
+    And I have the following docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000":
+      | full_address    | username | password | email                 |
+      | quay.io/foo/bar | foo      | bar      | samuel.roze@gmail.com |
+    When I update the docker registry "quay.io/foo/bar" of the bucket "00000000-0000-0000-0000-000000000000" with the following registry:
+      | username | password | email                 | attributes                        |
+      | foo      | bar      | samuel.roze@gmail.com | {"created-by": "continuous-pipe"} |
+    When I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
+    And the registry "quay.io/foo/bar" should have the attribute "created-by" valued "continuous-pipe"

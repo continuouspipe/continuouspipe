@@ -117,6 +117,26 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @When I update the docker registry :registryAddress of the bucket :bucket with the following registry:
+     */
+    public function iUpdateTheDockerRegistryOfTheBucketWithTheFollowingRegistry($registryAddress, $bucket, TableNode $table)
+    {
+        $registry = $table->getHash()[0];
+        if (isset($registry['attributes'])) {
+            $registry['attributes'] = json_decode($registry['attributes'], true);
+        }
+
+        $this->response = $this->kernel->handle(Request::create(
+            sprintf('/api/bucket/%s/docker-registries/%s', $bucket, urlencode($registryAddress)),
+            'PATCH', [], [], [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($registry)
+        ));
+
+        $this->assertResponseCodeIs($this->response, 200);
+    }
+
+    /**
      * @When I create a new docker registry with the following configuration in the bucket :bucket with the API key :apiKey:
      */
     public function iCreateANewDockerRegistryWithTheFollowingConfigurationWithTheApiKey($bucket, $apiKey, TableNode $table)
