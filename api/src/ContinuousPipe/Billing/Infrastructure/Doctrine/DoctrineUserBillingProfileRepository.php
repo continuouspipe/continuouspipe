@@ -131,7 +131,8 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
      */
     public function delete(UserBillingProfile $billingProfile)
     {
-        $this->getUserBillingProfileRepository()->delete($billingProfile);
+        $this->entityManager->remove($billingProfile);
+        $this->entityManager->flush();
     }
 
     private function getUserBillingProfileRepository()
