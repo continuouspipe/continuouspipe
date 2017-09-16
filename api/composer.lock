@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "26feb1aae5724cb2c6616b5cc9883343",
+    "content-hash": "b295be1593552febe173d8195ba2be60",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -423,16 +423,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-allow-to-update-docker-registry",
+            "version": "2.9.7",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "c47b188e990edd215712b0b1b9e84506e53cf1ef"
+                "reference": "69cf04adff7d56795255c712155773376f89b892"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/c47b188e990edd215712b0b1b9e84506e53cf1ef",
-                "reference": "c47b188e990edd215712b0b1b9e84506e53cf1ef",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/69cf04adff7d56795255c712155773376f89b892",
+                "reference": "69cf04adff7d56795255c712155773376f89b892",
                 "shasum": ""
             },
             "require": {
@@ -454,10 +454,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/allow-to-update-docker-registry",
+                "source": "https://github.com/continuouspipe/security/tree/2.9.7",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-15 16:10:31"
+            "time": "2017-09-16T08:31:47+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -8703,7 +8703,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "continuous-pipe/security": 20,
         "continuous-pipe/worker-bundle": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
