@@ -6,7 +6,7 @@
                 <label>Name</label>
                 <input ng-model="project.name" required />
             </md-input-container>
-            <md-input-container class="md-block" flex-gt-xs>
+            <md-input-container class="md-block" flex-gt-xs ng-show="hasErrored">
                 <label>Unique identifier</label>
                 <input ng-model="project.slug" required />
             </md-input-container>

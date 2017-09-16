@@ -1,0 +1,23 @@
+form {
+    p.introduction {
+        padding-bottom: 20px;
+    }
+
+    md-dialog-actions {
+        padding-left: 0;
+
+        > button.md-button {
+            display: flex;
+
+            > md-progress-circular {
+                margin: 0 10px;
+                vertical-align: middle;
+                display: inline-block;
+                float: none;
+            }
+            > span {
+                flex: 1;
+            }
+        }
+    }
+}

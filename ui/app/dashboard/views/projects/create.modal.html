@@ -1,0 +1,35 @@
+<md-dialog>
+    <form ng-cloak name="projectForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Create project</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon>close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <md-content class="form-container md-padding">
+                <p class="introduction">Select a name for your project. This could be your organisation or unit name.</p>
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Name</label>
+                    <input ng-model="project.name" required placeholder="My company" />
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-xs ng-show="hasErrored">
+                    <label>Unique identifier</label>
+                    <input ng-model="project.slug" required />
+                </md-input-container>
+            </md-content>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button ng-click="cancel()">Cancel</md-button>
+            <span flex></span>
+            <md-button class="md-raised md-primary" aria-label="Create" ng-disabled="projectForm.$invalid || isLoading" ng-click="create(project)">
+                <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                Create
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
