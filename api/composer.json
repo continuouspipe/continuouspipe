@@ -30,7 +30,7 @@
         "sroze/log-stream": "~0.4.5",
         "tolerance/tolerance": "^0.4.0",
         "continuous-pipe/model": "~2.4.6",
-        "continuous-pipe/security": "dev-kms-vault-is-cachable",
+        "continuous-pipe/security": "~2.9.7",
         "simple-bus/rabbitmq-bundle-bridge": "~3.1.0",
         "simple-bus/jms-serializer-bundle-bridge": "^2.0",
         "knplabs/github-api": "^1.5",

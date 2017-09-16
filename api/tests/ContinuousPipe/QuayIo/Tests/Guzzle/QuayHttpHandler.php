@@ -42,6 +42,7 @@ class QuayHttpHandler extends MatchingHandler
                         'kind' => 'image',
                         'namespace' => $jsonBody['namespace'],
                         'name' => $jsonBody['repository'],
+                        'visibility' => $jsonBody['visibility'] ?? 'public',
                     ]));
                 },
             ],
@@ -61,6 +62,21 @@ class QuayHttpHandler extends MatchingHandler
                         'is_org_member' => true,
                         'is_robot' => true,
                         'role' => 'write',
+                    ]));
+                },
+            ],
+
+            // Change repository visibility
+            [
+                'match' => function (RequestInterface $request) {
+                    return
+                        $request->getMethod() == 'POST' && preg_match('#/repository/([a-z0-9\/-]+)/change-visibility$#', $request->getUri());
+                },
+                'response' => function(RequestInterface $request) {
+                    $jsonBody = \GuzzleHttp\json_decode($request->getBody()->getContents(), true);
+
+                    return new Response(200, ['Content-Type' => 'application/json'], json_encode([
+                        'visibility' => $jsonBody['visibility'] ?? 'public',
                     ]));
                 },
             ],

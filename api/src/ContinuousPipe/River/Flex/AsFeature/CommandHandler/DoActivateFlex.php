@@ -5,8 +5,10 @@ namespace ContinuousPipe\River\Flex\AsFeature\CommandHandler;
 use ContinuousPipe\Events\Transaction\TransactionManager;
 use ContinuousPipe\QuayIo\QuayClient;
 use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
+use ContinuousPipe\QuayIo\RobotAccount;
 use ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex;
 use ContinuousPipe\River\Flex\Cluster\ClusterResolver;
+use ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\Repository\FlowRepository;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
@@ -40,24 +42,24 @@ class DoActivateFlex
      */
     private $flowTransactionManager;
     /**
-     * @var QuayClient
+     * @var DockerRegistryManager
      */
-    private $quayClient;
+    private $dockerRegistryManager;
 
     public function __construct(
         FlowRepository $flowRepository,
-        BucketRepository $bucketRepository,
         AuthenticatorClient $authenticatorClient,
         ClusterResolver $clusterResolver,
         TransactionManager $flowTransactionManager,
-        QuayClient $quayClient
+        BucketRepository $bucketRepository,
+        DockerRegistryManager $dockerRegistryManager
     ) {
         $this->flowRepository = $flowRepository;
-        $this->authenticatorClient = $authenticatorClient;
         $this->bucketRepository = $bucketRepository;
         $this->clusterResolver = $clusterResolver;
         $this->flowTransactionManager = $flowTransactionManager;
-        $this->quayClient = $quayClient;
+        $this->authenticatorClient = $authenticatorClient;
+        $this->dockerRegistryManager = $dockerRegistryManager;
     }
 
     public function handle(ActivateFlex $command)
@@ -72,26 +74,7 @@ class DoActivateFlex
             );
         }
 
-        if (null === ($registry = $this->getFlexDockerRegistryCredentials($flow->getTeam(), $bucket))) {
-            $registry = $this->generateRobotAccount($flow->getTeam());
-
-            $this->authenticatorClient->addDockerRegistryToBucket(
-                $bucket->getUuid(),
-                $registry
-            );
-        }
-
-        try {
-            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString());
-        } catch (RepositoryAlreadyExists $e) {
-            $repository = $e->getRepository();
-        }
-
-        $this->quayClient->allowUserToAccessRepository(
-            $registry->getUsername(),
-            $repository->getName()
-        );
-
+        $this->dockerRegistryManager->createRepositoryForFlow($flow);
         $this->flowTransactionManager->apply($flow->getUuid()->toString(), function (Flow $flow) {
             $flow->activateFlex();
         });
@@ -104,32 +87,5 @@ class DoActivateFlex
         });
 
         return $flexClusters->count() > 0;
-    }
-
-    private function generateRobotAccount(Team $team) : DockerRegistry
-    {
-        $robotAccountName = $this->getDockerRegistryRobotAccountName($team);
-        $robot = $this->quayClient->createRobotAccount($robotAccountName);
-
-        return new DockerRegistry(
-            $robot->getUsername(),
-            $robot->getPassword(),
-            $robot->getEmail(),
-            'quay.io'
-        );
-    }
-
-    private function getDockerRegistryRobotAccountName(Team $team) : string
-    {
-        return 'project-'.$team->getSlug();
-    }
-
-    private function getFlexDockerRegistryCredentials(Team $team, Bucket $bucket)
-    {
-        $quayCredentials = $bucket->getDockerRegistries()->filter(function (DockerRegistry $credentials) {
-            return $credentials->getServerAddress() == 'quay.io';
-        });
-
-        return !$quayCredentials->isEmpty() ? $quayCredentials->first() : null;
     }
 }

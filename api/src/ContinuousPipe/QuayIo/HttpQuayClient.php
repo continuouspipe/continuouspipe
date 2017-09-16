@@ -75,7 +75,8 @@ class HttpQuayClient implements QuayClient
         }
 
         return new Repository(
-            $repository['namespace'].'/'.$repository['name']
+            $repository['namespace'].'/'.$repository['name'],
+            $repository['visibility'] ?? null
         );
     }
 
@@ -87,6 +88,19 @@ class HttpQuayClient implements QuayClient
             [
                 'json' => [
                     'role' => 'write',
+                ]
+            ]
+        );
+    }
+
+    public function changeVisibility(string $repositoryName, string $visibility)
+    {
+        $this->request(
+            'post',
+            $this->baseUrl . '/repository/'.$repositoryName.'/change-visibility',
+            [
+                'json' => [
+                    'visibility' => $visibility,
                 ]
             ]
         );
