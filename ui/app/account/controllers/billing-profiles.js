@@ -119,10 +119,28 @@ angular.module('continuousPipeRiver')
                 clickOutsideToClose:true,
                 scope: scope
 
-            }).then(function(answer) {
+            }).then(function() {
                 $state.reload();
             });
-        }
+        };
+
+        $scope.delete = function() {
+            swal({
+                title: "Are you sure?",
+                text: "The billing profile won't be recoverable.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            }, function() {
+                BillingProfileRepository.delete(billingProfile).then(function() {
+                    $state.go('billing-profiles');
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the billing profile", "error");
+                });
+            });
+        };
     })
     .controller('ChangeBillingProfileController', function($scope, $http, $mdDialog, $mdToast, BillingProfileRepository) {
         var plansPromise = BillingProfileRepository.findPlans();
@@ -172,3 +190,4 @@ angular.module('continuousPipeRiver')
             });
         };
     })
+;
