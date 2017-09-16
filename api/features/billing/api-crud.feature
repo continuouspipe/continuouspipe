@@ -1,12 +1,18 @@
 Feature:
   In order to refer to the billing profiles
   As a user
-  I want to be able to list my own billing profiles
+  I want to be able to create and list my own billing profiles
 
   Background:
     Given there is a user "samuel"
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
     And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "kieren"
+
+  Scenario: I can create a billing profile
+    Given there is a user "dave"
+    And I am authenticated as user "dave"
+    When I create a billing profile "alternative"
+    Then the billing profile "alternative" for "dave" should have been created
 
   Scenario: I can see my billing profile
     Given I am authenticated as user "samuel"
