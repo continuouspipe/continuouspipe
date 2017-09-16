@@ -20,24 +20,27 @@ angular.module('continuousPipeRiver')
         $scope.$watch('account', function(account) {
             if (!account) {
                 return;
+            } else if (account === 'add') {
+                $state.go('connected-accounts');
+                
+                return;
             }
 
             $scope.wizard = {
                 organisation: null
             };
 
-            $scope.organisations = [];
+            $scope.organisations = null;
             $remoteResource.load('organisations', WizardRepository.findOrganisations(account)).then(function (organisations) {
                 $scope.organisations = organisations;
             });
 
-            $scope.repositories = [];
             loadRepositoryList(WizardRepository.findRepositoryByCurrentUser($scope.account));
         });
 
         var currentRepositoriesPromise;
         var loadRepositoryList = function(repositoriesPromise) {            
-            $scope.repositories = [];
+            $scope.repositories = null;
             $remoteResource.load('repositories', repositoriesPromise).then(function (repositories) {
                 $scope.repositories = repositories;
             });

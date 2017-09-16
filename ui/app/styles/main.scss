@@ -10,6 +10,7 @@
 @import "components/check_list";
 @import "components/block";
 @import "components/forms";
+@import "components/flow_wizard";
 @import "kube_status";
 
 .pipeline-content-container {
@@ -440,9 +441,6 @@ body {
                     .md-icon-button {
                         padding: 0;
                     }
-                    .icon-link--help {
-                        padding-top: 7px;
-                    }
 
                     md-progress-circular {
                         margin: 0 10px;
@@ -539,55 +537,6 @@ body {
             height: 100%;
 
             border: none;
-        }
-    }
-
-    .flow-wizard {
-        md-list {
-            padding: 0;
-        }
-
-        md-list-item {
-            &.selected {
-                background: #737373;
-                color: #fff;
-
-                md-icon {
-                    color: #fff;
-                }
-            }
-        }
-
-        .organisation-list {
-            md-list-item {
-                .md-avatar {
-                    border-radius: 0;
-                }
-            }
-        }
-
-        .filter-repository-toolbar {
-            background: #EFEFEF;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-            padding-top: 20px;
-            min-height: 69px;
-            height: 69px;
-
-            md-icon {
-                color: grey;
-            }
-
-            md-input-container.md-block {
-                width: 100%;
-            }
-        }
-
-        .step-configuration {
-            pre {
-                border: 1px solid #ccc;
-                background: #fefefe;
-                padding: 10px;
-            }
         }
     }
 
