@@ -1,12 +1,18 @@
 Feature:
   In order to refer to the billing profiles
   As a user
-  I want to be able to list my own billing profiles
+  I want to be able to create and list my own billing profiles
 
   Background:
     Given there is a user "samuel"
     And there is a billing profile "00000000-0000-0000-0000-000000000000" for the user "samuel"
     And there is a billing profile "00000000-0000-0000-0000-000000000001" for the user "kieren"
+
+  Scenario: I can create a billing profile
+    Given there is a user "dave"
+    And I am authenticated as user "dave"
+    When I create a billing profile "alternative"
+    Then the billing profile "alternative" for "dave" should have been created
 
   Scenario: I can see my billing profile
     Given I am authenticated as user "samuel"
@@ -39,7 +45,7 @@ Feature:
 
   Scenario: No user profile is a 404
     Given I am authenticated as user "unknown"
-    When I request my billing profiles
+    When I request my billing profile
     Then I should see the billing profile to be not found
 
   Scenario: Get a team's billing profile
@@ -56,3 +62,17 @@ Feature:
     And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
     When I request the billing profile of the team "foo"
     Then I should be told that I don't have the authorization
+
+  Scenario: I can see my billing profile
+    Given I am authenticated as user "samuel"
+    When I delete the billing profile "00000000-0000-0000-0000-000000000000"
+    And I request my billing profiles
+    Then I should not see the billing profile "00000000-0000-0000-0000-000000000000"
+
+  Scenario: I can't delete the billing profile of other people
+    Given I am authenticated as user "samuel"
+    And there is a team "foo"
+    And there is a billing profile "00000000-1111-1111-1111-000000000000"
+    And the team "foo" is linked to the billing profile "00000000-1111-1111-1111-000000000000"
+    When I delete the billing profile "00000000-1111-1111-1111-000000000000"
+    Then I should be told that I don't have the authorization to access this billing profile

@@ -61,7 +61,14 @@ class BillingProfileController
      */
     public function getAction(User $user)
     {
-        return $this->billingProfiles($user);
+        $billingProfiles = $this->billingProfiles($user);
+        if (count($billingProfiles) == 0) {
+            throw new UserBillingProfileNotFound(
+                sprintf('No billing profiles found for user "%s"', $user->getUsername())
+            );
+        }
+
+        return $billingProfiles;
     }
 
     /**
@@ -71,15 +78,7 @@ class BillingProfileController
      */
     public function billingProfiles(User $user)
     {
-        $billingProfiles = $this->userBillingProfileRepository->findByUser($user);
-
-        if (count($billingProfiles) == 0) {
-            throw new UserBillingProfileNotFound(
-                sprintf('No billing profiles found for user "%s"', $user->getUsername())
-            );
-        }
-
-        return $billingProfiles;
+        return $this->userBillingProfileRepository->findByUser($user);
     }
 
     /**
@@ -113,6 +112,17 @@ class BillingProfileController
     public function getBillingProfileAction(UserBillingProfile $billingProfile)
     {
         return $billingProfile;
+    }
+
+    /**
+     * @Route("/billing-profile/{uuid}", methods={"DELETE"})
+     * @ParamConverter("billingProfile", converter="billingProfile")
+     * @Security("is_granted('READ', billingProfile)")
+     * @View
+     */
+    public function deleteBillingProfileAction(UserBillingProfile $billingProfile)
+    {
+        $this->userBillingProfileRepository->delete($billingProfile);
     }
 
     /**

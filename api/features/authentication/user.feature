@@ -28,13 +28,6 @@ Feature:
     And the user "sroze" should exists
     And the user "sroze" should be linked to a GitHub account with username "sroze"
 
-  Scenario: I am a new user, a billing account should be created
-    Given The user "sroze" is in the white list
-    When a login with GitHub as "sroze" with the token "1234"
-    Then the authentication should be successful
-    And the user "sroze" should exists
-    And the user "sroze" should have a billing account
-
   @smoke
   Scenario: A user can authenticate himself using an API key
     Given there is a user "samuel"
