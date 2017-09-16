@@ -126,6 +126,14 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
         return $billingProfile;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(UserBillingProfile $billingProfile)
+    {
+        $this->getUserBillingProfileRepository()->delete($billingProfile);
+    }
+
     private function getUserBillingProfileRepository()
     {
         return $this->entityManager->getRepository(UserBillingProfile::class);

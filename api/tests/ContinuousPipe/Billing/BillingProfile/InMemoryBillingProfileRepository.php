@@ -106,4 +106,16 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     {
         return $this->find($billingProfileUuid)->getTeams();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete(UserBillingProfile $billingProfile)
+    {
+        foreach ($this->profiles as $index => $profile) {
+            if ($profile->getUuid()->equals($billingProfile->getUuid())) {
+                unset($this->profiles[$index]);
+            }
+        }
+    }
 }

@@ -45,7 +45,7 @@ Feature:
 
   Scenario: No user profile is a 404
     Given I am authenticated as user "unknown"
-    When I request my billing profiles
+    When I request my billing profile
     Then I should see the billing profile to be not found
 
   Scenario: Get a team's billing profile
@@ -62,3 +62,17 @@ Feature:
     And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
     When I request the billing profile of the team "foo"
     Then I should be told that I don't have the authorization
+
+  Scenario: I can see my billing profile
+    Given I am authenticated as user "samuel"
+    When I delete the billing profile "00000000-0000-0000-0000-000000000000"
+    And I request my billing profiles
+    Then I should not see the billing profile "00000000-0000-0000-0000-000000000000"
+
+  Scenario: I can't delete the billing profile of other people
+    Given I am authenticated as user "samuel"
+    And there is a team "foo"
+    And there is a billing profile "00000000-1111-1111-1111-000000000000"
+    And the team "foo" is linked to the billing profile "00000000-1111-1111-1111-000000000000"
+    When I delete the billing profile "00000000-1111-1111-1111-000000000000"
+    Then I should be told that I don't have the authorization to access this billing profile

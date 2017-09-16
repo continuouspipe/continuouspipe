@@ -55,4 +55,9 @@ interface UserBillingProfileRepository
      * @param UserBillingProfile $billingProfile
      */
     public function unlink(Team $team, UserBillingProfile $billingProfile);
+
+    /**
+     * @param UserBillingProfile $billingProfile
+     */
+    public function delete(UserBillingProfile $billingProfile);
 }

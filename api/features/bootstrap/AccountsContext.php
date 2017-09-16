@@ -197,11 +197,27 @@ class AccountsContext implements Context
     }
 
     /**
+     * @When I request my billing profile
+     */
+    public function iRequestMyBillingProfile()
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
+    }
+
+    /**
      * @When I request my billing profiles
      */
     public function iRequestMyBillingProfiles()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
+        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profiles'));
+    }
+
+    /**
+     * @When I delete the billing profile :uuid
+     */
+    public function iDeleteTheBillingProfile($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create('/api/billing-profile/'.$uuid, 'DELETE'));
     }
 
     /**
@@ -306,7 +322,21 @@ class AccountsContext implements Context
                 throw new \RuntimeException(sprintf('The uuid %s should be one of the billing profiles', $row['uuid']));
             }
         }
+    }
 
+    /**
+     * @Then I should not see the billing profile :uuid
+     */
+    public function iShouldNotSeeTheBillingProfile($uuid)
+    {
+        $this->assertResponseCode(200);
+
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+        foreach ($json as $row) {
+            if ($row['uuid'] == $uuid) {
+                throw new \RuntimeException('Found billing profile');
+            }
+        }
     }
 
     /**
@@ -315,6 +345,14 @@ class AccountsContext implements Context
     public function iShouldSeeTheBillingProfileToBeNotFound()
     {
         $this->assertResponseCode(404);
+    }
+
+    /**
+     * @Then I should be told that I don't have the authorization to access this billing profile
+     */
+    public function iShouldBeToldThatIDonTHaveTheAuthorizationToAccessThisBillingProfile()
+    {
+        $this->assertResponseCode(403);
     }
 
     /**
