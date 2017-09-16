@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -278,12 +279,22 @@ class SecurityContext implements Context
      */
     public function theTeamHaveTheCredentialsOfADockerRegistry($team, $registry, $username = null)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $this->addRegistryToTeam($team, new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
+    }
 
-        $bucket->getDockerRegistries()->add(new DockerRegistry($username ?: 'username', 'password', 'email@example.com', $registry));
+    /**
+     * @Given the team :team have the credentials of the following Docker registry:
+     */
+    public function theTeamHaveTheCredentialsOfTheFollowingDockerRegistry($team, TableNode $table)
+    {
+        $registryAsArray = $table->getHash()[0];
+        if (isset($registryAsArray['attributes'])) {
+            $registryAsArray['attributes'] = json_decode($registryAsArray['attributes'], true);
+        }
 
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        $registry = $this->serializer->deserialize(json_encode($registryAsArray), DockerRegistry::class, 'json');
+
+        $this->addRegistryToTeam($team, $registry);
     }
 
     /**
@@ -311,16 +322,50 @@ class SecurityContext implements Context
     }
 
     /**
-     * @Then the team :teamSlug should have docker credentials for :serverAddress with the username :username
+     * @Then the team :teamSlug should have docker credentials for :address with the username :username
      */
-    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $serverAddress, $username)
+    public function theTeamShouldHaveDockerCredentialsForWithTheUsername($teamSlug, $address, $username)
     {
-        $matchingRegistries = $this->findTeamBucket($teamSlug)->getDockerRegistries()->filter(function(DockerRegistry $registry) use ($serverAddress, $username) {
-            return $registry->getServerAddress() == $serverAddress && $registry->getUsername() == $username;
-        });
+        $registry = $this->registryFromTeam($teamSlug, $address);
 
-        if ($matchingRegistries->count() == 0) {
-            throw new \RuntimeException('Found no matching registry');
+        if ($registry->getUsername() != $username) {
+            throw new \RuntimeException(sprintf(
+                'Found username "%s" instead',
+                $registry->getUsername()
+            ));
+        }
+    }
+
+    private function registryFromTeam(string $teamSlug, string $address)
+    {
+        foreach ($this->findTeamBucket($teamSlug)->getDockerRegistries() as $registry) {
+            if ($registry->getServerAddress() == $address || $registry->getFullAddress() == $address) {
+                return $registry;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @Then the team :teamSlug should have docker credentials for :address with the attribute :attributeName valued :attributeValue
+     */
+    public function theTeamShouldHaveDockerCredentialsForWithTheAttributeValued($teamSlug, $address, $attributeName, $attributeValue)
+    {
+        $registry = $this->registryFromTeam($teamSlug, $address);
+
+        if (!isset($registry->getAttributes()[$attributeName])) {
+            throw new \RuntimeException(sprintf(
+                'Attribute "%s" not found',
+                $attributeName
+            ));
+        }
+
+        if ($registry->getAttributes()[$attributeName] != $attributeValue) {
+            throw new \RuntimeException(sprintf(
+                'Value "%s" found instead',
+                $registry->getAttributes()[$attributeName]
+            ));
         }
     }
 
@@ -422,6 +467,16 @@ class SecurityContext implements Context
         return $this->inMemoryAuthenticatorClient->findBucketByUuid(
             $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
         );
+    }
+
+    private function addRegistryToTeam(string $team, DockerRegistry $registry)
+    {
+        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
+        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+
+        $bucket->getDockerRegistries()->add($registry);
+
+        $this->inMemoryAuthenticatorClient->addBucket($bucket);
     }
 
     public function tokenForUser($username)

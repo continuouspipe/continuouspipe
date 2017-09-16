@@ -15,49 +15,37 @@ class ViewRepositoryBasedConcurrencyManager implements TideConcurrencyManager
     private $tideRepository;
 
     /**
-     * @var MessageBus
-     */
-    private $commandBus;
-
-    /**
      * @var int
      */
     private $retryStartInterval;
 
     /**
      * @param TideRepository    $tideRepository
-     * @param MessageBus $commandBus
      * @param int               $retryStartInterval
      */
-    public function __construct(TideRepository $tideRepository, MessageBus $commandBus, $retryStartInterval)
+    public function __construct(TideRepository $tideRepository, $retryStartInterval)
     {
         $this->tideRepository = $tideRepository;
-        $this->commandBus = $commandBus;
         $this->retryStartInterval = $retryStartInterval;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function shouldTideStart(Tide $tide)
+    public function tideStartRecommendation(Tide $tide) : StartingTideRecommendation
     {
         $runningTides = $this->tideRepository->findRunningByFlowUuidAndBranch(
             $tide->getFlowUuid(),
             $tide->getCodeReference()->getBranch()
         );
 
-        return count($runningTides) == 0;
-    }
+        if (count($runningTides) > 0) {
+            return StartingTideRecommendation::postponeTo(
+                (new \DateTime())->add(new \DateInterval('PT'.$this->retryStartInterval.'S')),
+                sprintf('%d already running tide for this branch', count($runningTides))
+            );
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function postPoneTideStart(Tide $tide)
-    {
-        $this->commandBus->handle(new RunPendingTidesCommand(
-            $tide->getFlowUuid(),
-            $tide->getCodeReference()->getBranch(),
-            (new \DateTime())->add(new \DateInterval('PT'.$this->retryStartInterval.'S'))
-        ));
+        return StartingTideRecommendation::runNow();
     }
 }

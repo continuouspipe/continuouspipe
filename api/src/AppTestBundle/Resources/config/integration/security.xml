@@ -6,8 +6,10 @@
 
     <services>
         <service id="security.encryption.vault.base64" class="ContinuousPipe\Security\Encryption\Base64UnSecureVault" />
-        <service id="security.encryption.vault" class="ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault">
+        <service id="security.encryption.vault.previously_known" class="ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault">
             <argument type="service" id="security.encryption.vault.base64" />
         </service>
+
+        <service id="security.encryption.vault" alias="security.encryption.vault.previously_known" />
     </services>
 </container>

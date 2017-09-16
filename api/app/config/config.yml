@@ -8,17 +8,6 @@ parameters:
     locale: en
     firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
 
-services:
-    river.predis_cache:
-        class: Doctrine\Common\Cache\PredisCache
-        arguments:
-            - "@predis_client"
-
-    river.apcu_cache:
-        class: Doctrine\Common\Cache\ApcuCache
-        arguments:
-            - "river"
-
 framework:
     #esi:             ~
     #translator:      { fallbacks: ["%locale%"] }
@@ -137,6 +126,8 @@ continuous_pipe_security:
             location: "%google_kms_location%"
             service_account_path: "%google_kms_service_account_path%"
             key_ring: "%google_kms_key_ring%"
+            key_cache_service: river.cache
+        cache_service: river.apcu_cache
 
 fos_rest:
     body_converter:

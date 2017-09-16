@@ -11,12 +11,17 @@
             <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
             <argument type="service" id="logger" />
         </service>
+        <service id="river.flex.resources.docker_registry_managed" class="ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager">
+            <argument type="service" id="security.authenticator.client" />
+            <argument type="service" id="quay.client"/>
+            <argument type="service" id="authenticator.bucket_repository"/>
+        </service>
         <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
             <argument type="service" id="river.repository.flow" />
-            <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="river.flow.transaction_manager" />
-            <argument type="service" id="quay.client"/>
+            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="river.flex.resources.docker_registry_managed"/>
 
             <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
         </service>

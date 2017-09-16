@@ -83,6 +83,10 @@
             <argument type="service" id="command_bus"/>
             <argument type="service" id="river.flex.availability_detector"/>
         </service>
+        <service id="app.controller.resources" class="AppBundle\Controller\FlowResourcesController">
+            <argument type="service" id="river.flex.resources.docker_registry_managed"/>
+            <argument type="service" id="authenticator.bucket_repository"/>
+        </service>
         <service id="app.controller.usage" class="AppBundle\Controller\UsageController">
             <argument type="service" id="river.managed.resources.history_repository" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
