@@ -25,13 +25,6 @@
         </service>
         <service id="app.billing.trial_resolver" class="ContinuousPipe\Billing\BillingProfile\Trial\CreationDateTrialResolver" />
 
-        <!-- Billing profile -->
-        <service id="app.billing.when_user_is_created.create_billing_profile" class="ContinuousPipe\Billing\BillingProfile\WhenUserIsCreated\CreateABillingProfile">
-            <argument type="service" id="app.repository.billing_profile" />
-
-            <tag name="kernel.event_listener" event="security.user_created" method="notify" />
-        </service>
-
         <!-- Usage -->
         <service id="app.billing.usage_tracker" class="ContinuousPipe\Billing\Usage\FromActivityUsageTracker">
             <argument type="service" id="app.billing.activity_tracker" />
