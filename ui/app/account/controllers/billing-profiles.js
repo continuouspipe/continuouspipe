@@ -73,6 +73,8 @@ angular.module('continuousPipeRiver')
         };
 
         BillingProfileRepository.getUsage(billingProfile).then(function(usage) {
+            $scope.usage = usage;
+
             $scope.tidesGraph = {
                 type: 'SteppedAreaChart',
                 data: UsageGraphBuilder.dataFromUsage(usage, 'tides'),
@@ -101,8 +103,9 @@ angular.module('continuousPipeRiver')
         });
 
         BillingProfileRepository.getUsage(billingProfile, 'P31D').then(function(usage) {
-           console.log('tides', usage[0].entries[0].usage);
-           $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+            if (usage.length) {
+                $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+            }
         });
 
         $scope.change = function(ev) {
