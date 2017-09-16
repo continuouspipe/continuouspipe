@@ -58,6 +58,8 @@ interface UserBillingProfileRepository
 
     /**
      * @param UserBillingProfile $billingProfile
+     *
+     * @throws UserBillingProfileException
      */
     public function delete(UserBillingProfile $billingProfile);
 }

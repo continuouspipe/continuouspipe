@@ -63,7 +63,7 @@ Feature:
     When I request the billing profile of the team "foo"
     Then I should be told that I don't have the authorization
 
-  Scenario: I can see my billing profile
+  Scenario: I can delete my billing profile
     Given I am authenticated as user "samuel"
     When I delete the billing profile "00000000-0000-0000-0000-000000000000"
     And I request my billing profiles
@@ -76,3 +76,13 @@ Feature:
     And the team "foo" is linked to the billing profile "00000000-1111-1111-1111-000000000000"
     When I delete the billing profile "00000000-1111-1111-1111-000000000000"
     Then I should be told that I don't have the authorization to access this billing profile
+
+  @smoke
+  Scenario: I can't delete a billing profile linked to a team
+    Given I am authenticated as user "samuel"
+    And there is a team "foo"
+    And there is a billing profile "00000000-0000-0000-0000-000000000000"
+    And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
+    And the user "samuel" is administrator of the billing profile "00000000-0000-0000-0000-000000000000"
+    When I delete the billing profile "00000000-0000-0000-0000-000000000000"
+    Then I should be told "The billing profile is linked with some resources that needs to be deleted before" regarding the billing profile

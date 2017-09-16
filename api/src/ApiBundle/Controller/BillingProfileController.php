@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileException;
 use ContinuousPipe\Billing\Plan\ChangeBillingPlanRequest;
 use ContinuousPipe\Billing\BillingProfile\Request\UserBillingProfileCreationRequest;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
@@ -122,7 +123,13 @@ class BillingProfileController
      */
     public function deleteBillingProfileAction(UserBillingProfile $billingProfile)
     {
-        $this->userBillingProfileRepository->delete($billingProfile);
+        try {
+            $this->userBillingProfileRepository->delete($billingProfile);
+        } catch (UserBillingProfileException $e) {
+            return new JsonResponse([
+                'message' => $e->getMessage(),
+            ], $e->getCode() ?: 500);
+        }
     }
 
     /**

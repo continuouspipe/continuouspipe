@@ -356,6 +356,21 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Then I should be told :message regarding the billing profile
+     */
+    public function iShouldBeToldThat($message)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if ($json['message'] != $message) {
+            throw new \RuntimeException(sprintf(
+                'Got "%s" instead',
+                $json['message']
+            ));
+        }
+    }
+
+    /**
      * @Given the project :project have the following zones:
      */
     public function theProjectHaveTheFollowingZones($project, TableNode $table)
