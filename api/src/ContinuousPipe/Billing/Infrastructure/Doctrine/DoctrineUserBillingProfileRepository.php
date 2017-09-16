@@ -3,11 +3,13 @@
 namespace ContinuousPipe\Billing\Infrastructure\Doctrine;
 
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileException;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\User;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\UuidInterface;
 
@@ -131,8 +133,12 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
      */
     public function delete(UserBillingProfile $billingProfile)
     {
-        $this->entityManager->remove($billingProfile);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->remove($billingProfile);
+            $this->entityManager->flush();
+        } catch (ForeignKeyConstraintViolationException $e) {
+            throw new UserBillingProfileException('The billing profile is linked with some resources that needs to be deleted before', 400, $e);
+        }
     }
 
     private function getUserBillingProfileRepository()

@@ -114,6 +114,10 @@ class InMemoryBillingProfileRepository implements UserBillingProfileRepository
     {
         foreach ($this->profiles as $index => $profile) {
             if ($profile->getUuid()->equals($billingProfile->getUuid())) {
+                if ($profile->getTeams()->count() > 0) {
+                    throw new UserBillingProfileException('The billing profile is linked with some resources that needs to be deleted before', 400);
+                }
+
                 unset($this->profiles[$index]);
             }
         }
