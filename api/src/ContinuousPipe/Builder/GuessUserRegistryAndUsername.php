@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use ContinuousPipe\River\Task\Build\BuildTaskFactory;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
@@ -29,15 +30,21 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var ReferenceRegistryResolver
+     */
+    private $referenceRegistryResolver;
 
     public function __construct(
         BuildRequestCreator $decoratedCreator,
         BucketRepository $bucketRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ReferenceRegistryResolver $referenceRegistryResolver
     ) {
         $this->decoratedCreator = $decoratedCreator;
         $this->bucketRepository = $bucketRepository;
         $this->logger = $logger;
+        $this->referenceRegistryResolver = $referenceRegistryResolver;
     }
 
     /**
@@ -55,11 +62,11 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             $flowUuid,
             $tideUuid,
             $codeReference,
-            new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $credentialsBucketUuid) {
-                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $credentialsBucketUuid) {
+            new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
+                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
                     if ($buildRequestStep->getImage() !== null) {
                         $buildRequestStep = $buildRequestStep->withImage(
-                            $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid)
+                            $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid, $flowUuid)
                         );
                     }
 
@@ -71,7 +78,7 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
         );
     }
 
-    private function guessImageNameIfNeeded(BuildRequestStep $step, UuidInterface $bucketUuid, UuidInterface $tideUuid) : Image
+    private function guessImageNameIfNeeded(BuildRequestStep $step, UuidInterface $bucketUuid, UuidInterface $tideUuid, UuidInterface $flowUuid) : Image
     {
         $image = $step->getImage();
         $parts = explode('/', $image->getName());
@@ -81,39 +88,38 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             return $step->getImage();
         }
 
-        try {
-            $bucket = $this->bucketRepository->find($bucketUuid);
-        } catch (BucketNotFound $e) {
-            $this->logger->warning('Unable to guess the Docker image registry or username', [
-                'exception' => $e,
+        // Get registry of reference
+        if (null === ($registry = $this->referenceRegistryResolver->getReferenceRegistry($flowUuid))) {
+            if (empty($image->getName())) {
+                throw new BuilderException(sprintf(
+                    'Docker image name to build "%s" is invalid.',
+                    $image->getName()
+                ));
+            }
+
+            $this->logger->warning('Can\'t find any reference registry for this tide', [
                 'tide_uuid' => $tideUuid->toString(),
             ]);
 
             return $image;
         }
 
-        if (0 === $bucket->getDockerRegistries()->count()) {
-            $this->logger->warning('No docker registries found in team to guess image registry or username', [
-                'tide_uuid' => $tideUuid->toString(),
-            ]);
+        if (empty($image->getName()) && null !== ($fullAddress = $registry->getFullAddress())) {
+            $imageName = $registry->getFullAddress();
+        } else {
+            if (count($parts) == 1) {
+                array_unshift($parts, $registry->getUsername());
+            }
 
-            return $image;
-        }
+            if (count($parts) == 2) {
+                array_unshift($parts, $registry->getServerAddress());
+            }
 
-        /** @var DockerRegistry $registry */
-        $registry = $bucket->getDockerRegistries()->first();
-
-        // We will consider the username as missing
-        if (count($parts) == 1) {
-            array_unshift($parts, $registry->getUsername());
-        }
-
-        if (count($parts) == 2) {
-            array_unshift($parts, $registry->getServerAddress());
+            $imageName = implode('/', $parts);
         }
 
         return new Image(
-            implode('/', $parts),
+            $imageName,
             $image->getTag(),
             $image->getReuse()
         );

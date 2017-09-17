@@ -18,6 +18,8 @@ interface BuildRequestCreator
      * @param UuidInterface $credentialsBucketUuid
      * @param Log $parentLog
      *
+     * @throws BuilderException
+     *
      * @return array|BuildRequest[]
      */
     public function createBuildRequests(

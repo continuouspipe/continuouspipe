@@ -232,10 +232,10 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
             }, $stepConfiguration['write_artifacts']));
         }
 
-        if (isset($stepConfiguration['image']) && isset($stepConfiguration['tag'])) {
+        if (array_key_exists('image', $stepConfiguration) || array_key_exists('tag', $stepConfiguration)) {
             $step = $step->withImage(new Image(
-                $stepConfiguration['image'],
-                $stepConfiguration['tag'],
+                $stepConfiguration['image'] ?? '',
+                $stepConfiguration['tag'] ?? '',
                 isset($stepConfiguration['reuse']) ? $stepConfiguration['reuse'] : null
             ));
         }
@@ -281,6 +281,10 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
     private function getDockerImageNameValidator()
     {
         return function ($imageName) {
+            if ($imageName === null) {
+                return false;
+            }
+
             $domainComponentRegexp = '(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])';
             $optionalDotRegexp = '(\.' . $domainComponentRegexp . ')?';
             $optionalPortRegexp = '(?::[0-9]+)?';
