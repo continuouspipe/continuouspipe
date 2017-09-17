@@ -57,7 +57,7 @@ class HttpQuayClient implements QuayClient
         );
     }
 
-    public function createRepository(string $name): Repository
+    public function createRepository(string $name, string $visibility): Repository
     {
         try {
             $repository = $this->json(
@@ -65,7 +65,7 @@ class HttpQuayClient implements QuayClient
                     'json' => [
                         'namespace' => $this->organisation,
                         'repository' => $name,
-                        'visibility' => 'public',
+                        'visibility' => $visibility,
                         'description' => $name,
                     ]
                 ])

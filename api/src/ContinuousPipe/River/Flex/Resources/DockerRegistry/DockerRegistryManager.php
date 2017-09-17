@@ -7,7 +7,7 @@ use ContinuousPipe\QuayIo\QuayException;
 use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
 use ContinuousPipe\QuayIo\RobotAccount;
 use ContinuousPipe\River\Flex\Resources\FlexResourcesException;
-use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
 use ContinuousPipe\Security\Authenticator\AuthenticatorException;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -40,16 +40,19 @@ class DockerRegistryManager
     }
 
     /**
-     * @param Flow $flow
+     * @param FlatFlow $flow
+     * @param string $visibility
      *
      * @throws FlexResourcesException
+     *
+     * @return DockerRegistry
      */
-    public function createRepositoryForFlow(Flow $flow)
+    public function createRepositoryForFlow(FlatFlow $flow, string $visibility)
     {
         $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
 
         try {
-            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString());
+            $repository = $this->quayClient->createRepository('flow-' . $flow->getUuid()->toString(), $visibility);
         } catch (RepositoryAlreadyExists $e) {
             $repository = $e->getRepository();
         } catch (QuayException $e) {
@@ -95,15 +98,18 @@ class DockerRegistryManager
         } catch (QuayException $e) {
             throw new FlexResourcesException('Could not allow user to access Docker Registry repository', $e->getCode(), $e);
         }
+
+        return $registry;
     }
 
     /**
+     * @param FlatFlow $flow
      * @param DockerRegistry $registry
      * @param string $visibility
      *
      * @throws FlexResourcesException
      */
-    public function changeVisibility(Flow\Projections\FlatFlow $flow, DockerRegistry $registry, string $visibility)
+    public function changeVisibility(FlatFlow $flow, DockerRegistry $registry, string $visibility)
     {
         if (strpos($registry->getFullAddress(), 'quay.io/') !== 0) {
             throw new FlexResourcesException('Only supports quay.io docker registries');

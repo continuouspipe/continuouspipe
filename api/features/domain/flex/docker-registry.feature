@@ -9,10 +9,11 @@ Feature:
     And the user "sam" is "ADMIN" of the team "sam"
     And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "sam"
 
-  Scenario: It will create a Docker Registry automatically
+  Scenario: I can create a Docker registry for the flow
     Given I am authenticated as "sam"
-    When I activate flex for the flow "00000000-0000-0000-0000-000000000000"
-    Then a quay.io repository "flow-00000000-0000-0000-0000-000000000000" should be created
+    When I ask the creation of a Docker registry for the flow "00000000-0000-0000-0000-000000000000"
+    Then I should be told that the resource has been created
+    And a quay.io repository "flow-00000000-0000-0000-0000-000000000000" should be created
     And a quay.io robot account "project-sam" should have been created
     And the quay.io user "continuouspipe-flex+project-sam" should have been granted access to the "continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" repository
     And the team "sam" should have docker credentials for "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" with the username "continuouspipe-flex+project-sam"
@@ -26,3 +27,4 @@ Feature:
     When I change the visibility of the registry "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000" to "private"
     Then the quay.io repository "continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" should have been changed to a private repository
     And the attribute "visibility" of the registry "quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000" should have been updated with the value "private"
+

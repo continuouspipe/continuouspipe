@@ -727,7 +727,7 @@ EOF;
     }
 
     /**
-     * @When I should be told that the resource has been created
+     * @Then I should be told that the resource has been created
      */
     public function iShouldBeToldThatTheResourceHasBeenCreated()
     {
@@ -1053,6 +1053,17 @@ EOF;
         ));
 
         $this->assertResponseCode(204);
+    }
+
+    /**
+     * @When I ask the creation of a Docker registry for the flow :uuid
+     */
+    public function iAskTheCreationOfADockerRegistryForTheFlow($uuid)
+    {
+        $this->response = $this->kernel->handle(Request::create(
+            '/flows/'.$uuid.'/resources/registry',
+            'POST'
+        ));
     }
 
     /**

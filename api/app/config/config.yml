@@ -145,6 +145,8 @@ fos_rest:
     exception:
         messages:
             'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
+            'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
+            'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
 
 sensio_framework_extra:
     view:    { annotations: false }

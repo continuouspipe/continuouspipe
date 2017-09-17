@@ -19,12 +19,13 @@ interface QuayClient
      * Create a new repository.
      *
      * @param string $name
+     * @param string $visibility
      *
      * @throws QuayException
      *
      * @return Repository
      */
-    public function createRepository(string $name) : Repository;
+    public function createRepository(string $name, string $visibility) : Repository;
 
     /**
      * Allow a user to access a repository.
