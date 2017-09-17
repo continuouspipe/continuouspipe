@@ -287,7 +287,7 @@
             <argument>%redis_host%</argument>
         </service>
 
-        <service id="river.apcu_cache" class="Doctrine\Common\Cache\ApcuCache">
+        <service id="river.memory_cache" class="Doctrine\Common\Cache\ApcuCache">
             <argument>river</argument>
         </service>
 
@@ -297,7 +297,7 @@
 
         <service id="river.cache" class="Doctrine\Common\Cache\ChainCache">
             <argument type="collection">
-                <argument type="service" id="river.apcu_cache" />
+                <argument type="service" id="river.memory_cache" />
                 <argument type="service" id="river.predis_cache" />
             </argument>
         </service>
