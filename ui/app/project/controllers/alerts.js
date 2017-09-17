@@ -18,8 +18,9 @@ angular.module('continuousPipeRiver')
             AlertManager.showAll($scope.alerts);
         };
 
-        $rootScope.$on('configuration-saved', $scope.loadAlerts);
-        $rootScope.$on('visibility-changed', $scope.loadAlerts);
+        $scope.$on('$destroy', $rootScope.$on('configuration-saved', $scope.loadAlerts));
+        $scope.$on('$destroy', $rootScope.$on('visibility-changed', $scope.loadAlerts));
+        $scope.$on('$destroy', $rootScope.$on('reload-alerts', $scope.loadAlerts));
 
         $scope.loadAlerts();
     })

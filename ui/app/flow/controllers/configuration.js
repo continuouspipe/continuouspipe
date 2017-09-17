@@ -327,12 +327,12 @@ angular.module('continuousPipeRiver')
             },
             {
                 icon: 'storage',
-                title: 'Private Docker image in managed registry',
+                title: 'Docker image in managed registry',
                 description: 'You don\'t have a Docker Registry to store your Docker images? We have you stored if you click "Enable" !',
                 getStatus: function() {
                     return RegistryCredentialsRepository.findAll(project).then(function(registries) {
-                        var registryIsManagedForFlow = function(registry) {
-                            return false;
+                        var registryIsManagedForFlow = function(registry, flow) {
+                            return registry.attributes && registry.attributes.managed == true && registry.attributes.flow == flow.uuid;
                         };
 
                         for (var i = 0; i < registries.length; i++) {
@@ -344,12 +344,14 @@ angular.module('continuousPipeRiver')
                         return 'optional';
                     });
                 },
-                getAction: function(status) {
+                getAction: function(status, check) {
                     if (status.summary != 'success') {
+                        var visibility = check && check.last_error ? 'public' : 'private';
+
                         return {
-                            title: 'Create',
+                            title: visibility == 'private' ? 'Create private registry' : 'Create public registry',
                             click: function() {
-                                return RegistryCredentialsRepository.createManagedForFlow(flow);
+                                return RegistryCredentialsRepository.createManagedForFlow(flow, visibility);
                             }
                         }
                     }
@@ -372,7 +374,7 @@ angular.module('continuousPipeRiver')
                         status = {'summary': status};
                     }
 
-                    var actionPromise = check.getAction(status);
+                    var actionPromise = check.getAction(status, check);
                     if (!actionPromise || !actionPromise.then) {
                         actionPromise = $q.resolve(actionPromise);
                     }
@@ -389,8 +391,10 @@ angular.module('continuousPipeRiver')
                                 }
 
                                 return promise.then(function(result) {
-                                    return result;
+                                    check.last_result = result;
+                                    $rootScope.$emit('reload-alerts');
                                 }, function(error) {
+                                    check.last_error = error;
                                     swal("Error !", $http.getError(error) || "An unknown error occurred while actioning the checklist item", "error");
                                 })['finally'](function() {
                                     loadCheck(check);
@@ -413,52 +417,6 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.$watch('checks', function() {
-            /**
-            $scope.checks = [
-                {
-                    status: {
-                        summary: $scope.isLoading ? 'loading' : (
-                            $scope.repositoryAlert === null ? 'success' : 'error'
-                        ),
-                        action: $scope.repositoryAlert ? {
-                            'title': $scope.repositoryAlert.action.title,
-                            'click': function() {
-                                AlertManager.open($scope.repositoryAlert);
-                            }
-                        } : undefined
-                    }
-                },
-                {
-                    icon: 'cloud',
-                    title: 'Managed cluster',
-                    description: 'You don\'t have an infrastructure or a Kubernetes cluster? No worries, we can run your containers! Click on "Enable" to register a managed cluster to your project.',
-                    status: false ? {'summary': 'loading'} : {
-                        'summary': 'optional',
-                        'action': {
-                            'title': 'Enable',
-                            'click': function () {
-                                console.log('add managed cluster!');
-                            }
-                        }
-                    }
-                },
-                {
-                    icon: 'storage',
-                    title: 'Private Docker image in managed registry',
-                    description: 'You don\'t have a Docker Registry to store your Docker images? We have you stored if you click "Enable" !',
-                    status: false ? {'summary': 'loading'} : {
-                        'summary': 'optional',
-                        'action': {
-                            'title': 'Enable',
-                            'click': function () {
-                                console.log('add docker registry!');
-                            }
-                        }
-                    }
-                }
-            ];
-             **/
-
             $scope.isReady = $scope.checks.reduce(function(carry, check) {
                 return carry && ['disabled', 'success', 'optional'].indexOf(check.status.summary) !== -1;
             }, true);
