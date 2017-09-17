@@ -70,3 +70,19 @@ Feature:
     """
     When a tide is started for the branch "master"
     Then the build should be started with the image name "docker.io/sroze/cp-website"
+
+  Scenario: It automatically guess my full Docker image name with a full registry address with attributres
+    Given the team "samuel" have the credentials of the following Docker registry:
+      | full_address    | attributes                                       |
+      | quay.io/foo/bar | {"flow": "00000000-0000-0000-0000-000000000000"} |
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" and the following configuration:
+    """
+    tasks:
+        images:
+            build:
+                services:
+                    app:
+                        image: ~
+    """
+    When a tide is started for the branch "master"
+    Then the build should be started with the image name "quay.io/foo/bar"

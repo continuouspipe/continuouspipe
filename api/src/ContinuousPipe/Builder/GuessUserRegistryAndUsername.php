@@ -55,11 +55,11 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             $flowUuid,
             $tideUuid,
             $codeReference,
-            new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $credentialsBucketUuid) {
-                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $credentialsBucketUuid) {
+            new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
+                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
                     if ($buildRequestStep->getImage() !== null) {
                         $buildRequestStep = $buildRequestStep->withImage(
-                            $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid)
+                            $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid, $flowUuid)
                         );
                     }
 
@@ -71,7 +71,7 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
         );
     }
 
-    private function guessImageNameIfNeeded(BuildRequestStep $step, UuidInterface $bucketUuid, UuidInterface $tideUuid) : Image
+    private function guessImageNameIfNeeded(BuildRequestStep $step, UuidInterface $bucketUuid, UuidInterface $tideUuid, UuidInterface $flowUuid) : Image
     {
         $image = $step->getImage();
         $parts = explode('/', $image->getName());
@@ -81,41 +81,68 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             return $step->getImage();
         }
 
-        try {
-            $bucket = $this->bucketRepository->find($bucketUuid);
-        } catch (BucketNotFound $e) {
-            $this->logger->warning('Unable to guess the Docker image registry or username', [
-                'exception' => $e,
+        // Get registry of reference
+        if (null === ($registry = $this->getReferenceRegistry($bucketUuid, $flowUuid))) {
+            if (empty($image->getName())) {
+                throw new BuilderException(sprintf(
+                    'Docker image name to build "%s" is invalid.',
+                    $image->getName()
+                ));
+            }
+
+            $this->logger->warning('Can\'t find any reference registry for this tide', [
                 'tide_uuid' => $tideUuid->toString(),
             ]);
 
             return $image;
         }
 
-        if (0 === $bucket->getDockerRegistries()->count()) {
-            $this->logger->warning('No docker registries found in team to guess image registry or username', [
-                'tide_uuid' => $tideUuid->toString(),
-            ]);
+        if (empty($image->getName()) && null !== ($fullAddress = $registry->getFullAddress())) {
+            $imageName = $registry->getFullAddress();
+        } else {
+            if (count($parts) == 1) {
+                array_unshift($parts, $registry->getUsername());
+            }
 
-            return $image;
-        }
+            if (count($parts) == 2) {
+                array_unshift($parts, $registry->getServerAddress());
+            }
 
-        /** @var DockerRegistry $registry */
-        $registry = $bucket->getDockerRegistries()->first();
-
-        // We will consider the username as missing
-        if (count($parts) == 1) {
-            array_unshift($parts, $registry->getUsername());
-        }
-
-        if (count($parts) == 2) {
-            array_unshift($parts, $registry->getServerAddress());
+            $imageName = implode('/', $parts);
         }
 
         return new Image(
-            implode('/', $parts),
+            $imageName,
             $image->getTag(),
             $image->getReuse()
         );
+    }
+
+    /**
+     * @param UuidInterface $bucketUuid
+     * @param UuidInterface $flowUuid
+     *
+     * @return DockerRegistry|null
+     */
+    private function getReferenceRegistry(UuidInterface $bucketUuid, UuidInterface $flowUuid)
+    {
+        try {
+            $registries = $this->bucketRepository->find($bucketUuid)->getDockerRegistries();
+        } catch (BucketNotFound $e) {
+            return null;
+        }
+
+        // Find a registry matching the flow
+        foreach ($registries as $registry) {
+            if (isset($registry->getAttributes()['flow']) && $registry->getAttributes()['flow'] == $flowUuid->toString()) {
+                return $registry;
+            }
+        }
+
+        if ($registries->count() > 0) {
+            return $registries->first();
+        }
+
+        return null;
     }
 }

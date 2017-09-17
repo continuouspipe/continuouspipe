@@ -38,11 +38,7 @@
         <!-- Configuration generation -->
         <service id="river.flex.configuration_generation.generator_for_flow" class="ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow">
             <argument type="service" id="river.flow.encrypted_variable_vault"/>
-            <argument type="collection">
-                <argument key="CLOUD_FLARE_ZONE">%flex_cloud_flare_zone%</argument>
-                <argument key="CLOUD_FLARE_EMAIL">%flex_cloud_flare_email%</argument>
-                <argument key="CLOUD_FLARE_API_KEY">%flex_cloud_flare_api_key%</argument>
-            </argument>
+            <argument type="collection" />
         </service>
         <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\GenerateConfigurationFromFlexGenerator">
             <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />

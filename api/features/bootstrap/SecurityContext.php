@@ -284,17 +284,20 @@ class SecurityContext implements Context
 
     /**
      * @Given the team :team have the credentials of the following Docker registry:
+     * @Given the team :team have the credentials of the following Docker registries:
      */
-    public function theTeamHaveTheCredentialsOfTheFollowingDockerRegistry($team, TableNode $table)
+    public function theTeamHaveTheCredentialsOfTheFollowingDockerRegistries($team, TableNode $table)
     {
-        $registryAsArray = $table->getHash()[0];
-        if (isset($registryAsArray['attributes'])) {
-            $registryAsArray['attributes'] = json_decode($registryAsArray['attributes'], true);
+        foreach ($table->getHash() as $registryAsArray) {
+            if (isset($registryAsArray['attributes'])) {
+                $registryAsArray['attributes'] = json_decode($registryAsArray['attributes'], true);
+            }
+
+            $this->addRegistryToTeam(
+                $team,
+                $this->serializer->deserialize(json_encode($registryAsArray), DockerRegistry::class, 'json')
+            );
         }
-
-        $registry = $this->serializer->deserialize(json_encode($registryAsArray), DockerRegistry::class, 'json');
-
-        $this->addRegistryToTeam($team, $registry);
     }
 
     /**
