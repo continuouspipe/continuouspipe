@@ -21,7 +21,6 @@
         <table class="table responsive-table hover" ng-show="clusters.length > 0">
             <thead>
             <tr>
-                <th>Type</th>
                 <th>Identifier</th>
                 <th>Address</th>
                 <th>Credentials</th>
@@ -30,15 +29,23 @@
             </thead>
             <tbody>
             <tr ng-repeat="cluster in clusters">
-                <td data-th="Type">{{ cluster.type }}</td>
                 <td data-th="Identifier">{{ cluster.identifier }}</td>
-                <td data-th="Address">{{ cluster.address }} <small>{{ cluster.version }}</small></td>
-                <td data-th="Credentials">User <small>{{ cluster.username }}</small></td>
+                <td data-th="Address">
+                    <span ng-if="!clusterIsManaged(cluster)">{{ cluster.address }} <small>{{ cluster.version }}</small></span>
+                    <span ng-if="clusterIsManaged(cluster)">
+                        <md-icon>cloud</md-icon>
+                        <em>Cluster managed by ContinuousPipe</em>
+                    </span>
+                </td>
+                <td data-th="Credentials">
+                    <span ng-if="cluster.credentials.username">User <small>{{ cluster.credentials.username }}</small></span>
+                    <span ng-if="!cluster.credentials.username && cluster.credentials.google_cloud_service_account">Service account</span>
+                </td>
                 <td data-th="Actions">
                     <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
                     <md-button ng-click="showPolicies(cluster)" class="md-icon-button"><i class="material-icons">security</i></md-button>
-                    <md-button ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
-                    <md-button ng-click="showDashboard(cluster)" class="md-icon-button"><i class="material-icons">dashboard</i></md-button>
+                    <md-button ng-if="!clusterIsManaged(cluster)" ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
+                    <md-button ng-if="!clusterIsManaged(cluster)" ng-click="showDashboard(cluster)" class="md-icon-button"><i class="material-icons">dashboard</i></md-button>
                 </td>
             </tr>
             </tbody>

@@ -25,4 +25,13 @@ angular.module('continuousPipeRiver')
                 visibility: visibility
             }).$promise;
         };
+
+        this.changeVisibility = function(registry, visibility) {
+            return $resource(RIVER_API_URL+'/flows/:uuid/resources/registry/:registryAddress/visibility').save({
+                uuid: registry.attributes.flow,
+                registryAddress: registry.full_address
+            }, {
+                visibility: visibility
+            }).$promise;
+        };
     });

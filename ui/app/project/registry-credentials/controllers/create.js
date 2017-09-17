@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectCreateRegistryCredentialsController', function($scope, $state, RegistryCredentialsRepository) {
+    .controller('ProjectCreateRegistryCredentialsController', function($scope, $http, $state, RegistryCredentialsRepository) {
         $scope.credentials = {
             serverAddress: 'docker.io'
         };
@@ -16,8 +16,7 @@ angular.module('continuousPipeRiver')
                     username: credentials.username
                 });
             }, function(error) {
-                var message = ((error || {}).data || {}).message || "An unknown error occured while saving the credentials";
-                swal("Error !", message, "error");
+                swal("Error !", $http.getError(error) || "An unknown error occured while saving the credentials", "error");
             })['finally'](function() {
                 $scope.isLoading = false;
             });
