@@ -38,6 +38,7 @@
         <!-- Configuration generation -->
         <service id="river.flex.configuration_generation.generator_for_flow" class="ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow">
             <argument type="service" id="river.flow.encrypted_variable_vault"/>
+            <argument type="service" id="river.resources.reference_docker_registry_resolver"/>
             <argument type="collection" />
         </service>
         <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\GenerateConfigurationFromFlexGenerator">

@@ -41,6 +41,7 @@
             <argument type="service" id="builder.build_request_creator.guess_registry_details.inner" />
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="logger" />
+            <argument type="service" id="river.resources.reference_docker_registry_resolver"/>
         </service>
     </services>
 </container>

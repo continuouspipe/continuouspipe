@@ -12,6 +12,7 @@ use ContinuousPipe\Flex\ConfigurationGeneration\Symfony\DockerGenerator;
 use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Flow\EncryptedVariable\EncryptedVariableVault;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
+use ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver;
 
 final class GeneratorForFlow
 {
@@ -19,7 +20,10 @@ final class GeneratorForFlow
      * @var EncryptedVariableVault
      */
     private $vault;
-
+    /**
+     * @var ReferenceRegistryResolver
+     */
+    private $referenceRegistryResolver;
     /**
      * @var array
      */
@@ -27,12 +31,14 @@ final class GeneratorForFlow
 
     /**
      * @param EncryptedVariableVault $vault
+     * @param ReferenceRegistryResolver $referenceRegistryResolver
      * @param array $defaultVariables
      */
-    public function __construct(EncryptedVariableVault $vault, array $defaultVariables)
+    public function __construct(EncryptedVariableVault $vault, ReferenceRegistryResolver $referenceRegistryResolver, array $defaultVariables)
     {
         $this->vault = $vault;
         $this->defaultVariables = $defaultVariables;
+        $this->referenceRegistryResolver = $referenceRegistryResolver;
     }
 
     /**
@@ -56,8 +62,19 @@ final class GeneratorForFlow
             ),
             [
                 'variables' => $this->defaultVariables,
-                'image_name' => 'quay.io/continuouspipe-flex/flow-'.$flow->getUuid()->toString(),
+                'image_name' => $this->getImageName($flow),
             ]
         );
+    }
+
+    private function getImageName(FlatFlow $flow) : string
+    {
+        if (null !== ($registry = $this->referenceRegistryResolver->getReferenceRegistry($flow->getUuid()))) {
+            if (null !== ($imageName = $registry->getFullAddress())) {
+                return $imageName;
+            }
+        }
+
+        return 'quay.io/continuouspipe-flex/flow-'.$flow->getUuid()->toString();
     }
 }

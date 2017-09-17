@@ -21,5 +21,11 @@
 
             <tag name="command_handler" handles="ContinuousPipe\River\Managed\Resources\Discrepancies\RepairResourcesDiscrepancies" />
         </service>
+
+        <!-- Docker Registries -->
+        <service id="river.resources.reference_docker_registry_resolver" class="ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver">
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="authenticator.bucket_repository"/>
+        </service>
     </services>
 </container>

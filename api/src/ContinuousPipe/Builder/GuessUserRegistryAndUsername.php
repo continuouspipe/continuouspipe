@@ -5,6 +5,7 @@ namespace ContinuousPipe\Builder;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\CodeReference;
+use ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use ContinuousPipe\River\Task\Build\BuildTaskFactory;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
@@ -29,15 +30,21 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var ReferenceRegistryResolver
+     */
+    private $referenceRegistryResolver;
 
     public function __construct(
         BuildRequestCreator $decoratedCreator,
         BucketRepository $bucketRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ReferenceRegistryResolver $referenceRegistryResolver
     ) {
         $this->decoratedCreator = $decoratedCreator;
         $this->bucketRepository = $bucketRepository;
         $this->logger = $logger;
+        $this->referenceRegistryResolver = $referenceRegistryResolver;
     }
 
     /**
@@ -82,7 +89,7 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
         }
 
         // Get registry of reference
-        if (null === ($registry = $this->getReferenceRegistry($bucketUuid, $flowUuid))) {
+        if (null === ($registry = $this->referenceRegistryResolver->getReferenceRegistry($flowUuid))) {
             if (empty($image->getName())) {
                 throw new BuilderException(sprintf(
                     'Docker image name to build "%s" is invalid.',
@@ -116,33 +123,5 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             $image->getTag(),
             $image->getReuse()
         );
-    }
-
-    /**
-     * @param UuidInterface $bucketUuid
-     * @param UuidInterface $flowUuid
-     *
-     * @return DockerRegistry|null
-     */
-    private function getReferenceRegistry(UuidInterface $bucketUuid, UuidInterface $flowUuid)
-    {
-        try {
-            $registries = $this->bucketRepository->find($bucketUuid)->getDockerRegistries();
-        } catch (BucketNotFound $e) {
-            return null;
-        }
-
-        // Find a registry matching the flow
-        foreach ($registries as $registry) {
-            if (isset($registry->getAttributes()['flow']) && $registry->getAttributes()['flow'] == $flowUuid->toString()) {
-                return $registry;
-            }
-        }
-
-        if ($registries->count() > 0) {
-            return $registries->first();
-        }
-
-        return null;
     }
 }
