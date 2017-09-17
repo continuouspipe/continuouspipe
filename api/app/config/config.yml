@@ -127,7 +127,7 @@ continuous_pipe_security:
             service_account_path: "%google_kms_service_account_path%"
             key_ring: "%google_kms_key_ring%"
             key_cache_service: river.cache
-        cache_service: river.apcu_cache
+        cache_service: river.memory_cache
 
 fos_rest:
     body_converter:
@@ -145,6 +145,8 @@ fos_rest:
     exception:
         messages:
             'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
+            'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
+            'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
 
 sensio_framework_extra:
     view:    { annotations: false }

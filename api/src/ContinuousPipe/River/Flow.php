@@ -13,6 +13,7 @@ use ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated;
 use ContinuousPipe\River\Flow\Event\FlowCreated;
 use ContinuousPipe\River\Flow\Event\FlowFlexed;
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
+use ContinuousPipe\River\Flow\Event\FlowUnflexed;
 use ContinuousPipe\River\Flow\Event\PipelineCreated;
 use ContinuousPipe\River\Flow\Event\PipelineDeleted;
 use ContinuousPipe\River\Flow\Projections\FlatPipeline;
@@ -144,6 +145,11 @@ final class Flow implements Aggregate
         ));
     }
 
+    public function deactivateFlex()
+    {
+        $this->raise(new FlowUnflexed($this->uuid));
+    }
+
     /**
      * @param TideCreated $event
      */
@@ -212,6 +218,11 @@ final class Flow implements Aggregate
     public function applyFlowFlexed(FlowFlexed $event)
     {
         $this->flexConfiguration = $event->getFlexConfiguration();
+    }
+
+    public function applyFlowUnflexed()
+    {
+        $this->flexConfiguration = null;
     }
 
     public function getUuid() : UuidInterface

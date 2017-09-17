@@ -66,10 +66,9 @@ class CodeArchiveController
                 'flow_uuid' => $flow->getUuid()->toString(),
             ]);
 
-            return new Response(
-                $e->getMessage(),
-                500
-            );
+            return new JsonResponse([
+                'error' => $e->getMessage(),
+            ], 500);
         }
 
         return new StreamedResponse(function () use ($archiveStream) {

@@ -190,6 +190,19 @@ class GitHubContext implements CodeRepositoryContext
     }
 
     /**
+     * @Given the URL :url will return the content of the fixtures file :fixtureFile with the header :headerName valued :headerValue
+     */
+    public function theUrlWillReturnTheContentOfTheFixturesFileWithTheHeaderValued($url, $fileName, $headerName, $headerValue)
+    {
+        $this->matchingHandler->pushMatcher([
+            'match' => function(RequestInterface $request) use ($url, $headerName, $headerValue) {
+                return $request->getUri() == $url && $request->getHeaderLine($headerName) == $headerValue;
+            },
+            'response' => new \GuzzleHttp\Psr7\Response(200, [], file_get_contents(__DIR__.'/../fixtures/'.$fileName)),
+        ]);
+    }
+
+    /**
      * @When I request the GitHub installation token for the flow :flowUuid
      */
     public function iRequestTheGithubInstallationTokenForTheFlow($flowUuid)

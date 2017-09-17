@@ -2,9 +2,6 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex;
-use ContinuousPipe\River\Flex\FlexAvailabilityDetector;
-use ContinuousPipe\River\Flex\FlexException;
 use ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
@@ -13,7 +10,6 @@ use Ramsey\Uuid\UuidInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use SimpleBus\Message\Bus\MessageBus;
 use FOS\RestBundle\Controller\Annotations\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -38,6 +34,29 @@ class FlowResourcesController
     {
         $this->dockerRegistryManager = $dockerRegistryManager;
         $this->bucketRepository = $bucketRepository;
+    }
+
+    /**
+     * @Route("/flows/{uuid}/resources/registry", methods={"POST"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})
+     * @Security("is_granted('UPDATE', flow)")
+     * @View(statusCode=201)
+     */
+    public function createRegistryAction(FlatFlow $flow, Request $request)
+    {
+        if (!empty($contents = $request->getContent())) {
+            $json = \GuzzleHttp\json_decode($contents, true);
+
+            if (!isset($json['visibility'])) {
+                throw new BadRequestHttpException('`visibility` field is required');
+            }
+
+            $visibility = $json['visibility'];
+        } else {
+            $visibility = 'private';
+        }
+
+        return $this->dockerRegistryManager->createRepositoryForFlow($flow, $visibility);
     }
 
     /**

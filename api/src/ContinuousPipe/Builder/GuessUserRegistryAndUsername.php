@@ -114,7 +114,8 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
 
         return new Image(
             implode('/', $parts),
-            $image->getTag()
+            $image->getTag(),
+            $image->getReuse()
         );
     }
 }

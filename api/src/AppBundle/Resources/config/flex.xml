@@ -11,9 +11,6 @@
             <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
             <argument type="service" id="logger" />
         </service>
-        <service id="river.flex.cluster_resolver" class="ContinuousPipe\River\Flex\Cluster\ClusterResolver">
-            <argument>%flex_cluster_address%</argument>
-        </service>
         <service id="river.flex.resources.docker_registry_managed" class="ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager">
             <argument type="service" id="security.authenticator.client" />
             <argument type="service" id="quay.client"/>
@@ -21,13 +18,21 @@
         </service>
         <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
             <argument type="service" id="river.repository.flow" />
-            <argument type="service" id="security.authenticator.client" />
-            <argument type="service" id="river.flex.cluster_resolver" />
             <argument type="service" id="river.flow.transaction_manager" />
-            <argument type="service" id="authenticator.bucket_repository" />
-            <argument type="service" id="river.flex.resources.docker_registry_managed"/>
 
             <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
+        </service>
+        <service id="river.flex.activation.deactivate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DeactivateFlexHandler">
+            <argument type="service" id="river.flow.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\DeactivateFlex" />
+        </service>
+
+        <!-- Automatic flex activation -->
+        <service id="river.flex.activate_by_default_for_new_flows" class="ContinuousPipe\River\Flex\AsFeature\ActivateFlexWhenFlowIsCreated">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
         </service>
 
         <!-- Configuration generation -->

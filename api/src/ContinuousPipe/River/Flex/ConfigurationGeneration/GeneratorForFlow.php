@@ -44,12 +44,6 @@ final class GeneratorForFlow
      */
     public function get(FlatFlow $flow) : ConfigurationGenerator
     {
-        if (null === ($configuration = $flow->getFlexConfiguration())) {
-            $configuration = new FlexConfiguration(
-                'unknown'
-            );
-        }
-
         return new GenerateConfigurationWithDefaultContext(
             new WithSymfonyContext(
                 new SequentiallyGenerateFiles([
@@ -63,13 +57,6 @@ final class GeneratorForFlow
             [
                 'variables' => $this->defaultVariables,
                 'image_name' => 'quay.io/continuouspipe-flex/flow-'.$flow->getUuid()->toString(),
-                'endpoint_host_suffix' => '-'.$configuration->getSmallIdentifier().'-flex.continuouspipe.net',
-                'cluster' => 'flex',
-                'continuous_pipe_defaults' => [
-                    'environment' => [
-                        'name' => '\''.$flow->getUuid()->toString().'-\' ~ code_reference.branch',
-                    ]
-                ]
             ]
         );
     }
