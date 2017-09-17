@@ -59,7 +59,9 @@
                 <p ng-if="billingProfiles.length === 0">You don't have any billing profile.</p>
 
                 <md-select ng-if="billingProfiles.length > 0" ng-model="project.billing_profile" md-on-open="loadBillingProfiles()" placeholder="Select the billing profile" required>
-                    <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">{{ billingProfile.name }}</md-option>
+                    <md-option ng-value="billingProfile" ng-repeat="billingProfile in billingProfiles">
+                        {{ billingProfile.name }} <span ng-if="billingProfile.plan"><em>({{ billingProfile.plan.name }} plan)</em></span>
+                    </md-option>
                 </md-select>
             </md-content>
     </md-content>
