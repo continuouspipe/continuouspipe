@@ -12,7 +12,7 @@
 </md-content>
 <md-subheader class="md-primary">Billing</md-subheader>
 <remote-resource resource-name="billingProfiles">
-    <md-content class="form-container md-padding" ng-show="billingProfiles">
+    <md-content class="form-container md-padding create-project" ng-show="billingProfiles">
             <md-content class="md-padding">
                 <md-radio-group layout="row" layout-align="start center" ng-model="project.$billing.type" required>
                     <md-radio-button class="md-primary" value="new">
@@ -29,19 +29,19 @@
                 <p>Select the plan that you would like to use. Your <strong>14 days of trial, without credit card required</strong> will start when you click on "Create"..</p>
 
                 <remote-resource resource-name="plans">
-                    <md-radio-group ng-model="project.$billing.plan" required>
+                    <md-radio-group ng-model="project.$billing.plan" required layout="row">
                         <md-radio-button class="md-primary" ng-repeat="plan in plans" ng-value="plan">
                             <div class="plan">
                                 <div class="name">
                                     {{ plan.name }}
                                 </div>
                                 <ul>
-                                    <li>{{ plan.metrics.tides }} deployments</li>
-                                    <li>
+                                    <li ng-class="{'warning': plan.metrics.tides == 0}">{{ plan.metrics.tides }} deployments</li>
+                                    <li ng-class="{'warning': plan.metrics.memory == 0}">
                                         <span>{{ plan.metrics.memory }} GB of memory</span>
                                     </li>
-                                    <li>{{ plan.metrics.storage }} GB of storage</li>
-                                    <li>
+                                    <li ng-class="{'warning': plan.metrics.storage == 0}">{{ plan.metrics.storage }} GB of storage</li>
+                                    <li ng-class="{'warning': plan.metrics.docker_image == 0}">
                                         <span>{{ plan.metrics.docker_image }} private docker image(s)</span>
                                     </li>
                                 </ul>
@@ -51,7 +51,7 @@
                             </div>
                         </md-radio-button>
                     </md-radio-group>
-                    <div class="hint">You will be able to add add-ons such as deployments to your plan later to fit perfectly your requirements.</div>
+                    <p class="hint">You will be able to add add-ons such as deployments to your plan later to fit perfectly your requirements.</p>
                 </remote-resource>
             </md-content>
 

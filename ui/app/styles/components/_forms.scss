@@ -42,6 +42,42 @@ form {
             opacity: 1;
         }
     }
+
+    .create-project {
+        .plan {
+            text-align: center;
+            background: #fff;
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+
+            ul, li {
+                list-style: none;
+                margin: 0;
+            }
+
+            ul {
+                padding: 5px;
+            }
+
+            li {
+                padding: 2px;
+
+                &.warning {
+                    color: orange;
+                }
+            }
+
+            .name {
+                padding: 5px;
+                background: #efefef;
+                border-bottom: 1px solid #ccc;
+                font-weight: bold;
+            }
+
+            .price {
+                padding: 10px;
+            }
+        }
+    }
 }
 
 md-dialog.form-dialog {
