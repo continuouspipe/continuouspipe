@@ -35,13 +35,18 @@ class UserBillingProfile
     private $creationDate;
 
     /**
-     * @JMS\Type("boolean")
+     * @JMS\Type("DateTime")
      *
-     * TODO: Replace by a plan!
-     *
-     * @var bool
+     * @var \DateTimeInterface|null
      */
-    private $hasTrial;
+    private $trialEndDate;
+
+    /**
+     * @JMS\Type("string")
+     *
+     * @var string|null
+     */
+    private $status;
 
     /**
      * @JMS\Type("integer")
@@ -72,13 +77,13 @@ class UserBillingProfile
      */
     private $plan;
 
-    public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, bool $hasTrial = false, int $tidesPerHour = 0, Plan $plan = null)
+    public function __construct(UuidInterface $uuid, string $name, \DateTimeInterface $creationDate, $admins = null, \DateTime $trialEndDate = null, int $tidesPerHour = 0, Plan $plan = null, string $status = null)
     {
         $this->uuid = $uuid;
         $this->name = $name;
         $this->creationDate = $creationDate;
-        $this->admins = !$admins instanceof Collection ? new ArrayCollection($admins) : $admins;
-        $this->hasTrial = $hasTrial;
+        $this->admins = !$admins instanceof Collection ? new ArrayCollection($admins ?: []) : $admins;
+        $this->trialEndDate = $trialEndDate;
         $this->tidesPerHour = $tidesPerHour;
         $this->plan = $plan;
     }
@@ -129,14 +134,6 @@ class UserBillingProfile
     public function getCreationDate()
     {
         return $this->creationDate;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasTrial(): bool
-    {
-        return $this->hasTrial ?: false;
     }
 
     /**
@@ -192,6 +189,22 @@ class UserBillingProfile
     }
 
     /**
+     * @return string|null
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getTrialEndDate()
+    {
+        return $this->trialEndDate;
+    }
+
+    /**
      * @param Plan|null $plan
      */
     public function setPlan(Plan $plan = null)
@@ -202,6 +215,20 @@ class UserBillingProfile
     public function withPlan(Plan $plan = null)
     {
         $this->plan = $plan;
+
+        return $this;
+    }
+
+    public function withStatus(string $status = null)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function withTrialEndDate(\DateTime $trialEndDate = null)
+    {
+        $this->trialEndDate = $trialEndDate;
 
         return $this;
     }

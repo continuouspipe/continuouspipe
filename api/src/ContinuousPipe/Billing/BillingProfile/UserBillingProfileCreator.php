@@ -26,8 +26,7 @@ class UserBillingProfileCreator
             Uuid::uuid4(),
             $userBillingProfileCreationRequest->name,
             new \DateTime(),
-            [$user],
-            true
+            [$user]
         );
 
         $this->userBillingProfileRepository->save($billingProfile);

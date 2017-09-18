@@ -104,8 +104,7 @@ class AccountsContext implements Context
             new \DateTime(),
             $username !== null ? [
                 $this->securityContext->thereIsAUser($username)->getUser(),
-            ] : [],
-            false
+            ] : []
         ));
     }
 
@@ -143,7 +142,7 @@ class AccountsContext implements Context
             [
                 $this->securityContext->thereIsAUser($username)->getUser(),
             ],
-            false,
+            null,
             $tidesPerHour
         ));
     }
@@ -159,7 +158,7 @@ class AccountsContext implements Context
             $billingProfile->getName(),
             new \DateTime('-'.$createdDaysAgo.' days 2 hours'),
             $billingProfile->getAdmins(),
-            true
+            new \DateTime('+1 day')
         ));
     }
 

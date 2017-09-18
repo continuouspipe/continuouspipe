@@ -23,7 +23,6 @@
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Message\UserActivity" />
         </service>
-        <service id="app.billing.trial_resolver" class="ContinuousPipe\Billing\BillingProfile\Trial\CreationDateTrialResolver" />
 
         <!-- Usage -->
         <service id="app.billing.usage_tracker" class="ContinuousPipe\Billing\Usage\FromActivityUsageTracker">
@@ -38,13 +37,16 @@
             <argument>%billing_addons%</argument>
         </service>
 
+        <service id="app.billing.recurly_client" class="ContinuousPipe\Billing\Plan\Recurly\RecurlyClient">
+            <argument>%recurly_subdomain%</argument>
+            <argument>%recurly_api_key%</argument>
+        </service>
         <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\Recurly\RecurlyPlanManager">
             <argument type="service" id="app.billing.plan_repository"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="router"/>
-            <argument>%recurly_subdomain%</argument>
-            <argument>%recurly_api_key%</argument>
+            <argument type="service" id="app.billing.recurly_client"/>
         </service>
 
         <service id="app.billing.add_invoices_to_serialized" class="ContinuousPipe\Billing\Plan\Recurly\AddRecurlysInvoicesUrlToSerializedBillingProfiles">

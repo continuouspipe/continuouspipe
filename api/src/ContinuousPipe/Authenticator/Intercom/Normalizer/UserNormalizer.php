@@ -18,24 +18,17 @@ class UserNormalizer
     private $teamMembershipRepository;
 
     /**
-     * @var TrialResolver
-     */
-    private $trialResolver;
-
-    /**
      * @var UserBillingProfileRepository
      */
     private $userBillingPorfileRepository;
 
     /**
      * @param TeamMembershipRepository     $teamMembershipRepository
-     * @param TrialResolver                $trialResolver
      * @param UserBillingProfileRepository $userBillingProfileRepository
      */
-    public function __construct(TeamMembershipRepository $teamMembershipRepository, TrialResolver $trialResolver, UserBillingProfileRepository $userBillingProfileRepository)
+    public function __construct(TeamMembershipRepository $teamMembershipRepository, UserBillingProfileRepository $userBillingProfileRepository)
     {
         $this->teamMembershipRepository = $teamMembershipRepository;
-        $this->trialResolver = $trialResolver;
         $this->userBillingPorfileRepository = $userBillingProfileRepository;
     }
 
@@ -48,12 +41,6 @@ class UserNormalizer
      */
     public function normalize(User $user)
     {
-        try {
-            $trialExpiryDate = $this->getUserTrialExpiryDate($user);
-        } catch (UserBillingProfileNotFound $e) {
-            $trialExpiryDate = new \DateTimeImmutable('yesterday');
-        }
-
         return [
             'user_id' => $user->getUsername(),
             'email' => $user->getEmail(),
@@ -64,31 +51,7 @@ class UserNormalizer
                     'company_id' => $teamMembership->getTeam()->getSlug(),
                     'name' => $teamMembership->getTeam()->getName(),
                 ];
-            })->toArray(),
-            'custom_attributes' => [
-                'in_trial' => $trialExpiryDate >= (new \DateTimeImmutable('today')) ? 'Yes': 'No',
-                'trial_ends_at' => $trialExpiryDate->getTimestamp(),
-            ],
+            })->toArray()
         ];
-    }
-
-    /**
-     * @param User $user
-     *
-     * @throws UserBillingProfileNotFound
-     *
-     * @return \DateTimeInterface
-     */
-    private function getUserTrialExpiryDate(User $user) : \DateTimeInterface
-    {
-        $billingProfiles = $this->userBillingPorfileRepository->findByUser($user);
-
-        if (count($billingProfiles) == 0) {
-            throw new UserBillingProfileNotFound('No billing profile found');
-        }
-
-        return max(array_map(function (UserBillingProfile $billingProfile) {
-            return $this->trialResolver->getTrialPeriodExpirationDate($billingProfile);
-        }, $billingProfiles));
     }
 }
