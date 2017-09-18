@@ -10,8 +10,12 @@
         </service>
 
         <!-- Usage projection -->
+        <service id="river.managed.resources.usage_projection.projector" class="ContinuousPipe\River\Managed\Resources\UsageProjection\UsageProjector">
+            <argument type="service" id="river.managed.resources.usage_projection.flow_projector" />
+        </service>
         <service id="river.managed.resources.usage_projection.flow_projector" class="ContinuousPipe\River\Managed\Resources\UsageProjection\FlowUsageProjector">
             <argument type="service" id="river.managed.resources.history_repository" />
+            <argument type="service" id="river.view.tide_repository" />
         </service>
 
         <!-- Discrepancies repair -->

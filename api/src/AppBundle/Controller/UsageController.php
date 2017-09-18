@@ -15,6 +15,7 @@ use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
 use ContinuousPipe\River\Managed\Resources\UsageProjection\FlowUsageProjector;
+use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageProjector;
 use ContinuousPipe\River\Repository\FlowNotFound;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository;
@@ -64,6 +65,10 @@ class UsageController
      * @var FlowUsageProjector
      */
     private $flowUsageProjector;
+    /**
+     * @var UsageProjector
+     */
+    private $usageProjector;
 
     public function __construct(
         ResourceUsageHistoryRepository $usageHistoryRepository,
@@ -72,7 +77,8 @@ class UsageController
         TeamRepository $teamRepository,
         LoggerInterface $logger,
         TimeResolver $timeResolver,
-        FlowUsageProjector $flowUsageProjector
+        FlowUsageProjector $flowUsageProjector,
+        UsageProjector $usageProjector
     ) {
         $this->usageHistoryRepository = $usageHistoryRepository;
         $this->flatFlowRepository = $flatFlowRepository;
@@ -81,6 +87,7 @@ class UsageController
         $this->teamRepository = $teamRepository;
         $this->timeResolver = $timeResolver;
         $this->flowUsageProjector = $flowUsageProjector;
+        $this->usageProjector = $usageProjector;
     }
 
     /**
@@ -138,7 +145,7 @@ class UsageController
      */
     public function getTidesUsageAction(FlatFlow $flow, Request $request)
     {
-        return $this->getTideUsage(
+        return $this->flowUsageProjector->getTideUsage(
             $flow,
             new \DateTime($request->get('left', '-30days')),
             new \DateTime($request->get('right', 'now')),
@@ -168,31 +175,7 @@ class UsageController
             return array_merge($carry, $this->flatFlowRepository->findByTeam($team));
         }, []);
 
-        $usages = array_reduce($flows, function (array $carry, FlatFlow $flow) use ($left, $right, $interval) {
-            $flowUsages = $this->mergeUsages(array_merge(
-                $this->getTideUsage($flow, $left, $right, $interval),
-                $this->flowUsageProjector->getResourcesUsage($flow, $left, $right, $interval)
-            ));
-
-            return array_merge(
-                $carry,
-                array_map(function (array $usage) use ($flow) {
-                    $usage['flow'] = [
-                        'uuid' => $flow->getUuid()->toString(),
-                        'name' => $flow->getRepository()->getAddress(),
-                    ];
-
-                    $usage['team'] = [
-                        'slug' => $flow->getTeam()->getSlug(),
-                        'name' => $flow->getTeam()->getName(),
-                    ];
-
-                    return $usage;
-                }, $flowUsages)
-            );
-        }, []);
-
-        return $this->aggregateUsageEntriesByDateTime($usages);
+        return $this->usageProjector->forFlows($flows, $left, $right, $interval);
     }
 
     private function flowFromNamespace(UsedResourcesNamespace $namespace) : FlatFlow
@@ -208,68 +191,6 @@ class UsageController
         }
 
         throw new \InvalidArgumentException('No label on the namespace');
-    }
-
-    private function getTideUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval): array
-    {
-        $tideCollection = new ArrayCollection(
-            $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
-        );
-
-        return (new Interval($left, $right))->foreachInterval($interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
-            return [
-                'datetime' => [
-                    'left' => clone $left,
-                    'right' => clone $right,
-                ],
-                'usage' => [
-                    'tides' => $tideCollection
-                        ->filter(function (Tide $tide) use ($left, $right) {
-                            return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
-                        })
-                        ->count(),
-                ],
-            ];
-        });
-    }
-
-    private function aggregateUsageEntriesByDateTime(array $usages)
-    {
-        $aggregated = [];
-
-        foreach ($usages as $usage) {
-            $key = $usage['datetime']['left']->getTimestamp().'-'.$usage['datetime']['right']->getTimestamp();
-
-            if (!array_key_exists($key, $aggregated)) {
-                $aggregated[$key] = [
-                    'datetime' => $usage['datetime'],
-                    'entries' => [],
-                ];
-            }
-
-            unset($usage['datetime']);
-            $aggregated[$key]['entries'][] = $usage;
-        }
-
-        return array_values($aggregated);
-    }
-
-    /**
-     * @param array $usages
-     *
-     * @return array
-     */
-    private function mergeUsages(array $usages) : array
-    {
-        return array_map(function (array $usage) {
-            $usage['usage'] = array_reduce($usage['entries'], function (array $carry, array $entry) {
-                return array_merge($carry, $entry['usage']);
-            }, []);
-
-            unset($usage['entries']);
-
-            return $usage;
-        }, $this->aggregateUsageEntriesByDateTime($usages));
     }
 
     private function usageFromRequest(UsedResourcesRequest $request): ResourceUsage
