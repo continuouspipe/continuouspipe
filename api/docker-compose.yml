@@ -4,7 +4,6 @@ api:
         - .:/app
     links:
         - database
-        - rabbitmq
         - blackfire
         - tideways
         - redis
@@ -29,7 +28,6 @@ worker:
         - .:/app
     links:
         - database
-        - rabbitmq
         - redis
         - tideways
     expose:
