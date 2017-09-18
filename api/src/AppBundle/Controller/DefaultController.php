@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class DefaultController
 {
     /**
-     * @Route("/", methods={"GET"})
+     * @Route("/", methods={"GET"}, name="home")
      * @Template
      */
     public function indexAction()

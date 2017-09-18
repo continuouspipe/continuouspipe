@@ -5,17 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
-            <argument type="service" id="app.repository.account"/>
-            <argument type="service" id="form.factory" />
-            <argument type="service" id="router" />
-        </service>
-
-        <service id="app.controller.api_keys" class="AppBundle\Controller\ApiKeysController">
-            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
-            <argument type="service" id="router" />
-        </service>
-
         <service id="app.controller.invitation" class="AppBundle\Controller\InvitationController">
             <argument type="service" id="app.repository.user_invitation" />
             <argument type="service" id="app.invitation.invitation_to_team_membership_transformer" />
