@@ -16,11 +16,13 @@ Feature:
     And all the image builds are successful
     Then the deploy task should not be started
     And the tide should be cancelled
+    Then a log containing 'Tide manually cancelled by samuel' should be created
 
   Scenario: Cancel a pending tide
     Given a tide is created with just a build task
     When I cancel the tide
     Then the tide should be cancelled
+    Then a log containing 'Tide manually cancelled by samuel' should be created
 
   Scenario: It cancels the running task
     Given I have a "continuous-pipe.yml" file in my repository that contains:

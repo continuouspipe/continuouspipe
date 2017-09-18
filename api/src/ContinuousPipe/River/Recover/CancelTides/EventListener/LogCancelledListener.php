@@ -22,7 +22,7 @@ class LogCancelledListener
 
     /**
      * @param TideRepository $tideRepository
-     * @param LoggerFactory  $loggerFactory
+     * @param LoggerFactory $loggerFactory
      */
     public function __construct(TideRepository $tideRepository, LoggerFactory $loggerFactory)
     {
@@ -37,7 +37,8 @@ class LogCancelledListener
     {
         $tide = $this->tideRepository->find($event->getTideUuid());
         $logger = $this->loggerFactory->fromId($tide->getLogId());
+        $username = $event->getUser()->getUsername();
 
-        $logger->child(new Text('Tide manually cancelled'))->updateStatus(Log::FAILURE);
+        $logger->child(new Text(sprintf('Tide manually cancelled by %s', $username)))->updateStatus(Log::FAILURE);
     }
 }

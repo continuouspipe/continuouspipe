@@ -227,11 +227,12 @@ class TideController
      *
      * @Route("/tides/{uuid}/cancel", methods={"POST"})
      * @ParamConverter("tide", converter="tide", options={"identifier"="uuid"})
+     * @ParamConverter("user", converter="user")
      * @Security("is_granted('READ', tide)")
      * @View
      */
-    public function cancelAction(Tide $tide)
+    public function cancelAction(Tide $tide, User $user)
     {
-        $this->commandBus->handle(new CancelTideCommand($tide->getUuid()));
+        $this->commandBus->handle(new CancelTideCommand($tide->getUuid(), $user));
     }
 }
