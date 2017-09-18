@@ -47,6 +47,5 @@ Feature:
 
   Scenario: Do not transforms invitations when login-in
     Given the user with email "user@example.com" was invited to join the team "my-team"
-    And The user "invited" is in the white list
     When the user "invited" with email "user@example.com" login
     Then the user "invited" should not be in the team "my-team"

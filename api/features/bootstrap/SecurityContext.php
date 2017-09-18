@@ -6,13 +6,11 @@ use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
-use ContinuousPipe\Authenticator\Security\InMemoryApiKeyRepository;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GitHubResourceOwner;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
@@ -31,11 +29,6 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var UserProvider
      */
     private $userProvider;
-
-    /**
-     * @var WhiteList
-     */
-    private $whiteList;
 
     /**
      * @var TokenStorageInterface
@@ -73,7 +66,6 @@ class SecurityContext implements Context, SnippetAcceptingContext
 
     public function __construct(
         UserProvider $userProvider,
-        WhiteList $whiteList,
         TokenStorageInterface $tokenStorage,
         SecurityUserRepository $securityUserRepository,
         SystemUserApiKey $systemUserByApiKey,
@@ -83,7 +75,6 @@ class SecurityContext implements Context, SnippetAcceptingContext
         UserApiKeyRepository $userByApiKeyRepository
     ) {
         $this->userProvider = $userProvider;
-        $this->whiteList = $whiteList;
         $this->tokenStorage = $tokenStorage;
         $this->securityUserRepository = $securityUserRepository;
         $this->systemUserByApiKey = $systemUserByApiKey;
@@ -154,22 +145,6 @@ class SecurityContext implements Context, SnippetAcceptingContext
         } catch (UserNotFound $e) {
             return $this->userProvider->createUserFromUsername($username);
         }
-    }
-
-    /**
-     * @Given The user :username is not in the white list
-     */
-    public function theUserIsNotInTheWhiteList($username)
-    {
-        $this->whiteList->remove($username);
-    }
-
-    /**
-     * @Given The user :username is in the white list
-     */
-    public function theUserIsInTheWhiteList($username)
-    {
-        $this->whiteList->add($username);
     }
 
     /**

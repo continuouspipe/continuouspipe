@@ -5,7 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.white_list" class="ContinuousPipe\Authenticator\Tests\InMemoryWhiteList"/>
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Tests\Security\InMemorySecurityUserRepository"/>
         <service id="app.repository.credentials_bucket" class="ContinuousPipe\Security\Tests\Credentials\InMemoryBucketRepository" />
         <service id="app.repository.account" class="ContinuousPipe\Security\Account\InMemoryAccountRepository" />

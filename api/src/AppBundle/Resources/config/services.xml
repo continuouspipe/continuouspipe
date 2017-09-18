@@ -5,19 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.white_list" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineWhiteList">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-        </service>
-        <service id="app_white_list.bypass_white_list" class="ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteList" decorates="app.white_list" public="false">
-            <argument type="service" id="app_white_list.bypass_white_list.inner" />
-            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
-        </service>
-        <service id="app.authenticator.bypass_white_list_toggle_factory" class="ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory">
-            <argument type="service" id="session" />
-        </service>
-        <service id="app.repository.early_access_code" class="ContinuousPipe\Authenticator\EarlyAccess\InMemoryEarlyAccessCodeRepository">
-            <argument>%app.authenticator.early_access.codes%</argument>
-        </service>
         <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineSecurityUserRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
@@ -48,12 +35,6 @@
                  decorates="app.repository.user_invitation">
             <argument type="service" id="app.invitation.event_producer.user_invitation_repository.inner" />
             <argument type="service" id="event_dispatcher" />
-        </service>
-        <service id="app.invitation.event_producer.early_access_code_entered_event_producer" class="ContinuousPipe\Authenticator\Invitation\EventProducer\EarlyAccessCodeEnteredEventProducer">
-            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
-            <argument type="service" id="event_dispatcher" />
-
-            <tag name="kernel.event_subscriber" />
         </service>
         <service id="app.security.user_provider" class="ContinuousPipe\Authenticator\Security\Authentication\UserProvider">
             <argument type="service" id="app.repository.security_user" />
@@ -117,12 +98,6 @@
             <argument type="service" id="app.repository.team" />
         </service>
         <service id="app.repository.billing_profile" alias="app.billing_profile.doctrine_repository" />
-
-        <service id="app.constraints.early_access_code" class="AppBundle\Validator\Constraints\EarlyAccessCodeValidator">
-            <argument type="service" id="app.repository.early_access_code" />
-
-            <tag name="validator.constraint_validator" />
-        </service>
 
         <service id="app.user_billing_profile_creator" class="ContinuousPipe\Billing\BillingProfile\UserBillingProfileCreator">
             <argument type="service" id="app.repository.billing_profile" />
