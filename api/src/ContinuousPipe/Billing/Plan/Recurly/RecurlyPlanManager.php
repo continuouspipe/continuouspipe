@@ -24,10 +24,6 @@ class RecurlyPlanManager implements PlanManager
      */
     private $logger;
     /**
-     * @var string
-     */
-    private $subdomain;
-    /**
      * @var EntityManager
      */
     private $entityManager;
@@ -35,17 +31,18 @@ class RecurlyPlanManager implements PlanManager
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var RecurlyClient
+     */
+    private $recurlyClient;
 
-    public function __construct(PlanRepository $planRepository, LoggerInterface $logger, EntityManager $entityManager, UrlGeneratorInterface $urlGenerator, string $subdomain, string $apiKey)
+    public function __construct(PlanRepository $planRepository, LoggerInterface $logger, EntityManager $entityManager, UrlGeneratorInterface $urlGenerator, RecurlyClient $recurlyClient)
     {
         $this->planRepository = $planRepository;
         $this->logger = $logger;
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
-        $this->subdomain = $subdomain;
-
-        \Recurly_Client::$subdomain = $subdomain;
-        \Recurly_Client::$apiKey = $apiKey;
+        $this->recurlyClient = $recurlyClient;
     }
 
     public function changePlan(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user) : ChangeBillingPlanResponse
@@ -53,11 +50,8 @@ class RecurlyPlanManager implements PlanManager
         if (null === ($subscription = $this->subscriptionByBillingProfile($billingProfile))) {
             return new ChangeBillingPlanResponse($billingProfile, $this->urlGenerator->generate('billing_redirection_out', [
                 'to' => sprintf(
-                    'https://%s.recurly.com/subscribe/%s/%s/%s?%s',
-                    $this->subdomain,
-                    $changeRequest->getPlan(),
-                    $billingProfile->getUuid()->toString(),
-                    urlencode($user->getUsername()),
+                    '%s?%s',
+                    $this->recurlyClient->subscribeUrl($changeRequest->getPlan(), $billingProfile->getUuid()->toString(), $user->getUsername()),
                     http_build_query([
                         'quantity' => 1,
                         'email' => $user->getEmail()
@@ -82,16 +76,12 @@ class RecurlyPlanManager implements PlanManager
     public function getInvoicesUrl(UserBillingProfile $billingProfile)
     {
         try {
-            $hostedAccountToken = \Recurly_Account::get($billingProfile->getUuid())->hosted_login_token;
+            $account = \Recurly_Account::get($billingProfile->getUuid());
         } catch (\Recurly_NotFoundError $e) {
             return null;
         }
 
-        return sprintf(
-            'https://%s.recurly.com/account/%s',
-            $this->subdomain,
-            $hostedAccountToken
-        );
+        return $this->recurlyClient->accountUrl($account);
     }
 
     public function refreshBillingProfile(UserBillingProfile $billingProfile) : UserBillingProfile
@@ -110,15 +100,24 @@ class RecurlyPlanManager implements PlanManager
 
     private function getUpdatedBillingProfile(UserBillingProfile $billingProfile, \Recurly_Subscription $subscription)
     {
-        return $billingProfile->withPlan(
-            $this->planRepository->findPlanByIdentifier($subscription->plan->plan_code)
-        );
+        $billingProfile = $billingProfile
+            ->setPlan(
+                $this->planRepository->findPlanByIdentifier($subscription->plan->plan_code)
+            )
+            ->setStatus($subscription->state)
+        ;
+
+        if (isset($subscription->trial_ends_at)) {
+            $billingProfile = $billingProfile->setTrialEndDate(new \DateTime($subscription->trial_ends_at));
+        }
+
+        return $billingProfile;
     }
 
     private function changeRecurlySubscription(\Recurly_Subscription $subscription, ChangeBillingPlanRequest $changeRequest)
     {
         try {
-            $recurlySubscription = \Recurly_Subscription::get($subscription->uuid);
+            $recurlySubscription = $this->recurlyClient->getSubscription($subscription->uuid);
             $recurlySubscription->plan_code = $changeRequest->getPlan();
             $recurlySubscription->updateImmediately();
         } catch (\Recurly_Error $e) {
@@ -136,7 +135,7 @@ class RecurlyPlanManager implements PlanManager
     private function subscriptionByBillingProfile(UserBillingProfile $billingProfile)
     {
         try {
-            $list = \Recurly_SubscriptionList::getForAccount($billingProfile->getUuid()->toString());
+            $list = $this->recurlyClient->subscriptionsForAccount($billingProfile->getUuid()->toString());
 
             if ($list->count() == 0) {
                 return null;

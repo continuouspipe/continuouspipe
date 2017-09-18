@@ -104,8 +104,7 @@ class AccountsContext implements Context
             new \DateTime(),
             $username !== null ? [
                 $this->securityContext->thereIsAUser($username)->getUser(),
-            ] : [],
-            false
+            ] : []
         ));
     }
 
@@ -115,7 +114,7 @@ class AccountsContext implements Context
     public function theBillingProfileHaveThePlan($billingProfileUuid, $planIdentifier)
     {
         $userBillingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($billingProfileUuid));
-        $userBillingProfile->withPlan($this->planRepository->findPlanByIdentifier($planIdentifier));
+        $userBillingProfile->setPlan($this->planRepository->findPlanByIdentifier($planIdentifier));
 
         $this->userBillingProfileRepository->save($userBillingProfile);
     }
@@ -143,7 +142,7 @@ class AccountsContext implements Context
             [
                 $this->securityContext->thereIsAUser($username)->getUser(),
             ],
-            false,
+            null,
             $tidesPerHour
         ));
     }
@@ -159,7 +158,7 @@ class AccountsContext implements Context
             $billingProfile->getName(),
             new \DateTime('-'.$createdDaysAgo.' days 2 hours'),
             $billingProfile->getAdmins(),
-            true
+            new \DateTime('+1 day')
         ));
     }
 

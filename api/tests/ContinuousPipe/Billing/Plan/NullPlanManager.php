@@ -26,7 +26,7 @@ class NullPlanManager implements PlanManager
      */
     public function changePlan(UserBillingProfile $billingProfile, ChangeBillingPlanRequest $changeRequest, User $user): ChangeBillingPlanResponse
     {
-        return new ChangeBillingPlanResponse($billingProfile->withPlan(
+        return new ChangeBillingPlanResponse($billingProfile->setPlan(
             $this->planRepository->findPlanByIdentifier($changeRequest->getPlan())
         ));
     }
