@@ -29,9 +29,8 @@ angular.module('continuousPipeRiver')
                     text: "Do you want us to send '"+membership.user.username+"' an invitation email for your project?",
                     type: "info",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, invite!",
-                    closeOnConfirm: false
-                }, function() {
+                    confirmButtonText: "Yes, invite!"
+                }).then(function() {
                     InvitationRepository.create(project, membership.user.username, membership.permissions).then(function() {
                         swal("Invited!", "User successfully invited.", "success");
 
@@ -44,7 +43,7 @@ angular.module('continuousPipeRiver')
                     }, function(error) {
                         handleError(error);
                     });
-                });
+                }).catch(swal.noop);
             })['finally'](function() {
                 $scope.isLoading = false;
             });

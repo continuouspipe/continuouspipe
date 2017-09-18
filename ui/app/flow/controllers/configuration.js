@@ -179,9 +179,8 @@ angular.module('continuousPipeRiver')
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, encrypt it!",
-                closeOnConfirm: true,
                 showLoaderOnConfirm: true
-            }, function() {
+            }).then(function() {
                 FlowRepository.encrypt(flow, $scope.variables[key]).then(function(encryptedValue) {
                     $scope.variables[key].encrypted_value = encryptedValue;
 
@@ -189,7 +188,7 @@ angular.module('continuousPipeRiver')
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while encrypting the variable", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
 
         $scope.delete = function() {
@@ -199,9 +198,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-            }, function() {
+                confirmButtonText: "Yes, delete it!"
+            }).then(function() {
                 FlowRepository.remove(flow).then(function() {
                     swal("Deleted!", "Flow successfully deleted.", "success");
 
@@ -213,7 +211,7 @@ angular.module('continuousPipeRiver')
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the flow", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
     })
     .controller('ChangeVariableVisibilityController', function($mdDialog, $scope) {

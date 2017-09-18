@@ -61,9 +61,8 @@ angular.module('continuousPipeRiver')
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false,
                 showLoaderOnConfirm: true
-            }, function() {
+            }).then(function() {
                 RemoteRepository.delete(flow, developmentEnvironmentStatus.development_environment).then(function() {
                     $state.go('flow.development-environments');
 
@@ -73,7 +72,7 @@ angular.module('continuousPipeRiver')
                 })['finally'](function() {
                     $scope.isLoading = false;
                 });
-            });
+            }).catch(swal.noop);
         };
 
         $scope.rebuild = function() {

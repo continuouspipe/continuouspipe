@@ -20,11 +20,10 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, remove it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, remove it!"
+            }).then(function() {
                 ProjectMembershipRepository.remove(project, membership.user).then(load, handleError);
-            });
+            }).catch(swal.noop);
         };
 
         $scope.removeInvitation = function(invitation) {
@@ -34,11 +33,10 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, cancel it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, cancel it!"
+            }).then(function() {
                 InvitationRepository.remove(project, invitation).then(load, handleError);
-            });
+            }).catch(swal.noop);
         };
 
         $scope.isAdmin = user.isAdmin(project);

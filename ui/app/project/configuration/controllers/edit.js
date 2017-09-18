@@ -23,11 +23,10 @@ angular.module('continuousPipeRiver')
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
-                    confirmButtonText: "Yes, change it!",
-                    closeOnConfirm: true
-                }, function() {
+                    confirmButtonText: "Yes, change it!"
+                }).then(function() {
                     doUpdate();
-                });
+                }).catch(swal.noop);
             } else {
                 doUpdate();
             }
@@ -73,9 +72,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-            }, function () {
+                confirmButtonText: "Yes, delete it!"
+            }).then(function () {
                 ProjectRepository.delete($scope.project).then(function () {
                     swal("Deleted!", "Project successfully deleted.", "success");
                     
@@ -85,7 +83,7 @@ angular.module('continuousPipeRiver')
                 })['finally'](function () {
                     $scope.isLoading = false;
                 });
-            });
+            }).catch(swal.noop);
         };
 
         reloadBillingProfile();

@@ -85,16 +85,15 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, remove it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, remove it!"
+            }).then(function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
                     $scope.retry();
 
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
 
         TideSummaryRepository.findExternalRelations(tide).then(function(relations) {

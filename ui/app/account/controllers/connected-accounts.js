@@ -19,11 +19,10 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, unlink it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, unlink it!"
+            }).then(function() {
                 AccountRepository.unlinkAccount(account.uuid).then(load, handleError);
-            });
+            }).catch(swal.noop);
         };
 
         $scope.connectAccount = function (type) {

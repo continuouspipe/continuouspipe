@@ -17,9 +17,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-            }, function() {
+                confirmButtonText: "Yes, delete it!"
+            }).then(function() {
                 ClusterRepository.remove(cluster).then(function() {
                     swal("Deleted!", "Cluster successfully deleted.", "success");
 
@@ -27,7 +26,7 @@ angular.module('continuousPipeRiver')
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting cluster", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
 
         $scope.showDashboard = function(cluster) {

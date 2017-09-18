@@ -49,7 +49,7 @@ angular.module('continuousPipeRiver')
                     .parent($('#content')));
             }, function(response) {
                 swal("Error !", $http.getError(response), "error");
-            })
+            });
         };
         
         $scope.hasEnvironment = function(environment) {

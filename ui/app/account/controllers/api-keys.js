@@ -15,9 +15,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, delete it!"
+            }).then(function() {
                 UserRepository.deleteApiKey(user.username, apiKey).then(function() {
                     swal("Deleted!", "API key successfully deleted.", "success");
 
@@ -25,7 +24,7 @@ angular.module('continuousPipeRiver')
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the API key", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
 
         load();
