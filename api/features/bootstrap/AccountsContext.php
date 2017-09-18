@@ -114,7 +114,7 @@ class AccountsContext implements Context
     public function theBillingProfileHaveThePlan($billingProfileUuid, $planIdentifier)
     {
         $userBillingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($billingProfileUuid));
-        $userBillingProfile->withPlan($this->planRepository->findPlanByIdentifier($planIdentifier));
+        $userBillingProfile->setPlan($this->planRepository->findPlanByIdentifier($planIdentifier));
 
         $this->userBillingProfileRepository->save($userBillingProfile);
     }

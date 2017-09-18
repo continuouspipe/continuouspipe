@@ -101,14 +101,14 @@ class RecurlyPlanManager implements PlanManager
     private function getUpdatedBillingProfile(UserBillingProfile $billingProfile, \Recurly_Subscription $subscription)
     {
         $billingProfile = $billingProfile
-            ->withPlan(
+            ->setPlan(
                 $this->planRepository->findPlanByIdentifier($subscription->plan->plan_code)
             )
-            ->withStatus($subscription->state)
+            ->setStatus($subscription->state)
         ;
 
         if (isset($subscription->trial_ends_at)) {
-            $billingProfile = $billingProfile->withTrialEndDate(new \DateTime($subscription->trial_ends_at));
+            $billingProfile = $billingProfile->setTrialEndDate(new \DateTime($subscription->trial_ends_at));
         }
 
         return $billingProfile;

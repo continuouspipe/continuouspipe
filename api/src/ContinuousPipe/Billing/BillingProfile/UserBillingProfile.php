@@ -204,29 +204,21 @@ class UserBillingProfile
         return $this->trialEndDate;
     }
 
-    /**
-     * @param Plan|null $plan
-     */
     public function setPlan(Plan $plan = null)
-    {
-        $this->plan = $plan;
-    }
-
-    public function withPlan(Plan $plan = null)
     {
         $this->plan = $plan;
 
         return $this;
     }
 
-    public function withStatus(string $status = null)
+    public function setStatus(string $status = null)
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function withTrialEndDate(\DateTime $trialEndDate = null)
+    public function setTrialEndDate(\DateTime $trialEndDate = null)
     {
         $this->trialEndDate = $trialEndDate;
 
