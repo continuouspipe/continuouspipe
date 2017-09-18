@@ -97,6 +97,9 @@ class BillingController
 
         return [
             'overviewPerTeam' => $overviewPerTeam,
+            'numberOfPages' => ceil(count($teams) / $limit),
+            'page' => $page,
+            'limit' => $limit,
         ];
     }
 
@@ -126,8 +129,13 @@ class BillingController
         ];
 
         if ($billingProfile != null && null !== ($plan = $billingProfile->getPlan())) {
-            $usageSummary['tides_percent'] = ResourceConverter::resourceToNumber($usageSummary['tides']) / $plan->getMetrics()->getTides() * 100;
-            $usageSummary['memory_percent'] = ResourceConverter::resourceToNumber($usageSummary['memory']) / ($plan->getMetrics()->getMemory() * 1024) * 100;
+            if (!empty($availableTides = $plan->getMetrics()->getTides())) {
+                $usageSummary['tides_percent'] = ResourceConverter::resourceToNumber($usageSummary['tides']) / $availableTides * 100;
+            }
+
+            if (!empty($availableMemory = $plan->getMetrics()->getMemory())) {
+                $usageSummary['memory_percent'] = ResourceConverter::resourceToNumber($usageSummary['memory']) / ($availableMemory * 1024) * 100;
+            }
         }
 
         return $usageSummary;

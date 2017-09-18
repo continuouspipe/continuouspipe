@@ -1,5 +1,5 @@
 {% extends "@Admin/layout.html.twig" %}
-{% block header_navbar_tides_class %} class="active"{% endblock %}
+{% block header_navbar_billing_class %} class="active"{% endblock %}
 {% block content %}
 <ol class="breadcrumb">
     <li class="active">Last tides</li>
@@ -66,4 +66,18 @@
     {% endfor %}
     </tbody>
 </table>
+
+<div class="text-center">
+    <ul class="pagination">
+        <li{% if page == 1 %} class="disabled"{% endif %}>
+            <a href="{{ path('admin_billing', {'page': page - 1, 'limit': limit}) }}">Previous</a>
+        </li>
+        <li class="disabled">
+            <a>Page {{ page }} of {{ numberOfPages }}</a>
+        </li>
+        <li{% if page == numberOfPages %} class="disabled"{% endif %}>
+            <a href="{{ path('admin_billing', {'page': page + 1, 'limit': limit}) }}">Next</a>
+        </li>
+    </ul>
+</div>
 {% endblock %}
