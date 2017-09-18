@@ -41,7 +41,16 @@ angular.module('continuousPipeRiver')
                 });
 
                 $scope.deletePipeline = function (pipelineId) {
-                    PipelineRepository.delete($scope.flow.uuid, pipelineId);
+                    swal({
+                        title: 'Are you sure?',
+                        text: "The pipeline will be deleted. You won't be able to revert this!",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#DD6B55',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then(function() {
+                        PipelineRepository.delete($scope.flow.uuid, pipelineId);
+                    }).catch(swal.noop);
                 };
             }
         };
