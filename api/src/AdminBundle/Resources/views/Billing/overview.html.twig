@@ -1,0 +1,83 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_billing_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Last tides</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th colspan="2">Team</th>
+        <th colspan="5">Billing profile</th>
+        <th colspan="3">Usage</th>
+    </tr>
+    <tr>
+        <!-- Team -->
+        <th>Name</th>
+        <th># of flows</th>
+
+        <!-- Billing profile -->
+        <th>Name</th>
+        <th>Plan</th>
+        <th>Price</th>
+        <td>Available tides</td>
+        <td>Available memory</td>
+
+        <!-- Usage -->
+        <th>Tides</th>
+        <th>Resources (memory)</th>
+        <th>Resources (CPU)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for overview in overviewPerTeam %}
+        <tr>
+            <td><a href="{{ path('admin_team', {'team': overview.team.slug}) }}">{{ overview.team.name }}</a></td>
+            <td>{{ overview.flows | length }}</td>
+            <td{% if overview.billingProfile is null %} class="bg-danger text-danger"{% endif %}>
+                {% if overview.billingProfile is not null %}
+                    {{ overview.billingProfile.name }}
+                {% else %}
+                    <em>No billing profile</em>
+                {% endif %}
+            </td>
+            {% if overview.billingProfile is not null and overview.billingProfile.plan is not null %}
+            <td>{{ overview.billingProfile.plan.name }}</td>
+            <td>{{ overview.billingProfile.plan.price }}</td>
+            <td>{{ overview.billingProfile.plan.metrics.tides }}</td>
+            <td>{{ overview.billingProfile.plan.metrics.memory }} GB</td>
+            {% else %}
+            <td colspan="4" class="bg-danger text-danger"><em>No plan</em></td>
+            {% endif %}
+            {% if overview.usage is not empty %}
+            <td{% if overview.usage.tides_percent is defined and overview.usage.tides_percent > 100 %} class="bg-danger text-danger"{% endif %}>
+                {{ overview.usage.tides }} {% if overview.usage.tides_percent is defined %}({{ overview.usage.tides_percent | number_format }} %){% endif %}
+            </td>
+            <td{% if overview.usage.memory_percent is defined and overview.usage.memory_percent > 100 %} class="bg-danger text-danger"{% endif %}>
+                {{ overview.usage.memory }} {% if overview.usage.memory_percent is defined %}({{ overview.usage.memory_percent | number_format }} %){% endif %}
+            </td>
+            <td>
+                {{ overview.usage.cpu }} {% if overview.usage.cpu_percent is defined %}({{ overview.usage.cpu_percent | number_format }} %){% endif %}
+            </td>
+            {% else %}
+            <td colspan="3"><em>No usage</em></td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="text-center">
+    <ul class="pagination">
+        <li{% if page == 1 %} class="disabled"{% endif %}>
+            <a href="{{ path('admin_billing', {'page': page - 1, 'limit': limit}) }}">Previous</a>
+        </li>
+        <li class="disabled">
+            <a>Page {{ page }} of {{ numberOfPages }}</a>
+        </li>
+        <li{% if page == numberOfPages %} class="disabled"{% endif %}>
+            <a href="{{ path('admin_billing', {'page': page + 1, 'limit': limit}) }}">Next</a>
+        </li>
+    </ul>
+</div>
+{% endblock %}

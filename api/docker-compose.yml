@@ -4,7 +4,6 @@ api:
         - .:/app
     links:
         - database
-        - rabbitmq
         - blackfire
         - tideways
         - redis
@@ -17,19 +16,15 @@ api:
         - LOGSTREAM_URL=https://api.logstream.continuouspipe.io
         - RIVER_URL=http://localhost:80/app_dev.php
         - TIDEWAYS_API_KEY=bq8W3cebnQNuKgQA
-        - APP_USER_LOCAL=true
     expose:
         - 80
-    ports:
-        - 81:80
-        - 444:443
+
 worker:
     build: .
     volumes:
         - .:/app
     links:
         - database
-        - rabbitmq
         - redis
         - tideways
     expose:

@@ -9,6 +9,9 @@ use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCalculator;
 use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCollection;
 use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistoryRepository;
 use ContinuousPipe\River\Managed\Resources\ResourceUsage;
+use ContinuousPipe\River\View\Tide;
+use ContinuousPipe\River\View\TideRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class FlowUsageProjector
 {
@@ -17,9 +20,17 @@ class FlowUsageProjector
      */
     private $resourceUsageHistoryRepository;
 
-    public function __construct(ResourceUsageHistoryRepository $resourceUsageHistoryRepository)
-    {
+    /**
+     * @var TideRepository
+     */
+    private $tideRepository;
+
+    public function __construct(
+        ResourceUsageHistoryRepository $resourceUsageHistoryRepository,
+        TideRepository $tideRepository
+    ) {
         $this->resourceUsageHistoryRepository = $resourceUsageHistoryRepository;
+        $this->tideRepository = $tideRepository;
     }
 
     /**
@@ -63,6 +74,37 @@ class FlowUsageProjector
                 'usage' => [
                     'cpu' => $resources->getCpu(),
                     'memory' => $resources->getMemory(),
+                ],
+            ];
+        });
+    }
+
+    /**
+     * @param FlatFlow $flow
+     * @param \DateTime $left
+     * @param \DateTime $right
+     * @param \DateInterval $interval
+     *
+     * @return array
+     */
+    public function getTideUsage(FlatFlow $flow, \DateTime $left, \DateTime $right, \DateInterval $interval): array
+    {
+        $tideCollection = new ArrayCollection(
+            $this->tideRepository->findByFlowBetween($flow->getUuid(), $left, $right)->toArray()
+        );
+
+        return (new Interval($left, $right))->foreachInterval($interval, function (\DateTimeInterface $left, \DateTimeInterface $right) use ($tideCollection) {
+            return [
+                'datetime' => [
+                    'left' => clone $left,
+                    'right' => clone $right,
+                ],
+                'usage' => [
+                    'tides' => $tideCollection
+                        ->filter(function (Tide $tide) use ($left, $right) {
+                            return $tide->getCreationDate() >= $left && $tide->getCreationDate() <= $right;
+                        })
+                        ->count(),
                 ],
             ];
         });

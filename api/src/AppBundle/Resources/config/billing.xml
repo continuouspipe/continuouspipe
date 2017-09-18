@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.billing.user_profile_repository" class="ContinuousPipe\Billing\BillingProfile\AuthenticatorHttpBillingProfileRepository">
+            <argument type="service" id="security.authenticator.guzzle_http_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%continuous_pipe.authenticator.url%</argument>
+            <argument>%continuous_pipe.authenticator.api_key%</argument>
+        </service>
+
+        <service id="river.billing.user_profile_repository.cached"
+                 class="ContinuousPipe\Billing\BillingProfile\CachedBillingProfileRepository"
+                 decorates="river.billing.user_profile_repository">
+            <argument type="service" id="river.billing.user_profile_repository.cached.inner" />
+            <argument type="service" id="jms_serializer"/>
+            <argument type="service" id="river.cache"/>
+        </service>
+    </services>
+</container>
