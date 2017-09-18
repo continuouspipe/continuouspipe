@@ -163,6 +163,25 @@ class AccountsContext implements Context
     }
 
     /**
+     * @Given the billing profile :uuid is :status
+     * @Given the billing profile :uuid with the plan :plan is :status
+     */
+    public function theBillingProfileIs($uuid, $status, $plan = null)
+    {
+        $billingProfile = $this->userBillingProfileRepository->find(Uuid::fromString($uuid));
+        $this->userBillingProfileRepository->save(new UserBillingProfile(
+            $billingProfile->getUuid(),
+            $billingProfile->getName(),
+            new \DateTime('-2 days'),
+            $billingProfile->getAdmins(),
+            null,
+            0,
+            $plan !== null ? $this->planRepository->findPlanByIdentifier($plan) : null,
+            $status
+        ));
+    }
+
+    /**
      * @Then the user :username should have a billing account
      */
     public function theUserShouldHaveABillingAccount($username)
