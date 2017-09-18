@@ -278,7 +278,7 @@ EOF;
     {
         $tide = $this->getTideByCodeReference($branch, $sha1);
 
-        $this->commandBus->handle(new CancelTideCommand($tide->getUuid(), $tide->getUser()));
+        $this->commandBus->handle(new CancelTideCommand($tide->getUuid(), $tide->getUser()->getUsername()));
     }
 
     /**
@@ -611,7 +611,7 @@ EOF;
     {
         $tide = $this->getCurrentTide();
         $this->commandBus->handle(new CancelTideCommand(
-            $tide->getUuid(), $tide->getUser()
+            $tide->getUuid(), $tide->getUser()->getUsername()
         ));
     }
 

@@ -234,13 +234,13 @@ class Tide
     /**
      * Cancel the tide.
      *
-     * @param User $user The user who triggered the command.
+     * @param string $username The username of the user who triggered the command.
      */
-    public function cancel(User $user)
+    public function cancel(string $username)
     {
         $this->events->raiseAndApply(new TideCancelled(
             $this->getUuid(),
-            $user
+            $username
         ));
     }
 

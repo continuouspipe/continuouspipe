@@ -18,20 +18,20 @@ class CancelTideCommand implements TideCommand
     private $tideUuid;
 
     /**
-     * @JMS\Type("ContinuousPipe\Security\User\User")
+     * @JMS\Type("string")
      *
-     * @var User
+     * @var string
      */
-    private $user;
+    private $username;
 
     /**
      * @param Uuid $tideUuid
-     * @param User $user
+     * @param string $username
      */
-    public function __construct(Uuid $tideUuid, User $user)
+    public function __construct(Uuid $tideUuid, $username)
     {
         $this->tideUuid = $tideUuid;
-        $this->user = $user;
+        $this->username = $username;
     }
 
     public function getTideUuid(): UuidInterface
@@ -39,8 +39,13 @@ class CancelTideCommand implements TideCommand
         return $this->tideUuid;
     }
 
-    public function getUser(): User
+    /**
+     * Return the username of the user who run the command.
+     *
+     * @return string|null
+     */
+    public function getUsername()
     {
-        return $this->user;
+        return $this->username;
     }
 }

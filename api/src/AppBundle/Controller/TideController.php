@@ -233,6 +233,6 @@ class TideController
      */
     public function cancelAction(Tide $tide, User $user)
     {
-        $this->commandBus->handle(new CancelTideCommand($tide->getUuid(), $user));
+        $this->commandBus->handle(new CancelTideCommand($tide->getUuid(), $user->getUsername()));
     }
 }

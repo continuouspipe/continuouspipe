@@ -37,7 +37,7 @@ class LogCancelledListener
     {
         $tide = $this->tideRepository->find($event->getTideUuid());
         $logger = $this->loggerFactory->fromId($tide->getLogId());
-        $username = $event->getUser()->getUsername();
+        $username = $event->getUsername();
 
         $logger->child(new Text(sprintf('Tide manually cancelled by %s', $username)))->updateStatus(Log::FAILURE);
     }
