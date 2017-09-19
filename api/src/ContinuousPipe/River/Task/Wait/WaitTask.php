@@ -58,7 +58,8 @@ class WaitTask extends EventDrivenTask
         $status = $this->configuration->getStatus();
         $logger = $this->loggerFactory->from($this->context->getLog());
         $log = $logger->child(new Text(sprintf(
-            'Waiting status "%s" to be "%s"',
+            'Running wait task "%s": waiting status "%s" to be "%s"',
+            $this->getLabel(),
             $status->getContext(),
             $status->getState()
         )))->getLog();

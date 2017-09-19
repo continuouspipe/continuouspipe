@@ -989,6 +989,23 @@ EOF;
     }
 
     /**
+     * @When a tide is started with a wait task called :taskName
+     */
+    public function aTideIsStartedWithAWaitTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'wait' => [
+                    'status' => [
+                        'context' => 'one',
+                        'state' => 'two',
+                    ],
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * @Given a tide is started with the following configuration:
      * @Given a tide is started for the branch :branch with the following configuration:
      */
