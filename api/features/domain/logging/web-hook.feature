@@ -5,4 +5,4 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a web-hook task called "my_web_hook_task"
-    Then a 'Running web-hook task "my_web_hook_task": webhook sent to "http://localhost/"' log should be created
+    Then a 'Calling web-hook (my_web_hook_task)' log should be created

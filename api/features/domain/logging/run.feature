@@ -5,4 +5,4 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a run task called "my_run_task"
-    Then a 'Running run task "my_run_task"' log should be created
+    Then a 'Running my_run_task' log should be created

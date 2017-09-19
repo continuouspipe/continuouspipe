@@ -83,9 +83,8 @@ class WebHookTask extends EventDrivenTask
 
             $logger->child(new Text(
                 sprintf(
-                    'Running web-hook task "%s": webhook sent to "%s"',
-                    $this->getIdentifier(),
-                    $webHook->getUrl()
+                    'Calling web-hook (%s)',
+                    $this->getIdentifier()
                 )
             ));
         } catch (WebHookException $e) {

@@ -8,14 +8,14 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a deploy task called "my_deploy_task"
-    Then a 'Running deployment task "my_deploy_task"' log should be created
+    Then a 'Deploying environment (my_deploy_task)' log should be created
 
   Scenario:
     Given a tide is started with a deploy task
     When the deployment succeed
-    Then the 'Running deployment task "task0"' log should be successful
+    Then the 'Deploying environment (task0)' log should be successful
 
   Scenario:
     Given a tide is started with a deploy task
     When the deployment failed
-    Then the 'Running deployment task "task0"' log should be failed
+    Then the 'Deploying environment (task0)' log should be failed

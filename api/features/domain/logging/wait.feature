@@ -5,4 +5,4 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a wait task called "my_wait_task"
-    Then a 'Running wait task "my_wait_task": waiting status "one" to be "two"' log should be created
+    Then a 'Waiting for status "one" to be "two" (my_wait_task)' log should be created

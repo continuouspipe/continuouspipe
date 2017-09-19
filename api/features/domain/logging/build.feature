@@ -8,14 +8,14 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a build task called "my_build_task"
-    Then a 'Running build task "my_build_task"' log should be created
+    Then a 'Building application images (my_build_task)' log should be created
 
   Scenario:
     When a tide is started with a build task
     And all the image builds are successful
-    Then the 'Running build task "build"' log should be successful
+    Then the 'Building application images (build)' log should be successful
 
   Scenario:
     When a tide is started with a build task
     And the builds are failing
-    Then the 'Running build task "build"' log should be failed
+    Then the 'Building application images (build)' log should be failed

@@ -5,4 +5,4 @@ Feature:
 
   Scenario: See the title of the started task
     When a tide is started with a delete task called "my_delete_task"
-    Then a 'Running delete task "my_delete_task"' log should be created
+    Then a 'Deleting environment (my_delete_task)' log should be created
