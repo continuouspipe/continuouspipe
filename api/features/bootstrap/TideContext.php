@@ -966,6 +966,29 @@ EOF;
     }
 
     /**
+     * @When a tide is started with a run task called :taskName
+     */
+    public function aTideIsStartedWithARunTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'run' => [
+                    'cluster' => 'fake/foo',
+                    'image' => [
+                        'name' => 'foo/bar'
+                    ],
+                    'commands' => [],
+                    'environment_variables' => [
+                        'FOO' => 'bar',
+                    ],
+                    'volumes' => [],
+                    'volume_mounts' => [],
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * @Given a tide is started with the following configuration:
      * @Given a tide is started for the branch :branch with the following configuration:
      */
