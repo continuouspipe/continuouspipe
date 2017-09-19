@@ -108,7 +108,18 @@ class RecurlyPlanManager implements PlanManager
         ;
 
         if (isset($subscription->trial_ends_at)) {
-            $billingProfile = $billingProfile->setTrialEndDate(new \DateTime($subscription->trial_ends_at));
+            if (is_string($subscription->trial_ends_at)) {
+                $subscription->trial_ends_at = new \DateTime($subscription->trial_ends_at);
+            }
+
+            if (!$subscription->trial_ends_at instanceof \DateTime) {
+                throw new \InvalidArgumentException(sprintf(
+                    '`trial_ends_at` type (%s) is not matching expected type',
+                    gettype($subscription->trial_ends_at)
+                ));
+            }
+
+            $billingProfile = $billingProfile->setTrialEndDate($subscription->trial_ends_at);
         }
 
         return $billingProfile;
