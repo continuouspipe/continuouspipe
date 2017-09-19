@@ -68,8 +68,8 @@ class RunTask extends EventDrivenTask
         $logger = $this->loggerFactory->from($this->context->getLog());
 
         $log = $logger->child(new Text(sprintf(
-            'Running "%s"',
-            $this->context->getTaskId()
+            'Running %s',
+            $this->getLabel()
         )))->getLog();
 
         $this->context->setTaskLog($log);

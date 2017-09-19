@@ -6,16 +6,16 @@ Feature:
   Background:
     Given there is 1 application images in the repository
 
-  Scenario:
-    When a tide is started with a build task
-    Then a "Building application images" log should be created
+  Scenario: See the title of the started task
+    When a tide is started with a build task called "my_build_task"
+    Then a 'Building application images (my_build_task)' log should be created
 
   Scenario:
     When a tide is started with a build task
     And all the image builds are successful
-    Then the "Building application images" log should be successful
+    Then the 'Building application images (build)' log should be successful
 
   Scenario:
     When a tide is started with a build task
     And the builds are failing
-    Then the "Building application images" log should be failed
+    Then the 'Building application images (build)' log should be failed

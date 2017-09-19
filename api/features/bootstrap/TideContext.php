@@ -839,11 +839,12 @@ EOF;
 
     /**
      * @When a tide is started with a build task
+     * @When a tide is started with a build task called :taskName
      */
-    public function aTideIsStartedWithABuildTask()
+    public function aTideIsStartedWithABuildTask($taskName = 'build')
     {
         $this->aTideIsStartedWithTasks([
-            'build' => [
+            $taskName => [
                 'build' => []
             ]
         ]);
@@ -942,11 +943,12 @@ EOF;
 
     /**
      * @When a tide is started with a deploy task
+     * @When a tide is started with a deploy task called :taskName
      */
-    public function aTideIsStartedWithADeployTask()
+    public function aTideIsStartedWithADeployTask($taskName = 'task0')
     {
         $this->aTideIsStartedWithTasks([
-            [
+            $taskName => [
                 'deploy' => [
                     'cluster' => 'fake/foo',
                     'services' => [
@@ -959,6 +961,74 @@ EOF;
                             ]
                         ]
                     ]
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started with a run task called :taskName
+     */
+    public function aTideIsStartedWithARunTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'run' => [
+                    'cluster' => 'fake/foo',
+                    'image' => [
+                        'name' => 'foo/bar'
+                    ],
+                    'commands' => [],
+                    'environment_variables' => [
+                        'FOO' => 'bar',
+                    ],
+                    'volumes' => [],
+                    'volume_mounts' => [],
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started with a wait task called :taskName
+     */
+    public function aTideIsStartedWithAWaitTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'wait' => [
+                    'status' => [
+                        'context' => 'one',
+                        'state' => 'two',
+                    ],
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started with a web-hook task called :taskName
+     */
+    public function aTideIsStartedWithAWebHookTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'web-hook' => [
+                    'url' => 'http://localhost/',
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * @When a tide is started with a delete task called :taskName
+     */
+    public function aTideIsStartedWithADeleteTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'delete' => [
+                    'cluster' => 'fake/foo',
                 ]
             ]
         ]);
