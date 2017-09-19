@@ -838,11 +838,12 @@ EOF;
 
     /**
      * @When a tide is started with a build task
+     * @When a tide is started with a build task called :taskName
      */
-    public function aTideIsStartedWithABuildTask()
+    public function aTideIsStartedWithABuildTask($taskName = 'build')
     {
         $this->aTideIsStartedWithTasks([
-            'build' => [
+            $taskName => [
                 'build' => []
             ]
         ]);

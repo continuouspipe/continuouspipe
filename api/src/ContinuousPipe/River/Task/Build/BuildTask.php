@@ -79,7 +79,7 @@ class BuildTask extends EventDrivenTask
     public function buildImages(BuildRequestCreator $buildRequestCreator)
     {
         $logger = $this->loggerFactory->from($this->context->getLog());
-        $logger = $logger->child(new Text('Building application images'));
+        $logger = $logger->child(new Text(sprintf('Running build task "%s"', $this->getLabel())));
         $logger->updateStatus(Log::RUNNING);
 
         $this->context->setTaskLog($logger->getLog());
