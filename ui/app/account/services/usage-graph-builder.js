@@ -47,6 +47,10 @@ angular.module('continuousPipeRiver')
         };
 
         this.dataFromUsage = function(usage, metric) {
+            if (usage.length === 0) {
+                return [];
+            }
+            
             var groupByFunction = function(entry) { return entry.flow.uuid },
                 header = ['Date'];
 

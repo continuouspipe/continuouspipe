@@ -21,7 +21,7 @@
         <table class="table responsive-table hover" ng-show="credentials.length > 0">
             <thead>
             <tr>
-                <th>Server</th>
+                <th>Server / Name</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th ng-show="isAdmin">Actions</th>
@@ -29,11 +29,24 @@
             </thead>
             <tbody>
             <tr ng-repeat="credential in credentials">
-                <td data-th="Server">{{ credential.serverAddress }}</td>
+                <td data-th="Server">
+                    <span ng-if="!credential.full_address">{{ credential.serverAddress }}</span>
+                    <span ng-if="credential.full_address">{{ credential.full_address }}</span>
+                </td>
                 <td data-th="Username">{{ credential.username }}</td>
                 <td data-th="Email">{{ credential.email }}</td>
                 <td data-th="Actions" ng-show="isAdmin">
-                    <md-button ng-click="deleteCredentials(credential)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                    <md-button ng-click="changeVisibility(credential, credential.attributes.visibility != 'private' ? 'private' : 'public')" ng-if="credential.attributes.managed" class="md-icon-button">
+                        <md-tooltip>
+                            <span ng-if="credential.attributes.visibility != 'private'">This repository is public. Click here to make this repository private.</span>
+                            <span ng-if="credential.attributes.visibility == 'private'">This repository is private. Click here to make this repository public.</span>
+                        </md-tooltip>
+                        <md-icon ng-if="credential.attributes.visibility != 'private'">lock_open</md-icon>
+                        <md-icon ng-if="credential.attributes.visibility == 'private'">lock</md-icon>
+                    </md-button>
+                    <md-button ng-click="deleteCredentials(credential)" class="md-icon-button">
+                        <md-icon>delete</md-icon>
+                    </md-button>
                 </td>
             </tr>
             </tbody>

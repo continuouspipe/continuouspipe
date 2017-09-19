@@ -45,6 +45,7 @@ angular.module('continuousPipeRiver')
 
         $scope.$on('$destroy', $rootScope.$on('configuration-saved', $scope.loadAlerts));
         $scope.$on('$destroy', $rootScope.$on('visibility-changed', $scope.loadAlerts));
+        $scope.$on('$destroy', $rootScope.$on('reload-alerts', $scope.loadAlerts));
 
         $scope.loadAlerts();
     });

@@ -1,0 +1,58 @@
+.flow-wizard {
+    md-list {
+        padding: 0;
+    }
+
+    md-list-item {
+        &.selected {
+            background: #737373;
+            color: #fff;
+
+            md-icon {
+                color: #fff;
+            }
+        }
+    }
+
+    md-toolbar .md-toolbar-tools md-icon {
+        color: inherit;
+        fill: inherit;
+    }
+
+    .organisation-list {
+        md-list-item {
+            .md-avatar {
+                border-radius: 0;
+            }
+        }
+    }
+
+    .empty-placeholder {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .filter-repository-toolbar {
+        background: #EFEFEF;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        padding-top: 20px;
+        min-height: 69px;
+        height: 69px;
+
+        md-icon {
+            color: grey;
+        }
+
+        md-input-container.md-block {
+            width: 100%;
+        }
+    }
+
+    .step-configuration {
+        pre {
+            border: 1px solid #ccc;
+            background: #fefefe;
+            padding: 10px;
+        }
+    }
+}

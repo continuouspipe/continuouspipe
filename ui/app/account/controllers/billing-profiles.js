@@ -73,6 +73,8 @@ angular.module('continuousPipeRiver')
         };
 
         BillingProfileRepository.getUsage(billingProfile).then(function(usage) {
+            $scope.usage = usage;
+
             $scope.tidesGraph = {
                 type: 'SteppedAreaChart',
                 data: UsageGraphBuilder.dataFromUsage(usage, 'tides'),
@@ -101,8 +103,9 @@ angular.module('continuousPipeRiver')
         });
 
         BillingProfileRepository.getUsage(billingProfile, 'P31D').then(function(usage) {
-           console.log('tides', usage[0].entries[0].usage);
-           $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+            if (usage.length) {
+                $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+            }
         });
 
         $scope.change = function(ev) {
@@ -116,10 +119,28 @@ angular.module('continuousPipeRiver')
                 clickOutsideToClose:true,
                 scope: scope
 
-            }).then(function(answer) {
+            }).then(function() {
                 $state.reload();
             });
-        }
+        };
+
+        $scope.delete = function() {
+            swal({
+                title: "Are you sure?",
+                text: "The billing profile won't be recoverable.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                closeOnConfirm: true
+            }, function() {
+                BillingProfileRepository.delete(billingProfile).then(function() {
+                    $state.go('billing-profiles');
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the billing profile", "error");
+                });
+            });
+        };
     })
     .controller('ChangeBillingProfileController', function($scope, $http, $mdDialog, $mdToast, BillingProfileRepository) {
         var plansPromise = BillingProfileRepository.findPlans();
@@ -169,3 +190,4 @@ angular.module('continuousPipeRiver')
             });
         };
     })
+;

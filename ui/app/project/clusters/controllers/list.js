@@ -60,4 +60,18 @@ angular.module('continuousPipeRiver')
                 cluster: cluster
             });
         };
+
+        $scope.clusterIsManaged = function(cluster) {
+            if (!cluster.policies) {
+                return false;
+            }
+
+            for (var i = 0; i < cluster.policies.length; i++) {
+                if (cluster.policies[i]['name'] == 'managed') {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     });

@@ -46,7 +46,7 @@
                     </md-input-container>
                 </div>
                 <div ng-if="!isAdmin">
-                    <span ng-repeat="(key, secret) in policy.secrets">{{ key }}</span>
+                    <span ng-repeat="(key, secret) in policy.secrets" style="padding-right: 10px;">{{ key }}</span>
                 </div>
             </td>
 

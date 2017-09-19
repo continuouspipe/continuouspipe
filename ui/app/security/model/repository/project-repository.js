@@ -16,8 +16,8 @@ angular.module('continuousPipeRiver')
             return this.resource.get({slug: slug}).$promise;
         };
 
-        this.create = function(project) {
-            return this.resource.save({team: project}).$promise;
+        this.create = function(project, billingProfile) {
+            return this.resource.save({team: project, billing_profile: billingProfile}).$promise;
         };
 
         this.delete = function(project) {

@@ -11,7 +11,14 @@
             <md-input-container>
                 <label>Account</label>
                 <md-select ng-model="account">
-                    <md-option ng-repeat="account in accounts" ng-value="account">{{ account.username }} ({{ account.type }})</md-option>
+                    <md-optgroup label="Your accounts">
+                        <md-option ng-repeat="account in accounts" ng-value="account">
+                            <md-icon ng-class="'cp-icon-'+account.type" />
+                            <span>{{ account.username }}</span>
+                        </md-option>
+                    </md-optgroup>
+                    <md-divider></md-divider>
+                    <md-option ng-value="'add'"><md-icon>add</md-icon> <small>Add an account</small></md-option>
                 </md-select>
             </md-input-container>
         </div>
@@ -48,6 +55,7 @@
                             <p>{{ organisation.identifier }}</p>
                         </div>
                     </md-list-item>
+                    <div class="empty-placeholder" ng-if="organisations.length === 0">No organisation found</div>
                 </remote-resource>
             </md-list>
         </md-sidenav>
@@ -71,6 +79,8 @@
                             <md-icon ng-show="wizard.repository == repository">done</md-icon>
                         </md-list-item>
                     </md-list>
+                    <div class="empty-placeholder" ng-if="repositories.length === 0">No repositories found</div>
+                    <div class="empty-placeholder" ng-if="(repositories | filter:wizard.repositoryFilter).length === 0 && repositories.length !== 0">No repository matching "{{ wizard.repositoryFilter.$ }}"</div>
                 </remote-resource>
             </md-content>
         </md-content>
