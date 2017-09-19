@@ -58,7 +58,7 @@ class DeleteTask implements Task
             throw new \RuntimeException('The task is already running');
         }
 
-        $label = 'Deleting environment';
+        $label = sprintf('Running delete task "%s"', $this->getIdentifier());
         $logger = $loggerFactory->from($tide->getLog())->child(new Text($label))->updateStatus(Log::RUNNING);
 
         $configuration = new DeleteTaskConfiguration(

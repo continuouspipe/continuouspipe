@@ -1020,6 +1020,20 @@ EOF;
     }
 
     /**
+     * @When a tide is started with a delete task called :taskName
+     */
+    public function aTideIsStartedWithADeleteTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'delete' => [
+                    'cluster' => 'fake/foo',
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * @Given a tide is started with the following configuration:
      * @Given a tide is started for the branch :branch with the following configuration:
      */
