@@ -13,6 +13,11 @@ use JMS\Serializer\Annotation as JMS;
 
 class UserBillingProfile
 {
+    const STATUS_ACTIVE = 'active';
+    const STATUS_EXPIRED = 'expired';
+    const STATUS_CANCELED = 'canceled';
+    const STATUS_FUTURE = 'future';
+
     /**
      * @JMS\Type("uuid")
      *

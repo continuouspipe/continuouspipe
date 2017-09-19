@@ -33,7 +33,7 @@ class TeamBillingProfileAlertFinder implements AlertFinder
     public function findByTeam(Team $team): array
     {
         try {
-            $this->userBillingProfileRepository->findByTeam($team);
+            $billingProfile = $this->userBillingProfileRepository->findByTeam($team);
         } catch (UserBillingProfileNotFound $e) {
             return [
                 new Alert(
@@ -44,6 +44,21 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                         'state',
                         'Configure the project',
                         'configuration'
+                    )
+                ),
+            ];
+        }
+
+        if ($billingProfile->getStatus() != UserBillingProfile::STATUS_ACTIVE) {
+            return [
+                new Alert(
+                    'billing-profile-invalid',
+                    'Your billing profile is not active, your experience will be limited.',
+                    new \DateTime(),
+                    new AlertAction(
+                        'state',
+                        'Configure billing profile',
+                        'billing-profile'
                     )
                 ),
             ];
