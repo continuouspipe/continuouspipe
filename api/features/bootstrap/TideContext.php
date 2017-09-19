@@ -941,11 +941,12 @@ EOF;
 
     /**
      * @When a tide is started with a deploy task
+     * @When a tide is started with a deploy task called :taskName
      */
-    public function aTideIsStartedWithADeployTask()
+    public function aTideIsStartedWithADeployTask($taskName = 'task0')
     {
         $this->aTideIsStartedWithTasks([
-            [
+            $taskName => [
                 'deploy' => [
                     'cluster' => 'fake/foo',
                     'services' => [
