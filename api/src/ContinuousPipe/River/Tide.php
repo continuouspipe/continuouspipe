@@ -231,10 +231,16 @@ class Tide
         ));
     }
 
-    public function cancel()
+    /**
+     * Cancel the tide.
+     *
+     * @param string $username The username of the user who triggered the command.
+     */
+    public function cancel(string $username)
     {
         $this->events->raiseAndApply(new TideCancelled(
-            $this->getUuid()
+            $this->getUuid(),
+            $username
         ));
     }
 

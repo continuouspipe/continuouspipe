@@ -2,7 +2,6 @@
 
 namespace ContinuousPipe\River\Event;
 
-use ContinuousPipe\River\Event\TideEvent;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;
 
@@ -16,11 +15,20 @@ class TideCancelled implements TideEvent
     private $tideUuid;
 
     /**
-     * @param Uuid $tideUuid
+     * @JMS\Type("string")
+     *
+     * @var string
      */
-    public function __construct(Uuid $tideUuid)
+    private $username;
+
+    /**
+     * @param Uuid $tideUuid
+     * @param string $username
+     */
+    public function __construct(Uuid $tideUuid, $username)
     {
         $this->tideUuid = $tideUuid;
+        $this->username = $username;
     }
 
     /**
@@ -29,5 +37,15 @@ class TideCancelled implements TideEvent
     public function getTideUuid()
     {
         return $this->tideUuid;
+    }
+
+    /**
+     * Return the username of the user who triggered the event.
+     *
+     * @return string|null
+     */
+    public function getUsername()
+    {
+        return $this->username;
     }
 }

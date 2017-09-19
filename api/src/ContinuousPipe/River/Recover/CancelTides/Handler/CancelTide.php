@@ -29,8 +29,8 @@ class CancelTide
      */
     public function handle(CancelTideCommand $command)
     {
-        $this->transactionManager->apply($command->getTideUuid(), function (Tide $tide) {
-            $tide->cancel();
+        $this->transactionManager->apply($command->getTideUuid(), function (Tide $tide) use ($command) {
+            $tide->cancel($command->getUsername());
         });
     }
 }
