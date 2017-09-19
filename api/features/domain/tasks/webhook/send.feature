@@ -48,7 +48,7 @@ Feature:
     When a tide is started for the branch "master"
     Then a web-hook should be sent to "https://example.com/my-webhook"
     And the tide should be successful
-    And a 'Webhook sent to "https://example.com/my-webhook"' log should be created
+    And a 'Running web-hook task "task0": webhook sent to "https://example.com/my-webhook"' log should be created
 
   Scenario: If the web-hook failed, it fails the task and therefore the tide
     Given I have a flow with the following configuration:

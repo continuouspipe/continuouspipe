@@ -43,10 +43,10 @@ class WebHookTask extends EventDrivenTask
 
     /**
      * @param EventCollection $events
-     * @param TaskContext     $context
-     * @param LoggerFactory   $loggerFactory
-     * @param MessageBus      $commandBus
-     * @param array           $configuration
+     * @param TaskContext $context
+     * @param LoggerFactory $loggerFactory
+     * @param MessageBus $commandBus
+     * @param array $configuration
      */
     public function __construct(EventCollection $events, TaskContext $context, LoggerFactory $loggerFactory, MessageBus $commandBus, array $configuration)
     {
@@ -81,7 +81,13 @@ class WebHookTask extends EventDrivenTask
                 $webHook
             ));
 
-            $logger->child(new Text(sprintf('Webhook sent to "%s"', $webHook->getUrl())));
+            $logger->child(new Text(
+                sprintf(
+                    'Running web-hook task "%s": webhook sent to "%s"',
+                    $this->getIdentifier(),
+                    $webHook->getUrl()
+                )
+            ));
         } catch (WebHookException $e) {
             $this->events->raiseAndApply(new WebHookFailed(
                 $context->getTideUuid(),

@@ -1006,6 +1006,20 @@ EOF;
     }
 
     /**
+     * @When a tide is started with a web-hook task called :taskName
+     */
+    public function aTideIsStartedWithAWebHookTask($taskName = 'task0')
+    {
+        $this->aTideIsStartedWithTasks([
+            $taskName => [
+                'web-hook' => [
+                    'url' => 'http://localhost/',
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * @Given a tide is started with the following configuration:
      * @Given a tide is started for the branch :branch with the following configuration:
      */
