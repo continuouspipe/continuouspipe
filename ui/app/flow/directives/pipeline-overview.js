@@ -62,7 +62,6 @@ angular.module('continuousPipeRiver')
                                     .hideDelay(3000)
                                     .parent($('#content')));
                         }).catch(function(response) {
-                            console.log(response)
                             swal("Error !", response.data.message || results[response.status.toString()], "error");
                         });
                     }).catch(swal.noop);
