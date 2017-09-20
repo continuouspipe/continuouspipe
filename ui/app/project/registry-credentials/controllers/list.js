@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectRegistryCredentialsController', function($scope, $remoteResource, RegistryCredentialsRepository, user, project) {
+    .controller('ProjectRegistryCredentialsController', function($scope, $http, $remoteResource, RegistryCredentialsRepository, user, project) {
         var controller = this;
 
         this.loadCredentials = function() {
@@ -23,8 +23,8 @@ angular.module('continuousPipeRiver')
                     swal("Deleted!", "Credentials successfully deleted.", "success");
 
                     controller.loadCredentials();
-                }, function() {
-                    swal("Error !", "An unknown error occured while deleting credentials", "error");
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occured while deleting credentials", "error");
                 });
             }).catch(swal.noop);
         };
@@ -32,4 +32,22 @@ angular.module('continuousPipeRiver')
         $scope.isAdmin = user.isAdmin(project);
 
         this.loadCredentials();
+
+        $scope.changeVisibility = function(registry, visibility) {
+            swal({
+                title: "Are you sure?",
+                text: "You will change the visibility of the registry to \""+visibility+"\"",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, change it!",
+                closeOnConfirm: false
+            }, function() {
+                RegistryCredentialsRepository.changeVisibility(registry, visibility).then(function() {
+                    controller.loadCredentials();
+                }, function(error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while changing the visibility of the registry", "error");
+                });
+            });
+        };
     });

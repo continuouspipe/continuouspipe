@@ -30,7 +30,7 @@ angular.module('continuousPipeRiver')
             } else {
                 doUpdate();
             }
-        }
+        };
 
         var doUpdate = function() {
             $scope.isLoading = true;

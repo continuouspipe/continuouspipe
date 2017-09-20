@@ -1,16 +1,6 @@
 <md-content flex>
     <form name="projectForm">
-        <div class="form-container">
-            <p>You need to select a name and a unique identifier for your project.</p>
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Name</label>
-                <input ng-model="project.name" required />
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-xs>
-                <label>Unique identifier</label>
-                <input ng-model="project.slug" required />
-            </md-input-container>
-        </div>
+        <ng-include src="'dashboard/views/projects/create.form.html'" />
     </form>
 </md-content>
 <md-toolbar>
