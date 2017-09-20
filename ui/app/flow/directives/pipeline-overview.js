@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .directive('pipelineOverview', function ($authenticatedFirebaseDatabase, $firebaseArray) {
+    .directive('pipelineOverview', function ($authenticatedFirebaseDatabase, $firebaseArray, $mdToast) {
         return {
             restrict: 'E',
             scope: {
@@ -49,7 +49,22 @@ angular.module('continuousPipeRiver')
                         confirmButtonColor: '#DD6B55',
                         confirmButtonText: 'Yes, delete it!'
                     }).then(function() {
-                        PipelineRepository.delete($scope.flow.uuid, pipelineId);
+                        var results = {
+                            '204': 'Pipeline Successfully deleted',
+                            '404': 'Could not find specified pipeline',
+                            '400': 'Pipeline could not be deleted'
+                        };
+                        
+                        PipelineRepository.delete($scope.flow.uuid, pipelineId).then(function(response) {
+                            $mdToast.show($mdToast.simple()
+                                    .textContent(results[response.status.toString()])
+                                    .position('top')
+                                    .hideDelay(3000)
+                                    .parent($('#content')));
+                        }).catch(function(response) {
+                            console.log(response)
+                            swal("Error !", response.data.message || results[response.status.toString()], "error");
+                        });
                     }).catch(swal.noop);
                 };
             }
