@@ -13,16 +13,18 @@ class UsageSnapshotCollection
     private $snapshots = [];
 
     /**
+     * @var bool
+     */
+    private $sorted = true;
+
+    /**
      * @param \DateTimeInterface $dateTime
      * @param ResourceUsage $usage
      */
     public function add(\DateTimeInterface $dateTime, ResourceUsage $usage)
     {
         $this->snapshots[] = new UsageSnapshot($dateTime, $usage);
-
-        usort($this->snapshots, function (UsageSnapshot $left, UsageSnapshot $right) {
-            return $left->getDateTime() > $right->getDateTime() ? 1 : -1;
-        });
+        $this->sorted = false;
     }
 
     /**
@@ -33,6 +35,8 @@ class UsageSnapshotCollection
      */
     public function highestUsageInInterval(\DateTimeInterface $left, \DateTimeInterface $right)
     {
+        $this->withSortedSnapshots();
+
         $snapshots = $this->snapshotsInInterval($left, $right);
         if (count($snapshots) == 0) {
             return null;
@@ -54,6 +58,8 @@ class UsageSnapshotCollection
      */
     public function lastBefore(\DateTimeInterface $dateTime)
     {
+        $this->withSortedSnapshots();
+
         for ($i = count($this->snapshots) - 1; $i >= 0; $i--) {
             $snapshot = $this->snapshots[$i];
 
@@ -63,14 +69,6 @@ class UsageSnapshotCollection
         }
 
         return null;
-    }
-
-    /**
-     * @return UsageSnapshot[]
-     */
-    public function all()
-    {
-        return $this->snapshots;
     }
 
     /**
@@ -84,5 +82,20 @@ class UsageSnapshotCollection
         return array_values(array_filter($this->snapshots, function (UsageSnapshot $snapshot) use ($left, $right) {
             return $snapshot->getDateTime() >= $left && $snapshot->getDateTime() <= $right;
         }));
+    }
+
+    private function withSortedSnapshots()
+    {
+        if (!$this->sorted) {
+            $this->sortSnapshots();
+
+            $this->sorted = true;
+        }
+    }
+    private function sortSnapshots()
+    {
+        usort($this->snapshots, function (UsageSnapshot $left, UsageSnapshot $right) {
+            return $left->getDateTime() > $right->getDateTime() ? 1 : -1;
+        });
     }
 }
