@@ -57,8 +57,8 @@ class TeamBillingProfileAlertFinder implements AlertFinder
                     new \DateTime(),
                     new AlertAction(
                         'state',
-                        'Configure billing profile',
-                        'billing-profile'
+                        'Configure billing',
+                        'configuration'
                     )
                 ),
             ];
