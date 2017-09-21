@@ -85,9 +85,11 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
     private function mergeVariables(array $target, array $source) : array
     {
         foreach ($source as $variable) {
-            if (null !== ($index = $this->variableIndex($target, $variable['name']))) {
-                foreach ($variable as $key => $value) {
-                    $target[$index][$key] = $value;
+            if (!empty($indexes = $this->variableIndexes($target, $variable['name']))) {
+                foreach ($indexes as $index) {
+                    foreach ($variable as $key => $value) {
+                        $target[$index][$key] = $value;
+                    }
                 }
             } else {
                 $target[] = $variable;
@@ -101,16 +103,18 @@ class ImportPipelineConfiguration implements ConfigurationFinalizer
      * @param array $variables
      * @param string $name
      *
-     * @return int|null
+     * @return array
      */
-    private function variableIndex(array $variables, string $name)
+    private function variableIndexes(array $variables, string $name)
     {
+        $indexes = [];
+
         foreach ($variables as $index => $variable) {
             if ($variable['name'] == $name) {
-                return $index;
+                $indexes[] = $index;
             }
         }
 
-        return null;
+        return $indexes;
     }
 }
