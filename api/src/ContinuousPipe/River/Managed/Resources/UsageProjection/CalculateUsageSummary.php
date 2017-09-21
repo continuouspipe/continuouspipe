@@ -53,11 +53,11 @@ class CalculateUsageSummary implements UsageSummaryProjector
 
         if ($billingProfile != null && null !== ($plan = $billingProfile->getPlan())) {
             if (!empty($availableTides = $plan->getMetrics()->getTides())) {
-                $usageSummary->tidesPercent = ResourceConverter::resourceToNumber($usageSummary['tides']) / $availableTides * 100;
+                $usageSummary->tidesPercent = ResourceConverter::resourceToNumber($usageSummary->tides) / $availableTides * 100;
             }
 
             if (!empty($availableMemory = $plan->getMetrics()->getMemory())) {
-                $usageSummary->memoryPercent = ResourceConverter::resourceToNumber($usageSummary['memory']) / ($availableMemory * 1024) * 100;
+                $usageSummary->memoryPercent = ResourceConverter::resourceToNumber($usageSummary->memory) / ($availableMemory * 1024) * 100;
             }
         }
 

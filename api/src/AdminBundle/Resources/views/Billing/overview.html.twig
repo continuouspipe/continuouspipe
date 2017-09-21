@@ -50,14 +50,14 @@
             <td colspan="4" class="bg-danger text-danger"><em>No plan</em></td>
             {% endif %}
             {% if overview.usage is not empty %}
-            <td{% if overview.usage.tides_percent is defined and overview.usage.tides_percent > 100 %} class="bg-danger text-danger"{% endif %}>
-                {{ overview.usage.tides }} {% if overview.usage.tides_percent is defined %}({{ overview.usage.tides_percent | number_format }} %){% endif %}
+            <td{% if overview.usage.tidesPercent is defined and overview.usage.tidesPercent > 100 %} class="bg-danger text-danger"{% endif %}>
+                {{ overview.usage.tides }} {% if overview.usage.tidesPercent is defined %}({{ overview.usage.tidesPercent | number_format }} %){% endif %}
             </td>
-            <td{% if overview.usage.memory_percent is defined and overview.usage.memory_percent > 100 %} class="bg-danger text-danger"{% endif %}>
-                {{ overview.usage.memory }} {% if overview.usage.memory_percent is defined %}({{ overview.usage.memory_percent | number_format }} %){% endif %}
+            <td{% if overview.usage.memoryPercent is defined and overview.usage.memoryPercent > 100 %} class="bg-danger text-danger"{% endif %}>
+                {{ overview.usage.memory }} {% if overview.usage.memoryPercent is defined %}({{ overview.usage.memoryPercent | number_format }} %){% endif %}
             </td>
             <td>
-                {{ overview.usage.cpu }} {% if overview.usage.cpu_percent is defined %}({{ overview.usage.cpu_percent | number_format }} %){% endif %}
+                {{ overview.usage.cpu }} {% if overview.usage.cpuPercent is defined %}({{ overview.usage.cpuPercent | number_format }} %){% endif %}
             </td>
             {% else %}
             <td colspan="3"><em>No usage</em></td>
