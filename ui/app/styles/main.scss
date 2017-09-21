@@ -75,6 +75,7 @@
     & .card-content {
         justify-content: space-between;
         cursor: pointer;
+        flex: 1;
     }
 
     & .cp-span-git-branch {

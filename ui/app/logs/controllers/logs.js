@@ -72,14 +72,13 @@ angular.module('continuousPipeRiver')
         $scope.reject = function(log) {
             swal({
                 title: "Are you sure?",
-                text: "The tide will be rejected and the following tasks won\'t be ran.",
+                text: "The tide will be rejected and the following tasks won\'t be run.",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, reject it!",
-                closeOnConfirm: true
-            }, function() {
+                confirmButtonText: "Yes, reject it!"
+            }).then(function() {
                 doChoice(log, 'reject');
-            });
+            }).catch(swal.noop);
         };
     });

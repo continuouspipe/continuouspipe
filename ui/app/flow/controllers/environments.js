@@ -58,9 +58,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, remove it!",
-                closeOnConfirm: false
-            }, function() {
+                confirmButtonText: "Yes, remove it!"
+            }).then(function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
                     swal("Deleted!", "Environment successfully deleted.", "success");
 
@@ -68,7 +67,7 @@ angular.module('continuousPipeRiver')
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
 
         loadEnvironments();
@@ -92,9 +91,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, remove them!",
-                closeOnConfirm: false
-            }, function() {
+                confirmButtonText: "Yes, remove them!"
+            }).then(function() {
                 EnvironmentRepository.deleteContainers(flow, environment, component).then(function (containers) {
                     swal("Deleted!", containers.length+" containers successfully deleted.", "success");
 
@@ -102,7 +100,7 @@ angular.module('continuousPipeRiver')
                 }, function (error) {
                     swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the containers", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
     })
     .controller('EnvironmentPreviewController', function($rootScope, $scope, $componentLogDialog, EndpointOpener, environment, flow, $sce) {

@@ -17,9 +17,8 @@ angular.module('continuousPipeRiver')
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes, delete it!",
-                closeOnConfirm: false
-            }, function() {
+                confirmButtonText: "Yes, delete it!"
+            }).then(function() {
                 RegistryCredentialsRepository.remove(credentials).then(function() {
                     swal("Deleted!", "Credentials successfully deleted.", "success");
 
@@ -27,7 +26,7 @@ angular.module('continuousPipeRiver')
                 }, function(error) {
                     swal("Error !", $http.getError(error) || "An unknown error occured while deleting credentials", "error");
                 });
-            });
+            }).catch(swal.noop);
         };
         
         $scope.isAdmin = user.isAdmin(project);
