@@ -13,9 +13,20 @@
         <service id="river.managed.resources.usage_projection.projector" class="ContinuousPipe\River\Managed\Resources\UsageProjection\UsageProjector">
             <argument type="service" id="river.managed.resources.usage_projection.flow_projector" />
         </service>
+        <service id="river.managed.resources.usage_projection.summary_projector" class="ContinuousPipe\River\Managed\Resources\UsageProjection\CalculateUsageSummary">
+            <argument type="service" id="river.managed.resources.usage_projection.projector" />
+        </service>
         <service id="river.managed.resources.usage_projection.flow_projector" class="ContinuousPipe\River\Managed\Resources\UsageProjection\FlowUsageProjector">
             <argument type="service" id="river.managed.resources.history_repository" />
             <argument type="service" id="river.view.tide_repository" />
+        </service>
+
+        <!-- Cached usage -->
+        <service id="river.managed.resources.usage_projection.summary_projector.cached"
+                 class="ContinuousPipe\River\Managed\Resources\UsageProjection\Cache\CachedUsageSummaryProjector"
+                 decorates="river.managed.resources.usage_projection.summary_projector">
+            <argument type="service" id="river.managed.resources.usage_projection.summary_projector.cached.inner" />
+            <argument type="service" id="river.cache"/>
         </service>
 
         <!-- Discrepancies repair -->
