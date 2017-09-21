@@ -2,17 +2,10 @@
 
 namespace AdminBundle\Controller;
 
-use ContinuousPipe\Billing\BillingProfile\BillingProfile;
 use ContinuousPipe\Billing\BillingProfile\BillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\BillingProfileRepository;
-use ContinuousPipe\Model\Component\ResourcesRequest;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
-use ContinuousPipe\River\Managed\Resources\Calculation\AggregateResourcesRequest;
-use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
-use ContinuousPipe\River\Managed\Resources\Calculation\UsageSnapshotCalculator;
-use ContinuousPipe\River\Managed\Resources\History\ResourceUsageHistory;
-use ContinuousPipe\River\Managed\Resources\UsageProjection\FlowUsageProjector;
-use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageProjector;
+use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageSummaryProjector;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,7 +31,7 @@ class BillingController
      */
     private $billingProfileRepository;
     /**
-     * @var UsageProjector
+     * @var UsageSummaryProjector
      */
     private $usageProjector;
 
@@ -46,7 +39,7 @@ class BillingController
         TeamRepository $teamRepository,
         FlatFlowRepository $flatFlowRepository,
         BillingProfileRepository $billingProfileRepository,
-        UsageProjector $usageProjector
+        UsageSummaryProjector $usageProjector
     ) {
         $this->teamRepository = $teamRepository;
         $this->flatFlowRepository = $flatFlowRepository;
@@ -84,14 +77,15 @@ class BillingController
                 $flows,
                 $left,
                 $right,
-                $interval
+                $interval,
+                $billingProfile
             );
 
             $overviewPerTeam[$team->getSlug()] = [
                 'team' => $team,
                 'billingProfile' => $billingProfile,
                 'flows' => $flows,
-                'usage' => $this->usageSummary($usage, $billingProfile),
+                'usage' => $usage,
             ];
         }
 
@@ -101,43 +95,5 @@ class BillingController
             'page' => $page,
             'limit' => $limit,
         ];
-    }
-
-    private function usageSummary(array $usage, BillingProfile $billingProfile = null)
-    {
-        if (empty($usage)) {
-            return [];
-        }
-
-        $resourcesCalculator = new AggregateResourcesRequest();
-        $tides = 0;
-
-        foreach ($usage[0]['entries'] as $entry) {
-            $resourcesCalculator->add(new ResourcesRequest(
-                $entry['usage']['cpu'],
-                $entry['usage']['memory']
-            ));
-
-            $tides += $entry['usage']['tides'];
-        }
-
-        $aggregatedResources = $resourcesCalculator->toResourcesRequest();
-        $usageSummary = [
-            'tides' => $tides,
-            'memory' => $aggregatedResources->getMemory(),
-            'cpu' => $aggregatedResources->getCpu(),
-        ];
-
-        if ($billingProfile != null && null !== ($plan = $billingProfile->getPlan())) {
-            if (!empty($availableTides = $plan->getMetrics()->getTides())) {
-                $usageSummary['tides_percent'] = ResourceConverter::resourceToNumber($usageSummary['tides']) / $availableTides * 100;
-            }
-
-            if (!empty($availableMemory = $plan->getMetrics()->getMemory())) {
-                $usageSummary['memory_percent'] = ResourceConverter::resourceToNumber($usageSummary['memory']) / ($availableMemory * 1024) * 100;
-            }
-        }
-
-        return $usageSummary;
     }
 }

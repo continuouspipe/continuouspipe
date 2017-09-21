@@ -49,7 +49,7 @@
             <argument type="service" id="authenticator.team_repository" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.billing.user_profile_repository"/>
-            <argument type="service" id="river.managed.resources.usage_projection.projector"/>
+            <argument type="service" id="river.managed.resources.usage_projection.summary_projector"/>
         </service>
 
         <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">
