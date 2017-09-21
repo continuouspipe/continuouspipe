@@ -5,29 +5,10 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
-            <argument type="service" id="app.repository.account"/>
-            <argument type="service" id="form.factory" />
-            <argument type="service" id="router" />
-        </service>
-
-        <service id="app.controller.api_keys" class="AppBundle\Controller\ApiKeysController">
-            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
-            <argument type="service" id="router" />
-        </service>
-
         <service id="app.controller.invitation" class="AppBundle\Controller\InvitationController">
             <argument type="service" id="app.repository.user_invitation" />
             <argument type="service" id="app.invitation.invitation_to_team_membership_transformer" />
-            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
             <argument type="service" id="router" />
-        </service>
-
-        <service id="app.controller.early_access" class="AppBundle\Controller\EarlyAccessController">
-            <argument type="service" id="app.repository.early_access_code" />
-            <argument type="service" id="app.authenticator.bypass_white_list_toggle_factory" />
-            <argument type="service" id="router" />
-            <argument type="service" id="form.factory" />
         </service>
 
         <service id="app.controller.billing_redirection" class="AppBundle\Controller\BillingRedirectionController">

@@ -5,13 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="app.admin.white_listed_user" class="AppBundle\Admin\WhiteListedUserAdmin">
-            <tag name="sonata.admin" manager_type="orm" group="Users" label="White list"/>
-            <argument />
-            <argument>ContinuousPipe\Authenticator\WhiteList\WhiteListedUser</argument>
-            <argument />
-        </service>
-
         <service id="app.admin.user" class="AppBundle\Admin\UserAdmin">
             <argument />
             <argument>ContinuousPipe\Security\User\User</argument>

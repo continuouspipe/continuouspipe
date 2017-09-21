@@ -32,11 +32,6 @@ class InvitationController
     private $invitationToTeamMembershipTransformer;
 
     /**
-     * @var InvitationToggleFactory
-     */
-    private $bypassWhiteListToggleFactory;
-
-    /**
      * @var RouterInterface
      */
     private $router;
@@ -44,18 +39,15 @@ class InvitationController
     /**
      * @param UserInvitationRepository $userInvitationRepository
      * @param InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer
-     * @param BypassWhiteListToggleFactory $bypassWhiteListToggleFactory
      * @param RouterInterface $router
      */
     public function __construct(
         UserInvitationRepository $userInvitationRepository,
         InvitationToTeamMembershipTransformer $invitationToTeamMembershipTransformer,
-        BypassWhiteListToggleFactory $bypassWhiteListToggleFactory,
         RouterInterface $router
     ) {
         $this->userInvitationRepository = $userInvitationRepository;
         $this->invitationToTeamMembershipTransformer = $invitationToTeamMembershipTransformer;
-        $this->bypassWhiteListToggleFactory = $bypassWhiteListToggleFactory;
         $this->router = $router;
     }
 
@@ -65,9 +57,6 @@ class InvitationController
     public function acceptAction($uuid)
     {
         $this->loadInvitation($uuid);
-
-        $bypassWhiteListToggle = $this->bypassWhiteListToggleFactory->createFromSession();
-        $bypassWhiteListToggle->activate();
 
         return new RedirectResponse($this->router->generate('transform_invitation', ['uuid' => $uuid]));
     }
