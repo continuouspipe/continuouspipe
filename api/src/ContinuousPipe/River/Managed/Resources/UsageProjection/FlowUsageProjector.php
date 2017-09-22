@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ContinuousPipe\River\Managed\Resources\UsageProjection;
 
 use ContinuousPipe\River\Flow\Projections\FlatFlow;

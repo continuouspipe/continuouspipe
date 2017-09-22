@@ -21,9 +21,15 @@ class InMemoryUsageHistoryRepository implements ResourceUsageHistoryRepository
      */
     public function findByFlow(UuidInterface $flowUuid): array
     {
-        return array_values(array_filter($this->entries, function(ResourceUsageHistory $entry) use ($flowUuid) {
+        $entries = array_values(array_filter($this->entries, function(ResourceUsageHistory $entry) use ($flowUuid) {
             return $entry->getFlowUuid()->equals($flowUuid);
         }));
+
+        usort($entries, function (ResourceUsageHistory $left, ResourceUsageHistory $right) {
+            return $left->getDateTime() > $right->getDateTime() ? 1 : -1;
+        });
+
+        return $entries;
     }
 
     /**
