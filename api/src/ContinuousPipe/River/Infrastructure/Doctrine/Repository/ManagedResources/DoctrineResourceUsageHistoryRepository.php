@@ -37,6 +37,8 @@ class DoctrineResourceUsageHistoryRepository implements ResourceUsageHistoryRepo
     {
         return $this->entityManager->getRepository(ResourceUsageHistory::class)->findBy([
             'flowUuid' => $flowUuid,
+        ], [
+            'dateTime' => 'ASC',
         ]);
     }
 

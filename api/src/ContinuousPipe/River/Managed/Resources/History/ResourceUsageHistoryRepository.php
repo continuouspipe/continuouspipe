@@ -16,6 +16,8 @@ interface ResourceUsageHistoryRepository
     public function save(ResourceUsageHistory $entry);
 
     /**
+     * Return, order by date ASC, the usage history entries.
+     *
      * @param UuidInterface $flowUuid
      *
      * @throws ResourcesException
