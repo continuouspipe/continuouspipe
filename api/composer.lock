@@ -427,18 +427,18 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "c4ae04e6b260f442e246c974ea67165dcf0101a7"
+                "reference": "d5df5dcb00493e6a5f8620560a05ff3f33c79aa7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/c4ae04e6b260f442e246c974ea67165dcf0101a7",
-                "reference": "c4ae04e6b260f442e246c974ea67165dcf0101a7",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/d5df5dcb00493e6a5f8620560a05ff3f33c79aa7",
+                "reference": "d5df5dcb00493e6a5f8620560a05ff3f33c79aa7",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.6",
                 "guzzlehttp/guzzle": "~6.0",
-                "jms/serializer": "~1.0 || ~2.0",
+                "jms/serializer": "~1.0",
                 "lexik/jwt-authentication-bundle": "~1.0",
                 "ramsey/uuid": "^3.1"
             },
@@ -457,7 +457,7 @@
                 "source": "https://github.com/continuouspipe/security/tree/upgrade-to-symfony-3",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-26T16:38:03+00:00"
+            "time": "2017-09-26 16:46:43"
         },
         {
             "name": "continuous-pipe/worker-bundle",
