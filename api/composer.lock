@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "755023ee557aaec0c3b356412cf99ad9",
+    "content-hash": "ad1badd6a149cffa2483b6b2fe543203",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -69,16 +69,16 @@
         },
         {
             "name": "beberlei/assert",
-            "version": "v2.7.4",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "3ee3bc468a3ce4bbfc3d74f53c6cdb5242d39d1a"
+                "reference": "8726e183ebbb0169cb6cb4832e22ebd355524563"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/3ee3bc468a3ce4bbfc3d74f53c6cdb5242d39d1a",
-                "reference": "3ee3bc468a3ce4bbfc3d74f53c6cdb5242d39d1a",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/8726e183ebbb0169cb6cb4832e22ebd355524563",
+                "reference": "8726e183ebbb0169cb6cb4832e22ebd355524563",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +120,7 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2017-03-14T18:06:52+00:00"
+            "time": "2017-05-04T02:00:24+00:00"
         },
         {
             "name": "beberlei/metrics",
@@ -427,18 +427,18 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "bf0dcf3446c0a64f61622f8825ae43109f084786"
+                "reference": "c4ae04e6b260f442e246c974ea67165dcf0101a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/bf0dcf3446c0a64f61622f8825ae43109f084786",
-                "reference": "bf0dcf3446c0a64f61622f8825ae43109f084786",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/c4ae04e6b260f442e246c974ea67165dcf0101a7",
+                "reference": "c4ae04e6b260f442e246c974ea67165dcf0101a7",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.6",
                 "guzzlehttp/guzzle": "~6.0",
-                "jms/serializer": "1.0.0",
+                "jms/serializer": "~1.0 || ~2.0",
                 "lexik/jwt-authentication-bundle": "~1.0",
                 "ramsey/uuid": "^3.1"
             },
@@ -457,7 +457,7 @@
                 "source": "https://github.com/continuouspipe/security/tree/upgrade-to-symfony-3",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-26 16:07:19"
+            "time": "2017-09-26T16:38:03+00:00"
         },
         {
             "name": "continuous-pipe/worker-bundle",
@@ -624,21 +624,21 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "v1.4.0",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "54cacc9b81758b14e3ce750f205a393d52339e97"
+                "reference": "5beebb01b025c94e93686b7a0ed3edae81fe3e7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/54cacc9b81758b14e3ce750f205a393d52339e97",
-                "reference": "54cacc9b81758b14e3ce750f205a393d52339e97",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/5beebb01b025c94e93686b7a0ed3edae81fe3e7f",
+                "reference": "5beebb01b025c94e93686b7a0ed3edae81fe3e7f",
                 "shasum": ""
             },
             "require": {
                 "doctrine/lexer": "1.*",
-                "php": "^5.6 || ^7.0"
+                "php": "^7.1"
             },
             "require-dev": {
                 "doctrine/cache": "1.*",
@@ -647,7 +647,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4.x-dev"
+                    "dev-master": "1.5.x-dev"
                 }
             },
             "autoload": {
@@ -688,7 +688,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-02-24T16:22:25+00:00"
+            "time": "2017-07-22T10:58:02+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -2683,46 +2683,55 @@
         },
         {
             "name": "jms/serializer",
-            "version": "1.0.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/serializer.git",
-                "reference": "a29d9a204efc3ca3f39a9d182a83fd34462fef3f"
+                "reference": "ce65798f722c836f16d5d7d2e3ca9d21e0fb4331"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/a29d9a204efc3ca3f39a9d182a83fd34462fef3f",
-                "reference": "a29d9a204efc3ca3f39a9d182a83fd34462fef3f",
+                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/ce65798f722c836f16d5d7d2e3ca9d21e0fb4331",
+                "reference": "ce65798f722c836f16d5d7d2e3ca9d21e0fb4331",
                 "shasum": ""
             },
             "require": {
-                "doctrine/annotations": "1.*",
-                "doctrine/instantiator": "~1.0.3",
+                "doctrine/annotations": "^1.0",
+                "doctrine/instantiator": "^1.0.3",
                 "jms/metadata": "~1.1",
                 "jms/parser-lib": "1.*",
-                "php": ">=5.4.0",
-                "phpcollection/phpcollection": "~0.1"
+                "php": ">=5.5.0",
+                "phpcollection/phpcollection": "~0.1",
+                "phpoption/phpoption": "^1.1"
+            },
+            "conflict": {
+                "jms/serializer-bundle": "<1.2.1",
+                "twig/twig": "<1.12"
             },
             "require-dev": {
                 "doctrine/orm": "~2.1",
-                "doctrine/phpcr-odm": "~1.0.1",
-                "jackalope/jackalope-doctrine-dbal": "1.0.*",
-                "phpunit/phpunit": "~4.0",
+                "doctrine/phpcr-odm": "^1.3|^2.0",
+                "ext-pdo_sqlite": "*",
+                "jackalope/jackalope-doctrine-dbal": "^1.1.5",
+                "phpunit/phpunit": "^4.8|^5.0",
                 "propel/propel1": "~1.7",
-                "symfony/filesystem": "2.*",
-                "symfony/form": "~2.1",
-                "symfony/translation": "~2.0",
-                "symfony/validator": "~2.0",
-                "symfony/yaml": "2.*",
-                "twig/twig": ">=1.8,<2.0-dev"
+                "symfony/expression-language": "^2.6|^3.0",
+                "symfony/filesystem": "^2.1",
+                "symfony/form": "~2.1|^3.0",
+                "symfony/translation": "^2.1|^3.0",
+                "symfony/validator": "^2.2|^3.0",
+                "symfony/yaml": "^2.1|^3.0",
+                "twig/twig": "~1.12|~2.0"
             },
             "suggest": {
+                "doctrine/cache": "Required if you like to use cache functionality.",
+                "doctrine/collections": "Required if you like to use doctrine collection types as ArrayCollection.",
                 "symfony/yaml": "Required if you'd like to serialize data to YAML format."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.17-dev"
+                    "dev-master": "1.8-dev"
                 }
             },
             "autoload": {
@@ -2732,9 +2741,13 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache2"
+                "Apache-2.0"
             ],
             "authors": [
+                {
+                    "name": "Asmir Mustafic",
+                    "email": "goetas@gmail.com"
+                },
                 {
                     "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com"
@@ -2749,35 +2762,36 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2015-06-16T11:50:24+00:00"
+            "time": "2017-07-13T11:23:56+00:00"
         },
         {
             "name": "jms/serializer-bundle",
-            "version": "1.1.0",
-            "target-dir": "JMS/SerializerBundle",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSSerializerBundle.git",
-                "reference": "3e396c980545350c2efb65a50041d2a9f9d6562e"
+                "reference": "a612724ec70d9cbb744316365d88ec9440f81ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/3e396c980545350c2efb65a50041d2a9f9d6562e",
-                "reference": "3e396c980545350c2efb65a50041d2a9f9d6562e",
+                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/a612724ec70d9cbb744316365d88ec9440f81ac9",
+                "reference": "a612724ec70d9cbb744316365d88ec9440f81ac9",
                 "shasum": ""
             },
             "require": {
-                "jms/serializer": "^1.0.0",
-                "php": ">=5.4.0",
+                "jms/serializer": "^1.7",
+                "php": "^5.4|^7.0",
                 "phpoption/phpoption": "^1.1.0",
-                "symfony/framework-bundle": "~2.3|~3.0"
+                "symfony/framework-bundle": "~2.3|~3.0|~4.0"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "*",
                 "doctrine/orm": "*",
+                "phpunit/phpunit": "^4.8.35|^5.4.3|^6.0",
                 "symfony/browser-kit": "*",
                 "symfony/class-loader": "*",
                 "symfony/css-selector": "*",
+                "symfony/expression-language": "~2.6|~3.0|~4.0",
                 "symfony/finder": "*",
                 "symfony/form": "*",
                 "symfony/process": "*",
@@ -2792,19 +2806,26 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "JMS\\SerializerBundle": ""
-                }
+                "psr-4": {
+                    "JMS\\SerializerBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache2"
+                "Apache-2.0"
             ],
             "authors": [
+                {
+                    "name": "Asmir Mustafic",
+                    "email": "goetas@gmail.com"
+                },
                 {
                     "name": "Johannes M. Schmitt",
                     "email": "schmittjoh@gmail.com"
@@ -2819,7 +2840,7 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2015-11-10T12:26:42+00:00"
+            "time": "2017-08-31T10:41:30+00:00"
         },
         {
             "name": "keen-io/keen-io",
@@ -3659,20 +3680,20 @@
         },
         {
             "name": "mhujer/jms-serializer-uuid-bundle",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mhujer/jms-serializer-uuid-bundle.git",
-                "reference": "ad9803790ae5651f37a18a0303c5be13a791b2d1"
+                "reference": "75bb7c150d27e578fce207700312312713b31366"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mhujer/jms-serializer-uuid-bundle/zipball/ad9803790ae5651f37a18a0303c5be13a791b2d1",
-                "reference": "ad9803790ae5651f37a18a0303c5be13a791b2d1",
+                "url": "https://api.github.com/repos/mhujer/jms-serializer-uuid-bundle/zipball/75bb7c150d27e578fce207700312312713b31366",
+                "reference": "75bb7c150d27e578fce207700312312713b31366",
                 "shasum": ""
             },
             "require": {
-                "jms/serializer-bundle": "~1.0",
+                "jms/serializer-bundle": "~1.0|~2.0",
                 "mhujer/jms-serializer-uuid": "~1.0",
                 "symfony/config": "~2.7|~3.0",
                 "symfony/dependency-injection": "~2.7|~3.0",
@@ -3716,7 +3737,7 @@
                 "symfony",
                 "uuid"
             ],
-            "time": "2016-06-02T07:14:56+00:00"
+            "time": "2017-08-09T19:44:05+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -4131,16 +4152,16 @@
         },
         {
             "name": "php-amqplib/php-amqplib",
-            "version": "v2.6.3",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "fa2f0d4410a11008cb36b379177291be7ee9e4f6"
+                "reference": "f48748546e398d846134c594dfca9070c4c3b356"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/fa2f0d4410a11008cb36b379177291be7ee9e4f6",
-                "reference": "fa2f0d4410a11008cb36b379177291be7ee9e4f6",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/f48748546e398d846134c594dfca9070c4c3b356",
+                "reference": "f48748546e398d846134c594dfca9070c4c3b356",
                 "shasum": ""
             },
             "require": {
@@ -4197,20 +4218,20 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2016-04-11T14:30:01+00:00"
+            "time": "2017-08-03T22:06:21+00:00"
         },
         {
             "name": "php-amqplib/rabbitmq-bundle",
-            "version": "v1.12.0",
+            "version": "v1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/RabbitMqBundle.git",
-                "reference": "0bb11edec0abdf6dc28eac0144c0a673dddba28f"
+                "reference": "564e87c7d4c47f545838de57a78f657a8304374b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/0bb11edec0abdf6dc28eac0144c0a673dddba28f",
-                "reference": "0bb11edec0abdf6dc28eac0144c0a673dddba28f",
+                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/564e87c7d4c47f545838de57a78f657a8304374b",
+                "reference": "564e87c7d4c47f545838de57a78f657a8304374b",
                 "shasum": ""
             },
             "require": {
@@ -4243,7 +4264,10 @@
             "autoload": {
                 "psr-4": {
                     "OldSound\\RabbitMqBundle\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -4254,7 +4278,7 @@
                     "name": "Alvaro Videla"
                 }
             ],
-            "description": "Integrates php-amqplib with Symfony2|3 and RabbitMq. Formerly oldsound/rabbitmq-bundle.",
+            "description": "Integrates php-amqplib with Symfony & RabbitMq. Formerly oldsound/rabbitmq-bundle.",
             "keywords": [
                 "AMQP",
                 "Symfony2",
@@ -4262,7 +4286,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2016-12-09T12:58:28+00:00"
+            "time": "2017-06-12T07:05:02+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -4649,16 +4673,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.6.1",
+            "version": "3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "4ae32dd9ab8860a4bbd750ad269cba7f06f7934e"
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/4ae32dd9ab8860a4bbd750ad269cba7f06f7934e",
-                "reference": "4ae32dd9ab8860a4bbd750ad269cba7f06f7934e",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
                 "shasum": ""
             },
             "require": {
@@ -4727,7 +4751,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2017-03-26T20:37:53+00:00"
+            "time": "2017-09-22T20:46:04+00:00"
         },
         {
             "name": "ramsey/uuid-doctrine",
@@ -5127,28 +5151,27 @@
         },
         {
             "name": "simple-bus/asynchronous",
-            "version": "v2.1.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/Asynchronous.git",
-                "reference": "808a6eb15dfa1beebd4e84253b0a132025f3e00f"
+                "reference": "6edf8d9efa9ab203f121d75cf72de453be4a3a66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/Asynchronous/zipball/808a6eb15dfa1beebd4e84253b0a132025f3e00f",
-                "reference": "808a6eb15dfa1beebd4e84253b0a132025f3e00f",
+                "url": "https://api.github.com/repos/SimpleBus/Asynchronous/zipball/6edf8d9efa9ab203f121d75cf72de453be4a3a66",
+                "reference": "6edf8d9efa9ab203f121d75cf72de453be4a3a66",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
-                "php": ">=5.4",
+                "php": "^5.6 || ^7.0",
                 "psr/log": "~1.0",
-                "simple-bus/message-bus": "~2.0",
-                "simple-bus/serialization": "~2.0"
+                "simple-bus/message-bus": "~3.0",
+                "simple-bus/serialization": "~3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
@@ -5165,6 +5188,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Generic classes and interfaces for asynchronous messaging using SimpleBus",
@@ -5175,35 +5202,34 @@
                 "event bus",
                 "messaging"
             ],
-            "time": "2016-04-06T15:11:31+00:00"
+            "time": "2017-08-28T08:09:42+00:00"
         },
         {
             "name": "simple-bus/asynchronous-bundle",
-            "version": "2.3.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/AsynchronousBundle.git",
-                "reference": "1d885a890e033186d4aff98a48eaa7218220c400"
+                "reference": "d5d34e6889a61d08f0b5223e8a4ec0991da3ea20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/AsynchronousBundle/zipball/1d885a890e033186d4aff98a48eaa7218220c400",
-                "reference": "1d885a890e033186d4aff98a48eaa7218220c400",
+                "url": "https://api.github.com/repos/SimpleBus/AsynchronousBundle/zipball/d5d34e6889a61d08f0b5223e8a4ec0991da3ea20",
+                "reference": "d5d34e6889a61d08f0b5223e8a4ec0991da3ea20",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
-                "php": ">=5.4",
-                "simple-bus/asynchronous": "~2.1",
-                "simple-bus/message-bus": "~2.0",
-                "simple-bus/symfony-bridge": "~4.0",
-                "symfony/framework-bundle": "~2.0|~3.0"
+                "php": "^5.6 || ^7.0",
+                "simple-bus/asynchronous": "~3.0",
+                "simple-bus/message-bus": "~3.0",
+                "simple-bus/symfony-bridge": "~5.0",
+                "symfony/framework-bundle": "~2.0 || ~3.0"
             },
             "require-dev": {
                 "matthiasnoback/symfony-dependency-injection-test": "^0.7",
                 "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6",
-                "symfony/monolog-bundle": "~2.3"
+                "symfony/monolog-bundle": "~2.3 || ~3.0"
             },
             "suggest": {
                 "symfony/monolog-bundle": "For logging messages"
@@ -5238,30 +5264,29 @@
                 "message",
                 "message bus"
             ],
-            "time": "2016-12-08T18:14:38+00:00"
+            "time": "2017-08-28T08:10:37+00:00"
         },
         {
             "name": "simple-bus/jms-serializer-bridge",
-            "version": "v1.0.3",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/JMSSerializerBridge.git",
-                "reference": "6292dc9537311100725f5b926d434b0495c03fad"
+                "reference": "2d89c9414e5b6427e490d330b5c12d66e507957a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/JMSSerializerBridge/zipball/6292dc9537311100725f5b926d434b0495c03fad",
-                "reference": "6292dc9537311100725f5b926d434b0495c03fad",
+                "url": "https://api.github.com/repos/SimpleBus/JMSSerializerBridge/zipball/2d89c9414e5b6427e490d330b5c12d66e507957a",
+                "reference": "2d89c9414e5b6427e490d330b5c12d66e507957a",
                 "shasum": ""
             },
             "require": {
-                "jms/serializer": "~0.12||~1.0",
-                "php": ">=5.4",
-                "simple-bus/serialization": ">=1.0"
+                "jms/serializer": "~0.12 || ~1.0",
+                "php": "^5.6 || ^7.0",
+                "simple-bus/serialization": "~3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "bundle",
             "autoload": {
@@ -5278,6 +5303,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Bridge for using JMSSerializer as message serializer for SimpleBus/Asynchronous",
@@ -5287,32 +5316,31 @@
                 "message",
                 "serialization"
             ],
-            "time": "2015-07-29T07:48:42+00:00"
+            "time": "2017-08-28T08:11:57+00:00"
         },
         {
             "name": "simple-bus/jms-serializer-bundle-bridge",
-            "version": "v2.0.2",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/JMSSerializerBundleBridge.git",
-                "reference": "cc25a3e6e796de15438699610a42277412efd3df"
+                "reference": "3c6c989f858ff009d56ad4dbc128ced0e70452f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/JMSSerializerBundleBridge/zipball/cc25a3e6e796de15438699610a42277412efd3df",
-                "reference": "cc25a3e6e796de15438699610a42277412efd3df",
+                "url": "https://api.github.com/repos/SimpleBus/JMSSerializerBundleBridge/zipball/3c6c989f858ff009d56ad4dbc128ced0e70452f1",
+                "reference": "3c6c989f858ff009d56ad4dbc128ced0e70452f1",
                 "shasum": ""
             },
             "require": {
-                "jms/serializer-bundle": "~0.11|~1.0",
-                "php": ">=5.4",
-                "simple-bus/asynchronous-bundle": "~2.0",
-                "simple-bus/jms-serializer-bridge": "~1.0",
-                "symfony/framework-bundle": "~2.0|~3.0"
+                "jms/serializer-bundle": "~0.11 || ~1.0 || ~2.0",
+                "php": "^5.6 || ^7.0",
+                "simple-bus/asynchronous-bundle": "~3.0",
+                "simple-bus/jms-serializer-bridge": "~2.0",
+                "symfony/framework-bundle": "~2.0 || ~3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "bundle",
             "autoload": {
@@ -5329,6 +5357,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Symfony bundle for using JMSSerializer as message serializer for SimpleBus/Asynchronous",
@@ -5338,30 +5370,29 @@
                 "message",
                 "serializer"
             ],
-            "time": "2015-12-06T20:20:37+00:00"
+            "time": "2017-08-28T08:12:22+00:00"
         },
         {
             "name": "simple-bus/message-bus",
-            "version": "v2.2.2",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/MessageBus.git",
-                "reference": "723bf20b93e17e9e87e83032ec21d8b2452328cf"
+                "reference": "823a2180ac53e85de9a1c49217c21cfde3df0e0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/MessageBus/zipball/723bf20b93e17e9e87e83032ec21d8b2452328cf",
-                "reference": "723bf20b93e17e9e87e83032ec21d8b2452328cf",
+                "url": "https://api.github.com/repos/SimpleBus/MessageBus/zipball/823a2180ac53e85de9a1c49217c21cfde3df0e0f",
+                "reference": "823a2180ac53e85de9a1c49217c21cfde3df0e0f",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
-                "php": ">=5.4",
+                "php": "^5.6 || ^7.0",
                 "psr/log": "~1.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
@@ -5378,6 +5409,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Generic classes and interfaces for messages and message buses",
@@ -5388,39 +5423,39 @@
                 "message",
                 "message bus"
             ],
-            "time": "2016-02-12T08:35:53+00:00"
+            "time": "2017-08-07T13:34:22+00:00"
         },
         {
             "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "v3.1.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
-                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712"
+                "reference": "03144655ac0a0cce4a036f8b3591c8e2e34d5932"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
-                "reference": "4ef340c1e96343cbbe2ce26d1a3dcb2c243fa712",
+                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/03144655ac0a0cce4a036f8b3591c8e2e34d5932",
+                "reference": "03144655ac0a0cce4a036f8b3591c8e2e34d5932",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
-                "php": ">=5.4",
+                "php": "^5.6 || ^7.0",
                 "php-amqplib/rabbitmq-bundle": "~1.0",
-                "simple-bus/asynchronous": "~2.0",
-                "simple-bus/asynchronous-bundle": "~2.0",
-                "simple-bus/message-bus": "~2.0",
+                "simple-bus/asynchronous": "~3.0",
+                "simple-bus/asynchronous-bundle": "~3.0",
+                "simple-bus/message-bus": "~3.0",
                 "symfony/monolog-bundle": "~2.3 || ~3.0"
             },
             "require-dev": {
                 "matthiasnoback/phpunit-asynchronicity": "~1.0",
                 "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6",
-                "simple-bus/jms-serializer-bundle-bridge": "~2.0",
+                "simple-bus/jms-serializer-bundle-bridge": "~3.0",
                 "symfony/console": "~2.0 || ~3.0",
                 "symfony/finder": "~2.0 || ~3.0",
-                "symfony/process": "~2.0 || ~3.0"
+                "symfony/process": "~2.0 || ~3.0",
+                "symfony/translation": "~2.0 || ~3.0"
             },
             "type": "library",
             "autoload": {
@@ -5452,29 +5487,28 @@
                 "messages",
                 "rabbitmq"
             ],
-            "time": "2016-12-17T12:51:17+00:00"
+            "time": "2017-08-28T09:24:35+00:00"
         },
         {
             "name": "simple-bus/serialization",
-            "version": "v2.0.1",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/Serialization.git",
-                "reference": "df7a5704d4a9c3057184be09ce8dc6d442785618"
+                "reference": "f51dc365d64956fb2ba0c2b479a04aa51fc8f378"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/Serialization/zipball/df7a5704d4a9c3057184be09ce8dc6d442785618",
-                "reference": "df7a5704d4a9c3057184be09ce8dc6d442785618",
+                "url": "https://api.github.com/repos/SimpleBus/Serialization/zipball/f51dc365d64956fb2ba0c2b479a04aa51fc8f378",
+                "reference": "f51dc365d64956fb2ba0c2b479a04aa51fc8f378",
                 "shasum": ""
             },
             "require": {
                 "beberlei/assert": "~2.0",
-                "php": ">=5.4"
+                "php": "^5.6 || ^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6"
+                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
@@ -5491,6 +5525,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Generic classes and interfaces for serializing messages",
@@ -5500,38 +5538,37 @@
                 "messages",
                 "serialization"
             ],
-            "time": "2015-05-08T13:34:17+00:00"
+            "time": "2017-08-28T06:39:40+00:00"
         },
         {
             "name": "simple-bus/symfony-bridge",
-            "version": "v4.1.5",
+            "version": "v5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SimpleBus/SymfonyBridge.git",
-                "reference": "2033629f89b57f817cdc944b043180522dba1c9f"
+                "reference": "cc200214844ec1a61ea36f0cee9da4623c2f6703"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/SymfonyBridge/zipball/2033629f89b57f817cdc944b043180522dba1c9f",
-                "reference": "2033629f89b57f817cdc944b043180522dba1c9f",
+                "url": "https://api.github.com/repos/SimpleBus/SymfonyBridge/zipball/cc200214844ec1a61ea36f0cee9da4623c2f6703",
+                "reference": "cc200214844ec1a61ea36f0cee9da4623c2f6703",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
-                "simple-bus/message-bus": "~2.0",
-                "symfony/config": "~2.3|~3.0",
-                "symfony/dependency-injection": "~2.3|~3.0",
-                "symfony/http-kernel": "~2.3|~3.0",
-                "symfony/yaml": "~2.3|~3.0"
+                "php": "^5.6 || ^7.0",
+                "simple-bus/message-bus": "~3.0",
+                "symfony/config": "~2.3 || ~3.0",
+                "symfony/dependency-injection": "~2.3 || ~3.0",
+                "symfony/http-kernel": "~2.3 || ~3.0",
+                "symfony/yaml": "~2.3 || ~3.0"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "~1.0",
                 "doctrine/orm": "~2.3",
                 "phpunit/phpunit": "~4.0",
-                "satooshi/php-coveralls": "~0.6",
-                "simple-bus/doctrine-orm-bridge": "~4.0",
-                "symfony/monolog-bridge": "~2.3|~3.0",
-                "symfony/monolog-bundle": "~2.3|~3.0"
+                "simple-bus/doctrine-orm-bridge": "~5.0",
+                "symfony/monolog-bridge": "~2.3 || ~3.0",
+                "symfony/monolog-bundle": "~2.3 || ~3.0"
             },
             "suggest": {
                 "doctrine/doctrine-bundle": "For integration with Doctrine ORM",
@@ -5554,6 +5591,10 @@
                     "name": "Matthias Noback",
                     "email": "matthiasnoback@gmail.com",
                     "homepage": "http://php-and-symfony.matthiasnoback.nl"
+                },
+                {
+                    "name": "Cliff Odijk",
+                    "email": "cliff@jcid.nl"
                 }
             ],
             "description": "Bridge for using command buses and event buses in Symfony projects",
@@ -5564,7 +5605,7 @@
                 "event bus",
                 "symfony"
             ],
-            "time": "2016-07-17T12:50:07+00:00"
+            "time": "2017-08-28T08:14:15+00:00"
         },
         {
             "name": "sroze/kubernetes-client",
