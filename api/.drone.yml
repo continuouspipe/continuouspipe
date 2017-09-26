@@ -11,13 +11,13 @@ build:
         - composer install
 
         # Domain tests
-        - bin/phpspec run
-        - bin/phpunit -c app
-        - bin/behat -fprogress
+        - vendor/bin/phpspec run
+        - vendor/bin/phpunit -c app
+        - vendor/bin/behat -fprogress
 
         # Smoke tests
-        - app/console doctrine:migrations:migrate --no-interaction
-        - bin/behat --profile=smoke
+        - bin/console doctrine:migrations:migrate --no-interaction
+        - vendor/bin/behat --profile=smoke
 
 cache:
     mount:
