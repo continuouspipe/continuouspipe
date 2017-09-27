@@ -15,5 +15,11 @@
                  decorates="app.intercom.client">
             <argument type="service" id="app.intercom.hookable_client.inner" />
         </service>
+
+        <service id="authenticator.audit_log.storage.traced_log_repository"
+                 class="TestBundle\AuditLog\Storage\TracedLogRepository"
+                 decorates="authenticator.audit_log.storage.log_repository">
+            <argument type="service" id="authenticator.audit_log.storage.traced_log_repository.inner" />
+        </service>
     </services>
 </container>

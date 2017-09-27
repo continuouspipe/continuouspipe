@@ -22,5 +22,8 @@
         <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\NullPlanManager">
             <argument type="service" id="app.billing.plan_repository"/>
         </service>
+
+        <service id="authenticator.audit_log.storage.log_repository"
+                 class="TestBundle\AuditLog\Storage\MockedLogRepository" />
     </services>
 </container>

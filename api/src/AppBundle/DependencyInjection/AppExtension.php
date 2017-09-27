@@ -21,5 +21,6 @@ class AppExtension extends Extension
         $loader->load('intercom.xml');
         $loader->load('billing.xml');
         $loader->load('alerts.xml');
+        $loader->load('audit-log.xml');
     }
 }
