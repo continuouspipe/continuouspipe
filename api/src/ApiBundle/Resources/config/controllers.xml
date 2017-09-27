@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="api.controller.get_build" class="ApiBundle\Controller\GetBuildController">
+            <argument type="service" id="builder.view.build_repository" />
+        </service>
+
+        <service id="api.controller.create_build" class="ApiBundle\Controller\CreateBuildController">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="builder.build.build_factory" />
+            <argument type="service" id="builder.view.build_repository" />
+            <argument type="service" id="builder.request_transformer" />
+        </service>
+
+        <service id="api.controller.complete_build" class="ApiBundle\Controller\CompleteBuildController">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="builder.view.build_repository" />
+        </service>
+
+        <service id="builder.request.build_request_param_converter" class="ApiBundle\Request\ParamConverter\BuildRequestParamConverter">
+            <argument type="service" id="jms_serializer" />
+
+            <tag name="request.param_converter" priority="0" converter="build_request" />
+        </service>
+
+    </services>
+</container>

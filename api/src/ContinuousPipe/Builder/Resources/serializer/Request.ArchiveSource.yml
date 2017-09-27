@@ -1,0 +1,6 @@
+ContinuousPipe\Builder\Request\ArchiveSource:
+    properties:
+        url:
+            type: string
+        headers:
+            type: array<string,string>

@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.build_logger_factory" class="ContinuousPipe\Builder\Logging\BuildLoggerFactory">
+            <argument type="service" id="log_stream.logger_factory"/>
+        </service>
+        <service id="builder.http_notifier.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="builder.http_notifier" class="ContinuousPipe\Builder\Notifier\HttpNotifier">
+            <argument type="service" id="builder.http_notifier.http_client"/>
+            <argument type="service" id="jms_serializer"/>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="notify"
+                 runner="tolerance.operation_runners.notifier" />
+        </service>
+
+        <service id="builder.notifier" alias="builder.http_notifier" />
+        <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\SleepWaiter" />
+
+        <service id="builder.notifier.logging.displays_failing_notification"
+                 class="ContinuousPipe\Builder\Notifier\Logging\DisplaysNotificationIfFailing"
+                 decorates="builder.notifier">
+            <argument type="service" id="builder.notifier.logging.displays_failing_notification.inner" />
+            <argument type="service" id="builder.build_logger_factory"/>
+        </service>
+
+        <!-- Notification(s) -->
+        <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\Notification\SendNotificationWhenBuildFinishes">
+            <argument type="service" id="builder.notifier" />
+            <argument type="service" id="builder.view.build_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,24 @@
+ContinuousPipe\Builder\BuildStepConfiguration:
+    properties:
+        repository:
+            type: ContinuousPipe\Builder\Repository
+        archive:
+            type: ContinuousPipe\Builder\Request\ArchiveSource
+        image:
+            type: ContinuousPipe\Builder\Image
+        context:
+            type: ContinuousPipe\Builder\Context
+        environment:
+            type: array<string, string>
+        logStreamIdentifier:
+            type: string
+        dockerRegistries:
+            type: array<ContinuousPipe\Security\Credentials\DockerRegistry>
+        imageRegistryCredentials:
+            type: ContinuousPipe\Builder\RegistryCredentials
+        readArtifacts:
+            type: array<ContinuousPipe\Builder\Artifact>
+        writeArtifacts:
+            type: array<ContinuousPipe\Builder\Artifact>
+        engine:
+            type: ContinuousPipe\Builder\Engine

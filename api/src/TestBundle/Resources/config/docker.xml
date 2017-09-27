@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.docker.client.traceable" class="ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient" decorates="builder.docker.client">
+            <argument type="service" id="builder.docker.client.traceable.inner" />
+        </service>
+
+        <service id="builder.google_container_builder.artifacts_manager.traceable" class="ContinuousPipe\Builder\Tests\TraceableArtifactManager" />
+
+        <service id="builder.google_container_builder" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient">
+            <argument type="service" id="builder.archive_builder" />
+            <argument type="service" id="builder.google_container_builder.artifacts_manager.traceable" />
+            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.manifest_factory" />
+            <argument type="service" id="builder.google_container_builder.build_creator" />
+            <argument>%google_container_builder_project%</argument>
+        </service>
+
+        <service id="builder.google_container_builder.build_creator" class="ContinuousPipe\Builder\Tests\TraceableBuildCreator" />
+
+    </services>
+</container>

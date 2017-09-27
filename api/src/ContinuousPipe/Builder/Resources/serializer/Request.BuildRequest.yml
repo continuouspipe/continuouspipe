@@ -8,6 +8,18 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: ContinuousPipe\Builder\Logging
         credentialsBucket:
             type: uuid
-            accessor:
-                getter: getCredentialsBucket
             serialized_name: credentialsBucket
+        steps:
+            type: array<ContinuousPipe\Builder\BuildStepConfiguration>
+        repository:
+            type: ContinuousPipe\Builder\Repository
+        archive:
+            type: ContinuousPipe\Builder\Request\ArchiveSource
+        image:
+            type: ContinuousPipe\Builder\Image
+        context:
+            type: ContinuousPipe\Builder\Context
+        environment:
+            type: array<string, string>
+        engine:
+            type: ContinuousPipe\Builder\Engine

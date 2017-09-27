@@ -1,0 +1,4 @@
+ContinuousPipe\Builder\Engine:
+    properties:
+        type:
+            type: string
