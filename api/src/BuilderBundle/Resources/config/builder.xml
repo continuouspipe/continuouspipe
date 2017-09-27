@@ -38,14 +38,6 @@
             <argument type="service" id="builder.archive_reader" />
         </service>
         <service id="builder.docker_file_resolver" class="ContinuousPipe\Builder\Docker\DockerfileResolver" />
-        <service id="builder.dockerfile_command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\DockerfileCommandExtractor">
-            <argument type="service" id="builder.archive_reader" />
-            <argument type="service" id="builder.docker_file_resolver" />
-            <argument type="service" id="builder.archive_manipulator_factory" />
-        </service>
-        <service id="builder.command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\ContextualizedCommandsWithEnvironment">
-            <argument type="service" id="builder.dockerfile_command_extractor" />
-        </service>
 
         <service id="builder.archive.http_archive_builder.http_client.handler"
                  class="GuzzleHttp\HandlerStack">
