@@ -59,7 +59,7 @@ class ManifestFactory
         
         return [
             'log_boundary' => $build->getIdentifier(),
-            'build_complete_endpoint' => $this->urlGenerator->generate('complete_build', ['id' => $build->getIdentifier()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'build_complete_endpoint' => $this->urlGenerator->generate('complete_build', ['identifier' => $build->getIdentifier()], UrlGeneratorInterface::ABSOLUTE_URL),
             'artifacts_configuration' => [
                 'bucket_name' => $this->artifactsBucketName,
                 'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true),

@@ -21,7 +21,6 @@
         </service>
 
         <service id="builder.notifier" alias="builder.http_notifier" />
-
         <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\SleepWaiter" />
 
         <service id="builder.notifier.logging.displays_failing_notification"
@@ -29,6 +28,15 @@
                  decorates="builder.notifier">
             <argument type="service" id="builder.notifier.logging.displays_failing_notification.inner" />
             <argument type="service" id="builder.build_logger_factory"/>
+        </service>
+
+        <!-- Notification(s) -->
+        <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\Notification\SendNotificationWhenBuildFinishes">
+            <argument type="service" id="builder.notifier" />
+            <argument type="service" id="builder.view.build_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
         </service>
     </services>
 </container>

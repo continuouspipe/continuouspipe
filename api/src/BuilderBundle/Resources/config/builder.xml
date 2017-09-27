@@ -33,19 +33,7 @@
         </service>
 
         <!-- Archives -->
-        <service id="builder.archive_reader" class="ContinuousPipe\Builder\Archive\Reader\DownloaderArchiveReader" />
-        <service id="builder.archive_manipulator_factory" class="ContinuousPipe\Builder\Archive\Manipulator\ArchiveManipulatorFactory">
-            <argument type="service" id="builder.archive_reader" />
-        </service>
         <service id="builder.docker_file_resolver" class="ContinuousPipe\Builder\Docker\DockerfileResolver" />
-        <service id="builder.dockerfile_command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\DockerfileCommandExtractor">
-            <argument type="service" id="builder.archive_reader" />
-            <argument type="service" id="builder.docker_file_resolver" />
-            <argument type="service" id="builder.archive_manipulator_factory" />
-        </service>
-        <service id="builder.command_extractor" class="ContinuousPipe\Builder\IsolatedCommands\ContextualizedCommandsWithEnvironment">
-            <argument type="service" id="builder.dockerfile_command_extractor" />
-        </service>
 
         <service id="builder.archive.http_archive_builder.http_client.handler"
                  class="GuzzleHttp\HandlerStack">
@@ -85,16 +73,6 @@
         <service id="builder.existing_image_checker" class="ContinuousPipe\Builder\Image\ExistingImageChecker">
             <argument type="service" id="log_stream.logger_factory"/>
             <argument type="service" id="builder.image.registry"/>
-        </service>
-
-
-        <!-- Notification(s) -->
-        <service id="builder.listener.notification_when_finished" class="ContinuousPipe\Builder\EventListener\SendNotificationWhenBuildFinishes">
-            <argument type="service" id="builder.notifier" />
-            <argument type="service" id="builder.view.build_repository" />
-
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
         </service>
     </services>
 </container>

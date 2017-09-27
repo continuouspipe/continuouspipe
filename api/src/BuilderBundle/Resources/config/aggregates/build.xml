@@ -69,12 +69,6 @@
             <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\Command\StartBuild" />
         </service>
 
-        <service id="builder.command_handler.start_gcb_build" class="ContinuousPipe\Builder\Aggregate\CommandHandler\StartGcbBuildHandler">
-            <argument type="service" id="builder.build.transaction_manager" />
-
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild" />
-        </service>
-
         <service id="builder.command_handler.complete_build" class="ContinuousPipe\Builder\Aggregate\CommandHandler\CompleteBuildHandler">
             <argument type="service" id="builder.build.transaction_manager" />
 

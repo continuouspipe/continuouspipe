@@ -115,7 +115,10 @@ class DockerRegistry implements Registry
         try {
             $tokenResponse = $this->client->request(
                 'get',
-                sprintf('%s?service=%s&scope=%s', $authDetails['realm'], $authDetails['service'],
+                sprintf(
+                    '%s?service=%s&scope=%s',
+                    $authDetails['realm'],
+                    $authDetails['service'],
                     $this->scopeNeeded($authDetails, $image)
                 ),
                 [

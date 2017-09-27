@@ -37,7 +37,6 @@
         </service>
 
         <!--
-
           Do not cache the access token just yet.
 
         <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
@@ -82,15 +81,5 @@
             <argument>%google_container_builder_project%</argument>
             <argument>%google_container_builder_source_bucket%</argument>
         </service>
-
-        <!-- Handler & Listeners -->
-        <service id="builder.google_container_builder.handler.fetch_gc_build_status" class="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\CommandHandler\FetchGCBuildStatusHandler">
-            <argument type="service" id="builder.google_container_builder" />
-            <argument type="service" id="event_bus" />
-            <argument type="service" id="command_bus" />
-
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Command\FetchGCBuildStatus" />
-        </service>
-
     </services>
 </container>
