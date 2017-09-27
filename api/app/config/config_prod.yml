@@ -30,7 +30,7 @@ monolog:
             handler:      grouped_main
         sentry:
             type:  raven
-            dsn:   "%sentry_dsn%"
+            dsn:   %sentry_dsn%
             level: notice
         grouped_main:
             type:    group

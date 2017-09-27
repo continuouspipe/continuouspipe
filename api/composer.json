@@ -12,7 +12,7 @@
     },
     "require": {
         "php": ">=5.3.9",
-        "symfony/symfony": "~3.3.9",
+        "symfony/symfony": "3.4.x-dev",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "sensio/distribution-bundle": "~5.0",
         "doctrine/orm": "~2.5",
@@ -95,7 +95,10 @@
         "symfony-tests-dir": "tests",
         "symfony-assets-install": "relative",
         "incenteev-parameters": [{
-            "file": "app/config/parameters.yml"
+            "file": "app/config/parameters.yml",
+            "env-map": {
+                "sentry_dsn": "SENTRY_DSN"
+            }
         }]
     },
     "repositories": [
