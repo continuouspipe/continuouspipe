@@ -12,7 +12,7 @@ build:
 
         # Domain tests
         - vendor/bin/phpspec run
-        - vendor/bin/phpunit -c app
+        - vendor/bin/phpunit
         - vendor/bin/behat -fprogress
 
         # Smoke tests
