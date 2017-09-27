@@ -3,21 +3,21 @@ build:
     environment:
         - DATABASE_HOST=127.0.0.1
         - REDIS_HOST=127.0.0.1
-        - EVENT_STORE_HOST=127.0.0.1
         - COMPOSER_HOME=/drone/composer-cache
 
     commands:
+        - echo "memory_limit=1G" >> /usr/local/etc/php/php.ini
         - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
         - composer install
 
         # Domain tests
-        - bin/phpspec run
-        - bin/phpunit -c app
-        - bin/behat -fprogress
+        - vendor/bin/phpspec run
+        - vendor/bin/phpunit
+        - vendor/bin/behat -fprogress
 
         # Smoke tests
-        - app/console doctrine:migrations:migrate --no-interaction
-        - bin/behat --profile=smoke
+        - bin/console doctrine:migrations:migrate --no-interaction
+        - vendor/bin/behat --profile=smoke
 
 cache:
     mount:
@@ -34,6 +34,3 @@ compose:
 
     redis:
         image: redis:alpine
-
-    eventstore:
-        image: docker.io/eventstore/eventstore:release-3.8.1

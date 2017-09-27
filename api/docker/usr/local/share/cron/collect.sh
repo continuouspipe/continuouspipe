@@ -2,4 +2,4 @@
 
 set -ex
 
-/app/app/console tolerance:metrics:collect-and-publish
+/app/bin/console tolerance:metrics:collect-and-publish

@@ -13,9 +13,9 @@ ARG SYMFONY_ENV=prod
 RUN if [ -n "$GITHUB_TOKEN" ]; then \
         composer config github-oauth.github.com $GITHUB_TOKEN && \
         composer install -o --no-interaction; \
-        app/console assets:install; \
+        bin/console assets:install; \
     fi;
 
 # Remove cache and logs if some and fixes permissions
-RUN ((rm -rf app/cache/* && rm -rf app/logs/*) || true) \
-    && chown www-data . app/cache app/logs
+RUN ((rm -rf var/cache/* && rm -rf var/logs/*) || true) \
+    && chown www-data . var/cache var/logs

@@ -10,7 +10,7 @@ services:
     validator_cache:
         class: Symfony\Component\Validator\Mapping\Cache\DoctrineCache
         arguments:
-            - @apcu_cache
+            - "@apcu_cache"
 
 framework:
     validation:

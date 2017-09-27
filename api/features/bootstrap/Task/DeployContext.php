@@ -132,7 +132,7 @@ class DeployContext implements Context
             $name,
             new TableNode([
                 ['name', 'address'],
-                [$name, $address]
+                [$name ?: '', $address ?: '']
             ])
         );
     }

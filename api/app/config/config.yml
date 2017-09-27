@@ -239,7 +239,7 @@ tolerance:
         enabled: true
 
         wrappers:
-            - class: "ContinuousPipe\Security\Authenticator\HttpAuthenticatorClient"
+            - class: ContinuousPipe\Security\Authenticator\HttpAuthenticatorClient
               methods:
                   - getUserByUsername
                   - findBucketByUuid
