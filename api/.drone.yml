@@ -6,6 +6,7 @@ build:
         - COMPOSER_HOME=/drone/composer-cache
 
     commands:
+        - echo "memory_limit=1G" >> /usr/local/etc/php/php.ini
         - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
         - composer install
 
