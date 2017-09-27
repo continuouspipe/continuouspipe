@@ -33,10 +33,6 @@
         </service>
 
         <!-- Archives -->
-        <service id="builder.archive_reader" class="ContinuousPipe\Builder\Archive\Reader\DownloaderArchiveReader" />
-        <service id="builder.archive_manipulator_factory" class="ContinuousPipe\Builder\Archive\Manipulator\ArchiveManipulatorFactory">
-            <argument type="service" id="builder.archive_reader" />
-        </service>
         <service id="builder.docker_file_resolver" class="ContinuousPipe\Builder\Docker\DockerfileResolver" />
 
         <service id="builder.archive.http_archive_builder.http_client.handler"
