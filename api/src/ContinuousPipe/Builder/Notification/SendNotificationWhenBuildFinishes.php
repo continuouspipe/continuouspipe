@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Builder\EventListener;
+namespace ContinuousPipe\Builder\Notification;
 
 use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\View\BuildViewRepository;
