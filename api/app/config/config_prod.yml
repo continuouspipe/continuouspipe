@@ -10,7 +10,7 @@ services:
     validator_cache:
         class: Symfony\Component\Validator\Mapping\Cache\DoctrineCache
         arguments:
-            - @apcu_cache
+            - "@apcu_cache"
 
 framework:
     validation:
@@ -30,7 +30,7 @@ monolog:
             handler:      grouped_main
         sentry:
             type:  raven
-            dsn:   %sentry_dsn%
+            dsn:   "%sentry_dsn%"
             level: notice
         grouped_main:
             type:    group
