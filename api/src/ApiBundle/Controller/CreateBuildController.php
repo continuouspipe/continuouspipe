@@ -4,9 +4,9 @@ namespace ApiBundle\Controller;
 
 use ContinuousPipe\Builder\Aggregate\Build as AggregateBuild;
 use ContinuousPipe\Builder\Aggregate\Command\CompleteBuild;
+use ContinuousPipe\Builder\Aggregate\Command\StartBuild;
 use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Aggregate\BuildFactory;
-use ContinuousPipe\Builder\Aggregate\Command\StartGcbBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
@@ -85,7 +85,7 @@ class CreateBuildController
             $this->buildRequestTransformer->transform($request)
         );
 
-        $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
+        $this->commandBus->handle(new StartBuild($build->getIdentifier()));
 
         return $this->buildViewRepository->find($build->getIdentifier());
     }
