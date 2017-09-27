@@ -3,7 +3,6 @@ build:
     environment:
         - DATABASE_HOST=127.0.0.1
         - REDIS_HOST=127.0.0.1
-        - EVENT_STORE_HOST=127.0.0.1
         - COMPOSER_HOME=/drone/composer-cache
 
     commands:
@@ -34,6 +33,3 @@ compose:
 
     redis:
         image: redis:alpine
-
-    eventstore:
-        image: docker.io/eventstore/eventstore:release-3.8.1
