@@ -3,8 +3,6 @@
 namespace AdminBundle\Controller;
 
 use ContinuousPipe\River\Flow\Event\FlowRecovered;
-use ContinuousPipe\River\Flow\Migrations\ToEventSourced\Migrator;
-use ContinuousPipe\River\Migrations\GetEventStoreToSQLStore\FlowEventsMigrator;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -26,11 +24,6 @@ class MigrationsController
     private $session;
 
     /**
-     * @var Migrator
-     */
-    private $toEventsMigrator;
-
-    /**
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
@@ -39,29 +32,20 @@ class MigrationsController
      * @var MessageBus
      */
     private $eventBus;
-    /**
-     * @var FlowEventsMigrator
-     */
-    private $flowEventsMigrator;
 
     /**
      * @param Session $session
-     * @param Migrator $toEventsMigrator
      * @param UrlGeneratorInterface $urlGenerator
      * @param MessageBus $eventBus
      */
     public function __construct(
         Session $session,
-        Migrator $toEventsMigrator,
         UrlGeneratorInterface $urlGenerator,
-        MessageBus $eventBus,
-        FlowEventsMigrator $flowEventsMigrator
+        MessageBus $eventBus
     ) {
         $this->session = $session;
-        $this->toEventsMigrator = $toEventsMigrator;
         $this->urlGenerator = $urlGenerator;
         $this->eventBus = $eventBus;
-        $this->flowEventsMigrator = $flowEventsMigrator;
     }
 
     /**
@@ -78,15 +62,7 @@ class MigrationsController
      */
     public function migrateAction(Request $request, string $migration)
     {
-        if ($migration == 'to-event-sourced') {
-            $count = $this->toEventsMigrator->migrate();
-
-            $this->session->getFlashBag()->add('success', 'Migration successful. Migrated ' . $count . ' flows!');
-        } elseif ($migration == 'geteventstore-to-sql') {
-            $count = $this->flowEventsMigrator->migrate();
-
-            $this->session->getFlashBag()->add('success', 'Migration successful. Migrated ' . $count . ' events!');
-        } elseif ($migration == 'recover-flow') {
+        if ($migration == 'recover-flow') {
             $this->eventBus->handle(new FlowRecovered(
                 Uuid::fromString($request->request->get('_uuid'))
             ));

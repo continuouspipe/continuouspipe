@@ -10,10 +10,6 @@
         </service>
         <service id="river.tide_event_store" alias="river.tide_event_store.in_memory" />
         <service id="river.tide.concurrency.locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\FlockMutexLocker" />
-        <service id="river.event_store.http_adapter" class="ContinuousPipe\River\EventStore\InMemoryEventStore">
-            <argument type="service" id="jms_serializer" />
-        </service>
-
         <service id="app.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore">
             <argument type="service" id="app.time_resolver" />
         </service>
