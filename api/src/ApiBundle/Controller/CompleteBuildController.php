@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Controller;
 
+use ApiBundle\Request\CompletedBuildRequest;
 use ContinuousPipe\Builder\Aggregate\Command\CompleteBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
@@ -52,17 +53,21 @@ class CompleteBuildController
     }
 
     /**
-     * @Route("/complete/{id}", methods={"POST"}, schemes={"https"}, name="complete_build")
+     * @Route("/complete/{identifier}", methods={"POST"}, schemes={"https"}, name="complete_build")
+     * @ParamConverter("request", converter="fos_rest.request_body")
      * @View
      */
-    public function postAction($id, Request $request)
+    public function completedAction(string $identifier, CompletedBuildRequest $request)
     {
         $violations = $this->validator->validate($request);
         if ($violations->count() > 0) {
             return \FOS\RestBundle\View\View::create($violations->get(0), 400);
         }
 
-        $this->commandBus->handle(new CompleteBuild($id, new GoogleContainerBuildStatus($request->request->get('status'))));
+        $this->commandBus->handle(new CompleteBuild(
+            $identifier,
+            new GoogleContainerBuildStatus($request->getStatus())
+        ));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

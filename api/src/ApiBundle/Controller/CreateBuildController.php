@@ -81,19 +81,12 @@ class CreateBuildController
             $request = $request->withEngine(new Engine('gcb'));
         }
 
-        $build = $this->createAndStartBuild($request);
-
-        return $this->buildViewRepository->find($build->getIdentifier());
-    }
-
-    private function createAndStartBuild(BuildRequest $request) : AggregateBuild
-    {
         $build = $this->buildFactory->fromRequest(
             $this->buildRequestTransformer->transform($request)
         );
 
         $this->commandBus->handle(new StartGcbBuild($build->getIdentifier()));
 
-        return $build;
+        return $this->buildViewRepository->find($build->getIdentifier());
     }
 }
