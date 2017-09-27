@@ -292,7 +292,7 @@ tasks:
                 from_service: api
             commands:
                 - composer run-script update-parameters
-                - php app/console doctrine:migrations:migrate --no-interaction
+                - php bin/console doctrine:migrations:migrate --no-interaction
 
             environment_variables:
                 <<: *ENV
