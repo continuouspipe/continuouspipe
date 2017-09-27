@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7580311ad5a7b9a171e8b8d722cb8f82",
+    "content-hash": "1939ee1a9499f35e713ed6652c7485d9",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -448,16 +448,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "dev-upgrade-to-symfony-3",
+            "version": "2.9.8",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "d5df5dcb00493e6a5f8620560a05ff3f33c79aa7"
+                "reference": "4bf99948456a49afbd50206c1c18d89a2451d76f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/d5df5dcb00493e6a5f8620560a05ff3f33c79aa7",
-                "reference": "d5df5dcb00493e6a5f8620560a05ff3f33c79aa7",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/4bf99948456a49afbd50206c1c18d89a2451d76f",
+                "reference": "4bf99948456a49afbd50206c1c18d89a2451d76f",
                 "shasum": ""
             },
             "require": {
@@ -479,10 +479,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/upgrade-to-symfony-3",
+                "source": "https://github.com/continuouspipe/security/tree/2.9.8",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-09-26 16:46:43"
+            "time": "2017-09-27T07:53:01+00:00"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -8601,7 +8601,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "continuous-pipe/security": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
