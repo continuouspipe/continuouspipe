@@ -93,11 +93,6 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Resources/config'
                 prefix: ContinuousPipe
-            ContinuousPipeEvents:
-                type: annotation
-                is_bundle: false
-                dir: '%kernel.root_dir%/../vendor/continuous-pipe/events/src/ContinuousPipe/Events/EventStore/Doctrine'
-                prefix: ContinuousPipe\Events\EventStore\Doctrine
 
 jms_serializer:
     metadata:
