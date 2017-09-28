@@ -93,6 +93,11 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Resources/config'
                 prefix: ContinuousPipe
+            ContinuousPipeEvents:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../vendor/continuous-pipe/events/src/ContinuousPipe/Events/EventStore/Doctrine'
+                prefix: ContinuousPipe\Events\EventStore\Doctrine
 
 jms_serializer:
     metadata:
@@ -143,10 +148,13 @@ fos_rest:
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
     exception:
+        codes:
+            'ContinuousPipe\Builder\Request\BuildRequestException': 400
         messages:
             'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
             'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
             'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
+            'ContinuousPipe\Builder\Request\BuildRequestException': true
 
 sensio_framework_extra:
     view:    { annotations: false }
@@ -313,6 +321,20 @@ tolerance:
                 namespace: river.outgoing.keen
                 runner: tolerance.operation_runners.buffered
 
+        notifier:
+            retry:
+                runner:
+                    success_failure_metrics:
+                        publisher: tolerance.metrics.publisher.statsd
+                        namespace: builder.outgoing.notifier
+                waiter:
+                    count_limited:
+                        waiter:
+                            timeout:
+                                waiter:
+                                    sleep: ~
+                                timeout: 2
+                        count: %api_retry_count%
     metrics:
         collectors:
             -

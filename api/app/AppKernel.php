@@ -33,10 +33,13 @@ class AppKernel extends Kernel
             new LogStream\LogStreamBundle(),
             new AdminBundle\AdminBundle(),
             new AppBundle\AppBundle(),
+            new ApiBundle\ApiBundle(),
+            new BuilderBundle\BuilderBundle(),
         );
 
         if (in_array($this->getEnvironment(), ['test', 'smoke_test'])) {
             $bundles[] = new AppTestBundle\AppTestBundle();
+            $bundles[] = new TestBundle\TestBundle();
         }
 
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle();

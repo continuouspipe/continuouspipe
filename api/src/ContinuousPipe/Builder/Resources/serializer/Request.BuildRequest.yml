@@ -1,7 +1,7 @@
 ContinuousPipe\Builder\Request\BuildRequest:
     properties:
         steps:
-            type: array<ContinuousPipe\Builder\Request\BuildRequestStep>
+            type: array<ContinuousPipe\Builder\BuildStepConfiguration>
         notification:
             type: ContinuousPipe\Builder\Notification
         logging:
@@ -9,8 +9,6 @@ ContinuousPipe\Builder\Request\BuildRequest:
         credentialsBucket:
             type: uuid
             serialized_name: credentialsBucket
-        steps:
-            type: array<ContinuousPipe\Builder\BuildStepConfiguration>
         repository:
             type: ContinuousPipe\Builder\Repository
         archive:

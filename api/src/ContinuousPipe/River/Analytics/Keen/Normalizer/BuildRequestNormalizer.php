@@ -2,11 +2,11 @@
 
 namespace ContinuousPipe\River\Analytics\Keen\Normalizer;
 
-use ContinuousPipe\Builder\Request\BuildRequestStep;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 
 class BuildRequestNormalizer
 {
-    public function normalize(BuildRequestStep $buildRequestStep)
+    public function normalize(BuildStepConfiguration $buildRequestStep)
     {
         $request = [
             'environment' => $buildRequestStep->getEnvironment(),

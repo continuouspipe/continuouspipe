@@ -1,20 +1,20 @@
 default:
     suites:
-        domain:
+        river_domain:
             paths:
-                - %paths.base%/features/domain/
+                - %paths.base%/features/river/domain/
 
             contexts:
-                - SecurityContext:
+                - River\SecurityContext:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.encryption.vault.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
-                - TideConfigurationContext:
+                - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
-                - TideContext:
+                - River\TideContext:
                     - "@command_bus"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -25,14 +25,14 @@ default:
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
                     - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
-                - Tide\TasksContext:
+                - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
-                - LoggingContext:
+                - River\LoggingContext:
                     - "@kernel"
-                    - "@log_stream.client"
+                    - "@log_stream.client.in_memory"
                     - "@logger"
-                - CodeRepositoriesContext:
+                - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -40,7 +40,7 @@ default:
                     - "@river.code_repository.local_filesystem_resolver"
                     - "@river.code_repository.code_archive_streamer.overwritten"
                     - "@river.code_repository.partially_overwritten_filesystem_resolver"
-                - FlowContext:
+                - River\FlowContext:
                     pipeClient: "@river.pipe_client.fake"
                     hookablePipeClient: "@river.hookable_pipe_client"
                     traceablePipeClient: "@river.pipe_client"
@@ -53,7 +53,7 @@ default:
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
                     commandBus: "@command_bus"
-                - Task\BuildContext:
+                - River\Task\BuildContext:
                     - "@builder.client"
                     - "@builder.client.traceable"
                     - "@builder.client.hookable"
@@ -63,7 +63,7 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
-                - Task\DeployContext:
+                - River\Task\DeployContext:
                     - "@river.tide_event_store"
                     - "@event_bus"
                     - "@river.pipe_client"
@@ -71,44 +71,44 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@river.flow.environment_client.callback"
-                - Task\RunContext:
+                - River\Task\RunContext:
                     - "@kernel"
                     - "@river.pipe_client"
                     - "@jms_serializer"
-                - Task\WaitContext: ~
-                - Task\ManualApprovalContext:
+                - River\Task\WaitContext: ~
+                - River\Task\ManualApprovalContext:
                     - "@kernel"
-                - TeamContext:
+                - River\TeamContext:
                     - "@kernel"
                     - "@authenticator.team_repository"
-                - TideSummaryContext:
+                - River\TideSummaryContext:
                     - "@kernel"
-                - AnalyticsContext:
+                - River\AnalyticsContext:
                     - "@river.keen.client.traceable"
                     - "@river.logitio.client.traceable"
-                - NotificationsContext:
+                - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
-                - Task\WebHookContext:
+                - River\Task\WebHookContext:
                     - "@river.web_hooks.client.traceable"
                     - "@river.web_hooks.client.hookable"
-                - ClusterHealthContext:
+                - River\ClusterHealthContext:
                     - "@river.k8s_health_checker.http.guzzle_client.stack"
                     - "@kernel"
-                - FirebaseContext:
+                - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - UserActivityContext:
+                - River\UserActivityContext:
                     - "@river.user_activity.traceable_dispatcher"
                     - "@river.user_activity.middleware_supporting_dispatcher"
-                - DevelopmentEnvironmentContext:
+                - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
-                - BranchContext:
+                - River\BranchContext:
                     - "@command_bus"
-                - QuayIoContext:
+                - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
                 # TBR:
-                - GitHubContext:
+                - River\GitHubContext:
                     - "@kernel"
                     - "@river.notifications.notifier.github.commit_status.traceable"
                     - "@river.pull_request_resolver"
@@ -125,22 +125,22 @@ default:
                     - "@river.github.guzzle_http_client.handler.matching"
                     - "@river.code_repository.branch_query.in_memory"
 
-                - StorageContext:
+                - River\StorageContext:
                     - "@river.pipeline.view.storage"
                     - "@river.repository.flow"
                     - "@kernel"
 
-        github:
+        river_github:
             paths:
-                - %paths.base%/features/integrations/code-repositories/common/
-                - %paths.base%/features/integrations/code-repositories/github/
+                - %paths.base%/features/river/integrations/code-repositories/common/
+                - %paths.base%/features/river/integrations/code-repositories/github/
 
             contexts:
-                - CacheContext:
+                - River\CacheContext:
                     - "@river.cache"
 
                 # GitHub-specific contexts
-                - GitHubContext:
+                - River\GitHubContext:
                     - "@kernel"
                     - "@river.notifications.notifier.github.commit_status.traceable"
                     - "@river.pull_request_resolver"
@@ -158,16 +158,16 @@ default:
                     - "@river.code_repository.branch_query.in_memory"
 
                 # Common contexts
-                - SecurityContext:
+                - River\SecurityContext:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.encryption.vault.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
-                - TideConfigurationContext:
+                - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
-                - TideContext:
+                - River\TideContext:
                     - "@command_bus"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -178,14 +178,14 @@ default:
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
                     - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
-                - Tide\TasksContext:
+                - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
-                - LoggingContext:
+                - River\LoggingContext:
                     - "@kernel"
-                    - "@log_stream.client"
+                    - "@log_stream.client.in_memory"
                     - "@logger"
-                - CodeRepositoriesContext:
+                - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -193,7 +193,7 @@ default:
                     - "@river.code_repository.local_filesystem_resolver"
                     - "@river.code_repository.code_archive_streamer.overwritten"
                     - "@river.code_repository.partially_overwritten_filesystem_resolver"
-                - FlowContext:
+                - River\FlowContext:
                     pipeClient: "@river.pipe_client.fake"
                     hookablePipeClient: "@river.hookable_pipe_client"
                     traceablePipeClient: "@river.pipe_client"
@@ -206,7 +206,7 @@ default:
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
                     commandBus: "@command_bus"
-                - Task\BuildContext:
+                - River\Task\BuildContext:
                     - "@builder.client"
                     - "@builder.client.traceable"
                     - "@builder.client.hookable"
@@ -216,7 +216,7 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
-                - Task\DeployContext:
+                - River\Task\DeployContext:
                     - "@river.tide_event_store"
                     - "@event_bus"
                     - "@river.pipe_client"
@@ -224,42 +224,42 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@river.flow.environment_client.callback"
-                - Task\RunContext:
+                - River\Task\RunContext:
                     - "@kernel"
                     - "@river.pipe_client"
                     - "@jms_serializer"
-                - Task\WaitContext: ~
-                - Task\ManualApprovalContext:
+                - River\Task\WaitContext: ~
+                - River\Task\ManualApprovalContext:
                     - "@kernel"
-                - TideSummaryContext:
+                - River\TideSummaryContext:
                     - "@kernel"
-                - AnalyticsContext:
+                - River\AnalyticsContext:
                     - "@river.logitio.client.traceable"
                     - "@river.keen.client.traceable"
-                - NotificationsContext:
+                - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
-                - Task\WebHookContext:
+                - River\Task\WebHookContext:
                     - "@river.web_hooks.client.traceable"
                     - "@river.web_hooks.client.hookable"
-                - ClusterHealthContext:
+                - River\ClusterHealthContext:
                     - "@river.k8s_health_checker.http.guzzle_client.stack"
                     - "@kernel"
-                - FirebaseContext:
+                - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - UserActivityContext:
+                - River\UserActivityContext:
                     - "@river.user_activity.traceable_dispatcher"
                     - "@river.user_activity.middleware_supporting_dispatcher"
-                - QuayIoContext:
+                - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
-        bitbucket:
+        river_bitbucket:
             paths:
-                - %paths.base%/features/integrations/code-repositories/common/
-                - %paths.base%/features/integrations/code-repositories/bitbucket/
+                - %paths.base%/features/river/integrations/code-repositories/common/
+                - %paths.base%/features/river/integrations/code-repositories/bitbucket/
 
             contexts:
                 # BitBucket-specific contexts
-                - BitBucketContext:
+                - River\BitBucketContext:
                     - "@river.code_repository.bitbucket.explorer.http_client.handler.matching"
                     - "@kernel"
                     - "@atlassian_addon.installation_repository.traceable"
@@ -271,16 +271,16 @@ default:
                     - "@river.pull_request_resolver"
 
                 # Common contexts
-                - SecurityContext:
+                - River\SecurityContext:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.encryption.vault.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
-                - TideConfigurationContext:
+                - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
-                - TideContext:
+                - River\TideContext:
                     - "@command_bus"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -291,14 +291,14 @@ default:
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
                     - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
-                - Tide\TasksContext:
+                - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
-                - LoggingContext:
+                - River\LoggingContext:
                     - "@kernel"
-                    - "@log_stream.client"
+                    - "@log_stream.client.in_memory"
                     - "@logger"
-                - CodeRepositoriesContext:
+                - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -306,7 +306,7 @@ default:
                     - "@river.code_repository.local_filesystem_resolver"
                     - "@river.code_repository.code_archive_streamer.overwritten"
                     - "@river.code_repository.partially_overwritten_filesystem_resolver"
-                - FlowContext:
+                - River\FlowContext:
                     pipeClient: "@river.pipe_client.fake"
                     hookablePipeClient: "@river.hookable_pipe_client"
                     traceablePipeClient: "@river.pipe_client"
@@ -319,7 +319,7 @@ default:
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
                     commandBus: "@command_bus"
-                - Task\BuildContext:
+                - River\Task\BuildContext:
                     - "@builder.client"
                     - "@builder.client.traceable"
                     - "@builder.client.hookable"
@@ -329,7 +329,7 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
-                - Task\DeployContext:
+                - River\Task\DeployContext:
                     - "@river.tide_event_store"
                     - "@event_bus"
                     - "@river.pipe_client"
@@ -337,33 +337,83 @@ default:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@river.flow.environment_client.callback"
-                - Task\RunContext:
+                - River\Task\RunContext:
                     - "@kernel"
                     - "@river.pipe_client"
                     - "@jms_serializer"
-                - Task\WaitContext: ~
-                - Task\ManualApprovalContext:
+                - River\Task\WaitContext: ~
+                - River\Task\ManualApprovalContext:
                     - "@kernel"
-                - TideSummaryContext:
+                - River\TideSummaryContext:
                     - "@kernel"
-                - AnalyticsContext:
+                - River\AnalyticsContext:
                     - "@river.logitio.client.traceable"
                     - "@river.keen.client.traceable"
-                - NotificationsContext:
+                - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
-                - Task\WebHookContext:
+                - River\Task\WebHookContext:
                     - "@river.web_hooks.client.traceable"
                     - "@river.web_hooks.client.hookable"
-                - ClusterHealthContext:
+                - River\ClusterHealthContext:
                     - "@river.k8s_health_checker.http.guzzle_client.stack"
                     - "@kernel"
-                - FirebaseContext:
+                - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - UserActivityContext:
+                - River\UserActivityContext:
                     - "@river.user_activity.traceable_dispatcher"
                     - "@river.user_activity.middleware_supporting_dispatcher"
-                - QuayIoContext:
+                - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
+
+        builder:
+            paths:
+                - %paths.base%/features/builder/
+
+            contexts:
+                - Builder\BuilderContext:
+                    - "@kernel"
+                    - "@builder.docker.client.traceable"
+                    - "@security.authenticator.client.in_memory"
+                    - "@builder.notifier.traceable"
+                    - "@builder.notifier.hookable"
+                    - "@builder.archive_builder.traceable"
+                    - "@builder.build.repository"
+                    - "@builder.build_step.repository"
+                    - "@builder.build.build_factory"
+                    - "@jms_serializer"
+                    - "@command_bus"
+                    - "@builder.event_store"
+                    - "@builder.request_transformer"
+                    - "@tolerance.metrics.publisher.statsd"
+                    - "@builder.google_container_builder.artifacts_manager.traceable"
+                    - "@builder.google_container_builder.build_creator"
+                    - "@builder.image.registry"
+                - Builder\DockerContext:
+                    - "@builder.docker.client"
+                    - "@log_stream.logger_factory"
+                - Builder\DockerOutputContext:
+                    - "@builder.docker.client.output_handler"
+                - Builder\SecurityContext:
+                    - "@security.authenticator.client.in_memory"
+                    - "@security.token_storage"
+                    - "@kernel"
+                - Builder\Mock\DockerContext:
+                    - "@builder.docker.client.callback"
+                - Builder\HttpContext:
+                    - "@builder.archive.http_archive_builder.http_client.handler.matching"
+                    - "@csa_guzzle.data_collector.history_bag"
+                - Builder\LoggingContext:
+                    - "@log_stream.client.traceable"
+                    - "@log_stream.client.in_memory"
+                    - "@builder.reporting.publisher.traced"
+                    - "@builder.time_resolver.predictable"
+                - Builder\ArtifactContext:
+                    - "@builder.artifact_manager.file_system"
+                    - "@builder.artifact_remover.traced"
+
+    gherkin:
+        filters:
+            tags: "~@integration && ~@elasticsearch && ~@elasticsearch_secure && ~@wip"
 
     extensions:
         Behat\Symfony2Extension:
@@ -372,20 +422,20 @@ default:
 
     gherkin:
         filters:
-            tags: "~@wip && ~@onlySmoke"
+            tags: "~@wip && ~@onlySmoke && ~@integration && ~@elasticsearch && ~@elasticsearch_secure && ~@wip"
 
 smoke:
     suites:
-        application:
+        river:
             contexts:
-                - SecurityContext:
+                - River\SecurityContext:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.encryption.vault.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
-                - FlowContext:
+                - River\FlowContext:
                     pipeClient: "@river.pipe_client.fake"
                     hookablePipeClient: "@river.hookable_pipe_client"
                     traceablePipeClient: "@river.pipe_client"
@@ -398,7 +448,7 @@ smoke:
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
                     commandBus: "@command_bus"
-                - TideContext:
+                - River\TideContext:
                     - "@command_bus"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -409,7 +459,7 @@ smoke:
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
                     - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
-                - GitHubContext:
+                - River\GitHubContext:
                     - "@kernel"
                     - "@river.notifications.notifier.github.commit_status.traceable"
                     - "@river.pull_request_resolver"
@@ -425,7 +475,7 @@ smoke:
                     - "@repository_river.code_repository_repository"
                     - "@river.github.guzzle_http_client.handler.matching"
                     - "@river.code_repository.branch_query.in_memory"
-                - CodeRepositoriesContext:
+                - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
                     - "@river.tide_event_store"
@@ -433,12 +483,12 @@ smoke:
                     - "@river.code_repository.local_filesystem_resolver"
                     - "@river.code_repository.code_archive_streamer.overwritten"
                     - "@river.code_repository.partially_overwritten_filesystem_resolver"
-                - TideConfigurationContext:
+                - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
-                - Tide\TasksContext:
+                - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
-                - Task\BuildContext:
+                - River\Task\BuildContext:
                     - "@builder.client"
                     - "@builder.client.traceable"
                     - "@builder.client.hookable"
@@ -448,9 +498,9 @@ smoke:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
-                - NotificationsContext:
+                - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
-                - DevelopmentEnvironmentContext:
+                - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
 

@@ -2,6 +2,10 @@ app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
+api:
+    resource: "@ApiBundle/Controller/"
+    type:     annotation
+
 admin:
     resource: "@AdminBundle/Controller/"
     type: annotation

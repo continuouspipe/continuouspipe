@@ -10,22 +10,11 @@ use ContinuousPipe\Builder\Repository;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use ContinuousPipe\Builder\BuildStepConfiguration;
-use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Engine;
-use ContinuousPipe\Builder\Image;
-use ContinuousPipe\Builder\Logging;
 use ContinuousPipe\Builder\LogStreamLogging;
-use ContinuousPipe\Builder\Notification;
-use ContinuousPipe\Builder\Repository;
-use Ramsey\Uuid\Uuid;
 
 class BuildRequest
 {
-    /**
-     * @var BuildRequestStep[]
-     */
-    private $steps;
-
     /**
      * @var Notification
      */
@@ -40,28 +29,6 @@ class BuildRequest
      * @var UuidInterface
      */
     private $credentialsBucket;
-
-    /**
-     * @param BuildRequestStep[] $steps
-     * @param Notification       $notification
-     * @param Logging            $logging
-     * @param UuidInterface      $credentialsBucket
-     */
-    public function __construct(array $steps, Notification $notification, Logging $logging, UuidInterface $credentialsBucket)
-    {
-        $this->steps = $steps;
-        $this->notification = $notification;
-        $this->logging = $logging;
-        $this->credentialsBucket = $credentialsBucket;
-    }
-
-    /**
-     * @return BuildRequestStep[]
-     */
-    public function getSteps(): array
-    {
-        return $this->steps ?: [];
-    }
 
     /**
      * @var BuildStepConfiguration[]
@@ -109,6 +76,20 @@ class BuildRequest
     private $environment;
 
     /**
+     * @param BuildStepConfiguration[] $steps
+     * @param Notification       $notification
+     * @param Logging            $logging
+     * @param UuidInterface      $credentialsBucket
+     */
+    public function __construct(array $steps, Notification $notification, Logging $logging, UuidInterface $credentialsBucket)
+    {
+        $this->steps = $steps;
+        $this->notification = $notification;
+        $this->logging = $logging;
+        $this->credentialsBucket = $credentialsBucket;
+    }
+
+    /**
      * @return Notification
      */
     public function getNotification()
@@ -133,14 +114,6 @@ class BuildRequest
             $this->credentialsBucket = Uuid::fromString($this->credentialsBucket);
         }
 
-        return $this->credentialsBucket;
-    }
-
-    /**
-     * @return Uuid
-     */
-    public function getCredentialsBucket()
-    {
         return $this->credentialsBucket;
     }
 

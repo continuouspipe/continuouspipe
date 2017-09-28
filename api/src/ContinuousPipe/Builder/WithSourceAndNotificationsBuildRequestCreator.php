@@ -3,13 +3,11 @@
 namespace ContinuousPipe\Builder;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
 use LogStream\Log;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -69,7 +67,7 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
         $codeBaseSource = $this->buildRequestSourceResolver->getSource($flowUuid, $codeReference);
         $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $address, $parentLog, $credentialsBucketUuid) {
             return new BuildRequest(
-                array_map(function (BuildRequestStep $step) use ($codeBaseSource) {
+                array_map(function (BuildStepConfiguration $step) use ($codeBaseSource) {
                     return $step->withSource($codeBaseSource);
                 }, $serviceConfiguration->getBuilderSteps()),
                 Notification::withHttp(HttpNotification::fromAddress($address)),

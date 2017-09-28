@@ -5,24 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="log_stream.client.in_memory" class="LogStream\Tests\InMemoryLogClient">
-            <argument type="service" id="log_stream.tree.log_normalizer" />
-        </service>
-        <service id="log_stream.client" alias="log_stream.client.in_memory" />
-
-        <service id="log_stream.client.traceable"
-                 class="LogStream\TraceableClient"
-                 decorates="log_stream.client">
-            <argument type="service" id="log_stream.client.traceable.inner" />
-        </service>
-
-        <service id="log_stream.display_logger_factory"
-                 class="LogStream\Tests\Debug\DisplayLoggerFactory"
-                 decorates="log_stream.logger_factory">
-            <argument type="service" id="log_stream.display_logger_factory.inner" />
-            <argument type="service" id="log_stream.tree.log_normalizer" />
-        </service>
-
         <service id="builder.notifier.retry.waiter" class="Tolerance\Waiter\NullWaiter" />
         <service id="builder.null_notifier" class="ContinuousPipe\Builder\Notifier\NullNotifier" public="false" />
         <service id="builder.notifier.hookable" alias="builder.http_notifier" />

@@ -3,10 +3,10 @@
 namespace ContinuousPipe\River\Task\Build;
 
 use ContinuousPipe\Builder\BuildRequestCreator;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Image;
-use ContinuousPipe\Builder\Request\Artifact;
-use ContinuousPipe\Builder\Request\BuildRequestStep;
+use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
 use ContinuousPipe\River\Task\Task;
@@ -18,7 +18,6 @@ use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\TideContext;
 use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
@@ -211,11 +210,12 @@ class BuildTaskFactory implements TaskFactory, TaskRunner
     /**
      * @param TideContext $context
      * @param array $stepConfiguration
-     * @return BuildRequestStep
+     *
+     * @return BuildStepConfiguration
      */
-    private function transformStep(TideContext $context, array $stepConfiguration) : BuildRequestStep
+    private function transformStep(TideContext $context, array $stepConfiguration) : BuildStepConfiguration
     {
-        $step = (new BuildRequestStep())
+        $step = (new BuildStepConfiguration())
             ->withContext(new Context($stepConfiguration['docker_file_path'], $stepConfiguration['build_directory']))
             ->withEnvironment($this->flattenEnvironmentVariables($stepConfiguration['environment'] ?: []))
         ;

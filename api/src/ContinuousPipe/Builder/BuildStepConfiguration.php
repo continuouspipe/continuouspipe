@@ -198,6 +198,24 @@ class BuildStepConfiguration
         return $step;
     }
 
+    public function withSource($archiveOrRepository) : self
+    {
+        $step = clone $this;
+
+        if ($archiveOrRepository instanceof ArchiveSource) {
+            $step->archive = $archiveOrRepository;
+        } elseif ($archiveOrRepository instanceof Repository) {
+            $step->repository = $archiveOrRepository;
+        } else {
+            throw new \InvalidArgumentException(sprintf(
+                'The argument should be an archive or a repository, "%s" given',
+                get_class($archiveOrRepository)
+            ));
+        }
+
+        return $step;
+    }
+
     public function withRepository(Repository $repository = null) : self
     {
         $step = clone $this;
@@ -218,6 +236,14 @@ class BuildStepConfiguration
     {
         $step = clone $this;
         $step->readArtifacts = $readArtifacts;
+
+        return $step;
+    }
+
+    public function withWriteArtifacts(array $writeArtifacts)
+    {
+        $step = clone $this;
+        $step->writeArtifacts = $writeArtifacts;
 
         return $step;
     }

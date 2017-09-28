@@ -2,20 +2,20 @@
 
 namespace ContinuousPipe\River\Task\Build\Configuration;
 
-use ContinuousPipe\Builder\Request\BuildRequestStep;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use JMS\Serializer\Annotation as JMS;
 
 class ServiceConfiguration
 {
     /**
-     * @JMS\Type("array<ContinuousPipe\Builder\Request\BuildRequestStep>")
+     * @JMS\Type("array<ContinuousPipe\Builder\BuildStepConfiguration>")
      *
-     * @var BuildRequestStep[]
+     * @var BuildStepConfiguration[]
      */
     private $builderSteps;
 
     /**
-     * @param BuildRequestStep[] $builderSteps
+     * @param BuildStepConfiguration[] $builderSteps
      */
     public function __construct(array $builderSteps)
     {
@@ -23,7 +23,7 @@ class ServiceConfiguration
     }
 
     /**
-     * @return BuildRequestStep[]
+     * @return BuildStepConfiguration[]
      */
     public function getBuilderSteps(): array
     {

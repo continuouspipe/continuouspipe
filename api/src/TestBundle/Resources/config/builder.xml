@@ -10,7 +10,7 @@
         </service>
 
         <service id="builder.archive_builder.fixtures" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
-            <argument>%kernel.root_dir%/../features/fixtures</argument>
+            <argument>%builder_fixtures_folder%</argument>
         </service>
 
         <service id="builder.archive.http_archive_builder.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
