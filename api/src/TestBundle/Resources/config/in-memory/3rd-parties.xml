@@ -24,6 +24,6 @@
         </service>
 
         <service id="authenticator.audit_log.storage.log_repository"
-                 class="TestBundle\AuditLog\Storage\MockedLogRepository" />
+                 class="TestBundle\AuditLog\Storage\InMemoryLogRepository" />
     </services>
 </container>

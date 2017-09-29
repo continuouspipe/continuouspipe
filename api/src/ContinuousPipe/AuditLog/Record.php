@@ -33,27 +33,35 @@ class Record
      * Constructor.
      *
      * @param string $eventName
-     * @param string $type
+     * @param string $eventType
      * @param array $data
+     * @param DateTimeImmutable|null $eventDate
      */
-    public function __construct(string $eventName, string $type, array $data)
+    public function __construct(string $eventName, string $eventType, array $data, DateTimeImmutable $eventDate = null)
     {
         $this->eventName = $eventName;
-        $this->eventDate = new DateTimeImmutable();
-        $this->type = $type;
+        $this->eventDate = $eventDate ?: new DateTimeImmutable();
+        $this->type = $eventType;
         $this->data = $data;
     }
 
     public function data(): array
     {
-        return array_merge($this->data, [
-            'event_name' => $this->eventName,
-            'event_date' => $this->eventDate->format(\DateTime::W3C),
-        ]);
+        return $this->data;
     }
 
     public function type(): string
     {
         return $this->type;
+    }
+
+    public function name(): string
+    {
+        return $this->eventName;
+    }
+
+    public function date(): DateTimeImmutable
+    {
+        return $this->eventDate;
     }
 }

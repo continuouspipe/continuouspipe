@@ -4,6 +4,7 @@ namespace TestBundle\AuditLog\Storage;
 
 use ContinuousPipe\AuditLog\Record;
 use ContinuousPipe\AuditLog\Storage\LogRepository;
+use ContinuousPipe\AuditLog\Storage\PaginatedResult;
 
 class TracedLogRepository implements LogRepository
 {
@@ -36,5 +37,21 @@ class TracedLogRepository implements LogRepository
     public function getInsertedRecords(): array
     {
         return $this->insertedRecords;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query(string $eventType, string $pageCursor, int $pageSize): PaginatedResult
+    {
+        return $this->decoratedLogRepository->query($eventType, $pageCursor, $pageSize);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function listEventTypes(): array
+    {
+        return $this->decoratedLogRepository->listEventTypes();
     }
 }
