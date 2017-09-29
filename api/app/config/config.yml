@@ -316,20 +316,6 @@ tolerance:
                 namespace: river.outgoing.keen
                 runner: tolerance.operation_runners.buffered
 
-        notifier:
-            retry:
-                runner:
-                    success_failure_metrics:
-                        publisher: tolerance.metrics.publisher.statsd
-                        namespace: builder.outgoing.notifier
-                waiter:
-                    count_limited:
-                        waiter:
-                            timeout:
-                                waiter:
-                                    sleep: ~
-                                timeout: 2
-                        count: %api_retry_count%
     metrics:
         collectors:
             -

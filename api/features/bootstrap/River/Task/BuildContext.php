@@ -650,7 +650,6 @@ class BuildContext implements Context
     {
         $dummyRequest = new BuildRequest(
             [],
-            new Notification(),
             new Logging(),
             Uuid::fromString('00000000-0000-0000-0000-000000000000')
         );

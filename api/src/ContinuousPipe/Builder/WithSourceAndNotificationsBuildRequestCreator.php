@@ -21,33 +21,15 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
      * @var BuildRequestSourceResolver
      */
     private $buildRequestSourceResolver;
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-    /**
-     * @var string
-     */
-    private $riverHostname;
-    /**
-     * @var bool
-     */
-    private $useSsl;
 
     /**
      * @param LoggerInterface $logger
      * @param BuildRequestSourceResolver $buildRequestSourceResolver
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param string $riverHostname
-     * @param bool $useSsl
      */
-    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver, UrlGeneratorInterface $urlGenerator, string $riverHostname, bool $useSsl)
+    public function __construct(LoggerInterface $logger, BuildRequestSourceResolver $buildRequestSourceResolver)
     {
         $this->logger = $logger;
         $this->buildRequestSourceResolver = $buildRequestSourceResolver;
-        $this->urlGenerator = $urlGenerator;
-        $this->riverHostname = $riverHostname;
-        $this->useSsl = $useSsl;
     }
 
     /**
@@ -60,17 +42,12 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
             'configuration' => $configuration,
         ]);
 
-        $address = 'http'.($this->useSsl ? 's' : '').'://'.$this->riverHostname.$this->urlGenerator->generate('builder_notification_post', [
-            'tideUuid' => (string) $tideUuid,
-        ], UrlGeneratorInterface::ABSOLUTE_PATH);
-
         $codeBaseSource = $this->buildRequestSourceResolver->getSource($flowUuid, $codeReference);
-        $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $address, $parentLog, $credentialsBucketUuid) {
+        $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $parentLog, $credentialsBucketUuid) {
             return new BuildRequest(
                 array_map(function (BuildStepConfiguration $step) use ($codeBaseSource) {
                     return $step->withSource($codeBaseSource);
                 }, $serviceConfiguration->getBuilderSteps()),
-                Notification::withHttp(HttpNotification::fromAddress($address)),
                 Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId())),
                 $credentialsBucketUuid
             );

@@ -16,11 +16,6 @@ use ContinuousPipe\Builder\LogStreamLogging;
 class BuildRequest
 {
     /**
-     * @var Notification
-     */
-    private $notification;
-
-    /**
      * @var Logging
      */
     private $logging;
@@ -77,24 +72,14 @@ class BuildRequest
 
     /**
      * @param BuildStepConfiguration[] $steps
-     * @param Notification       $notification
      * @param Logging            $logging
      * @param UuidInterface      $credentialsBucket
      */
-    public function __construct(array $steps, Notification $notification, Logging $logging, UuidInterface $credentialsBucket)
+    public function __construct(array $steps, Logging $logging, UuidInterface $credentialsBucket)
     {
         $this->steps = $steps;
-        $this->notification = $notification;
         $this->logging = $logging;
         $this->credentialsBucket = $credentialsBucket;
-    }
-
-    /**
-     * @return Notification
-     */
-    public function getNotification()
-    {
-        return $this->notification;
     }
 
     /**
