@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Build\Event;
 
-use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\River\Task\TaskEvent;
 use Ramsey\Uuid\Uuid;
 
@@ -13,7 +13,7 @@ class BuildStarted extends BuildEvent implements TaskEvent
      */
     private $taskIdentifier;
 
-    public function __construct(Uuid $tideUuid, string $taskIdentifier, BuilderBuild $build)
+    public function __construct(Uuid $tideUuid, string $taskIdentifier, Build $build)
     {
         parent::__construct($tideUuid, $build);
 

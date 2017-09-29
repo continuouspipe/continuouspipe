@@ -5,8 +5,8 @@ namespace River\Task;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuildStepConfiguration;
-use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\Builder\Client\BuilderException;
 use ContinuousPipe\Builder\Client\HookableBuilderClient;
@@ -254,7 +254,7 @@ class BuildContext implements Context
     {
         $this->dispatchBuildStatus(
             $this->getLastBuild(),
-            BuilderBuild::STATUS_ERROR
+            Build::STATUS_ERROR
         );
     }
 
@@ -265,7 +265,7 @@ class BuildContext implements Context
     {
         $this->dispatchBuildStatus(
             $this->getLastBuild(),
-            BuilderBuild::STATUS_SUCCESS
+            Build::STATUS_SUCCESS
         );
     }
 
@@ -288,7 +288,7 @@ class BuildContext implements Context
      */
     public function oneImageBuildIsSuccessful()
     {
-        $this->dispatchBuildStatus($this->getLastBuild(), BuilderBuild::STATUS_SUCCESS);
+        $this->dispatchBuildStatus($this->getLastBuild(), Build::STATUS_SUCCESS);
     }
 
     /**
@@ -337,7 +337,7 @@ class BuildContext implements Context
             $events = $this->getBuildStartedEvents();
             $firstEvent = $events[$number];
 
-            $this->dispatchBuildStatus($firstEvent->getBuild(), BuilderBuild::STATUS_SUCCESS);
+            $this->dispatchBuildStatus($firstEvent->getBuild(), Build::STATUS_SUCCESS);
         }
     }
 
@@ -350,7 +350,7 @@ class BuildContext implements Context
         $events = $this->getBuildStartedEvents();
         $firstEvent = $events[0];
 
-        $this->dispatchBuildStatus($firstEvent->getBuild(), BuilderBuild::STATUS_SUCCESS);
+        $this->dispatchBuildStatus($firstEvent->getBuild(), Build::STATUS_SUCCESS);
     }
 
     /**
@@ -380,7 +380,7 @@ class BuildContext implements Context
         foreach ($this->getBuildStartedEvents() as $event) {
             $this->dispatchBuildStatus(
                 $event->getBuild(),
-                BuilderBuild::STATUS_SUCCESS
+                Build::STATUS_SUCCESS
             );
         }
     }
@@ -796,7 +796,7 @@ class BuildContext implements Context
     }
 
     /**
-     * @return BuilderBuild
+     * @return Build
      */
     private function getLastBuild()
     {
@@ -808,15 +808,16 @@ class BuildContext implements Context
     }
 
     /**
-     * @param BuilderBuild $build
+     * @param Build $build
      * @param string $status
      */
-    private function dispatchBuildStatus(BuilderBuild $build, string $status)
+    private function dispatchBuildStatus(Build $build, string $status)
     {
-        $build = new BuilderBuild(
+        $build = new Build(
             $build->getUuid(),
-            $status,
-            $build->getRequest()
+            $build->getRequest(),
+            new User('user', Uuid::uuid4()),
+            $status
         );
 
         $response = $this->kernel->handle(Request::create(

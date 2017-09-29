@@ -2,8 +2,6 @@ ContinuousPipe\Builder\Request\BuildRequest:
     properties:
         steps:
             type: array<ContinuousPipe\Builder\BuildStepConfiguration>
-        notification:
-            type: ContinuousPipe\Builder\Notification
         logging:
             type: ContinuousPipe\Builder\Logging
         credentialsBucket:

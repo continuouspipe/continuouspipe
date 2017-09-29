@@ -9,7 +9,7 @@ Responsible of building the Docker images, this component is built as an indepen
 ### Interfaces
 
 Input: 
-- `ContinuousPipe\Builder\Aggregate\Command\CreateBuild` command.
+- `ContinuousPipe\Builder\Client\BuilderClient` interface.
 Output: 
 - `ContinuousPipe\Builder\Aggregate\Event\BuildFailed` event.
 - `ContinuousPipe\Builder\Aggregate\Event\BuildFinished` event.

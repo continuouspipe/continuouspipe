@@ -5,6 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="builder.client" class="ContinuousPipe\Builder\Client\TransformAndStartBuild">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="builder.build.build_factory" />
+            <argument type="service" id="builder.view.build_repository" />
+            <argument type="service" id="builder.request_transformer" />
+        </service>
+
         <!-- Build requests -->
         <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
         <service id="builder.request_transformer.engine_into_steps" class="ContinuousPipe\Builder\Request\Transformers\EngineIntoStepsTransformer" />

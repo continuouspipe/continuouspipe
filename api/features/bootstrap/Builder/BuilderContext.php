@@ -21,9 +21,6 @@ use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Image\Registry;
-use ContinuousPipe\Builder\Notifier\HookableNotifier;
-use ContinuousPipe\Builder\Notifier\NotificationException;
-use ContinuousPipe\Builder\Notifier\TraceableNotifier;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
 use ContinuousPipe\Builder\Tests\Docker\TraceableDockerClient;
@@ -36,10 +33,14 @@ use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher;
 use JMS\Serializer\SerializerInterface;
 use SimpleBus\Message\Bus\MessageBus;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 use Tolerance\Metrics\Metric;
+use ContinuousPipe\Builder\Client\BuilderClient;
+use ContinuousPipe\Security\User\User;
+use Symfony\Component\HttpFoundation\Response;
+use Ramsey\Uuid\Uuid;
+use ContinuousPipe\Builder\Client\BuilderException;
 
 class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
@@ -64,18 +65,9 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     private $inMemoryAuthenticatorClient;
 
     /**
-     * @var TraceableNotifier
-     */
-    private $traceableNotifier;
-
-    /**
      * @var Response|null
      */
     private $response;
-    /**
-     * @var HookableNotifier
-     */
-    private $hookableNotifier;
     /**
      * @var TraceableArchiveBuilder
      */
@@ -126,12 +118,15 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      */
     private $registry;
 
+    /**
+     * @var BuilderClient
+     */
+    private $builderClient;
+
     public function __construct(
         Kernel $kernel,
         TraceableDockerClient $traceableDockerClient,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
-        TraceableNotifier $traceableNotifier,
-        HookableNotifier $hookableNotifier,
         TraceableArchiveBuilder $traceableArchiveBuilder,
         BuildRepository $buildRepository,
         BuildStepRepository $buildStepRepository,
@@ -143,13 +138,12 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         TracedPublisher $tracedPublisher,
         TraceableArtifactManager $traceableArtifactManager,
         TraceableBuildCreator $traceableBuildCreator,
-        Registry $registry 
+        Registry $registry,
+        BuilderClient $builderClient
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
-        $this->traceableNotifier = $traceableNotifier;
-        $this->hookableNotifier = $hookableNotifier;
         $this->traceableArchiveBuilder = $traceableArchiveBuilder;
         $this->buildRepository = $buildRepository;
         $this->buildStepRepository = $buildStepRepository;
@@ -162,6 +156,7 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
         $this->traceableArtifactManager = $traceableArtifactManager;
         $this->traceableBuildCreator = $traceableBuildCreator;
         $this->registry = $registry;
+        $this->builderClient = $builderClient;
     }
 
     /**
@@ -264,11 +259,7 @@ CONTENT;
      */
     public function iSendTheFollowingBuildRequest(PyStringNode $requestJson)
     {
-        $this->response = $this->kernel->handle(Request::create(
-            '/build',
-            'POST', [], [], [], [],
-            $requestJson->getRaw()
-        ));
+        $this->createAndStartBuild($requestJson->getRaw());
     }
 
     /**
@@ -366,11 +357,7 @@ CONTENT;
 }
 EOF;
 
-        $this->response = $this->kernel->handle(Request::create(
-            '/build',
-            'POST', [], [], [], [],
-            $contents
-        ));
+        $this->createAndStartBuild($contents);
     }
 
     /**
@@ -455,32 +442,6 @@ EOF;
                 'Found no matching commits'
             ));
         }
-    }
-
-    /**
-     * @Then the notification should be sent
-     */
-    public function theNotificationShouldBeSent()
-    {
-        $notifications = $this->traceableNotifier->getNotifications();
-
-        if (count($notifications) == 0) {
-            throw new \RuntimeException('No notifications sent');
-        }
-    }
-
-    /**
-     * @Given the notification will fail the first :count times
-     */
-    public function theNotificationWillFailTheFirstTimes($count)
-    {
-        $this->hookableNotifier->addHook(function() use (&$count) {
-            if ($count-- > 0) {
-                throw new NotificationException('This intentionally failed');
-            }
-
-            return func_get_args();
-        });
     }
 
     /**
@@ -629,6 +590,20 @@ EOF;
     public function theImageExistsInTheDockerRegistry($image)
     {
         $this->registry->addImage($image);
+    }
+
+    private function createAndStartBuild(string $requestAsJson)
+    {
+        $request = $this->serializer->deserialize($requestAsJson, BuildRequest::class, 'json');
+
+        try {
+            $build = $this->builderClient->build($request, new User('samuel', Uuid::uuid4()));
+            $this->response = Response::create($this->serializer->serialize($build, 'json'));
+        } catch (BuilderException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
+        }
     }
 
     /**

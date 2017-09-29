@@ -57,6 +57,14 @@ class Build implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    /**
      * @return BuildRequest
      */
     public function getRequest()
@@ -70,6 +78,30 @@ class Build implements \JsonSerializable
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful()
+    {
+        return $this->getStatus() == self::STATUS_SUCCESS;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isErrored()
+    {
+        return $this->getStatus() == self::STATUS_ERROR;
     }
 
     /**

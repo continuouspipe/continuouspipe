@@ -5,20 +5,20 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="builder.client" class="ContinuousPipe\River\Tests\Builder\EmptyBuilderClient" />
+        <service id="river.builder_client" class="ContinuousPipe\River\Tests\Builder\EmptyBuilderClient" />
         <service id="builder.client.traceable"
                  class="ContinuousPipe\Builder\Client\TraceableBuilderClient"
-                 decorates="builder.client">
+                 decorates="river.builder_client">
             <argument type="service" id="builder.client.traceable.inner" />
         </service>
         <service id="builder.client.hookable"
                  class="ContinuousPipe\Builder\Client\HookableBuilderClient"
-                 decorates="builder.client">
+                 decorates="river.builder_client">
             <argument type="service" id="builder.client.hookable.inner" />
         </service>
         <service id="builder.client.faulty_api_simulator"
                  class="ContinuousPipe\Builder\Client\FaultyApiSimulatorBuilderClient"
-                 decorates="builder.client" decoration-priority="32">
+                 decorates="river.builder_client" decoration-priority="32">
             <argument type="service" id="builder.client.faulty_api_simulator.inner" />
 
             <tag name="tolerance.operation_wrapper"

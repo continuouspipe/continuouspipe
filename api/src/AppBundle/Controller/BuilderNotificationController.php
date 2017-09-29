@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Transaction\TransactionManager;
@@ -35,7 +35,7 @@ class BuilderNotificationController
      * @ParamConverter("build", converter="fos_rest.request_body")
      * @View
      */
-    public function postAction($tideUuid, BuilderBuild $build)
+    public function postAction($tideUuid, Build $build)
     {
         $this->transactionManager->apply(Uuid::fromString($tideUuid), function (Tide $tide) use ($build) {
             /** @var BuildTask[] $tasks */

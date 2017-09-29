@@ -374,8 +374,6 @@ default:
                     - "@kernel"
                     - "@builder.docker.client.traceable"
                     - "@security.authenticator.client.in_memory"
-                    - "@builder.notifier.traceable"
-                    - "@builder.notifier.hookable"
                     - "@builder.archive_builder.traceable"
                     - "@builder.build.repository"
                     - "@builder.build_step.repository"
@@ -388,6 +386,7 @@ default:
                     - "@builder.google_container_builder.artifacts_manager.traceable"
                     - "@builder.google_container_builder.build_creator"
                     - "@builder.image.registry"
+                    - "@builder.client"
                 - Builder\DockerContext:
                     - "@builder.docker.client"
                     - "@log_stream.logger_factory"

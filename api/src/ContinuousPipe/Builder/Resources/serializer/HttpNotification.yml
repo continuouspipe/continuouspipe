@@ -1,4 +1,0 @@
-ContinuousPipe\Builder\HttpNotification:
-    properties:
-        address:
-            type: string
