@@ -2,9 +2,10 @@ app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
-api:
-    resource: "@ApiBundle/Controller/"
+builder:
+    resource: "@BuilderBundle/Controller/"
     type:     annotation
+    prefix: /builder
 
 admin:
     resource: "@AdminBundle/Controller/"

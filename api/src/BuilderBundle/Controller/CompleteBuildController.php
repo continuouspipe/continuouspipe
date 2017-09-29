@@ -1,8 +1,8 @@
 <?php
 
-namespace ApiBundle\Controller;
+namespace BuilderBundle\Controller;
 
-use ApiBundle\Request\CompletedBuildRequest;
+use BuilderBundle\Request\CompletedBuildRequest;
 use ContinuousPipe\Builder\Aggregate\Command\CompleteBuild;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\GoogleContainerBuilder\GoogleContainerBuildStatus;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route(service="api.controller.complete_build")
+ * @Route(service="builder.controller.complete_build")
  */
 class CompleteBuildController
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiBundle\Request;
+namespace BuilderBundle\Request;
 
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;

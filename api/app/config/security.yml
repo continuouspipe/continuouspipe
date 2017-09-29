@@ -70,6 +70,9 @@ security:
         # Managed services
         - { path: ^/managed/resources$, roles: ROLE_RESOURCE_USAGE_CREATOR }
 
+        # GCB build complete endpoint
+        - { path: ^/builder/complete$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
         # Required by GCE healthchecks
         - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
