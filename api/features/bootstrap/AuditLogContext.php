@@ -1,28 +1,29 @@
 <?php
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\AuditLog\Record;
 use ContinuousPipe\AuditLog\Storage\LogRepository;
-use Helper\KernelClientHelper;
+use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\KernelInterface;
 use TestBundle\AuditLog\Storage\TracedLogRepository;
 
 class AuditLogContext implements Context
 {
-    use KernelClientHelper;
-
     /**
      * @var LogRepository
      */
     private $logRepository;
 
-    public function __construct(TracedLogRepository $logRepository, KernelInterface $kernel)
+    /**
+     * @var Client
+     */
+    private $httpClient;
+
+    public function __construct(TracedLogRepository $logRepository, Client $httpClient)
     {
         $this->logRepository = $logRepository;
-        $this->kernel = $kernel;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -74,7 +75,7 @@ class AuditLogContext implements Context
      */
     public function iVisitTheAuditLogViewPage($eventType)
     {
-        $this->request(Request::create('/audit-log/view', Request::METHOD_GET, ['event_type' => $eventType]));
+        $this->httpClient->request(Request::METHOD_GET, '/audit-log/view', ['event_type' => $eventType]);
     }
 
     /**
@@ -102,6 +103,38 @@ class AuditLogContext implements Context
             foreach ($row as $fieldName => $value) {
                 $this->assertDoesNotContainText($value);
             }
+        }
+    }
+
+    private function assertResponseCode(int $expectedHttpStatus)
+    {
+        if (($actualHttpStatus = $this->httpClient->getInternalResponse()->getStatus()) !== $expectedHttpStatus) {
+            echo $this->httpClient->getCrawler()->text();
+            throw new UnexpectedValueException(sprintf(
+                'Expected to get HTTP status code %d, but got %d.',
+                $expectedHttpStatus,
+                $actualHttpStatus
+            ));
+        }
+    }
+
+    private function assertContainsText(string $text)
+    {
+        if (false === mb_stripos($this->httpClient->getCrawler()->text(), $text)) {
+            throw new UnexpectedValueException(sprintf(
+                'Page expected to contain the text "%s", but does not found.',
+                $text
+            ));
+        }
+    }
+
+    private function assertDoesNotContainText($text)
+    {
+        if (false !== mb_stripos($this->httpClient->getCrawler()->text(), $text)) {
+            throw new UnexpectedValueException(sprintf(
+                'Page not expected to contain the text "%s", but found.',
+                $text
+            ));
         }
     }
 }

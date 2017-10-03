@@ -20,7 +20,7 @@ Feature:
     And a record should be added to the audit log storage
 
   Scenario: View the recorded audit log
-    Given I am authenticated as admin "geza"
+    Given I am authenticated on the frontend as admin "geza"
     And these records exist in audit log storage
       | Event Type  | Event Date                | Event Name   | Properties       |
       | UserCreated | 2017-09-28T12:53:04+00:00 | foo_happened | property1=value1 |
