@@ -97,13 +97,13 @@ class CredentialsBucketController
 
         // basic protection against adding same server address twice
         foreach ($bucket->getDockerRegistries() as $dockerRegistry) {
-            if ($dockerRegistry->getServerAddress() == $credentials->getServerAddress()) {
+            if ($dockerRegistry->getFullAddress() == $credentials->getFullAddress()) {
                 return FOSRestView::create(new ConstraintViolationList([
                     new ConstraintViolation(
-                        'A credential with this registry type/address already exists in this project',
+                        'A credential with this registry address already exists in this project',
                         'The credential for registry {serverAddress} already exists in this project',
                         [
-                            'serverAddress' => $credentials->getServerAddress(),
+                            'serverAddress' => $credentials->getFullAddress(),
                         ],
                         $bucket,
                         'serverAddress',
