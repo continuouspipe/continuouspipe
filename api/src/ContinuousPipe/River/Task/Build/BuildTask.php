@@ -125,7 +125,7 @@ class BuildTask extends EventDrivenTask
     public function build(BuilderClient $client, BuildRequest $request)
     {
         try {
-            $build = $client->build($request, $this->context->getUser());
+            $build = $client->build($request);
 
             $this->events->raiseAndApply(new BuildStarted(
                 $this->context->getTideUuid(),

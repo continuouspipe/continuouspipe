@@ -28,7 +28,6 @@
         <!-- Factory -->
         <service id="builder.build.build_factory" class="ContinuousPipe\Builder\Aggregate\BuildFactory">
             <argument type="service" id="event_bus" />
-            <argument type="service" id="security.user_context" />
         </service>
 
         <!-- Aggregate -->

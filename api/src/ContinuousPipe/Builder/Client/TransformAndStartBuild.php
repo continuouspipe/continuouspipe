@@ -55,7 +55,7 @@ class TransformAndStartBuild implements BuilderClient
     /**
      * {@inheritdoc}
      */
-    public function build(BuildRequest $buildRequest, User $user): Build
+    public function build(BuildRequest $buildRequest): Build
     {
         $violations = $this->validator->validate($buildRequest);
         if ($violations->count() > 0) {

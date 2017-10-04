@@ -29,13 +29,6 @@ class Build implements \JsonSerializable
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\Security\User\User")
-     *
-     * @var User
-     */
-    private $user;
-
-    /**
      * @JMS\Type("string")
      *
      * @var string
@@ -45,14 +38,12 @@ class Build implements \JsonSerializable
     /**
      * @param string $uuid
      * @param BuildRequest $request
-     * @param User $user
      * @param string $status
      */
-    public function __construct(string $uuid, BuildRequest $request, User $user, string $status)
+    public function __construct(string $uuid, BuildRequest $request, string $status)
     {
         $this->uuid = $uuid;
         $this->request = $request;
-        $this->user = $user;
         $this->status = $status;
     }
 
@@ -70,14 +61,6 @@ class Build implements \JsonSerializable
     public function getRequest()
     {
         return $this->request;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
     }
 
     /**

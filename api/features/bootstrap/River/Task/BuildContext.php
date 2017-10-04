@@ -12,7 +12,6 @@ use ContinuousPipe\Builder\Client\BuilderException;
 use ContinuousPipe\Builder\Client\HookableBuilderClient;
 use ContinuousPipe\Builder\Client\TraceableBuilderClient;
 use ContinuousPipe\Builder\Logging;
-use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventBus\EventStore;
@@ -22,8 +21,6 @@ use ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted;
 use ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful;
 use ContinuousPipe\River\Task\Task;
-use ContinuousPipe\Builder\Client\FaultyApiSimulatorBuilderClient;
-use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Exception\ServerException;
 use JMS\Serializer\SerializerInterface;
 use Ramsey\Uuid\Uuid;
@@ -37,17 +34,17 @@ use ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher;
 class BuildContext implements Context
 {
     /**
-     * @var \TideContext
+     * @var \River\TideContext
      */
     private $tideContext;
 
     /**
-     * @var \FlowContext
+     * @var \River\FlowContext
      */
     private $flowContext;
 
     /**
-     * @var \Tide\TasksContext
+     * @var \River\Tide\TasksContext
      */
     private $tideTasksContext;
 
@@ -79,11 +76,6 @@ class BuildContext implements Context
     private $hookableBuilderClient;
 
     /**
-     * @var FaultyApiSimulatorBuilderClient
-     */
-    private $faultyApiSimulatorBuilderClient;
-
-    /**
      * @var BuilderClient
      */
     private $realBuilderClient;
@@ -101,7 +93,6 @@ class BuildContext implements Context
      * @param BuilderClient $realBuilderClient
      * @param TraceableBuilderClient $traceableBuilderClient
      * @param HookableBuilderClient $hookableBuilderClient
-     * @param FaultyApiSimulatorBuilderClient $faultyApiSimulatorBuilderClient
      * @param EventStore $eventStore
      * @param MessageBus $eventBus
      * @param KernelInterface $kernel
@@ -112,7 +103,6 @@ class BuildContext implements Context
         $realBuilderClient,
         $traceableBuilderClient,
         $hookableBuilderClient,
-        $faultyApiSimulatorBuilderClient,
         EventStore $eventStore,
         MessageBus $eventBus,
         KernelInterface $kernel,
@@ -125,7 +115,6 @@ class BuildContext implements Context
         $this->serializer = $serializer;
         $this->traceableBuilderClient = $traceableBuilderClient;
         $this->hookableBuilderClient = $hookableBuilderClient;
-        $this->faultyApiSimulatorBuilderClient = $faultyApiSimulatorBuilderClient;
         $this->realBuilderClient = $realBuilderClient;
         $this->tracedPublisher = $tracedPublisher;
     }
@@ -628,22 +617,6 @@ class BuildContext implements Context
     }
 
     /**
-     * @Given the builder API returns :statusCode HTTP status code :count times
-     */
-    public function theBuilderAPIReturnsHTTPStatusCodeTimes($statusCode, $count)
-    {
-        $faultGenerator = function() use ($statusCode) {
-            $request = new \GuzzleHttp\Psr7\Request('GET', 'http://api.builder.dev/');
-            $response = new \GuzzleHttp\Psr7\Response($statusCode);
-            throw ServerException::create($request, $response);
-        };
-
-        for ($i = 1; $i <= $count; $i++) {
-            $this->faultyApiSimulatorBuilderClient->addFault($faultGenerator);
-        }
-    }
-
-    /**
      * @When I send a build request
      */
     public function iSendABuildRequest()
@@ -653,10 +626,9 @@ class BuildContext implements Context
             new Logging(),
             Uuid::fromString('00000000-0000-0000-0000-000000000000')
         );
-        $dummyUser = new User('geza', Uuid::fromString('00000000-0000-0000-0000-000000000000'), ['USER']);
 
         try {
-            $this->realBuilderClient->build($dummyRequest, $dummyUser);
+            $this->realBuilderClient->build($dummyRequest);
         } catch (\Exception $e) {
             $this->buildException = $e;
         }
@@ -816,7 +788,6 @@ class BuildContext implements Context
         $build = new Build(
             $build->getUuid(),
             $build->getRequest(),
-            new User('user', Uuid::uuid4()),
             $status
         );
 
