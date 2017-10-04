@@ -13,8 +13,7 @@ build:
         # Domain tests
         - vendor/bin/phpspec run
         - vendor/bin/phpunit
-        - vendor/bin/behat -fprogress --profile=river
-        - vendor/bin/behat -fprogress --profile=builder
+        - vendor/bin/behat -fprogress
 
         # Smoke tests
         - bin/console doctrine:migrations:migrate --no-interaction
