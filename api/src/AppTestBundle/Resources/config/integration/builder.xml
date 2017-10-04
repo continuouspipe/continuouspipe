@@ -32,5 +32,7 @@
                  public="false">
             <argument type="service" id="builder.metrics.traced_publisher.inner" />
         </service>
+
+        <service id="river.builder_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\EmptyListener" />
     </services>
 </container>

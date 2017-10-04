@@ -19,3 +19,5 @@ ContinuousPipe\Builder\Request\BuildRequest:
             type: array<string, string>
         engine:
             type: ContinuousPipe\Builder\Engine
+        attributes:
+            type: array<string, string>

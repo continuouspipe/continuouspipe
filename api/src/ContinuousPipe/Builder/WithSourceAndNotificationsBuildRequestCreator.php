@@ -43,13 +43,17 @@ class WithSourceAndNotificationsBuildRequestCreator implements BuildRequestCreat
         ]);
 
         $codeBaseSource = $this->buildRequestSourceResolver->getSource($flowUuid, $codeReference);
-        $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $parentLog, $credentialsBucketUuid) {
+        $buildRequests = array_map(function (ServiceConfiguration $serviceConfiguration) use ($codeBaseSource, $parentLog, $credentialsBucketUuid, $tideUuid, $flowUuid) {
             return new BuildRequest(
                 array_map(function (BuildStepConfiguration $step) use ($codeBaseSource) {
                     return $step->withSource($codeBaseSource);
                 }, $serviceConfiguration->getBuilderSteps()),
                 Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLog->getId())),
-                $credentialsBucketUuid
+                $credentialsBucketUuid,
+                [
+                    'tide_uuid' => $tideUuid->toString(),
+                    'flow_uuid' => $flowUuid->toString(),
+                ]
             );
         }, $configuration->getServices());
 

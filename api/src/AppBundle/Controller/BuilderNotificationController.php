@@ -14,6 +14,8 @@ use FOS\RestBundle\Controller\Annotations\View;
 
 /**
  * @Route(service="app.controller.builder_notification")
+ *
+ * @deprecated This is now a PHP method call, no need for such HTTP adapter.
  */
 class BuilderNotificationController
 {

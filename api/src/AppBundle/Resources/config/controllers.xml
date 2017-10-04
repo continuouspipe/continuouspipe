@@ -49,6 +49,8 @@
         </service>
         <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
             <argument type="service" id="river.tide.transaction_manager" />
+
+            <deprecated>The "%service_id%" service has been merged with river. This HTTP adapter should not be used anymore.</deprecated>
         </service>
         <service id="app.controller.pipe_notification" class="AppBundle\Controller\PipeNotificationController">
             <argument type="service" id="river.tide.transaction_manager" />

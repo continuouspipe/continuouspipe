@@ -35,6 +35,13 @@ class BuildRequest
     private $engine;
 
     /**
+     * A key/value attribute bag to tag the build.
+     *
+     * @var array
+     */
+    private $attributes;
+
+    /**
      * @deprecated Should use the `steps` instead.
      *
      * @var Repository|null
@@ -71,14 +78,16 @@ class BuildRequest
 
     /**
      * @param BuildStepConfiguration[] $steps
-     * @param Logging            $logging
-     * @param UuidInterface      $credentialsBucket
+     * @param Logging $logging
+     * @param UuidInterface $credentialsBucket
+     * @param array $attributes
      */
-    public function __construct(array $steps, Logging $logging, UuidInterface $credentialsBucket)
+    public function __construct(array $steps, Logging $logging, UuidInterface $credentialsBucket, array $attributes = [])
     {
         $this->steps = $steps;
         $this->logging = $logging;
         $this->credentialsBucket = $credentialsBucket;
+        $this->attributes = $attributes;
     }
 
     /**
@@ -115,6 +124,11 @@ class BuildRequest
     public function getSteps()
     {
         return $this->steps ?: [];
+    }
+
+    public function getAttributes() : array
+    {
+        return $this->attributes ?: [];
     }
 
     public function withSteps(array $steps) : BuildRequest
