@@ -12,12 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AuditLogController
 {
-    private $pageSizes = [
-        10,
-        20,
-        50,
-    ];
-
     /**
      * @var LogRepository
      */
@@ -38,8 +32,8 @@ class AuditLogController
     {
         $eventTypes = $this->logRepository->listEventTypes();
         $eventType = $request->get('event_type', reset($eventTypes));
-        $pageCursor = $request->get('page', '');
-        $pageSize = $request->get('limit', reset($this->pageSizes));
+        $pageCursor = $request->get('cursor', '');
+        $pageSize = $request->get('limit', 10);
         $result = $this->logRepository->query($eventType, $pageCursor, $pageSize);
 
         return [
@@ -47,9 +41,7 @@ class AuditLogController
             'nextPageCursor' => $result->nextPageCursor(),
             'eventTypes' => $eventTypes,
             'eventType' => $eventType,
-            'pageSizes' => $this->pageSizes,
             'pageSize' => $pageSize,
-            'hasNextPage' => !empty($result->nextPageCursor()),
         ];
     }
 }

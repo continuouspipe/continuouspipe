@@ -4,9 +4,6 @@ namespace ContinuousPipe\AuditLog\Storage;
 
 use ContinuousPipe\AuditLog\Record;
 
-/**
- *
- */
 class PaginatedResult
 {
     /**

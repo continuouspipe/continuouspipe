@@ -1,5 +1,6 @@
 {% extends '::layout.html.twig' %}
 
+{% set pageSizes = [10, 20, 50] %}
 {% block content %}
     <div class="container-fluid">
         <div class="row">
@@ -67,10 +68,10 @@
                 <div class="pager">
                     <form class="form-inline" method="GET">
                         <div class="form-group">
-                            <input type="hidden" name="page" value="{{ nextPageCursor }}" />
+                            <input type="hidden" name="cursor" value="{{ nextPageCursor }}" />
                             <input type="hidden" name="limit" value="{{ pageSize }}" />
                             <input type="hidden" name="event_type" value="{{ eventType }}" />
-                            {% if hasNextPage %}
+                            {% if nextPageCursor %}
                             <button class="btn btn-default" type="submit">Next Page</button>
                             {% endif %}
                         </div>

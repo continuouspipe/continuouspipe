@@ -4,7 +4,6 @@ namespace ContinuousPipe\AuditLog;
 
 use ContinuousPipe\Authenticator\Event\TeamCreationEvent;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
-use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
 
 class RecordFactory
@@ -14,15 +13,9 @@ class RecordFactory
      */
     private $serializer;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager, SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
-        $this->entityManager = $entityManager;
     }
 
     /**

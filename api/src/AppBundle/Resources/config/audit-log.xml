@@ -29,7 +29,6 @@
         <service id="authenticator.audit_log.record_factory"
             class="ContinuousPipe\AuditLog\RecordFactory"
             public="false">
-            <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="serializer" />
         </service>
 
