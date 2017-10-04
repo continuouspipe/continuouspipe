@@ -13,7 +13,7 @@ class EmptyBuilderClient implements BuilderClient
     /**
      * {@inheritdoc}
      */
-    public function build(BuildRequest $buildRequest, User $user) : Build
+    public function build(BuildRequest $buildRequest) : Build
     {
         return new Build(
             (string) Uuid::uuid1(),

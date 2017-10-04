@@ -29,11 +29,11 @@ class TraceableBuilderClient implements BuilderClient
     /**
      * {@inheritdoc}
      */
-    public function build(BuildRequest $buildRequest, User $user) : Build
+    public function build(BuildRequest $buildRequest) : Build
     {
         $this->requests[] = $buildRequest;
 
-        return $this->decoratedClient->build($buildRequest, $user);
+        return $this->decoratedClient->build($buildRequest);
     }
 
     /**

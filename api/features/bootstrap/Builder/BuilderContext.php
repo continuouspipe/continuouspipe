@@ -597,7 +597,7 @@ EOF;
         $request = $this->serializer->deserialize($requestAsJson, BuildRequest::class, 'json');
 
         try {
-            $build = $this->builderClient->build($request, new User('samuel', Uuid::uuid4()));
+            $build = $this->builderClient->build($request);
             $this->response = Response::create($this->serializer->serialize($build, 'json'));
         } catch (BuilderException $e) {
             $this->response = Response::create(json_encode([

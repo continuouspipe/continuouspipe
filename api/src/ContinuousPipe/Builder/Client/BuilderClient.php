@@ -17,5 +17,5 @@ interface BuilderClient
      *
      * @return Build
      */
-    public function build(BuildRequest $buildRequest, User $user) : Build;
+    public function build(BuildRequest $buildRequest) : Build;
 }

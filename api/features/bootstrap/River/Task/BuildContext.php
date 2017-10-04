@@ -653,10 +653,9 @@ class BuildContext implements Context
             new Logging(),
             Uuid::fromString('00000000-0000-0000-0000-000000000000')
         );
-        $dummyUser = new User('geza', Uuid::fromString('00000000-0000-0000-0000-000000000000'), ['USER']);
 
         try {
-            $this->realBuilderClient->build($dummyRequest, $dummyUser);
+            $this->realBuilderClient->build($dummyRequest);
         } catch (\Exception $e) {
             $this->buildException = $e;
         }

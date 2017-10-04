@@ -29,9 +29,9 @@ class HookableBuilderClient implements BuilderClient
     /**
      * {@inheritdoc}
      */
-    public function build(BuildRequest $buildRequest, User $user) : Build
+    public function build(BuildRequest $buildRequest) : Build
     {
-        $build = $this->decoratedClient->build($buildRequest, $user);
+        $build = $this->decoratedClient->build($buildRequest);
 
         foreach ($this->hooks as $hook) {
             $build = $hook($build);
