@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Time resolver -->
+        <service id="builder.time_resolver" class="ContinuousPipe\Events\TimeResolver\NativeTimeResolver" />
+
+        <!-- Events storage -->
+        <service id="builder.event_store.doctrine" class="ContinuousPipe\Events\EventStore\Doctrine\DoctrineEventStore">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="jms_serializer.serializer" />
+            <argument type="service" id="builder.time_resolver"/>
+        </service>
+        <service id="builder.event_store" alias="builder.event_store.doctrine" />
+        <service id="builder.build.event_stream_resolver" class="ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver" />
+
+        <!-- Event bus -->
+        <service id="builder.event_bus.middleware.build_event_store" class="ContinuousPipe\Events\SimpleBus\StoreEventsMiddleware">
+            <argument type="service" id="builder.event_store" />
+            <argument type="service" id="builder.build.event_stream_resolver" />
+
+            <tag name="event_bus_middleware" priority="10" />
+        </service>
+
+        <!-- Factory -->
+        <service id="builder.build.build_factory" class="ContinuousPipe\Builder\Aggregate\BuildFactory">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="security.user_context" />
+        </service>
+
+        <!-- Aggregate -->
+        <service id="builder.build.repository" class="ContinuousPipe\Builder\Aggregate\FromEvents\FromEventsBuildRepository">
+            <argument type="service" id="builder.event_store" />
+        </service>
+
+        <service id="builder.build.transaction_manager" class="ContinuousPipe\Events\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="builder.build.repository" />
+            <argument type="service" id="event_bus" />
+        </service>
+
+        <!-- View -->
+        <service id="builder.view.build_repository" class="ContinuousPipe\Builder\View\FromAggregateBuildViewRepository">
+            <argument type="service" id="builder.build.repository" />
+        </service>
+
+        <!-- Saga -->
+        <service id="builder.build_saga" class="ContinuousPipe\Builder\Aggregate\BuildSaga">
+            <argument type="service" id="builder.build.transaction_manager" />
+            <argument type="service" id="builder.artifact_remover" />
+            <argument type="service" id="builder.google_container_builder" />
+            <argument type="service" id="builder.existing_image_checker" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepFinished" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\GoogleContainerBuilder\Event\GCBuildFinished" />
+        </service>
+
+        <!-- Command handler -->
+        <service id="builder.command_handler.start_build" class="ContinuousPipe\Builder\Aggregate\CommandHandler\StartBuildHandler">
+            <argument type="service" id="builder.build.transaction_manager" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\Builder\Aggregate\Command\StartBuild" />
+        </service>
+
+        <service id="builder.command_handler.complete_build" class="ContinuousPipe\Builder\Aggregate\CommandHandler\CompleteBuildHandler">
+            <argument type="service" id="builder.build.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\Builder\Aggregate\Command\CompleteBuild" />
+        </service>
+    </services>
+</container>

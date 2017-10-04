@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.event_store" class="ContinuousPipe\Events\EventStore\InMemoryEventStore">
+            <argument type="service" id="builder.time_resolver" />
+        </service>
+
+        <service id="builder.archive_builder.fixtures" class="ContinuousPipe\Builder\Tests\FixturesArchiveBuilder">
+            <argument>%builder_fixtures_folder%</argument>
+        </service>
+
+        <service id="builder.archive.http_archive_builder.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="builder.archive.http_archive_builder.http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+
+            <argument type="service" id="builder.archive.http_archive_builder.http_client.handler.matching" />
+        </service>
+
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
+            <argument type="collection">
+                <argument type="service" id="builder.archive_builder.fixtures" />
+                <argument type="service" id="builder.archive.http_archive_builder" />
+            </argument>
+        </service>
+
+        <service id="builder.archive_builder.traceable"
+                 class="ContinuousPipe\Builder\Article\TraceableArchiveBuilder"
+                 decorates="builder.archive_builder"
+                 decoration-priority="5">
+            <argument type="service" id="builder.archive_builder.traceable.inner" />
+        </service>
+
+        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\InMemoryRegistry" />
+
+    </services>
+</container>

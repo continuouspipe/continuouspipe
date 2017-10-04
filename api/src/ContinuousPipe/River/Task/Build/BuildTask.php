@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\River\Task\Build;
 
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\BuilderException;
 use ContinuousPipe\Builder\BuildRequestCreator;
-use ContinuousPipe\Builder\Client\BuilderBuild;
 use ContinuousPipe\Builder\Client\BuilderClient;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\River\Event\TideEvent;
@@ -50,12 +50,12 @@ class BuildTask extends EventDrivenTask
     private $log;
 
     /**
-     * @var BuilderBuild[]
+     * @var Build[]
      */
     private $startedBuilds = [];
 
     /**
-     * @var BuilderBuild[]
+     * @var Build[]
      */
     private $successfulBuilds = [];
 
@@ -137,7 +137,7 @@ class BuildTask extends EventDrivenTask
         }
     }
 
-    public function receiveBuildNotification(BuilderBuild $build)
+    public function receiveBuildNotification(Build $build)
     {
         if (!$this->hasStartedBuild($build)) {
             return;
@@ -231,7 +231,7 @@ class BuildTask extends EventDrivenTask
         return true;
     }
 
-    private function isBuildSuccessful(BuilderBuild $build) : bool
+    private function isBuildSuccessful(Build $build) : bool
     {
         foreach ($this->successfulBuilds as $successfulBuild) {
             if ($successfulBuild->getUuid() == $build->getUuid()) {
@@ -242,7 +242,7 @@ class BuildTask extends EventDrivenTask
         return false;
     }
 
-    private function hasStartedBuild(BuilderBuild $build) : bool
+    private function hasStartedBuild(Build $build) : bool
     {
         foreach ($this->startedBuilds as $startedBuild) {
             if ($startedBuild->getUuid() == $build->getUuid()) {

@@ -5,20 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="builder.http_client" class="GuzzleHttp\Client">
-            <tag name="csa_guzzle.client" />
-        </service>
-
-        <service id="builder.client" class="ContinuousPipe\Builder\Client\HttpBuilderClient">
-            <argument type="service" id="builder.http_client" />
-            <argument type="service" id="jms_serializer" />
-            <argument type="service" id="lexik_jwt_authentication.jwt_manager" />
-            <argument>%builder_base_url%</argument>
-
-            <tag name="tolerance.operation_wrapper"
-                 methods="build"
-                 runner="tolerance.operation_runners.builder" />
-        </service>
+        <service id="river.builder_client" alias="builder.client" />
 
         <service id="builder.build_request_source_resolver" class="ContinuousPipe\River\CodeRepository\ThroughRiverArchiveProxySourceResolver">
             <argument type="service" id="logger" />
@@ -30,9 +17,6 @@
         <service id="builder.build_request_creator" class="ContinuousPipe\Builder\WithSourceAndNotificationsBuildRequestCreator">
             <argument type="service" id="logger" />
             <argument type="service" id="builder.build_request_source_resolver" />
-            <argument type="service" id="router" />
-            <argument>%river_host%</argument>
-            <argument>%use_ssl%</argument>
         </service>
 
         <service id="builder.build_request_creator.guess_registry_details"
@@ -42,6 +26,14 @@
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="logger" />
             <argument type="service" id="river.resources.reference_docker_registry_resolver"/>
+        </service>
+
+        <service id="river.builder_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Builder\ListenForBuildStatus" public="true">
+            <argument type="service" id="river.tide.transaction_manager" />
+            <argument type="service" id="builder.view.build_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
         </service>
     </services>
 </container>

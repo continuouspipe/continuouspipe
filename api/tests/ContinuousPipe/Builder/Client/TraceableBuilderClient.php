@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Client;
 
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\User;
 
@@ -28,7 +29,7 @@ class TraceableBuilderClient implements BuilderClient
     /**
      * {@inheritdoc}
      */
-    public function build(BuildRequest $buildRequest, User $user)
+    public function build(BuildRequest $buildRequest, User $user) : Build
     {
         $this->requests[] = $buildRequest;
 

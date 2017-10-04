@@ -1,0 +1,4 @@
+ContinuousPipe\Builder\Engine:
+    properties:
+        type:
+           - Choice: { choices: [docker, gcb], message: Choose a valid engine type }

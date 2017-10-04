@@ -2,16 +2,11 @@
 
 namespace ContinuousPipe\Builder;
 
-use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Builder\Request\BuildRequestStep;
 use ContinuousPipe\River\CodeReference;
 use ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver;
 use ContinuousPipe\River\Task\Build\BuildTaskConfiguration;
-use ContinuousPipe\River\Task\Build\BuildTaskFactory;
 use ContinuousPipe\River\Task\Build\Configuration\ServiceConfiguration;
-use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
-use ContinuousPipe\Security\Credentials\DockerRegistry;
 use LogStream\Log;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\UuidInterface;
@@ -63,7 +58,7 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
             $tideUuid,
             $codeReference,
             new BuildTaskConfiguration(array_map(function (ServiceConfiguration $serviceConfiguration) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
-                return new ServiceConfiguration(array_map(function (BuildRequestStep $buildRequestStep) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
+                return new ServiceConfiguration(array_map(function (BuildStepConfiguration $buildRequestStep) use ($tideUuid, $flowUuid, $credentialsBucketUuid) {
                     if ($buildRequestStep->getImage() !== null) {
                         $buildRequestStep = $buildRequestStep->withImage(
                             $this->guessImageNameIfNeeded($buildRequestStep, $credentialsBucketUuid, $tideUuid, $flowUuid)
@@ -78,7 +73,7 @@ class GuessUserRegistryAndUsername implements BuildRequestCreator
         );
     }
 
-    private function guessImageNameIfNeeded(BuildRequestStep $step, UuidInterface $bucketUuid, UuidInterface $tideUuid, UuidInterface $flowUuid) : Image
+    private function guessImageNameIfNeeded(BuildStepConfiguration $step, UuidInterface $bucketUuid, UuidInterface $tideUuid, UuidInterface $flowUuid) : Image
     {
         $image = $step->getImage();
         $parts = explode('/', $image->getName());

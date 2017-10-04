@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Build\Event;
 
-use ContinuousPipe\Builder\Client\BuilderBuild;
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\River\Event\TideEvent;
 use Ramsey\Uuid\Uuid;
 
@@ -14,11 +14,11 @@ abstract class BuildEvent implements TideEvent
     private $tideUuid;
 
     /**
-     * @var BuilderBuild
+     * @var Build
      */
     private $build;
 
-    public function __construct(Uuid $tideUuid, BuilderBuild $build)
+    public function __construct(Uuid $tideUuid, Build $build)
     {
         $this->tideUuid = $tideUuid;
         $this->build = $build;
@@ -33,7 +33,7 @@ abstract class BuildEvent implements TideEvent
     }
 
     /**
-     * @return BuilderBuild
+     * @return Build
      */
     public function getBuild()
     {

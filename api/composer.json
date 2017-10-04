@@ -59,7 +59,10 @@
         "sroze/kubernetes-client": "dev-master",
         "continuous-pipe/message": "dev-feature/CD-595-add-a-router-for-messages",
         "continuous-pipe/flex": "dev-master",
-        "google/cloud": "^0.36.0"
+        "google/cloud": "^0.36.0",
+        "docker-php/docker-php": "~1.21.4",
+        "react/event-loop": "^0.4.2",
+        "elasticsearch/elasticsearch": "^5.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.1.6",

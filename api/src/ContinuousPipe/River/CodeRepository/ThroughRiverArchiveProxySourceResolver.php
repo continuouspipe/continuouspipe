@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\CodeRepository;
 
 use ContinuousPipe\Builder\BuildRequestSourceResolver;
-use ContinuousPipe\Builder\Request\Archive;
+use ContinuousPipe\Builder\Request\ArchiveSource;
 use ContinuousPipe\River\CodeReference;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -51,7 +51,7 @@ class ThroughRiverArchiveProxySourceResolver implements BuildRequestSourceResolv
             null
         ));
 
-        return new Archive(
+        return new ArchiveSource(
             'https://'.$this->riverUrl.$this->urlGenerator->generate('flow_source_code_archive', [
                 'flowUuid' => $flowUuid->toString(),
                 'reference' => $codeReference->getCommitSha() ?: $codeReference->getBranch(),

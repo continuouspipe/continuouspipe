@@ -143,10 +143,13 @@ fos_rest:
             - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
 
     exception:
+        codes:
+            'ContinuousPipe\Builder\Request\BuildRequestException': 400
         messages:
             'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
             'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
             'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
+            'ContinuousPipe\Builder\Request\BuildRequestException': true
 
 sensio_framework_extra:
     view:    { annotations: false }

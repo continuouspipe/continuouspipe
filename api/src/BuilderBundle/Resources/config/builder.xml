@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.client" class="ContinuousPipe\Builder\Client\TransformAndStartBuild">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="builder.build.build_factory" />
+            <argument type="service" id="builder.view.build_repository" />
+            <argument type="service" id="builder.request_transformer" />
+        </service>
+
+        <!-- Build requests -->
+        <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
+        <service id="builder.request_transformer.engine_into_steps" class="ContinuousPipe\Builder\Request\Transformers\EngineIntoStepsTransformer" />
+        <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
+        <service id="builder.request_transformer.replace_github_repository_by_archive" class="ContinuousPipe\Builder\GitHub\BuildRequestTransformer\ReplaceTheGitHubRepositoryByAnArchive">
+            <argument type="service" id="logger" />
+        </service>
+        <service id="builder.request_transformer.dispatch_log_stream_identifier" class="ContinuousPipe\Builder\Request\Transformers\DispatchLogStreamIdentifierToSteps" />
+        <service id="builder.request_transformer.find_image_registry_credentials" class="ContinuousPipe\Builder\Request\Transformers\FindImageRegistryCredentials">
+            <argument type="service" id="builder.docker.authenticator_credentials_repository" />
+        </service>
+        <service id="builder.request_transformer.load_docker_registries" class="ContinuousPipe\Builder\Request\Transformers\LoadRegistriesFromCredentialsBucket">
+            <argument type="service" id="authenticator.bucket_repository" />
+        </service>
+
+        <service id="builder.request_transformer" class="ContinuousPipe\Builder\Request\Transformers\ChainBuildRequestTransformer">
+            <argument type="collection">
+                <argument type="service" id="builder.request_transformer.non_steps_bc_layer" />
+                <argument type="service" id="builder.request_transformer.add_default_context" />
+                <argument type="service" id="builder.request_transformer.replace_github_repository_by_archive" />
+                <argument type="service" id="builder.request_transformer.dispatch_log_stream_identifier" />
+                <argument type="service" id="builder.request_transformer.find_image_registry_credentials" />
+                <argument type="service" id="builder.request_transformer.load_docker_registries" />
+                <argument type="service" id="builder.request_transformer.engine_into_steps" />
+            </argument>
+        </service>
+
+        <!-- Archives -->
+        <service id="builder.docker_file_resolver" class="ContinuousPipe\Builder\Docker\DockerfileResolver" />
+
+        <service id="builder.archive.http_archive_builder.http_client.handler"
+                 class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
+        <service id="builder.archive.http_archive_builder.http_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="builder.archive.http_archive_builder.http_client.handler" />
+            </argument>
+
+            <tag name="csa_guzzle.client" />
+        </service>
+
+        <service id="builder.archive.http_archive_packer" class="ContinuousPipe\Builder\Archive\HttpArchivePacker">
+            <argument type="service" id="builder.archive.http_archive_builder.http_client" />
+        </service>
+
+        <service id="builder.archive.http_archive_builder" class="ContinuousPipe\Builder\Archive\HttpArchiveBuilder">
+            <argument type="service" id="builder.archive.http_archive_packer" />
+        </service>
+
+        <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
+            <argument type="collection">
+                <argument type="service" id="builder.archive.http_archive_builder" />
+            </argument>
+        </service>
+
+        <service id="builder.image.registry" class="ContinuousPipe\Builder\Image\DockerRegistry">
+            <argument type="service" id="builder.image.registry.http_client"/>
+            <argument type="service" id="builder.docker.authenticator_credentials_repository"/>
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="builder.image.registry.http_client" class="GuzzleHttp\Client"/>
+
+        <service id="builder.existing_image_checker" class="ContinuousPipe\Builder\Image\ExistingImageChecker">
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="builder.image.registry"/>
+        </service>
+    </services>
+</container>

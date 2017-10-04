@@ -8,11 +8,15 @@ class Image
      * @var string
      */
     private $name;
+
     /**
      * @var string
      */
     private $tag;
+
     /**
+     * Re-use the existing built image.
+     *
      * @var bool|null
      */
     private $reuse;
@@ -37,6 +41,23 @@ class Image
         return $this->name;
     }
 
+    public function getTwoPartName() : string
+    {
+        $parts = explode('/', $this->getName());
+        if (count($parts) == 2) {
+            return $this->getName();
+        }
+        return $parts[1] . '/' . $parts[2];
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function shouldReuse()
+    {
+        return $this->reuse;
+    }
+
     /**
      * @return string
      */
@@ -51,5 +72,10 @@ class Image
     public function getReuse()
     {
         return $this->reuse;
+    }
+
+    public function withTag(string $tag)
+    {
+        return new self($this->name, $tag, $this->reuse);
     }
 }

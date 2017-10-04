@@ -1,8 +1,0 @@
-ContinuousPipe\Builder\Request\Artifact:
-    properties:
-        identifier:
-            type: string
-        path:
-            type: string
-        persistent:
-            type: boolean

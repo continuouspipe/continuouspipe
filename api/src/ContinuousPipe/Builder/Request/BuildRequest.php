@@ -5,23 +5,15 @@ namespace ContinuousPipe\Builder\Request;
 use ContinuousPipe\Builder\Context;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Logging;
-use ContinuousPipe\Builder\Notification;
 use ContinuousPipe\Builder\Repository;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Engine;
+use ContinuousPipe\Builder\LogStreamLogging;
 
 class BuildRequest
 {
-    /**
-     * @var BuildRequestStep[]
-     */
-    private $steps;
-
-    /**
-     * @var Notification
-     */
-    private $notification;
-
     /**
      * @var Logging
      */
@@ -33,33 +25,69 @@ class BuildRequest
     private $credentialsBucket;
 
     /**
-     * @param BuildRequestStep[] $steps
-     * @param Notification       $notification
-     * @param Logging            $logging
-     * @param UuidInterface      $credentialsBucket
+     * @var BuildStepConfiguration[]
      */
-    public function __construct(array $steps, Notification $notification, Logging $logging, UuidInterface $credentialsBucket)
+    private $steps;
+
+    /**
+     * @var Engine
+     */
+    private $engine;
+
+    /**
+     * A key/value attribute bag to tag the build.
+     *
+     * @var array
+     */
+    private $attributes;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Repository|null
+     */
+    private $repository;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var ArchiveSource|null
+     */
+    private $archive;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Image|null
+     */
+    private $image;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var Context|null
+     */
+    private $context;
+
+    /**
+     * @deprecated Should use the `steps` instead.
+     *
+     * @var array|null
+     */
+    private $environment;
+
+    /**
+     * @param BuildStepConfiguration[] $steps
+     * @param Logging $logging
+     * @param UuidInterface $credentialsBucket
+     * @param array $attributes
+     */
+    public function __construct(array $steps, Logging $logging, UuidInterface $credentialsBucket, array $attributes = [])
     {
         $this->steps = $steps;
-        $this->notification = $notification;
         $this->logging = $logging;
         $this->credentialsBucket = $credentialsBucket;
-    }
-
-    /**
-     * @return BuildRequestStep[]
-     */
-    public function getSteps(): array
-    {
-        return $this->steps ?: [];
-    }
-
-    /**
-     * @return Notification
-     */
-    public function getNotification()
-    {
-        return $this->notification;
+        $this->attributes = $attributes;
     }
 
     /**
@@ -80,5 +108,100 @@ class BuildRequest
         }
 
         return $this->credentialsBucket;
+    }
+
+    /**
+     * @return Engine|null
+     */
+    public function getEngine()
+    {
+        return $this->engine;
+    }
+
+    /**
+     * @return BuildStepConfiguration[]
+     */
+    public function getSteps()
+    {
+        return $this->steps ?: [];
+    }
+
+    public function getAttributes() : array
+    {
+        return $this->attributes ?: [];
+    }
+
+    public function withSteps(array $steps) : BuildRequest
+    {
+        $request = clone $this;
+        $request->steps = $steps;
+
+        return $request;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Repository|null
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return ArchiveSource|null
+     */
+    public function getArchive()
+    {
+        return $this->archive;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Image|null
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return Context|null
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @deprecated Should be using the build steps instead.
+     *
+     * @return array|null
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    public function withParentLogIdentifier(string $parentLogIdentifier) : BuildRequest
+    {
+        $request = clone $this;
+        $request->logging = Logging::withLogStream(LogStreamLogging::fromParentLogIdentifier($parentLogIdentifier));
+
+        return $request;
+    }
+
+    public function withEngine(Engine $engine)
+    {
+        $request = clone $this;
+        $request->engine = $engine;
+
+        return $request;
     }
 }

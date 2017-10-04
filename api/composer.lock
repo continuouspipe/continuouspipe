@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "71b522481de163f65cb010f6fe0fcd35",
+    "content-hash": "4bfc480da880b3baea60168bb4a515f5",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -189,6 +189,58 @@
                 "logging"
             ],
             "time": "2017-03-06T13:19:23+00:00"
+        },
+        {
+            "name": "clue/stream-filter",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/clue/php-stream-filter.git",
+                "reference": "d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/clue/php-stream-filter/zipball/d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0",
+                "reference": "d80fdee9b3a7e0d16fc330a22f41f3ad0eeb09d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.0 || ^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Clue\\StreamFilter\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@lueck.tv"
+                }
+            ],
+            "description": "A simple and modern approach to stream filtering in PHP",
+            "homepage": "https://github.com/clue/php-stream-filter",
+            "keywords": [
+                "bucket brigade",
+                "callback",
+                "filter",
+                "php_user_filter",
+                "stream",
+                "stream_filter_append",
+                "stream_filter_register"
+            ],
+            "time": "2017-08-18T09:54:01+00:00"
         },
         {
             "name": "cocur/slugify",
@@ -617,6 +669,53 @@
             ],
             "abandoned": "dbellettini/geteventstore-core",
             "time": "2016-07-14T19:50:51+00:00"
+        },
+        {
+            "name": "docker-php/docker-php",
+            "version": "1.21.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/docker-php/docker-php.git",
+                "reference": "964b704520d06d2990458ac07722ca65a19eff67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/docker-php/docker-php/zipball/964b704520d06d2990458ac07722ca65a19eff67",
+                "reference": "964b704520d06d2990458ac07722ca65a19eff67",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/psr7": "^1.2",
+                "jane/open-api": "^1.0",
+                "php": ">=5.4",
+                "php-http/message": "^1.0",
+                "php-http/plugins": "^1.0.1",
+                "php-http/socket-client": "^1.0",
+                "symfony/filesystem": "^2.3 || ^3.0",
+                "symfony/process": "^2.3 || ^3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "^2.0@dev",
+                "phpunit/phpunit": "^4.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.22-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Docker\\": "src/",
+                    "Docker\\API\\": "generated/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Docker PHP client",
+            "time": "2016-05-01T13:21:44+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1586,6 +1685,61 @@
             "time": "2017-01-30T22:07:36+00:00"
         },
         {
+            "name": "elasticsearch/elasticsearch",
+            "version": "v5.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elastic/elasticsearch-php.git",
+                "reference": "50e5b1c63db68839b8acc1f4766769570a27a448"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/50e5b1c63db68839b8acc1f4766769570a27a448",
+                "reference": "50e5b1c63db68839b8acc1f4766769570a27a448",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/ringphp": "~1.0",
+                "php": "^5.6|^7.0",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "cpliakas/git-wrapper": "~1.0",
+                "doctrine/inflector": "^1.1",
+                "mockery/mockery": "0.9.4",
+                "phpunit/phpunit": "^4.7|^5.4",
+                "sami/sami": "~3.2",
+                "symfony/finder": "^2.8",
+                "symfony/yaml": "^2.8"
+            },
+            "suggest": {
+                "ext-curl": "*",
+                "monolog/monolog": "Allows for client-level logging and tracing"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Elasticsearch\\": "src/Elasticsearch/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Zachary Tong"
+                }
+            ],
+            "description": "PHP Client for Elasticsearch",
+            "keywords": [
+                "client",
+                "elasticsearch",
+                "search"
+            ],
+            "time": "2017-07-19T18:44:30+00:00"
+        },
+        {
             "name": "fig/http-message-util",
             "version": "1.1.2",
             "source": {
@@ -1731,6 +1885,54 @@
             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
             "homepage": "https://github.com/firebase/php-jwt",
             "time": "2016-07-18T04:51:16+00:00"
+        },
+        {
+            "name": "fitbug/symfony-yaml-serializer-encoder-decoder",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fitbug/symfony-yaml-serializer-encoder-decoder.git",
+                "reference": "de3279ae69a80ddcef2559dbdb89a72f33caf5b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fitbug/symfony-yaml-serializer-encoder-decoder/zipball/de3279ae69a80ddcef2559dbdb89a72f33caf5b1",
+                "reference": "de3279ae69a80ddcef2559dbdb89a72f33caf5b1",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/serializer": "^v2.0.0 || ^3.0.0",
+                "symfony/yaml": "^v2.0.0 || ^3.0.0"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^2.0.0 || ^3.0.0",
+                "squizlabs/php_codesniffer": "^2.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fitbug\\SymfonySerializer\\YamlEncoderDecoder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Billie Thompson",
+                    "email": "billie.thompson@fitbug.com"
+                }
+            ],
+            "description": "A encoder and decoder for Yaml for the Symfony Serializer Component.",
+            "keywords": [
+                "encoder",
+                "serializer",
+                "symfony",
+                "symfony-serializer",
+                "yaml"
+            ],
+            "time": "2016-08-12T14:15:24+00:00"
         },
         {
             "name": "friendsofsymfony/rest-bundle",
@@ -2469,6 +2671,107 @@
             "time": "2017-03-20T17:10:46+00:00"
         },
         {
+            "name": "guzzlehttp/ringphp",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/RingPHP.git",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/RingPHP/zipball/dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/streams": "~3.0",
+                "php": ">=5.4.0",
+                "react/promise": "~2.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "ext-curl": "Guzzle will use specific adapters if cURL is present"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Ring\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
+            "time": "2015-05-20T03:37:09+00:00"
+        },
+        {
+            "name": "guzzlehttp/streams",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/streams.git",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/streams/zipball/47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Stream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple abstraction over streams of data",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "stream"
+            ],
+            "time": "2014-10-12T19:18:40+00:00"
+        },
+        {
             "name": "incenteev/composer-parameter-handler",
             "version": "v2.1.2",
             "source": {
@@ -2518,6 +2821,215 @@
                 "parameters management"
             ],
             "time": "2015-11-10T17:04:01+00:00"
+        },
+        {
+            "name": "jane/jane",
+            "version": "v1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janephp/jane.git",
+                "reference": "991e095881b570b010cd3a3e8c78ec80903238ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janephp/jane/zipball/991e095881b570b010cd3a3e8c78ec80903238ee",
+                "reference": "991e095881b570b010cd3a3e8c78ec80903238ee",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/inflector": "^1.0",
+                "jane/runtime": "^1.0",
+                "nikic/php-parser": "^1.4|^2.0",
+                "symfony/console": "^2.3|^3.0",
+                "symfony/options-resolver": "^2.7.2|^3.1",
+                "symfony/property-access": "^2.3|^3.0"
+            },
+            "conflict": {
+                "fabpot/php-cs-fixer": "<2.0.0-alpha|>v2.0.0-alpha"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "v2.0.0-alpha",
+                "phpunit/phpunit": "^4.7|^5.5"
+            },
+            "suggest": {
+                "fabpot/php-cs-fixer": "Allow to automatically fix cs on generated code for better visualisation"
+            },
+            "bin": [
+                "bin/jane"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Joli\\Jane\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "Generate a serializable / deserializable object model given a json schema",
+            "time": "2017-06-30T18:45:29+00:00"
+        },
+        {
+            "name": "jane/open-api",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janephp/openapi.git",
+                "reference": "4146c2d837669907695107be9cb0ffae529c176e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janephp/openapi/zipball/4146c2d837669907695107be9cb0ffae529c176e",
+                "reference": "4146c2d837669907695107be9cb0ffae529c176e",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/inflector": "^1.0",
+                "fitbug/symfony-yaml-serializer-encoder-decoder": "^0.1.1",
+                "jane/jane": "^1.5",
+                "jane/openapi-runtime": "^1.0",
+                "nikic/php-parser": "^1.4|^2.0",
+                "symfony/console": "^2.3|^3.0",
+                "symfony/yaml": "^2.8.2 | ^3.0"
+            },
+            "conflict": {
+                "friendsofphp/php-cs-fixer": "<2.0.0-alpha|>2.0.0-alpha"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "v2.0.0-alpha",
+                "phpunit/phpunit": "^4.7",
+                "sllh/php-cs-fixer-styleci-bridge": "^2.1"
+            },
+            "suggest": {
+                "friendsofphp/php-cs-fixer": "To have a nice formatting of the generated files"
+            },
+            "bin": [
+                "bin/jane-openapi"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Joli\\Jane\\OpenApi\\Model\\": "generated/Model/",
+                    "Joli\\Jane\\OpenApi\\Normalizer\\": "generated/Normalizer/",
+                    "Joli\\Jane\\OpenApi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "Generate a PHP Client API (PSR7 compatible) given a OpenApi (Swagger) specification",
+            "keywords": [
+                "jane",
+                "openapi",
+                "swagger"
+            ],
+            "time": "2016-09-08T13:14:02+00:00"
+        },
+        {
+            "name": "jane/openapi-runtime",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janephp/openapi-runtime.git",
+                "reference": "1ee03abfa7d6ed00e4b025b20bdb220ea15770e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janephp/openapi-runtime/zipball/1ee03abfa7d6ed00e4b025b20bdb220ea15770e9",
+                "reference": "1ee03abfa7d6ed00e4b025b20bdb220ea15770e9",
+                "shasum": ""
+            },
+            "require": {
+                "jane/runtime": "^1.0",
+                "php-http/client-common": "^1.1",
+                "php-http/httplug": "^1.0",
+                "php-http/message-factory": "^1.0.2",
+                "symfony/options-resolver": "^2.7|^3.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.7|^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Joli\\Jane\\OpenApi\\Runtime\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "Jane OpenAPI Runtime Library, dependencies and utility class for a library generated by jane/openapi",
+            "time": "2016-09-01T15:57:08+00:00"
+        },
+        {
+            "name": "jane/runtime",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janephp/runtime.git",
+                "reference": "949ddd8f28ed3a697ff2bdc23491be92fd76d6ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janephp/runtime/zipball/949ddd8f28ed3a697ff2bdc23491be92fd76d6ba",
+                "reference": "949ddd8f28ed3a697ff2bdc23491be92fd76d6ba",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/serializer": "^2.3|^3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Joli\\Jane\\Runtime\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "Jane runtime Library",
+            "time": "2016-08-31T15:38:54+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -4063,6 +4575,57 @@
             "time": "2017-04-24T09:12:42+00:00"
         },
         {
+            "name": "nikic/php-parser",
+            "version": "v2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "4dd659edadffdc2143e4753df655d866dbfeedf0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4dd659edadffdc2143e4753df655d866dbfeedf0",
+                "reference": "4dd659edadffdc2143e4753df655d866dbfeedf0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2016-09-16T12:04:44+00:00"
+        },
+        {
             "name": "ocramius/package-versions",
             "version": "1.1.3",
             "source": {
@@ -4365,6 +4928,480 @@
                 "rabbitmq"
             ],
             "time": "2017-06-12T07:05:02+00:00"
+        },
+        {
+            "name": "php-http/client-common",
+            "version": "1.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/client-common.git",
+                "reference": "154d36542eb96ee95daa504591eab78af2484baa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/client-common/zipball/154d36542eb96ee95daa504591eab78af2484baa",
+                "reference": "154d36542eb96ee95daa504591eab78af2484baa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "php-http/httplug": "^1.1",
+                "php-http/message": "^1.2",
+                "php-http/message-factory": "^1.0",
+                "symfony/options-resolver": "^2.6 || ^3.0"
+            },
+            "require-dev": {
+                "henrikbjorn/phpspec-code-coverage": "^1.0",
+                "phpspec/phpspec": "^2.4"
+            },
+            "suggest": {
+                "php-http/cache-plugin": "PSR-6 Cache plugin",
+                "php-http/logger-plugin": "PSR-3 Logger plugin",
+                "php-http/stopwatch-plugin": "Symfony Stopwatch plugin"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Client\\Common\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "Common HTTP Client implementations and tools for HTTPlug",
+            "homepage": "http://httplug.io",
+            "keywords": [
+                "client",
+                "common",
+                "http",
+                "httplug"
+            ],
+            "time": "2017-03-30T12:50:04+00:00"
+        },
+        {
+            "name": "php-http/discovery",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/discovery.git",
+                "reference": "7b50ab4d6c9fdaa1ed53ae310c955900af6e3372"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/7b50ab4d6c9fdaa1ed53ae310c955900af6e3372",
+                "reference": "7b50ab4d6c9fdaa1ed53ae310c955900af6e3372",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5 || ^7.0"
+            },
+            "require-dev": {
+                "henrikbjorn/phpspec-code-coverage": "^2.0.2",
+                "php-http/httplug": "^1.0",
+                "php-http/message-factory": "^1.0",
+                "phpspec/phpspec": "^2.4",
+                "puli/composer-plugin": "1.0.0-beta10"
+            },
+            "suggest": {
+                "php-http/message": "Allow to use Guzzle, Diactoros or Slim Framework factories",
+                "puli/composer-plugin": "Sets up Puli which is recommended for Discovery to work. Check http://docs.php-http.org/en/latest/discovery.html for more details."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Discovery\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "Finds installed HTTPlug implementations and PSR-7 message factories",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "adapter",
+                "client",
+                "discovery",
+                "factory",
+                "http",
+                "message",
+                "psr7"
+            ],
+            "time": "2017-08-03T10:12:53+00:00"
+        },
+        {
+            "name": "php-http/httplug",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/httplug.git",
+                "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/httplug/zipball/1c6381726c18579c4ca2ef1ec1498fdae8bdf018",
+                "reference": "1c6381726c18579c4ca2ef1ec1498fdae8bdf018",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "php-http/promise": "^1.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "henrikbjorn/phpspec-code-coverage": "^1.0",
+                "phpspec/phpspec": "^2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Client\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eric GELOEN",
+                    "email": "geloen.eric@gmail.com"
+                },
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "HTTPlug, the HTTP client abstraction for PHP",
+            "homepage": "http://httplug.io",
+            "keywords": [
+                "client",
+                "http"
+            ],
+            "time": "2016-08-31T08:30:17+00:00"
+        },
+        {
+            "name": "php-http/message",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/message.git",
+                "reference": "2edd63bae5f52f79363c5f18904b05ce3a4b7253"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/message/zipball/2edd63bae5f52f79363c5f18904b05ce3a4b7253",
+                "reference": "2edd63bae5f52f79363c5f18904b05ce3a4b7253",
+                "shasum": ""
+            },
+            "require": {
+                "clue/stream-filter": "^1.3",
+                "php": ">=5.4",
+                "php-http/message-factory": "^1.0.2",
+                "psr/http-message": "^1.0"
+            },
+            "provide": {
+                "php-http/message-factory-implementation": "1.0"
+            },
+            "require-dev": {
+                "akeneo/phpspec-skip-example-extension": "^1.0",
+                "coduo/phpspec-data-provider-extension": "^1.0",
+                "ext-zlib": "*",
+                "guzzlehttp/psr7": "^1.0",
+                "henrikbjorn/phpspec-code-coverage": "^1.0",
+                "phpspec/phpspec": "^2.4",
+                "slim/slim": "^3.0",
+                "zendframework/zend-diactoros": "^1.0"
+            },
+            "suggest": {
+                "ext-zlib": "Used with compressor/decompressor streams",
+                "guzzlehttp/psr7": "Used with Guzzle PSR-7 Factories",
+                "slim/slim": "Used with Slim Framework PSR-7 implementation",
+                "zendframework/zend-diactoros": "Used with Diactoros Factories"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Message\\": "src/"
+                },
+                "files": [
+                    "src/filters.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "HTTP Message related tools",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "http",
+                "message",
+                "psr-7"
+            ],
+            "time": "2017-07-05T06:40:53+00:00"
+        },
+        {
+            "name": "php-http/message-factory",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/message-factory.git",
+                "reference": "a478cb11f66a6ac48d8954216cfed9aa06a501a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/message-factory/zipball/a478cb11f66a6ac48d8954216cfed9aa06a501a1",
+                "reference": "a478cb11f66a6ac48d8954216cfed9aa06a501a1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "psr/http-message": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "Factory interfaces for PSR-7 HTTP Message",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "factory",
+                "http",
+                "message",
+                "stream",
+                "uri"
+            ],
+            "time": "2015-12-19T14:08:53+00:00"
+        },
+        {
+            "name": "php-http/plugins",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/plugins.git",
+                "reference": "0837bf5918020943dc89b1fb2410ce71825898fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/plugins/zipball/0837bf5918020943dc89b1fb2410ce71825898fc",
+                "reference": "0837bf5918020943dc89b1fb2410ce71825898fc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "php-http/client-common": "^1.1",
+                "php-http/httplug": "^1.0",
+                "php-http/message": "^1.0",
+                "php-http/message-factory": "^1.0.2",
+                "symfony/options-resolver": "^2.6|^3.0"
+            },
+            "conflict": {
+                "psr/cache": ">=2.0.0",
+                "psr/log": ">=2.0.0"
+            },
+            "require-dev": {
+                "henrikbjorn/phpspec-code-coverage": "^1.0",
+                "phpspec/phpspec": "^2.4",
+                "psr/cache": "^1.0",
+                "psr/log": "^1.0",
+                "symfony/stopwatch": "^2.3"
+            },
+            "suggest": {
+                "psr/cache-implementation": "Allow to use the CachePlugin",
+                "psr/log-implementation": "Allow to use the LoggerPlugin",
+                "symfony/stopwatch": "Allow to use the StopwatchPlugin"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Client\\Plugin\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "joel.wurtz@gmail.com"
+                }
+            ],
+            "description": "Plugins for HTTPlug",
+            "homepage": "http://httplug.io",
+            "keywords": [
+                "http",
+                "plugin",
+                "psr7"
+            ],
+            "abandoned": "php-http/client-common",
+            "time": "2016-05-04T23:09:25+00:00"
+        },
+        {
+            "name": "php-http/promise",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/promise.git",
+                "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/promise/zipball/dc494cdc9d7160b9a09bd5573272195242ce7980",
+                "reference": "dc494cdc9d7160b9a09bd5573272195242ce7980",
+                "shasum": ""
+            },
+            "require-dev": {
+                "henrikbjorn/phpspec-code-coverage": "^1.0",
+                "phpspec/phpspec": "^2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Promise\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                },
+                {
+                    "name": "Joel Wurtz",
+                    "email": "joel.wurtz@gmail.com"
+                }
+            ],
+            "description": "Promise used for asynchronous HTTP requests",
+            "homepage": "http://httplug.io",
+            "keywords": [
+                "promise"
+            ],
+            "time": "2016-01-26T13:27:02+00:00"
+        },
+        {
+            "name": "php-http/socket-client",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/socket-client.git",
+                "reference": "b40ab7ab5037c3970580db1ac352656495a114c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/socket-client/zipball/b40ab7ab5037c3970580db1ac352656495a114c5",
+                "reference": "b40ab7ab5037c3970580db1ac352656495a114c5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5 || ^7.0",
+                "php-http/discovery": "^1.0",
+                "php-http/httplug": "^1.0",
+                "php-http/message-factory": "^1.0.2",
+                "symfony/options-resolver": "^2.6 || ^3.0"
+            },
+            "provide": {
+                "php-http/client-implementation": "1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/psr7": "^1.2",
+                "php-http/client-common": "^1.0",
+                "php-http/client-integration-tests": "^0.6",
+                "php-http/message": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Client\\Socket\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "Socket client for PHP-HTTP",
+            "time": "2017-07-08T12:10:50+00:00"
         },
         {
             "name": "phpcollection/phpcollection",
@@ -5087,6 +6124,94 @@
             ],
             "abandoned": "sentry/sentry",
             "time": "2015-08-25T22:38:46+00:00"
+        },
+        {
+            "name": "react/event-loop",
+            "version": "v0.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/event-loop.git",
+                "reference": "8bde03488ee897dc6bb3d91e4e17c353f9c5252f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/event-loop/zipball/8bde03488ee897dc6bb3d91e4e17c353f9c5252f",
+                "reference": "8bde03488ee897dc6bb3d91e4e17c353f9c5252f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-event": "~1.0",
+                "ext-libev": "*",
+                "ext-libevent": ">=0.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\EventLoop\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Event loop abstraction layer that libraries can use for evented I/O.",
+            "keywords": [
+                "asynchronous",
+                "event-loop"
+            ],
+            "time": "2017-04-27T10:56:23+00:00"
+        },
+        {
+            "name": "react/promise",
+            "version": "v2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise.git",
+                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/62785ae604c8d69725d693eb370e1d67e94c4053",
+                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com"
+                }
+            ],
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
+            "keywords": [
+                "promise",
+                "promises"
+            ],
+            "time": "2017-03-25T12:08:31+00:00"
         },
         {
             "name": "rhumsaa/uuid",

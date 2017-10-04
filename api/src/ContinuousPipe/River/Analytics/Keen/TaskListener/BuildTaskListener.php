@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Analytics\Keen\TaskListener;
 
-use ContinuousPipe\Builder\Request\BuildRequestStep;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\River\Analytics\Keen\Client\KeenClient;
 use ContinuousPipe\River\Analytics\Keen\Normalizer\BuildRequestNormalizer;
 use ContinuousPipe\River\Event\TideEventWithMetadata;
@@ -73,7 +73,7 @@ class BuildTaskListener
                 'total' => $finishedAt->getTimestamp() - $startedAt->getTimestamp(),
             ],
             'step_count' => count($build->getRequest()->getSteps()),
-            'steps' => array_map(function (BuildRequestStep $step) {
+            'steps' => array_map(function (BuildStepConfiguration $step) {
                 return (new BuildRequestNormalizer())->normalize($step);
             }, $build->getRequest()->getSteps()),
         ]);

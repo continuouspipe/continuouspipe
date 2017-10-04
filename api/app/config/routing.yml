@@ -2,6 +2,11 @@ app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
+builder:
+    resource: "@BuilderBundle/Controller/"
+    type:     annotation
+    prefix: /builder
+
 admin:
     resource: "@AdminBundle/Controller/"
     type: annotation

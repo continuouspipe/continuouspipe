@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Builder\Client;
 
+use ContinuousPipe\Builder\Build;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Security\User\User;
 
@@ -14,7 +15,7 @@ interface BuilderClient
      *
      * @throws BuilderException
      *
-     * @return BuilderBuild
+     * @return Build
      */
-    public function build(BuildRequest $buildRequest, User $user);
+    public function build(BuildRequest $buildRequest, User $user) : Build;
 }

@@ -15,7 +15,7 @@
 
         <service id="river.task.build.saga" class="ContinuousPipe\River\Task\Build\BuildSaga">
             <argument type="service" id="river.tide.transaction_manager" />
-            <argument type="service" id="builder.client"/>
+            <argument type="service" id="river.builder_client"/>
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted" />
         </service>
