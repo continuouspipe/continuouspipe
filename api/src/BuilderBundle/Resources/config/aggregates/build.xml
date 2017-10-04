@@ -22,7 +22,7 @@
             <argument type="service" id="builder.event_store" />
             <argument type="service" id="builder.build.event_stream_resolver" />
 
-            <tag name="event_bus_middleware" priority="10" />
+            <tag name="event_bus_middleware" priority="500" />
         </service>
 
         <!-- Factory -->
