@@ -13,22 +13,14 @@ class BuildFactory
      */
     private $eventBus;
 
-    /**
-     * @var UserContext
-     */
-    private $userContext;
-
-    public function __construct(MessageBus $eventBus, UserContext $userContext)
+    public function __construct(MessageBus $eventBus)
     {
         $this->eventBus = $eventBus;
-        $this->userContext = $userContext;
     }
 
     public function fromRequest(BuildRequest $request, string $identifier = null) : Build
     {
-        $user = $this->userContext->getCurrent();
-
-        $build = Build::createFromRequest($request, $user, $identifier);
+        $build = Build::createFromRequest($request, $identifier);
 
         foreach ($build->raisedEvents() as $event) {
             $this->eventBus->handle($event);

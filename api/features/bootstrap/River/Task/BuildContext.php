@@ -816,7 +816,6 @@ class BuildContext implements Context
         $build = new Build(
             $build->getUuid(),
             $build->getRequest(),
-            new User('user', Uuid::uuid4()),
             $status
         );
 

@@ -45,11 +45,6 @@ class Build implements Aggregate
     private $request;
 
     /**
-     * @var User
-     */
-    private $user;
-
-    /**
      * @var Artifact[]
      */
     private $writtenArtifacts = [];
@@ -61,13 +56,12 @@ class Build implements Aggregate
     {
     }
 
-    public static function createFromRequest(BuildRequest $request, User $user, string $identifier = null) : Build
+    public static function createFromRequest(BuildRequest $request, string $identifier = null) : Build
     {
         $build = new self();
         $build->raiseAndApply(new BuildCreated(
             $identifier ?: Uuid::uuid4()->toString(),
-            $request,
-            $user
+            $request
         ));
 
         return $build;
@@ -172,7 +166,6 @@ class Build implements Aggregate
     {
         $this->identifier = $event->getBuildIdentifier();
         $this->request = $event->getRequest();
-        $this->user = $event->getUser();
     }
 
     private function applyBuildStarted()
@@ -204,14 +197,6 @@ class Build implements Aggregate
     public function getRequest(): BuildRequest
     {
         return $this->request;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
     }
 
     /**

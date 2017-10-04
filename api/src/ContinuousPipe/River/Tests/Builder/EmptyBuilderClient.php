@@ -18,7 +18,6 @@ class EmptyBuilderClient implements BuilderClient
         return new Build(
             (string) Uuid::uuid1(),
             $buildRequest,
-            $user,
             Build::STATUS_PENDING
         );
     }

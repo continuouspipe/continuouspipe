@@ -30,7 +30,6 @@ class FromAggregateBuildViewRepository implements BuildViewRepository
         return new Build(
             $build->getIdentifier(),
             $build->getRequest(),
-            $build->getUser(),
             $build->getStatus()
         );
     }

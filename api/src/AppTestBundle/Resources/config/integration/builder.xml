@@ -16,15 +16,6 @@
                  decorates="river.builder_client">
             <argument type="service" id="builder.client.hookable.inner" />
         </service>
-        <service id="builder.client.faulty_api_simulator"
-                 class="ContinuousPipe\Builder\Client\FaultyApiSimulatorBuilderClient"
-                 decorates="river.builder_client" decoration-priority="32">
-            <argument type="service" id="builder.client.faulty_api_simulator.inner" />
-
-            <tag name="tolerance.operation_wrapper"
-                 methods="build"
-                 runner="tolerance.operation_runners.builder" />
-        </service>
 
         <service id="builder.metrics.traced_publisher"
                  class="ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher"

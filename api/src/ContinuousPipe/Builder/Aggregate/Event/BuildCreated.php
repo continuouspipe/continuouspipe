@@ -18,23 +18,14 @@ class BuildCreated extends BuildEvent
     private $request;
 
     /**
-     * @JMS\Type("ContinuousPipe\Security\User\User")
-     *
-     * @var User
-     */
-    private $user;
-
-    /**
      * @param string $buildIdentifier
      * @param BuildRequest $request
-     * @param User $user
      */
-    public function __construct(string $buildIdentifier, BuildRequest $request, User $user)
+    public function __construct(string $buildIdentifier, BuildRequest $request)
     {
         parent::__construct($buildIdentifier);
 
         $this->request = $request;
-        $this->user = $user;
     }
 
     /**
@@ -43,13 +34,5 @@ class BuildCreated extends BuildEvent
     public function getRequest(): BuildRequest
     {
         return $this->request;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser(): User
-    {
-        return $this->user;
     }
 }
