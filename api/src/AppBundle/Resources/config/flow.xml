@@ -61,7 +61,7 @@
         <service id="river.event_bus.middleware.flow_event_store" class="ContinuousPipe\River\Flow\Event\Storage\StoreFlowEventsMiddleware">
             <argument type="service" id="river.event_store" />
 
-            <tag name="event_bus_middleware" priority="10" />
+            <tag name="event_bus_middleware" priority="500" />
         </service>
 
         <service id="river.flow.configuration.missing_variables.configuration_resolver" class="ContinuousPipe\River\Flow\MissingVariables\ConfigurationMissingVariableResolver">

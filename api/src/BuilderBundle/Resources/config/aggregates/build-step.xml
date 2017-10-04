@@ -16,7 +16,7 @@
             <argument type="service" id="builder.build_step.event_store" />
             <argument type="service" id="builder.build_step.event_stream_resolver" />
 
-            <tag name="event_bus_middleware" priority="10" />
+            <tag name="event_bus_middleware" priority="500" />
         </service>
 
         <!-- Aggregate -->
