@@ -572,6 +572,14 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the new Docker registry should have been saved successfully
+     */
+    public function theNewDockerRegistryShouldHaveBeenSavedSuccessfully()
+    {
+        $this->assertResponseCodeIs($this->response, 201);
+    }
+
+    /**
      * @Then the list should not contain the access token :identifier
      */
     public function theListShouldNotContainTheAccessToken($identifier)

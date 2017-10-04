@@ -83,3 +83,14 @@ Feature:
       | foo      | bar      | samuel.roze@gmail.com | {"created-by": "continuous-pipe"} |
     When I ask the list of the docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000"
     And the registry "quay.io/foo/bar" should have the attribute "created-by" valued "continuous-pipe"
+
+  Scenario: I can add multiple docker registries from a provider
+    Given I am authenticated as user "samuel"
+    And I have the following docker registry credentials in the bucket "00000000-0000-0000-0000-000000000000":
+      | full_address    | username | password | email                 |
+      | quay.io/foo/bar | foo      | foo      | samuel.roze@gmail.com |
+    When I create a new docker registry with the following configuration in the bucket "00000000-0000-0000-0000-000000000000":
+      | full_address    | username | password | email            |
+      | quay.io/foo/baz | bar      | bar      | gbuza@inviqa.com |
+      | quay.io/bar/foo | bar      | bar      | gbuza@inviqa.com |
+    Then the new Docker registry should have been saved successfully
