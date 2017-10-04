@@ -20,7 +20,7 @@
             <argument type="service" id="command_bus" />
             <argument>%retry_interval%</argument>
 
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
         </service>
 
         <service id="river.handler.delete_environments" class="ContinuousPipe\River\Handler\DeleteEnvironmentsHandler">
@@ -40,14 +40,14 @@
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="event_bus" />
 
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\PinBranch" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\PinBranch" />
         </service>
 
         <service id="river.handler.unpin_branch" class="ContinuousPipe\River\Handler\UnpinBranchHandler">
             <argument type="service" id="river.repository.flow" />
             <argument type="service" id="event_bus" />
 
-            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\UnpinBranch" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\UnpinBranch" />
         </service>
 
         <!-- Event subscribers -->
