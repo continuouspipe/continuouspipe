@@ -1,0 +1,8 @@
+ContinuousPipe\Pipe\DeploymentRequest\Notification:
+    properties:
+        httpCallbackUrl:
+            type: string
+            serialized_name: httpCallbackUrl
+        logStreamParentId:
+            type: string
+            serialized_name: logStreamParentId

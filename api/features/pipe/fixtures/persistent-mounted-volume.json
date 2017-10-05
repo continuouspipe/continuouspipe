@@ -1,0 +1,41 @@
+[
+  {
+    "name": "app",
+    "identifier": "app",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "volumes": [
+        {
+          "type": "persistent",
+          "name": "app-volume",
+          "capacity": "5Gi"
+        }
+      ],
+      "volume_mounts": [
+        {
+          "name": "app-volume",
+          "mount_path": "/app/shared"
+        }
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": [
+    ],
+    "deployment_strategy": {
+      "locked": false
+    }
+  }
+]

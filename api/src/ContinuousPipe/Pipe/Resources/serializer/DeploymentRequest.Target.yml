@@ -1,0 +1,11 @@
+ContinuousPipe\Pipe\DeploymentRequest\Target:
+    properties:
+        environmentName:
+            type: string
+            serialized_name: environmentName
+        clusterIdentifier:
+            type: string
+            serialized_name: clusterIdentifier
+        environmentLabels:
+            type: array<string,string>
+            serialized_name: environmentLabels

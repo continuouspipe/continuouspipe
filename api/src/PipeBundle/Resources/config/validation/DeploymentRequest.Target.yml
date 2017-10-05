@@ -1,0 +1,6 @@
+ContinuousPipe\Pipe\DeploymentRequest\Target:
+    properties:
+        environmentName:
+            - NotBlank: ~
+        clusterIdentifier:
+            - NotBlank: ~

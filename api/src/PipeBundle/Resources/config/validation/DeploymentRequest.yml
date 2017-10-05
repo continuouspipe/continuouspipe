@@ -1,0 +1,10 @@
+ContinuousPipe\Pipe\DeploymentRequest:
+    properties:
+        target:
+            - Valid: ~
+            - NotNull: ~
+        specification:
+            - Valid: ~
+            - NotNull: ~
+        credentialsBucket:
+            - NotBlank: ~

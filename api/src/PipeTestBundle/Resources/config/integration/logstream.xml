@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="log_stream.client" class="LogStream\Tests\InMemoryLogClient">
+            <argument type="service" id="log_stream.tree.log_normalizer" />
+        </service>
+        <service id="log_stream.display_logger_factory"
+                 class="LogStream\Tests\Debug\DisplayLoggerFactory"
+                 decorates="log_stream.logger_factory">
+            <argument type="service" id="log_stream.display_logger_factory.inner" />
+            <argument type="service" id="log_stream.tree.log_normalizer" />
+        </service>
+
+        <service id="log_stream.hookable_factory"
+                 class="LogStream\HookableLoggerFactory"
+                 decorates="log_stream.logger_factory"
+                 decoration-priority="10">
+            <argument type="service" id="log_stream.hookable_factory.inner" />
+        </service>
+    </services>
+</container>

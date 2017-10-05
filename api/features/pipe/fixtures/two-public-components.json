@@ -1,0 +1,63 @@
+[
+  {
+    "name": "api",
+    "identifier": "api",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": {
+      "com.continuouspipe.visibility": "public"
+    }
+  },
+  {
+    "name": "ui",
+    "identifier": "ui",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {"name": "API_URL", "value": "${SERVICE_API_PUBLIC_ENDPOINT}"}
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": {
+      "com.continuouspipe.visibility": "public"
+    }
+  }
+]

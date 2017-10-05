@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="pipe.event_store" class="ContinuousPipe\Pipe\Infrastructure\Doctrine\DoctrineEventStore">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="pipe.deployment_repository" class="ContinuousPipe\Pipe\EventBus\EventStoreDeploymentRepository">
+            <argument type="service" id="pipe.event_store" />
+        </service>
+        <service id="pipe.deployment.apply_events_middleware" class="ContinuousPipe\Pipe\EventBus\Middleware\ApplyDeploymentEventsMiddleware">
+            <argument type="service" id="pipe.deployment_repository" />
+            <argument type="service" id="pipe.event_store" />
+
+            <tag name="event_bus_middleware" />
+        </service>
+        <service id="pipe.deployment.deployment_commands_handler" class="ContinuousPipe\Pipe\Handler\DeploymentCommandsHandler" />
+
+        <!-- Event listeners -->
+        <service id="pipe.deployment.listener.status" class="ContinuousPipe\Pipe\Listener\DeploymentStatusListener">
+            <argument type="service" id="pipe.view.deployment_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
+        </service>
+
+        <service id="pipe.deployment.listener.public_endpoints.inject_as_variables" class="ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised\InjectPublicEndpointsAsVariable">
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" priority="" />
+        </service>
+        <service id="pipe.deployment.listener.public_endpoints.populate_deployment_endpoints" class="ContinuousPipe\Pipe\Listener\PublicEndpointsFinalised\PopulateDeploymentEndpoints">
+            <argument type="service" id="pipe.view.deployment_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" />
+        </service>
+        <service id="pipe.deployment.listener.components_created.populate_statuses" class="ContinuousPipe\Pipe\Listener\ComponentsCreated\PopulateComponentStatuses">
+            <argument type="service" id="pipe.view.deployment_repository" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsCreated" />
+        </service>
+
+        <service id="pipe.deployment_saga" class="ContinuousPipe\Pipe\DeploymentSaga">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="pipe.view.deployment_repository" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentStarted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\EnvironmentPrepared" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsReady" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\PublicEndpointsFinalised" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\ComponentsReady" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+        </service>
+
+        <service id="pipe.deployment.listener.deployment_started.display_cluster_problems" class="ContinuousPipe\Pipe\Listener\DeploymentStarted\DisplayClusterProblems">
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="pipe.k8s_health_checker" />
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentStarted" />
+        </service>
+
+        <service id="pipe.view.deployment_repository" class="ContinuousPipe\Pipe\Infrastructure\Doctrine\DoctrineDeploymentRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+    </services>
+</container>
