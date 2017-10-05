@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(name="deployment_event")
  */
 class EventDto
 {

@@ -88,6 +88,11 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/DevelopmentEnvironment/Infrastructure/Doctrine/Resources/config'
                 prefix: ContinuousPipe\DevelopmentEnvironment
+            ContinuousPipe:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Pipe/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity
             ContinuousPipeRiver:
                 type: xml
                 is_bundle: false
