@@ -18,6 +18,7 @@ use ContinuousPipe\Builder\Aggregate\FromEvents\BuildEventStreamResolver;
 use ContinuousPipe\Builder\Archive\FileSystemArchive;
 use ContinuousPipe\Builder\Article\TraceableArchiveBuilder;
 use ContinuousPipe\Builder\BuildStepConfiguration;
+use ContinuousPipe\Builder\Engine;
 use ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient;
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\Image\Registry;
@@ -182,9 +183,11 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
 
     /**
      * @Given there is a build :identifier
+     * @Given there is a build :identifier with the engine :engine
      * @When I create a build :identifier
+     * @When I create a build :identifier with the engine :engine
      */
-    public function thereIsABuild($identifier)
+    public function thereIsABuild($identifier, $engine = null)
     {
         $this->securityContext->iAmAuthenticated();
         $this->securityContext->thereIsTheBucket('00000000-0000-0000-0000-000000000000');
@@ -210,10 +213,13 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
 }
 CONTENT;
 
+        $request = $this->serializer->deserialize($request, BuildRequest::class, 'json');
+        if (null !== $engine) {
+            $request = $request->withEngine(new Engine($engine));
+        }
+
         $this->buildFactory->fromRequest(
-            $this->buildRequestTransformer->transform(
-                $this->serializer->deserialize($request, BuildRequest::class, 'json')
-            ),
+            $this->buildRequestTransformer->transform($request),
             $identifier
         );
     }
