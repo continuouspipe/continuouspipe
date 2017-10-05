@@ -3,8 +3,8 @@
 namespace Kubernetes\Mock;
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableDeploymentRepository;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableDeploymentRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookablePodRepository;
 use Kubernetes\Client\Exception\DeploymentNotFound;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Deployment;

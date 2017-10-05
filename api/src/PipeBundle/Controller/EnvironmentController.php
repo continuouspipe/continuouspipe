@@ -4,7 +4,7 @@ namespace PipeBundle\Controller;
 
 use ContinuousPipe\Pipe\EnvironmentClientFactory;
 use ContinuousPipe\Pipe\EnvironmentNotFound;
-use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
+use ContinuousPipe\Pipe\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Model\Application;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\BucketRepository;

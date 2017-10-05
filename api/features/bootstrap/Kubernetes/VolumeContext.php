@@ -3,7 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceablePersistentVolumeClaimRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceablePersistentVolumeClaimRepository;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\PersistentVolumeClaim;
 use Kubernetes\Client\Model\PersistentVolumeClaimSpecification;

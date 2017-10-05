@@ -4,8 +4,8 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableIngressRepository;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableIngressRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressBackend;
 use Kubernetes\Client\Model\IngressHttpRule;

@@ -4,8 +4,8 @@ namespace Kubernetes\Mock;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookablePodRepository;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableReplicationControllerRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookablePodRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableReplicationControllerRepository;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\Pod;
 use Kubernetes\Client\Model\PodList;

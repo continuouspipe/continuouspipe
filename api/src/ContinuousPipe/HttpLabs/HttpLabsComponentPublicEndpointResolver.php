@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\HttpLabs;
 
-use ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
+use ContinuousPipe\Pipe\Kubernetes\Inspector\ReverseTransformer\ComponentPublicEndpointResolver;
 use Kubernetes\Client\Model\KubernetesObject;
 use Psr\Log\LoggerInterface;
 

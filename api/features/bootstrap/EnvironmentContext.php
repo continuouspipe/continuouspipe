@@ -2,7 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;

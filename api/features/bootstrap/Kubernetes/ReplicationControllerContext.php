@@ -4,8 +4,8 @@ namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\InMemoryPodRepository;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryPodRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository;
 use Kubernetes\Client\Exception\ReplicationControllerNotFound;
 use Kubernetes\Client\Model\ContainerStatus;
 use Kubernetes\Client\Model\KeyValueObjectList;

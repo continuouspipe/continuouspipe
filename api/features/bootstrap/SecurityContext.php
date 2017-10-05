@@ -3,8 +3,8 @@
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;

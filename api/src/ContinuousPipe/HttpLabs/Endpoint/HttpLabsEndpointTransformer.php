@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\HttpLabs\Endpoint;
 
-use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
-use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\EndpointException;
-use ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
+use ContinuousPipe\Pipe\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\EndpointException;
+use ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\PublicEndpointTransformer;
 use ContinuousPipe\HttpLabs\Authentication;
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
 use ContinuousPipe\HttpLabs\Client\HttpLabsException;

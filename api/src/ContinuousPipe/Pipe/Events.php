@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe;
 
-use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
+use ContinuousPipe\Pipe\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 
 final class Events
 {

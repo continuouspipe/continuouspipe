@@ -3,7 +3,7 @@
 namespace Kubernetes;
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository;
 use Kubernetes\Client\Model\Container;
 use Kubernetes\Client\Model\Deployment;
 use Kubernetes\Client\Model\DeploymentSpecification;

@@ -3,7 +3,7 @@
 namespace ContinuousPipe\CloudFlare\BeforeEnvironmentDeletion;
 
 use ContinuousPipe\Pipe\Events;
-use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
+use ContinuousPipe\Pipe\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\CloudFlare\CloudFlareClient;
 use ContinuousPipe\CloudFlare\CloudFlareException;
 use ContinuousPipe\CloudFlare\Encryption\EncryptedAuthentication;

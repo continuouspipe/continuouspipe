@@ -6,36 +6,36 @@
 
     <services>
         <!-- ContinuousPipe to Kubernetes transformer -->
-        <service id="kubernetes.naming_strategy.identifier" class="ContinuousPipe\Adapter\Kubernetes\Naming\IdentifierNamingStrategy" />
-        <service id="kubernetes.transformer.volume" class="ContinuousPipe\Adapter\Kubernetes\Transformer\VolumeTransformer" />
-        <service id="kubernetes.transformer.pod" class="ContinuousPipe\Adapter\Kubernetes\Transformer\PodTransformer">
+        <service id="kubernetes.naming_strategy.identifier" class="ContinuousPipe\Pipe\Kubernetes\Naming\IdentifierNamingStrategy" />
+        <service id="kubernetes.transformer.volume" class="ContinuousPipe\Pipe\Kubernetes\Transformer\VolumeTransformer" />
+        <service id="kubernetes.transformer.pod" class="ContinuousPipe\Pipe\Kubernetes\Transformer\PodTransformer">
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
             <argument type="service" id="kubernetes.transformer.volume" />
         </service>
-        <service id="kubernetes.transformer.service" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ServiceTransformer">
+        <service id="kubernetes.transformer.service" class="ContinuousPipe\Pipe\Kubernetes\Transformer\ServiceTransformer">
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
             <argument type="service" id="event_dispatcher" />
         </service>
-        <service id="kubernetes.transformer.replication_controller_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ReplicationControllerFactory" />
-        <service id="kubernetes.transformer.ingress_factory" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Factory\IngressFactory">
+        <service id="kubernetes.transformer.replication_controller_factory" class="ContinuousPipe\Pipe\Kubernetes\Transformer\ReplicationControllerFactory" />
+        <service id="kubernetes.transformer.ingress_factory" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\Ingress\Factory\IngressFactory">
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
         </service>
-        <service id="kubernetes.transformer.deployment_factory" class="ContinuousPipe\Adapter\Kubernetes\Transformer\DeploymentFactory" />
-        <service id="kubernetes.transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Transformer\ComponentTransformer">
+        <service id="kubernetes.transformer.deployment_factory" class="ContinuousPipe\Pipe\Kubernetes\Transformer\DeploymentFactory" />
+        <service id="kubernetes.transformer.component" class="ContinuousPipe\Pipe\Kubernetes\Transformer\ComponentTransformer">
             <argument type="service" id="kubernetes.transformer.pod" />
             <argument type="service" id="kubernetes.transformer.service" />
             <argument type="service" id="kubernetes.transformer.replication_controller_factory" />
             <argument type="service" id="kubernetes.transformer.ingress_factory" />
             <argument type="service" id="kubernetes.transformer.deployment_factory" />
         </service>
-        <service id="kubernetes.transformer.environment" class="ContinuousPipe\Adapter\Kubernetes\Transformer\EnvironmentTransformer">
+        <service id="kubernetes.transformer.environment" class="ContinuousPipe\Pipe\Kubernetes\Transformer\EnvironmentTransformer">
             <argument type="service" id="kubernetes.transformer.component" />
         </service>
-        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ComponentTransformer">
+        <service id="kubernetes.reverse_transformer.component" class="ContinuousPipe\Pipe\Kubernetes\Inspector\ReverseTransformer\ComponentTransformer">
             <argument type="service" id="kubernetes.reverse_transformer.component_public_endpoint_resolver"/>
         </service>
 
-        <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\ChainedComponentPublicEndpointResolver">
+        <service id="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" class="ContinuousPipe\Pipe\Kubernetes\Inspector\ReverseTransformer\ChainedComponentPublicEndpointResolver">
             <argument type="collection">
                 <argument type="service" id="pipe.cloud_flare.component_public_endpoint_resolver"/>
                 <argument type="service" id="pipe.httplabs.component_public_endpoint_resolver"/>
@@ -44,17 +44,17 @@
             </argument>
         </service>
         <service id="kubernetes.reverse_transformer.component_public_endpoint_resolver" alias="kubernetes.reverse_transformer.chained_component_public_endpoint_resolver" />
-        <service id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\IngressEndpointResolver" />
-        <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Adapter\Kubernetes\Inspector\ReverseTransformer\DefaultComponentPublicEndpointResolver">
+        <service id="kubernetes.reverse_transformer.ingress.ingress_public_endpoint_resolver" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\Ingress\IngressEndpointResolver" />
+        <service id="kubernetes.reverse_transformer.default_component_public_endpoint_resolver" class="ContinuousPipe\Pipe\Kubernetes\Inspector\ReverseTransformer\DefaultComponentPublicEndpointResolver">
             <argument type="service" id="logger" />
         </service>
 
-        <service id="kubernetes.inspector.pod" class="ContinuousPipe\Adapter\Kubernetes\Inspector\PodInspector" />
-        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector">
+        <service id="kubernetes.inspector.pod" class="ContinuousPipe\Pipe\Kubernetes\Inspector\PodInspector" />
+        <service id="kubernetes.inspector.namespace" class="ContinuousPipe\Pipe\Kubernetes\Inspector\NamespaceInspector">
             <argument type="service" id="kubernetes.reverse_transformer.component" />
         </service>
 
-        <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter" />
+        <service id="kubernetes.public_endpoint.public_service_voter" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\PublicEndpointObjectVoter" />
 
         <!-- Kubernetes client -->
         <service id="pipe.adapter.kubernetes.guzzle_client" class="GuzzleHttp\Client">
@@ -67,12 +67,12 @@
         <service id="pipe.adapter.kubernetes.jms_serializer.rolling_update_deployment_handler" class="Kubernetes\Client\Serializer\JmsSerializerRollingUpdateDeploymentHandler">
             <tag name="jms_serializer.subscribing_handler" />
         </service>
-        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory.google_service_account_resolver" class="ContinuousPipe\Adapter\Kubernetes\Client\Authentication\GoogleCloud\GoogleCloudServiceAccountResolver" />
-        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\Authentication\AuthenticatedHttpClientFactory">
+        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory.google_service_account_resolver" class="ContinuousPipe\Pipe\Kubernetes\Client\Authentication\GoogleCloud\GoogleCloudServiceAccountResolver" />
+        <service id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory" class="ContinuousPipe\Pipe\Kubernetes\Client\Authentication\AuthenticatedHttpClientFactory">
             <argument type="service"
                       id="pipe.adapter.kubernetes.client_factory.authenticated_http_factory.google_service_account_resolver"/>
         </service>
-        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\HttpClientFactory">
+        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Pipe\Kubernetes\Client\HttpClientFactory">
             <argument type="service" id="jms_serializer" />
             <argument type="service" id="pipe.adapter.kubernetes.guzzle_client" />
             <argument type="service" id="pipe.adapter.kubernetes.fault_tolerance_configurator" />
@@ -80,25 +80,25 @@
             <argument type="service" id="logger" />
         </service>
 
-        <service id="pipe.adapter.kubernetes.fault_tolerance_configurator" class="ContinuousPipe\Adapter\Kubernetes\Client\FaultToleranceConfigurator">
+        <service id="pipe.adapter.kubernetes.fault_tolerance_configurator" class="ContinuousPipe\Pipe\Kubernetes\Client\FaultToleranceConfigurator">
         </service>
-        <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\KubernetesEnvironmentClientFactory">
+        <service id="pipe.adapter.kubernetes.environment_client_factory" class="ContinuousPipe\Pipe\Kubernetes\KubernetesEnvironmentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="kubernetes.inspector.namespace" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="logger" />
         </service>
-        <service id="pipe.adapter.kubernetes.deployment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory">
+        <service id="pipe.adapter.kubernetes.deployment_client_factory" class="ContinuousPipe\Pipe\Kubernetes\Client\DeploymentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
         </service>
-        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\LoopPublicEndpointWaiter">
+        <service id="pipe.adapter.kubernetes.service_waiter" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\LoopPublicEndpointWaiter">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="jms_serializer" />
             <argument>%endpoint.wait.timeout%</argument>
             <argument>%endpoint.wait.interval%</argument>
         </service>
-        <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Adapter\Kubernetes\Component\ComponentAttacher">
+        <service id="pipe.adapter.kubernetes.component.attacher" class="ContinuousPipe\Pipe\Kubernetes\Component\ComponentAttacher">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="jms_serializer" />
@@ -108,24 +108,24 @@
         </service>
 
         <!-- Listeners -->
-        <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
-        <service id="pipe.adapter.kubernetes.private_images.secret_factory" class="ContinuousPipe\Adapter\Kubernetes\PrivateImages\SecretFactory">
+        <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Pipe\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
+        <service id="pipe.adapter.kubernetes.private_images.secret_factory" class="ContinuousPipe\Pipe\Kubernetes\PrivateImages\SecretFactory">
             <argument type="service" id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" />
             <argument type="service" id="authenticator.bucket_repository" />
         </service>
-        <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated\WaitPublicServicesEndpoints">
+        <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated\WaitPublicServicesEndpoints">
             <argument type="service" id="event_bus" />
             <argument type="service" id="pipe.adapter.kubernetes.service_waiter" />
             <argument type="service" id="log_stream.logger_factory" />
             <argument type="service" id="kubernetes.public_endpoint.public_service_voter"/>
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Adapter\Kubernetes\Event\PublicServicesCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Kubernetes\Event\PublicServicesCreated" />
         </service>
 
         <!-- Endpoint integrations -->
-        <service id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\Ingress\Transformer\UsesIngressRulesAsEndpoint" />
+        <service id="pipe.adapter.kubernetes.public_endpoint.ingress.use_ingress_rules_as_endpoint" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\Ingress\Transformer\UsesIngressRulesAsEndpoint" />
         <service id="pipe.adapter.kubernetes.service_waiter.transform_endpoints"
-                 class="ContinuousPipe\Adapter\Kubernetes\PublicEndpoint\ApplyEndpointTransformationAfterWaiting"
+                 class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\ApplyEndpointTransformationAfterWaiting"
                  decorates="pipe.adapter.kubernetes.service_waiter">
             <argument type="service" id="pipe.adapter.kubernetes.service_waiter.transform_endpoints.inner" />
             <argument type="collection">
@@ -213,28 +213,28 @@
         <service id="pipe.k8s_health_checker" alias="pipe.k8s_health_checker.http" />
 
         <!-- Synchronous event listeners -->
-        <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Adapter\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
+        <service id="pipe.adapter.kubernetes.listener.before_creating_component.create_persistent_volume_claim" class="ContinuousPipe\Pipe\Kubernetes\Listener\BeforeCreatingComponent\CreatePersistentVolumeClaim">
             <tag name="kernel.event_subscriber" />
         </service>
-        <service id="pipe.adapter.kubernetes.listener.after_creating_component.attach_component" class="ContinuousPipe\Adapter\Kubernetes\Listener\AfterCreatingComponent\AttachComponent">
+        <service id="pipe.adapter.kubernetes.listener.after_creating_component.attach_component" class="ContinuousPipe\Pipe\Kubernetes\Listener\AfterCreatingComponent\AttachComponent">
             <argument type="service" id="pipe.adapter.kubernetes.component.attacher" />
 
             <tag name="kernel.event_subscriber" />
         </service>
-        <service id="pipe.adapter.kubernetes.listener.post_service_transformation.adds_reverse_proxy_annotations" class="ContinuousPipe\Adapter\Kubernetes\Listener\PostServiceTransformation\AddsReverseProxyAnnotation">
+        <service id="pipe.adapter.kubernetes.listener.post_service_transformation.adds_reverse_proxy_annotations" class="ContinuousPipe\Pipe\Kubernetes\Listener\PostServiceTransformation\AddsReverseProxyAnnotation">
             <tag name="kernel.event_subscriber" />
         </service>
 
         <!-- Object deployer -->
-        <service id="pipe.adapter.kubernetes.object_deployer.pod" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\PodObjectDeployer">
+        <service id="pipe.adapter.kubernetes.object_deployer.pod" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\PodObjectDeployer">
             <argument type="service" id="kubernetes.inspector.pod" />
         </service>
-        <service id="pipe.adapter.kubernetes.object_deployer.service" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ServiceObjectDeployer" />
-        <service id="pipe.adapter.kubernetes.object_deployer.secret" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\SecretObjectDeployer" />
-        <service id="pipe.adapter.kubernetes.object_deployer.ingress" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\IngressObjectDeployer" />
-        <service id="pipe.adapter.kubernetes.object_deployer.deployment" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\DeploymentObjectDeployer" />
-        <service id="pipe.adapter.kubernetes.object_deployer.replication_controller" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ReplicationControllerObjectDeployer" />
-        <service id="pipe.adapter.kubernetes.object_deployer" class="ContinuousPipe\Adapter\Kubernetes\ObjectDeployer\ChainObjectDeployer">
+        <service id="pipe.adapter.kubernetes.object_deployer.service" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\ServiceObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.secret" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\SecretObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.ingress" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\IngressObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.deployment" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\DeploymentObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer.replication_controller" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\ReplicationControllerObjectDeployer" />
+        <service id="pipe.adapter.kubernetes.object_deployer" class="ContinuousPipe\Pipe\Kubernetes\ObjectDeployer\ChainObjectDeployer">
             <argument type="collection">
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.pod" />
                 <argument type="service" id="pipe.adapter.kubernetes.object_deployer.service" />
@@ -246,7 +246,7 @@
         </service>
 
         <!-- Handlers -->
-        <service id="pipe.adapter.kubernetes.prepare_environment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\PrepareEnvironmentHandler">
+        <service id="pipe.adapter.kubernetes.prepare_environment_handler" class="ContinuousPipe\Pipe\Kubernetes\Handler\PrepareEnvironmentHandler">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
@@ -256,7 +256,7 @@
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
-        <service id="pipe.adapter.kubernetes.create_public_endpoints" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreatePublicEndpointsHandler">
+        <service id="pipe.adapter.kubernetes.create_public_endpoints" class="ContinuousPipe\Pipe\Kubernetes\Handler\CreatePublicEndpointsHandler">
             <argument type="service" id="kubernetes.transformer.environment" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
@@ -266,7 +266,7 @@
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreatePublicEndpointsCommand" />
         </service>
-        <service id="pipe.adapter.kubernetes.create_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\CreateComponentsHandler">
+        <service id="pipe.adapter.kubernetes.create_components_handler" class="ContinuousPipe\Pipe\Kubernetes\Handler\CreateComponentsHandler">
             <argument type="service" id="kubernetes.transformer.component" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
@@ -278,14 +278,14 @@
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\CreateComponentsCommand" />
         </service>
 
-        <service id="pipe.adapter.kubernetes.rollback_deployment_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\RollbackDeploymentHandler">
+        <service id="pipe.adapter.kubernetes.rollback_deployment_handler" class="ContinuousPipe\Pipe\Kubernetes\Handler\RollbackDeploymentHandler">
             <argument type="service" id="pipe.event_store" />
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\RollbackDeploymentCommand" />
         </service>
 
-        <service id="pipe.adapter.kubernetes.wait_components_handler" class="ContinuousPipe\Adapter\Kubernetes\Handler\WaitComponentsHandler">
+        <service id="pipe.adapter.kubernetes.wait_components_handler" class="ContinuousPipe\Pipe\Kubernetes\Handler\WaitComponentsHandler">
             <argument type="service" id="pipe.adapter.kubernetes.deployment_client_factory" />
             <argument type="service" id="event_bus" />
             <argument type="service" id="log_stream.logger_factory" />
