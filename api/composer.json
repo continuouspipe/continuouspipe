@@ -31,7 +31,7 @@
         "sroze/log-stream": "~0.4.5",
         "tolerance/tolerance": "^0.4.0",
         "continuous-pipe/model": "~2.4.6",
-        "continuous-pipe/security": "~2.9.8",
+        "continuous-pipe/security": "~2.9.9",
         "simple-bus/symfony-bridge": "~5.0",
         "simple-bus/rabbitmq-bundle-bridge": "~4.0.0",
         "simple-bus/jms-serializer-bundle-bridge": "~3.0.0",
