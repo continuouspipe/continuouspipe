@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\CloudFlare\AnnotationManager;
 
-use ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory;
+use ContinuousPipe\Pipe\Kubernetes\Client\DeploymentClientFactory;
 use ContinuousPipe\Pipe\DeploymentContext;
 use Kubernetes\Client\Exception\Exception;
 use Kubernetes\Client\Model\Annotation;

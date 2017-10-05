@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Handler;
 
-use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Pipe\EnvironmentClientFactory;
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Cluster\ClusterNotFound;
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;

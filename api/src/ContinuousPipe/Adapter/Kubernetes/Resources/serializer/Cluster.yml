@@ -1,6 +1,0 @@
-ContinuousPipe\Adapter\Kubernetes\Cluster:
-    properties:
-        address:
-            type: string
-        version:
-            type: string

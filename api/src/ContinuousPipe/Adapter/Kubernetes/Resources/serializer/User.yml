@@ -1,6 +1,0 @@
-ContinuousPipe\Adapter\Kubernetes\User:
-    properties:
-        username:
-            type: string
-        password:
-            type: string
