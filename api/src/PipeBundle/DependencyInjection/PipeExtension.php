@@ -18,7 +18,6 @@ class PipeExtension extends Extension
         $loader->load('controllers.xml');
         $loader->load('deployment.xml');
         $loader->load('handler.xml');
-        $loader->load('adapter.xml');
         $loader->load('kubernetes.xml');
         $loader->load('notification.xml');
         $loader->load('tolerance.xml');

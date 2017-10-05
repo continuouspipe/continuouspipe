@@ -2,11 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Adapter\Kubernetes\KubernetesProvider;
 use ContinuousPipe\Adapter\Kubernetes\Tests\Repository\HookableNamespaceRepository;
-use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeEnvironmentClient;
-use ContinuousPipe\Pipe\Tests\Adapter\Fake\FakeProvider;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
@@ -59,10 +55,6 @@ class EnvironmentContext implements Context
     private $deploymentRepository;
 
     /**
-     * @var FakeEnvironmentClient
-     */
-    private $fakeEnvironmentClient;
-    /**
      * @var InMemoryAuthenticatorClient
      */
     private $inMemoryAuthenticatorClient;
@@ -82,7 +74,6 @@ class EnvironmentContext implements Context
         EventStore $eventStore,
         DeploymentRepository $deploymentRepository,
         MessageBus $eventBus,
-        FakeEnvironmentClient $fakeEnvironmentClient,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         HookableNamespaceRepository $hookableNamespaceRepository,
         JWTManagerInterface $jwtManager
@@ -91,7 +82,6 @@ class EnvironmentContext implements Context
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
-        $this->fakeEnvironmentClient = $fakeEnvironmentClient;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;
         $this->jwtManager = $jwtManager;
@@ -257,31 +247,6 @@ class EnvironmentContext implements Context
             throw new \RuntimeException(sprintf(
                 'Expected the response to be 403/401, but got %d',
                 $this->response->getStatusCode()
-            ));
-        }
-    }
-
-    /**
-     * @Given I have an environment :name
-     */
-    public function iHaveAnEnvironment($name)
-    {
-        $this->fakeEnvironmentClient->add(new Environment($name, $name));
-    }
-
-    /**
-     * @Then the environment :name shouldn't exists
-     */
-    public function theEnvironmentShouldnTExists($name)
-    {
-        $matchingEnvironments = array_filter($this->fakeEnvironmentClient->findAll(), function(Environment $environment) use ($name) {
-            return $environment->getName() == $name;
-        });
-
-        if (count($matchingEnvironments) != 0) {
-            throw new \RuntimeException(sprintf(
-                'Found an environment named "%s"',
-                $name
             ));
         }
     }

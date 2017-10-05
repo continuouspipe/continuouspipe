@@ -18,7 +18,6 @@ class PipeTestExtension extends Extension
         $environment = $container->getParameter('kernel.environment');
 
         // Add our fake adapter
-        $loader->load('fake-adapter.xml');
         $loader->load('tolerance.xml');
 
         // Updates the message bus to trace events

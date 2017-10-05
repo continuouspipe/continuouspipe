@@ -88,11 +88,6 @@
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="logger" />
         </service>
-        <service id="pipe.adapter.kubernetes" class="ContinuousPipe\Adapter\Kubernetes\KubernetesAdapter">
-            <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory" />
-
-            <tag name="pipe.adapter" />
-        </service>
         <service id="pipe.adapter.kubernetes.deployment_client_factory" class="ContinuousPipe\Adapter\Kubernetes\Client\DeploymentClientFactory">
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
         </service>

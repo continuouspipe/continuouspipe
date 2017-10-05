@@ -7,7 +7,7 @@
     <services>
         <service id="pipe.controllers.environment" class="PipeBundle\Controller\EnvironmentController">
             <argument type="service" id="authenticator.bucket_repository" />
-            <argument type="service" id="pipe.chain_environment_client_factory" />
+            <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory" />
             <argument type="service" id="logger" />
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
         </service>

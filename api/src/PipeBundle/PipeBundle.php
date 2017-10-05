@@ -14,7 +14,6 @@ class PipeBundle extends Bundle
      */
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new AdapterCompilerPass());
         $container->addCompilerPass(new DeploymentCommandHandlersPass());
     }
 }
