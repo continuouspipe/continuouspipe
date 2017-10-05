@@ -1,6 +1,6 @@
 <?php
 
-namespace Kubernetes\Mock;
+namespace Pipe\Kubernetes\Mock;
 
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableDeploymentRepository;

@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Pipe\Notification\HookableNotifier;
 use ContinuousPipe\Pipe\Notification\NotificationException;

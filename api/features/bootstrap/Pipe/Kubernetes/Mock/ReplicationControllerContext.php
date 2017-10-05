@@ -1,6 +1,6 @@
 <?php
 
-namespace Kubernetes\Mock;
+namespace Pipe\Kubernetes\Mock;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
@@ -46,7 +46,7 @@ class ReplicationControllerContext implements Context
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->replicationControllerContext = $scope->getEnvironment()->getContext('Kubernetes\ReplicationControllerContext');
+        $this->replicationControllerContext = $scope->getEnvironment()->getContext('Pipe\Kubernetes\ReplicationControllerContext');
     }
 
     /**

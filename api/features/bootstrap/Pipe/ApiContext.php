@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;

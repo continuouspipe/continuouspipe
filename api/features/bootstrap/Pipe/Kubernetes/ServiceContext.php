@@ -1,6 +1,6 @@
 <?php
 
-namespace Kubernetes;
+namespace Pipe\Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;

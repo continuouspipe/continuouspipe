@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use ContinuousPipe\CloudFlare\CloudFlareException;

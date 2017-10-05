@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableNamespaceRepository;
@@ -175,7 +177,7 @@ class EnvironmentContext implements Context
         $bucket = new Bucket(UuidTransformer::transform(Uuid::uuid1()));
         $this->inMemoryAuthenticatorClient->addBucket($bucket);
 
-        $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true);
+        $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../../pipe/fixtures/'.$template.'.json'), true);
         $contents = json_encode([
             'target' => [
                 'environmentName' => $environmentName,
@@ -211,7 +213,7 @@ class EnvironmentContext implements Context
      */
     public function iSendADeploymentRequestWithoutAGivenTarget()
     {
-        $simpleAppComponents = json_decode(file_get_contents(__DIR__.'/../fixtures/simple-app.json'), true);
+        $simpleAppComponents = json_decode(file_get_contents(__DIR__.'/../../pipe/fixtures/simple-app.json'), true);
         $contents = json_encode([
             'specification' => [
                 'components' => $simpleAppComponents,

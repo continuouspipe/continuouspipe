@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Context\Context;
 use LogStream\HookableLoggerFactory;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kubernetes;
+namespace Pipe\Kubernetes;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
@@ -38,7 +38,7 @@ use Symfony\Component\HttpFoundation\Request;
 class NamespaceContext implements Context
 {
     /**
-     * @var \EnvironmentContext
+     * @var \Pipe\EnvironmentContext
      */
     private $environmentContext;
 
@@ -127,7 +127,7 @@ class NamespaceContext implements Context
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->environmentContext = $scope->getEnvironment()->getContext('EnvironmentContext');
+        $this->environmentContext = $scope->getEnvironment()->getContext('Pipe\EnvironmentContext');
     }
 
     /**

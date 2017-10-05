@@ -1,5 +1,7 @@
 <?php
 
+namespace Pipe;
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Model\Environment;
@@ -53,6 +55,7 @@ class DeploymentContext implements Context
      * @var MessageBus
      */
     private $eventBus;
+
     /**
      * @var DeploymentRepository
      */
@@ -122,7 +125,7 @@ class DeploymentContext implements Context
     public function theSpecificationComeFromTheTemplate($template)
     {
         $this->deploymentRequest['specification'] = [
-            'components' => \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../fixtures/'.$template.'.json'), true),
+            'components' => \GuzzleHttp\json_decode(file_get_contents(__DIR__.'/../../pipe/fixtures/'.$template.'.json'), true),
         ];
     }
 
