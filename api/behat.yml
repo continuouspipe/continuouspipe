@@ -407,9 +407,93 @@ default:
                     - "@builder.artifact_manager.file_system"
                     - "@builder.artifact_remover.traced"
 
-    gherkin:
-        filters:
-            tags: "~@integration && ~@elasticsearch && ~@elasticsearch_secure && ~@wip"
+        pipe:
+            paths:
+                - %paths.base%/features/pipe/
+
+            contexts:
+                - Pipe\ApiContext:
+                    - "@security.token_storage"
+                    - "@security.authenticator.client.in_memory"
+                    - "@kernel"
+                - Pipe\DeploymentContext:
+                    - "@kernel"
+                    - "@pipe.view.deployment_repository"
+                    - "@pipe.event_store"
+                    - "@event_bus"
+                - Pipe\EnvironmentContext:
+                    - "@kernel"
+                    - "@pipe.event_store"
+                    - "@pipe.view.deployment_repository"
+                    - "@event_bus"
+                    - "@security.authenticator.client.in_memory"
+                    - "@pipe.adapter.kubernetes.hookable.namespace_repository"
+                    - "@lexik_jwt_authentication.jwt_manager"
+                - Pipe\NotificationContext:
+                    - "@pipe.notification.notifier.traceable"
+                    - "@pipe.notification.notifier.hookable"
+                - Pipe\SecurityContext:
+                    - "@authenticator.bucket_repository"
+                    - "@jms_serializer"
+                    - "@authenticator.team_repository"
+                    - "@security.encryption.vault.previously_known"
+                    - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
+                - Pipe\Kubernetes\NamespaceContext:
+                    - "@pipe.adapter.kubernetes.traceable.namespace_repository"
+                    - "@event_bus"
+                    - "@pipe.adapter.kubernetes.traceable.secret_repository"
+                    - "@pipe.adapter.kubernetes.traceable.service_account_repository"
+                    - "@log_stream.logger_factory"
+                    - "@security.authenticator.client.in_memory"
+                    - "@pipe.adapter.kubernetes.in_memory.service_account_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.secret_repository"
+                    - "@pipe.adapter.kubernetes.hookable.service_account_repository"
+                    - "@pipe.adapter.kubernetes.hookable.namespace_repository"
+                - Pipe\Kubernetes\ReplicationControllerContext:
+                    - "@pipe.adapter.kubernetes.traceable.replication_controller_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.pod_repository"
+                    - "@pipe.adapter.kubernetes.traceable.pod_repository"
+                - Pipe\Kubernetes\PodContext:
+                    - "@pipe.adapter.kubernetes.traceable.pod_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.pod_repository"
+                    - "@pipe.adapter.kubernetes.hookable.pod_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.event_repository"
+                - Pipe\Kubernetes\ServiceContext:
+                    - "@pipe.adapter.kubernetes.hookable.service_repository"
+                    - "@pipe.adapter.kubernetes.traceable.service_repository"
+                - Pipe\Kubernetes\IngressContext:
+                    - "@pipe.adapter.kubernetes.traceable.ingress_repository"
+                    - "@pipe.adapter.kubernetes.hookable.ingress_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.ingress_repository"
+                - Pipe\Kubernetes\VolumeContext:
+                    - "@pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository"
+                    - "@pipe.adapter.kubernetes.traceable.replication_controller_repository"
+                    - "@pipe.adapter.kubernetes.traceable.pod_repository"
+                - Pipe\Kubernetes\Mock\ReplicationControllerContext:
+                    - "@pipe.adapter.kubernetes.hookable.replication_controller_repository"
+                    - "@pipe.adapter.kubernetes.hookable.pod_repository"
+                - Pipe\Kubernetes\DeploymentContext:
+                    - "@pipe.adapter.kubernetes.traceable.deployment_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.deployment_repository"
+                - Pipe\Kubernetes\Mock\DeploymentContext:
+                    - "@pipe.adapter.kubernetes.hookable.deployment_repository"
+                    - "@pipe.adapter.kubernetes.hookable.pod_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.deployment_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.pod_repository"
+                - Pipe\CloudFlareContext:
+                    - "@pipe.cloud_flare.client.traceable"
+                    - "@pipe.cloud_flare.client.api"
+                - Pipe\HttpLabsContext:
+                    - "@pipe.httplabs.http_client.handler.matching"
+                    - "@pipe.httplabs.client.traceable"
+                - Pipe\ClusterHealthContext:
+                    - "@pipe.k8s_health_checker.http.guzzle_client.stack"
+                    - "@kernel"
+                    - "@log_stream.client.in_memory"
+                - Pipe\LogContext:
+                    - "@logger"
+                    - "@log_stream.hookable_factory"
 
     extensions:
         Behat\Symfony2Extension:
@@ -498,6 +582,70 @@ smoke:
                 - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
+
+        pipe:
+            contexts:
+                - Pipe\ApiContext:
+                    - "@security.token_storage"
+                    - "@security.authenticator.client.in_memory"
+                    - "@kernel"
+                - Pipe\SecurityContext:
+                    - "@authenticator.bucket_repository"
+                    - "@jms_serializer"
+                    - "@authenticator.team_repository"
+                    - "@security.encryption.vault.previously_known"
+                    - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
+                - Pipe\EnvironmentContext:
+                    - "@kernel"
+                    - "@pipe.event_store"
+                    - "@pipe.view.deployment_repository"
+                    - "@event_bus"
+                    - "@security.authenticator.client.in_memory"
+                    - "@pipe.adapter.kubernetes.hookable.namespace_repository"
+                    - "@lexik_jwt_authentication.jwt_manager"
+                - Pipe\DeploymentContext:
+                    - "@kernel"
+                    - "@pipe.view.deployment_repository"
+                    - "@pipe.event_store"
+                    - "@event_bus"
+                - Pipe\NotificationContext:
+                    - "@pipe.notification.notifier.traceable"
+                    - "@pipe.notification.notifier.hookable"
+                - Pipe\Kubernetes\NamespaceContext:
+                    - "@pipe.adapter.kubernetes.traceable.namespace_repository"
+                    - "@event_bus"
+                    - "@pipe.adapter.kubernetes.traceable.secret_repository"
+                    - "@pipe.adapter.kubernetes.traceable.service_account_repository"
+                    - "@log_stream.logger_factory"
+                    - "@security.authenticator.client.in_memory"
+                    - "@pipe.adapter.kubernetes.in_memory.service_account_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.secret_repository"
+                    - "@pipe.adapter.kubernetes.hookable.service_account_repository"
+                    - "@pipe.adapter.kubernetes.hookable.namespace_repository"
+                - Pipe\Kubernetes\ServiceContext:
+                    - "@pipe.adapter.kubernetes.hookable.service_repository"
+                    - "@pipe.adapter.kubernetes.traceable.service_repository"
+                - Pipe\Kubernetes\IngressContext:
+                    - "@pipe.adapter.kubernetes.traceable.ingress_repository"
+                    - "@pipe.adapter.kubernetes.hookable.ingress_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.ingress_repository"
+                - Pipe\Kubernetes\ReplicationControllerContext:
+                    - "@pipe.adapter.kubernetes.traceable.replication_controller_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.pod_repository"
+                    - "@pipe.adapter.kubernetes.traceable.pod_repository"
+                - Pipe\Kubernetes\Mock\ReplicationControllerContext:
+                    - "@pipe.adapter.kubernetes.hookable.replication_controller_repository"
+                    - "@pipe.adapter.kubernetes.hookable.pod_repository"
+                - Pipe\CloudFlareContext:
+                    - "@pipe.cloud_flare.client.traceable"
+                    - "@pipe.cloud_flare.client.api"
+                - Pipe\HttpLabsContext:
+                    - "@pipe.httplabs.http_client.handler.matching"
+                    - "@pipe.httplabs.client.traceable"
+                - Pipe\LogContext:
+                    - "@logger"
+                    - "@log_stream.hookable_factory"
 
     extensions:
         Behat\Symfony2Extension:

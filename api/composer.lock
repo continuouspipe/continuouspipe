@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4bfc480da880b3baea60168bb4a515f5",
+    "content-hash": "d4426cc326367fff4874ef0f17e26a9b",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -431,16 +431,16 @@
         },
         {
             "name": "continuous-pipe/message",
-            "version": "dev-feature/CD-595-add-a-router-for-messages",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:continuouspipe/message.git",
-                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede"
+                "url": "https://github.com/continuouspipe/message.git",
+                "reference": "b70514ac0609423938c98c71628b2763b7006396"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
-                "reference": "203d95011756e5c9f28cf1440e0dbfbb53ea6ede",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/b70514ac0609423938c98c71628b2763b7006396",
+                "reference": "b70514ac0609423938c98c71628b2763b7006396",
                 "shasum": ""
             },
             "require": {
@@ -463,10 +463,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/message/tree/feature/CD-595-add-a-router-for-messages",
+                "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-09-02 12:27:44"
+            "time": "2017-09-05T08:32:07+00:00"
         },
         {
             "name": "continuous-pipe/model",
@@ -669,6 +669,69 @@
             ],
             "abandoned": "dbellettini/geteventstore-core",
             "time": "2016-07-14T19:50:51+00:00"
+        },
+        {
+            "name": "defuse/php-encryption",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/defuse/php-encryption.git",
+                "reference": "5176f5abb38d3ea8a6e3ac6cd3bbb54d8185a689"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/defuse/php-encryption/zipball/5176f5abb38d3ea8a6e3ac6cd3bbb54d8185a689",
+                "reference": "5176f5abb38d3ea8a6e3ac6cd3bbb54d8185a689",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "paragonie/random_compat": "~2.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "nikic/php-parser": "^2.0|^3.0",
+                "phpunit/phpunit": "^4|^5"
+            },
+            "bin": [
+                "bin/generate-defuse-key"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Defuse\\Crypto\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Hornby",
+                    "email": "taylor@defuse.ca",
+                    "homepage": "https://defuse.ca/"
+                },
+                {
+                    "name": "Scott Arciszewski",
+                    "email": "info@paragonie.com",
+                    "homepage": "https://paragonie.com"
+                }
+            ],
+            "description": "Secure PHP Encryption Library",
+            "keywords": [
+                "aes",
+                "authenticated encryption",
+                "cipher",
+                "crypto",
+                "cryptography",
+                "encrypt",
+                "encryption",
+                "openssl",
+                "security",
+                "symmetric key cryptography"
+            ],
+            "time": "2017-05-18T21:28:48+00:00"
         },
         {
             "name": "docker-php/docker-php",
@@ -2821,6 +2884,47 @@
                 "parameters management"
             ],
             "time": "2015-11-10T17:04:01+00:00"
+        },
+        {
+            "name": "jamesryanbell/cloudflare",
+            "version": "1.11.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jamesryanbell/cloudflare.git",
+                "reference": "75e93bb822619d8ddb8b1843588caa2fad739491"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jamesryanbell/cloudflare/zipball/75e93bb822619d8ddb8b1843588caa2fad739491",
+                "reference": "75e93bb822619d8ddb8b1843588caa2fad739491",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "< 6",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cloudflare\\": "src/CloudFlare"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Bell",
+                    "email": "james@james-bell.co.uk"
+                }
+            ],
+            "description": "CloudFlare API - PHP",
+            "keywords": [
+                "api",
+                "cloudflare"
+            ],
+            "time": "2017-08-04T19:01:02+00:00"
         },
         {
             "name": "jane/jane",
@@ -6214,6 +6318,59 @@
             "time": "2017-03-25T12:08:31+00:00"
         },
         {
+            "name": "react/promise-timer",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise-timer.git",
+                "reference": "3bc527fbd1201a193ab41c19b9a770d71a3514af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/promise-timer/zipball/3bc527fbd1201a193ab41c19b9a770d71a3514af",
+                "reference": "3bc527fbd1201a193ab41c19b9a770d71a3514af",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3.5",
+                "react/promise": "~2.1|~1.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.0 || ^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\Promise\\Timer\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@lueck.tv"
+                }
+            ],
+            "description": "Trivial timeout implementation for Promises",
+            "homepage": "https://github.com/react/promise-timer",
+            "keywords": [
+                "async",
+                "event-loop",
+                "promise",
+                "reactphp",
+                "timeout",
+                "timer"
+            ],
+            "time": "2017-08-08T16:30:19+00:00"
+        },
+        {
             "name": "rhumsaa/uuid",
             "version": "2.8.2",
             "source": {
@@ -6951,16 +7108,16 @@
         },
         {
             "name": "sroze/kubernetes-client",
-            "version": "dev-master",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/kubernetes-client.git",
-                "reference": "124720d35c30f46b5829d4137d7c28726f2308c1"
+                "reference": "fe02eec3f5b90b47e0b720fb00ecf70b344df876"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/124720d35c30f46b5829d4137d7c28726f2308c1",
-                "reference": "124720d35c30f46b5829d4137d7c28726f2308c1",
+                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/fe02eec3f5b90b47e0b720fb00ecf70b344df876",
+                "reference": "fe02eec3f5b90b47e0b720fb00ecf70b344df876",
                 "shasum": ""
             },
             "require": {
@@ -6981,7 +7138,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-08-18 11:28:30"
+            "time": "2017-10-05T12:21:27+00:00"
         },
         {
             "name": "sroze/log-stream",
@@ -9727,8 +9884,6 @@
     "stability-flags": {
         "symfony/symfony": 20,
         "csa/guzzle-bundle": 20,
-        "sroze/kubernetes-client": 20,
-        "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
     },
     "prefer-stable": false,

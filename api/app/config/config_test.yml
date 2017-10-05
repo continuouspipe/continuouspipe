@@ -1,6 +1,16 @@
 imports:
     - { resource: config_dev.yml }
 
+parameters:
+    pipe.wait_component_interval: 0.01
+    pipe.wait_component_timeout: 1
+
+    endpoint.wait.timeout: 1
+    endpoint.wait.interval: 0.01
+
+    pod.wait.timeout: 1
+    pod.wait.interval: 0.01
+
 framework:
     test: ~
     session:
@@ -39,3 +49,14 @@ message:
         delayed:
             driver:
                 direct: ~
+
+tolerance:
+    operation_runners:
+        logstream:
+            retry:
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    'null': ~

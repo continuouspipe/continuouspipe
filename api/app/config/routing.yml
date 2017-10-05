@@ -7,6 +7,10 @@ builder:
     type:     annotation
     prefix: /builder
 
+pipe:
+    resource: "@PipeBundle/Controller/"
+    type:     annotation
+
 admin:
     resource: "@AdminBundle/Controller/"
     type: annotation

@@ -109,6 +109,12 @@ jms_serializer:
             KubernetesClient:
                 namespace_prefix: "Kubernetes\\Client"
                 path: "%kernel.root_dir%/../vendor/sroze/kubernetes-client/src/Resources/serializer"
+            Kubernetes:
+                namespace_prefix: "ContinuousPipe\\Pipe\\Kubernetes"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Pipe/Kubernetes/Resources/serializer"
+            ContinuousPipePipe:
+                namespace_prefix: "ContinuousPipe\\Pipe"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Pipe/Resources/serializer"
 
 lexik_jwt_authentication:
     private_key_path: %jwt_private_key_path%
@@ -174,6 +180,8 @@ command_bus:
 log_stream:
     url: %logstream_url%
     strict_ssl: false
+    tolerance:
+        operation_runner: tolerance.operation_runners.logstream
 
 old_sound_rabbit_mq:
     connections:
@@ -315,6 +323,23 @@ tolerance:
                 publisher: tolerance.metrics.publisher.statsd
                 namespace: river.outgoing.keen
                 runner: tolerance.operation_runners.buffered
+
+        logstream:
+            retry:
+                runner:
+                    callback: ~
+
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    sleep: ~
+
+                                initial_exponent: 0
+                                step: 0.5
+
+                        count: 2
 
     metrics:
         collectors:
