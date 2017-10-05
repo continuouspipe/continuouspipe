@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle;
+namespace PipeBundle;
 
-use AppBundle\DependencyInjection\CompilerPass\AdapterCompilerPass;
-use AppBundle\DependencyInjection\CompilerPass\DeploymentCommandHandlersPass;
+use PipeBundle\DependencyInjection\CompilerPass\AdapterCompilerPass;
+use PipeBundle\DependencyInjection\CompilerPass\DeploymentCommandHandlersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class AppBundle extends Bundle
+class PipeBundle extends Bundle
 {
     /**
      * {@inheritdoc}

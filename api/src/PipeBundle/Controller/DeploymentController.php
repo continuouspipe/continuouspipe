@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace PipeBundle\Controller;
 
 use ContinuousPipe\Pipe\Command\StartDeploymentCommand;
 use ContinuousPipe\Pipe\View\Deployment;

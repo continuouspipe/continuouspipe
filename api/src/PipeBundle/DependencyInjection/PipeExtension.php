@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\DependencyInjection;
+namespace PipeBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-class AppExtension extends Extension
+class PipeExtension extends Extension
 {
     /**
      * {@inheritdoc}

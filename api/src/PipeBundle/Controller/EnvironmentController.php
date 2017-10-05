@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace PipeBundle\Controller;
 
 use ContinuousPipe\Adapter\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\EnvironmentNotFound;

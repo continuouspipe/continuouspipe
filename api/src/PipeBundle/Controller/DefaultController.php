@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace PipeBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;

@@ -5,14 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="pipe.controllers.environment" class="AppBundle\Controller\EnvironmentController">
+        <service id="pipe.controllers.environment" class="PipeBundle\Controller\EnvironmentController">
             <argument type="service" id="authenticator.bucket_repository" />
             <argument type="service" id="pipe.chain_environment_client_factory" />
             <argument type="service" id="logger" />
             <argument type="service" id="pipe.adapter.kubernetes.client_factory" />
         </service>
 
-        <service id="pipe.controllers.deployment" class="AppBundle\Controller\DeploymentController">
+        <service id="pipe.controllers.deployment" class="PipeBundle\Controller\DeploymentController">
             <argument type="service" id="validator" />
             <argument type="service" id="pipe.view.deployment_repository" />
             <argument type="service" id="security.user_context" />
