@@ -1,7 +1,9 @@
 <?php
 
-namespace ContinuousPipe\Adapter;
+namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Pipe\ClusterNotSupported;
+use ContinuousPipe\Pipe\EnvironmentClient;
 use ContinuousPipe\Security\Credentials\Cluster;
 
 interface EnvironmentClientFactory

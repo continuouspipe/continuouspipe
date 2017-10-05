@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\CloudFlare\BeforeEnvironmentDeletion;
 
-use ContinuousPipe\Adapter\Events;
+use ContinuousPipe\Pipe\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\CloudFlare\CloudFlareClient;
 use ContinuousPipe\CloudFlare\CloudFlareException;

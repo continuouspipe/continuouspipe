@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes;
 
-use ContinuousPipe\Adapter\ClusterNotSupported;
+use ContinuousPipe\Pipe\ClusterNotSupported;
 use ContinuousPipe\Adapter\DispatchEventClientDecorator;
-use ContinuousPipe\Adapter\EnvironmentClientFactory;
+use ContinuousPipe\Pipe\EnvironmentClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Client\ClientException;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;

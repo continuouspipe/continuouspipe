@@ -2,8 +2,8 @@
 
 namespace PipeBundle\Controller;
 
-use ContinuousPipe\Adapter\EnvironmentClientFactory;
-use ContinuousPipe\Adapter\EnvironmentNotFound;
+use ContinuousPipe\Pipe\EnvironmentClientFactory;
+use ContinuousPipe\Pipe\EnvironmentNotFound;
 use ContinuousPipe\Adapter\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Model\Application;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
@@ -53,7 +53,7 @@ class EnvironmentController extends Controller
 
     /**
      * @param BucketRepository $bucketRepository
-     * @param EnvironmentClientFactory $environmentClientFactory
+     * @param \ContinuousPipe\Pipe\EnvironmentClientFactory $environmentClientFactory
      * @param LoggerInterface $logger
      * @param KubernetesClientFactory $kubernetesClientFactory
      */

@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Adapter;
+namespace ContinuousPipe\Pipe;
 
 class EnvironmentNotFound extends \Exception
 {

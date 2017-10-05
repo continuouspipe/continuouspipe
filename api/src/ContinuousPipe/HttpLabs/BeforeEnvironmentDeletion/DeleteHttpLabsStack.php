@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\HttpLabs\BeforeEnvironmentDeletion;
 
-use ContinuousPipe\Adapter\Events;
+use ContinuousPipe\Pipe\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\HttpLabs\Client\HttpLabsClient;
 use ContinuousPipe\HttpLabs\Encryption\EncryptedAuthentication;

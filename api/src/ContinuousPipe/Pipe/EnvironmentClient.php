@@ -1,7 +1,8 @@
 <?php
 
-namespace ContinuousPipe\Adapter;
+namespace ContinuousPipe\Pipe;
 
+use ContinuousPipe\Pipe\EnvironmentNotFound;
 use ContinuousPipe\Model\Environment;
 
 interface EnvironmentClient

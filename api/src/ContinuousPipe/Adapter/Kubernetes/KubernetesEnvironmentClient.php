@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\Adapter\Kubernetes;
 
-use ContinuousPipe\Adapter\EnvironmentClient;
-use ContinuousPipe\Adapter\EnvironmentNotFound;
-use ContinuousPipe\Adapter\Events;
+use ContinuousPipe\Pipe\EnvironmentClient;
+use ContinuousPipe\Pipe\EnvironmentNotFound;
+use ContinuousPipe\Pipe\Events;
 use ContinuousPipe\Adapter\Kubernetes\Event\Environment\EnvironmentDeletionEvent;
 use ContinuousPipe\Adapter\Kubernetes\Inspector\NamespaceInspector;
 use ContinuousPipe\Model\Environment;
