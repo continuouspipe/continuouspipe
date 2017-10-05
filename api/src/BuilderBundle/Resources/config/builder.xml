@@ -14,6 +14,7 @@
         </service>
 
         <!-- Build requests -->
+        <service id="builder.request_transformer.add_default_engine" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultEngine" />
         <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
         <service id="builder.request_transformer.engine_into_steps" class="ContinuousPipe\Builder\Request\Transformers\EngineIntoStepsTransformer" />
         <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
@@ -30,6 +31,7 @@
 
         <service id="builder.request_transformer" class="ContinuousPipe\Builder\Request\Transformers\ChainBuildRequestTransformer">
             <argument type="collection">
+                <argument type="service" id="builder.request_transformer.add_default_engine" />
                 <argument type="service" id="builder.request_transformer.non_steps_bc_layer" />
                 <argument type="service" id="builder.request_transformer.add_default_context" />
                 <argument type="service" id="builder.request_transformer.replace_github_repository_by_archive" />
