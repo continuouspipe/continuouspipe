@@ -1,13 +1,13 @@
 <?php
 
-namespace TestBundle\DependencyInjection;
+namespace PipeTestBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class TestExtension extends Extension
+class PipeTestExtension extends Extension
 {
     /**
      * {@inheritdoc}
