@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Handler;
 
-use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\Client\Client;
 use ContinuousPipe\River\Command\PinBranch;
 use ContinuousPipe\River\Repository\FlowRepository;
 use SimpleBus\Message\Bus\MessageBus;

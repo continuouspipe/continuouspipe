@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\PipeClientException;
+use ContinuousPipe\Pipe\Client\PipeClientException;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
@@ -26,7 +26,7 @@ use Psr\Log\LoggerInterface;
 class EnvironmentClient implements DeployedEnvironmentRepository
 {
     /**
-     * @var Client
+     * @var \ContinuousPipe\Pipe\Client\Client
      */
     private $pipeClient;
 
@@ -51,14 +51,14 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     private $logger;
 
     /**
-     * @param Client $pipeClient
+     * @param \ContinuousPipe\Pipe\Client\Client $pipeClient
      * @param ClusterIdentifierResolver $clusterIdentifierResolver
      * @param UserContext $userContext
      * @param BucketRepository $bucketRepository
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Client $pipeClient,
+        Client\Client $pipeClient,
         ClusterIdentifierResolver $clusterIdentifierResolver,
         UserContext $userContext,
         BucketRepository $bucketRepository,

@@ -11,7 +11,7 @@ use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise;
 use Ramsey\Uuid\Uuid;
 
-class FakeClient implements Client
+class FakeClient implements Client\Client
 {
     /**
      * @var Environment[]

@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
-use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\Client\Client;
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;

@@ -79,7 +79,7 @@ class DeployTask extends EventDrivenTask
         $this->configuration = $configuration;
     }
 
-    public function startDeployment(Tide $tide, DeploymentRequestFactory $deploymentRequestFactory, Client $pipeClient)
+    public function startDeployment(Tide $tide, DeploymentRequestFactory $deploymentRequestFactory, Client\Client $pipeClient)
     {
         $tideLogger = $this->loggerFactory->from($this->context->getLog());
         $taskLogger = $tideLogger->child(new Text(sprintf('Deploying environment (%s)', $this->getLabel())));

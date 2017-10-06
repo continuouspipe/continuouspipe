@@ -7,7 +7,7 @@ use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
-class TraceableClient implements Client
+class TraceableClient implements Client\Client
 {
     /**
      * @var DeploymentRequest\Target[]
@@ -30,14 +30,14 @@ class TraceableClient implements Client
     private $deployments = [];
 
     /**
-     * @var Client
+     * @var Client\Client
      */
     private $client;
 
     /**
-     * @param Client $client
+     * @param Client\Client $client
      */
-    public function __construct(Client $client)
+    public function __construct(Client\Client $client)
     {
         $this->client = $client;
     }

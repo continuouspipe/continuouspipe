@@ -16,7 +16,7 @@ use SimpleBus\Message\Bus\MessageBus;
 class DeleteEnvironmentsHandler
 {
     /**
-     * @var Client
+     * @var \ContinuousPipe\Pipe\Client\Client
      */
     private $client;
 
@@ -56,7 +56,7 @@ class DeleteEnvironmentsHandler
     private $retryInterval;
 
     public function __construct(
-        Client $client,
+        Client\Client $client,
         TideRepository $tideRepository,
         EnvironmentNamingStrategy $environmentNamingStrategy,
         ClusterIdentifierResolver $clusterIdentifierResolver,

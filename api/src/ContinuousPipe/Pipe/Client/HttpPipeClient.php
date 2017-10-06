@@ -1,15 +1,14 @@
 <?php
 
-namespace ContinuousPipe\Pipe;
+namespace ContinuousPipe\Pipe\Client;
 
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\ClusterNotFound;
+use ContinuousPipe\Pipe\PodNotFound;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
 use JMS\Serializer\Serializer;

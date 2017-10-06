@@ -1,9 +1,11 @@
 <?php
 
-namespace ContinuousPipe\Pipe;
+namespace ContinuousPipe\Pipe\Client;
 
 use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\Client\PipeClientException;
+use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise\PromiseInterface;

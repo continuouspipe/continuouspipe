@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Pipe;
+namespace ContinuousPipe\Pipe\Client;
 
 class PipeClientException extends \Exception
 {

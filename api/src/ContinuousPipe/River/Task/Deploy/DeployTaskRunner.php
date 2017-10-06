@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy;
 
-use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\Client\Client;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\River\Task\TaskRunnerException;
