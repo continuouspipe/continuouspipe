@@ -2,13 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use Ramsey\Uuid\Uuid;
-use SimpleBus\Message\Bus\MessageBus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\View;

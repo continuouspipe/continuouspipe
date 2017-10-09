@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\ClusterPolicies\Endpoint;
 
 use ContinuousPipe\Model\Component;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\ClusterNotFound;
 use ContinuousPipe\River\ClusterPolicies\ClusterPolicyException;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
@@ -82,8 +82,8 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                 new DeploymentRequest\Specification(array_map(function (Component $component) use ($tide, $policy) {
                     return $this->enforcePolicyOnComponent($tide, $component, $policy);
                 }, $deploymentRequest->getSpecification()->getComponents())),
-                $deploymentRequest->getNotification(),
-                $deploymentRequest->getCredentialsBucket()
+                $deploymentRequest->getCredentialsBucket(),
+                $deploymentRequest->getNotification()
             );
         } catch (ClusterPolicyException $e) {
             throw new DeploymentRequestException($e->getMessage(), $e->getCode(), $e);

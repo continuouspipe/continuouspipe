@@ -3,8 +3,8 @@
 namespace ContinuousPipe\River\ClusterPolicies\Resources;
 
 use ContinuousPipe\Model\Component;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
 use ContinuousPipe\Pipe\ClusterNotFound;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\ClusterPolicies\ClusterResolution\ClusterPolicyResolver;
 use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;

@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\River\Event;
 
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface TideEvent
 {
     /**
      * Get tide UUID.
      *
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getTideUuid();
 }

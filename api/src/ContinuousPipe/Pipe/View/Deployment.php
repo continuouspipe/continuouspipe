@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class Deployment
 {
@@ -30,7 +31,7 @@ class Deployment
     private $request;
 
     /**
-     * @var User
+     * @var User|null
      */
     private $user;
 
@@ -45,17 +46,35 @@ class Deployment
     private $componentStatuses;
 
     /**
+     * @param UuidInterface     $uuid
+     * @param DeploymentRequest $request
+     * @param string            $status
+     * @param PublicEndpoint[]  $publicEndpoints
+     * @param ComponentStatus[] $componentStatuses
+     */
+    public function __construct(UuidInterface $uuid, DeploymentRequest $request, $status, array $publicEndpoints = [], array $componentStatuses = [])
+    {
+        $this->uuid = (string) $uuid;
+        $this->request = $request;
+        $this->status = $status;
+        $this->publicEndpoints = $publicEndpoints;
+        $this->componentStatuses = $componentStatuses;
+    }
+
+    /**
      * @param DeploymentRequest $request
      * @param User              $user
      *
      * @return Deployment
      */
-    public static function fromRequest(DeploymentRequest $request, User $user)
+    public static function fromRequest(DeploymentRequest $request, User $user = null)
     {
-        $deployment = new self();
-        $deployment->uuid = (string) Uuid::uuid1();
-        $deployment->request = $request;
-        $deployment->status = self::STATUS_PENDING;
+        $deployment = new self(
+            Uuid::uuid4(),
+            $request,
+            self::STATUS_PENDING
+        );
+
         $deployment->user = $user;
 
         return $deployment;
@@ -86,7 +105,7 @@ class Deployment
     }
 
     /**
-     * @return User
+     * @return User|null
      */
     public function getUser()
     {
@@ -99,6 +118,22 @@ class Deployment
     public function updateStatus($status)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful()
+    {
+        return self::STATUS_SUCCESS == $this->getStatus();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFailed()
+    {
+        return self::STATUS_FAILURE == $this->getStatus();
     }
 
     /**

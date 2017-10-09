@@ -1,87 +1,19 @@
 <?php
 
 namespace ContinuousPipe\Pipe\Client;
-
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
-use JMS\Serializer\Annotation as JMS;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
-class DeploymentRequest
+/**
+ * @deprecated Duplicate of the `ContinuousPipe\Pipe\DeploymentRequest` object, after merging pipe. Kept to be compatible
+ *             with serialized tides.
+ */
+class DeploymentRequest extends \ContinuousPipe\Pipe\DeploymentRequest
 {
-    /**
-     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Target")
-     *
-     * @var Target
-     */
-    private $target;
-
-    /**
-     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Specification")
-     *
-     * @var Specification
-     */
-    private $specification;
-
-    /**
-     * @JMS\Type("ContinuousPipe\Pipe\Client\DeploymentRequest\Notification")
-     *
-     * @var Notification
-     */
-    private $notification;
-
-    /**
-     * @JMS\Type("Ramsey\Uuid\Uuid")
-     * @JMS\SerializedName("credentialsBucket")
-     *
-     * @var Uuid
-     */
-    private $credentialsBucket;
-
-    /**
-     * @param Target        $target
-     * @param Specification $specification
-     * @param Notification  $notification
-     * @param Uuid          $credentialsBucket
-     */
-    public function __construct(Target $target, Specification $specification, Notification $notification, Uuid $credentialsBucket)
+    public function __construct(Target $target, Specification $specification, Notification $notification, UuidInterface $credentialsBucket)
     {
-        $this->target = $target;
-        $this->specification = $specification;
-        $this->notification = $notification;
-        $this->credentialsBucket = $credentialsBucket;
-    }
-
-    /**
-     * @return Target
-     */
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    /**
-     * @return Specification
-     */
-    public function getSpecification()
-    {
-        return $this->specification;
-    }
-
-    /**
-     * @return Notification
-     */
-    public function getNotification()
-    {
-        return $this->notification;
-    }
-
-    /**
-     * @return Uuid
-     */
-    public function getCredentialsBucket()
-    {
-        return $this->credentialsBucket;
+        parent::__construct($target, $specification, $credentialsBucket, $notification);
     }
 }

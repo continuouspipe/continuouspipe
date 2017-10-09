@@ -9,6 +9,7 @@ use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Model\ObjectMetadata;
 use Kubernetes\Client\Model\Secret;
+use Ramsey\Uuid\UuidInterface;
 
 class SecretFactory
 {
@@ -48,7 +49,7 @@ class SecretFactory
 
         return new Secret(
             new ObjectMetadata(
-                $this->getSecretName($deploymentContext->getDeployment()->getUser())
+                $this->getSecretName($credentialsBucketUuid)
             ),
             [
                 '.dockercfg' => base64_encode($dockerCfgFileContents),
@@ -57,14 +58,9 @@ class SecretFactory
         );
     }
 
-    /**
-     * @param User $user
-     *
-     * @return string
-     */
-    private function getSecretName(User $user)
+    private function getSecretName(UuidInterface $uuid) : string
     {
-        $userIdentifier = (new Slugify())->slugify($user->getEmail());
+        $userIdentifier = (new Slugify())->slugify('bucket-'.$uuid->toString());
 
         return self::SECRET_PREFIX.$userIdentifier;
     }

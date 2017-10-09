@@ -169,8 +169,8 @@ class DeploymentContext implements Context
         $deployment = $this->deploymentRepository->save(
             Deployment::fromRequest(
                 new DeploymentRequest(
-                    new DeploymentRequest\Target(),
-                    new DeploymentRequest\Specification(),
+                    new DeploymentRequest\Target('', ''),
+                    new DeploymentRequest\Specification([]),
                     Uuid::uuid1(),
                     new DeploymentRequest\Notification(
                         'http://foo/bar'

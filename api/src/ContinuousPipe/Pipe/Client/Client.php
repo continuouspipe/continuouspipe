@@ -2,34 +2,33 @@
 
 namespace ContinuousPipe\Pipe\Client;
 
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\Pipe\Client\PipeClientException;
 use ContinuousPipe\Pipe\ClusterNotFound;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise\PromiseInterface;
+use ContinuousPipe\Pipe\DeploymentRequest as PipeDeploymentRequest;
 
 interface Client
 {
     /**
-     * @param DeploymentRequest $deploymentRequest
-     * @param User              $user
+     * @param PipeDeploymentRequest $deploymentRequest
+     * @param User                  $user
      *
      * @throws PipeClientException
      *
      * @return Deployment
      */
-    public function start(DeploymentRequest $deploymentRequest, User $user);
+    public function start(PipeDeploymentRequest $deploymentRequest, User $user);
 
     /**
-     * @param DeploymentRequest\Target $target
-     * @param Team                     $team
-     * @param User                     $authenticatedUser
+     * @param Target $target
+     * @param Team   $team
+     * @param User   $authenticatedUser
      *
      * @throws PipeClientException
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser);
+    public function deleteEnvironment(Target $target, Team $team, User $authenticatedUser);
 
     /**
      * Delete a Pod.

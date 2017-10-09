@@ -3,12 +3,11 @@
 namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
 use ContinuousPipe\Model\Component\EnvironmentVariable;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable\ServiceVariable;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
-use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 

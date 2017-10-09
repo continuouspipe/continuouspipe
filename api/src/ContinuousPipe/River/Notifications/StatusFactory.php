@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Notifications;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\DeployTask;
 use ContinuousPipe\River\Tide\Status\Status;

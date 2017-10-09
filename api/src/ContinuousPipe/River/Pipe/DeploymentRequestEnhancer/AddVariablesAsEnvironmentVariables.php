@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\EnvironmentVariable;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 

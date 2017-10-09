@@ -4,7 +4,7 @@ namespace ContinuousPipe\River\Task\Run\RunRequest;
 
 use Cocur\Slugify\Slugify;
 use ContinuousPipe\Model\Component;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\DeploymentRequestEnhancer;
@@ -81,11 +81,11 @@ class DeploymentRequestFactory
                     $configuration
                 ),
             ]),
+            $tide->getTeam()->getBucketUuid(),
             new DeploymentRequest\Notification(
                 $this->getNotificationUrl($tide),
                 $taskDetails->getLogId()
-            ),
-            $tide->getTeam()->getBucketUuid()
+            )
         );
 
         return $this->deploymentRequestEnhancer->enhance(

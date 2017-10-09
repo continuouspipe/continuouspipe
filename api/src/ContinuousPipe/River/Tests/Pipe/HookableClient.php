@@ -3,8 +3,8 @@
 namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
@@ -26,10 +26,7 @@ class HookableClient implements Client\Client
     }
 
     /**
-     * @param DeploymentRequest $deploymentRequest
-     * @param User $user
-     *
-     * @return Deployment
+     * {@inheritdoc}
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
@@ -37,11 +34,9 @@ class HookableClient implements Client\Client
     }
 
     /**
-     * @param DeploymentRequest\Target $target
-     * @param Team $team
-     * @param User $authenticatedUser
+     * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
+    public function deleteEnvironment(Target $target, Team $team, User $authenticatedUser)
     {
         $this->decoratedClient->deleteEnvironment($target, $team, $authenticatedUser);
     }

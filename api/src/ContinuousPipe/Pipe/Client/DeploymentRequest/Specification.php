@@ -2,40 +2,10 @@
 
 namespace ContinuousPipe\Pipe\Client\DeploymentRequest;
 
-use ContinuousPipe\Model\Component;
-use JMS\Serializer\Annotation as JMS;
-
-class Specification
+/**
+ * @deprecated Duplicate of the `ContinuousPipe\Pipe\DeploymentRequest\Specification` object, after merging pipe.
+ *             Kept to be compatible with serialized tides.
+ */
+class Specification extends \ContinuousPipe\Pipe\DeploymentRequest\Specification
 {
-    /**
-     * @JMS\Type("array<ContinuousPipe\Model\Component>")
-     * @JMS\SerializedName("components")
-     *
-     * @var Component[]
-     */
-    private $components;
-
-    /**
-     * @param Component[] $components
-     */
-    public function __construct(array $components)
-    {
-        $this->components = $components;
-    }
-
-    /**
-     * @return \ContinuousPipe\Model\Component[]
-     */
-    public function getComponents()
-    {
-        return $this->components;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDockerComposeContents()
-    {
-        return $this->dockerComposeContents;
-    }
 }

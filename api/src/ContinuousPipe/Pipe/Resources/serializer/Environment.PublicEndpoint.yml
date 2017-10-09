@@ -1,0 +1,8 @@
+ContinuousPipe\Pipe\Environment\PublicEndpoint:
+    properties:
+        name:
+            type: string
+        address:
+            type: string
+        ports:
+            type: array<ContinuousPipe\Pipe\Environment\PublicEndpointPort>

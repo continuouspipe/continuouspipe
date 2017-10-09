@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;

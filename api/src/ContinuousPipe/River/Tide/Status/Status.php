@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Tide\Status;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use JMS\Serializer\Annotation as JMS;
 
 final class Status
@@ -35,7 +35,7 @@ final class Status
     private $url;
 
     /**
-     * @JMS\Type("array<ContinuousPipe\Pipe\Client\PublicEndpoint>")
+     * @JMS\Type("array<ContinuousPipe\Pipe\Environment\PublicEndpoint>")
      *
      * @var PublicEndpoint[]
      */

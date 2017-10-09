@@ -3,7 +3,7 @@
 namespace River\Task;
 
 use Behat\Behat\Context\Context;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\WebHook\HookableWebHookClient;
 use ContinuousPipe\River\WebHook\TraceableWebHookClient;
 use ContinuousPipe\River\WebHook\WebHook;

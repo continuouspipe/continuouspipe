@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Pipe\DeploymentRequest;
 
-use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\River\Pipe\EnvironmentAwareConfiguration;
 use ContinuousPipe\River\Tide;
 

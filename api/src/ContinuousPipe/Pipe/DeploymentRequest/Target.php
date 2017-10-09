@@ -26,6 +26,18 @@ class Target
     private $clusterIdentifier;
 
     /**
+     * @param string $environmentName
+     * @param string $clusterIdentifier
+     * @param array  $environmentLabels
+     */
+    public function __construct($environmentName, $clusterIdentifier, array $environmentLabels = [])
+    {
+        $this->environmentName = $environmentName;
+        $this->clusterIdentifier = $clusterIdentifier;
+        $this->environmentLabels = $environmentLabels;
+    }
+
+    /**
      * @return string
      */
     public function getEnvironmentName()
@@ -47,5 +59,13 @@ class Target
     public function getEnvironmentLabels()
     {
         return $this->environmentLabels ?: [];
+    }
+
+    public function withClusterIdentifier(string $clusterIdentifier) : self
+    {
+        $target = clone $this;
+        $target->clusterIdentifier = $clusterIdentifier;
+
+        return $target;
     }
 }

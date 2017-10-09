@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Pipe\PublicEndpoint;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
-use ContinuousPipe\Pipe\Client\PublicEndpointPort;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 
 class PublicEndpointWriter
 {

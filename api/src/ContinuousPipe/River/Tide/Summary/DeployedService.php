@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Tide\Summary;
 
-use ContinuousPipe\Pipe\Client\ComponentStatus;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\View\ComponentStatus;
 
 class DeployedService
 {

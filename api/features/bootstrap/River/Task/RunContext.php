@@ -4,34 +4,31 @@ namespace River\Task;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Component;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\River\Task\Run\Event\RunStarted;
+use ContinuousPipe\Pipe\View\Deployment;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\Task\Run\RunTask;
 use ContinuousPipe\River\Task\Task;
 use ContinuousPipe\River\Tests\Pipe\TraceableClient;
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Kernel;
-use Tide\TasksContext;
 
 class RunContext implements Context
 {
     /**
-     * @var \TideContext
+     * @var \River\TideContext
      */
     private $tideContext;
 
     /**
-     * @var \FlowContext
+     * @var \River\FlowContext
      */
     private $flowContext;
 
     /**
-     * @var TasksContext
+     * @var \River\TasksContext
      */
     private $tideTasksContext;
 

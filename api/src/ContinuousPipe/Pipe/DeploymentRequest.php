@@ -6,6 +6,7 @@ use ContinuousPipe\Pipe\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DeploymentRequest
 {
@@ -25,17 +26,17 @@ class DeploymentRequest
     private $notification;
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $credentialsBucket;
 
     /**
      * @param Target        $target
      * @param Specification $specification
-     * @param Uuid          $credentialsBucket
+     * @param UuidInterface $credentialsBucket
      * @param Notification  $notification
      */
-    public function __construct(Target $target, Specification $specification, Uuid $credentialsBucket, Notification $notification = null)
+    public function __construct(Target $target, Specification $specification, UuidInterface $credentialsBucket, Notification $notification = null)
     {
         $this->target = $target;
         $this->specification = $specification;
@@ -68,7 +69,7 @@ class DeploymentRequest
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getCredentialsBucket()
     {

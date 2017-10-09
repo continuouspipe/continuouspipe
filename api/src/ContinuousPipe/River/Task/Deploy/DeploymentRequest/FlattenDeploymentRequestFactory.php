@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Deploy\DeploymentRequest;
 
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\Pipe\DeploymentRequest\TargetEnvironmentFactory;
 use ContinuousPipe\River\Task\Deploy\DeploymentRequestFactory;
 use ContinuousPipe\River\Task\Deploy\DeployTaskConfiguration;
@@ -61,11 +61,11 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             new DeploymentRequest\Specification(
                 $configuration->getComponents()
             ),
+            $bucketUuid,
             new DeploymentRequest\Notification(
                 $callbackUrl,
                 $taskDetails->getLogId()
-            ),
-            $bucketUuid
+            )
         );
     }
 }

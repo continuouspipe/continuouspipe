@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\WebHook;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\CodeReference;
 use Ramsey\Uuid\Uuid;
 use JMS\Serializer\Annotation as JMS;

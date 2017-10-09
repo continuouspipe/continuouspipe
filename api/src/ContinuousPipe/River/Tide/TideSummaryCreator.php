@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Tide;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentStarted;

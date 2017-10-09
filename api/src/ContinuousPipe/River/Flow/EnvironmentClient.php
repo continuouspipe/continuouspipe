@@ -4,6 +4,7 @@ namespace ContinuousPipe\River\Flow;
 
 use ContinuousPipe\Model\Environment;
 use ContinuousPipe\Pipe\Client;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Client\PipeClientException;
 use ContinuousPipe\River\Environment\DeployedEnvironment;
 use ContinuousPipe\River\Environment\DeployedEnvironmentException;
@@ -126,7 +127,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     {
         try {
             $this->pipeClient->deleteEnvironment(
-                new Client\DeploymentRequest\Target(
+                new DeploymentRequest\Target(
                     $environment->getIdentifier(),
                     $environment->getCluster()
                 ),

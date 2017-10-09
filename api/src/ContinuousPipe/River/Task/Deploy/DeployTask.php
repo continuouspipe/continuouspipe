@@ -3,8 +3,8 @@
 namespace ContinuousPipe\River\Task\Deploy;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\ComponentStatus;
-use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\View\ComponentStatus;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
@@ -111,7 +111,7 @@ class DeployTask extends EventDrivenTask
         } catch (\Exception $e) {
             $this->events->raiseAndApply(new DeploymentFailed(
                 $this->context->getTideUuid(),
-                new Client\Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Client\Deployment::STATUS_FAILURE),
+                new Deployment(Uuid::fromString(Uuid::NIL), $deploymentRequest, Deployment::STATUS_FAILURE),
                 $this->getIdentifier()
             ));
 

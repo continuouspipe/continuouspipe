@@ -3,7 +3,7 @@
 namespace ContinuousPipe\River\Pipe\DeploymentRequest\DynamicVariable;
 
 use Cocur\Slugify\Slugify;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 
 /**
  * This value object represents a dynamic service variable

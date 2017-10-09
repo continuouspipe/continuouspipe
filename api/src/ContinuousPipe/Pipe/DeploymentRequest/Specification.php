@@ -14,10 +14,18 @@ class Specification
     private $components;
 
     /**
+     * @param Component[] $components
+     */
+    public function __construct(array $components)
+    {
+        $this->components = $components;
+    }
+
+    /**
      * @return \ContinuousPipe\Model\Component[]
      */
     public function getComponents()
     {
-        return $this->components;
+        return $this->components ?: [];
     }
 }
