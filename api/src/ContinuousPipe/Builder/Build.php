@@ -52,7 +52,7 @@ class Build implements \JsonSerializable
      */
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->uuid ?: '';
     }
 
     /**
