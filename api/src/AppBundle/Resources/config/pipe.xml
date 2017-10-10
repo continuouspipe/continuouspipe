@@ -9,14 +9,7 @@
             <tag name="csa_guzzle.client" />
         </service>
 
-        <service id="river.pipe_client" class="ContinuousPipe\Pipe\Client\DirectComponentBridgeClient">
-            <argument type="service" id="validator"/>
-            <argument type="service" id="command_bus"/>
-            <argument type="service" id="pipe.view.deployment_repository"/>
-            <argument type="service" id="pipe.adapter.kubernetes.environment_client_factory"/>
-            <argument type="service" id="authenticator.bucket_repository"/>
-            <argument type="service" id="pipe.adapter.kubernetes.client_factory"/>
-        </service>
+        <service id="river.pipe_client" alias="pipe.client" />
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
         <service id="river.pipe.deployment_request.cluster_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\FromTeamBucketClusterResolver">

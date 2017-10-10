@@ -5,6 +5,8 @@ namespace Pipe;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use ContinuousPipe\Model\Environment;
+use ContinuousPipe\Pipe\Client\Client;
+use ContinuousPipe\Pipe\Client\PipeClientException;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
@@ -19,6 +21,7 @@ use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\HandlerStack;
+use JMS\Serializer\SerializerInterface;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,11 +34,6 @@ class DeploymentContext implements Context
      * @var Uuid|null
      */
     public static $deploymentUuid;
-
-    /**
-     * @var Kernel
-     */
-    private $kernel;
 
     /**
      * @var EventStore
@@ -60,19 +58,27 @@ class DeploymentContext implements Context
      * @var DeploymentRepository
      */
     private $deploymentRepository;
-
     /**
-     * @param Kernel $kernel
-     * @param DeploymentRepository $deploymentRepository
-     * @param EventStore $eventStore
-     * @param MessageBus $eventBus
+     * @var SerializerInterface
      */
-    public function __construct(Kernel $kernel, DeploymentRepository $deploymentRepository, EventStore $eventStore, MessageBus $eventBus)
-    {
-        $this->kernel = $kernel;
+    private $serializer;
+    /**
+     * @var Client
+     */
+    private $pipeClient;
+
+    public function __construct(
+        DeploymentRepository $deploymentRepository,
+        EventStore $eventStore,
+        MessageBus $eventBus,
+        SerializerInterface $serializer,
+        Client $pipeClient
+    ) {
         $this->deploymentRepository = $deploymentRepository;
         $this->eventStore = $eventStore;
         $this->eventBus = $eventBus;
+        $this->serializer = $serializer;
+        $this->pipeClient = $pipeClient;
     }
 
     /**
@@ -209,10 +215,16 @@ class DeploymentContext implements Context
      */
     public function iSendTheBuiltDeploymentRequest()
     {
-        $contents = json_encode($this->deploymentRequest);
-        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], $contents));
+        $request = $this->serializer->deserialize(\GuzzleHttp\json_encode($this->deploymentRequest), DeploymentRequest::class, 'json');
+
+        try {
+            $deployment = $this->pipeClient->start($request, new User('username', Uuid::uuid4()));
+            $this->response = Response::create($this->serializer->serialize($deployment, 'json'));
+        } catch (PipeClientException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
+        }
 
         if (in_array($this->response->getStatusCode(), [200, 201])) {
             $json = json_decode($this->response->getContent(), true);
@@ -263,7 +275,7 @@ class DeploymentContext implements Context
      */
     public function theDeploymentRequestShouldBeSuccessfullyCreated()
     {
-        $this->assertResponseCodeIs(201);
+        $this->assertResponseCodeIs([200, 201]);
     }
 
     /**
@@ -341,16 +353,20 @@ class DeploymentContext implements Context
     }
 
     /**
-     * @param int $statusCode
+     * @param int|array $statusCode
      */
     private function assertResponseCodeIs($statusCode)
     {
-        if ($statusCode !== $this->response->getStatusCode()) {
+        if (!is_array($statusCode)) {
+            $statusCode = [$statusCode];
+        }
+
+        if (!in_array($this->response->getStatusCode(), $statusCode)) {
             echo $this->response->getContent();
 
             throw new \RuntimeException(sprintf(
-                'Expected status %d but got %d',
-                $statusCode,
+                'Expected statuses %d but got %d',
+                implode(',', $statusCode),
                 $this->response->getStatusCode()
             ));
         }

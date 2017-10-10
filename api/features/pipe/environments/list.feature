@@ -124,14 +124,6 @@ Feature:
     Then the status of the component "app" should contain the public endpoint "1.2.3.4"
     And the status of the component "app" should contain the public endpoint "foo.bar.dns"
 
-  Scenario: Return 503 HTTP code in case of API error
-    Given I am authenticated
-    And I send the built deployment request
-    And the environment API calls to the cluster failed
-    When I request the environment list of the cluster "my-cluster" of the team "my-team"
-    Then I should receive a service unavailable error
-    And I should see the "Collecting environment list from clusters failed." message in the log
-
   Scenario: It returns the HttpLabs DNS
     Given I am authenticated
     And I send the built deployment request
@@ -140,17 +132,3 @@ Feature:
       | com.continuouspipe.io.httplabs.stack | {"stack_identifier":"00000000-0000-0000-0000-000000000000","stack_address":"foo-bar.httplabs.io"} |
     When I request the environment list of the cluster "my-cluster" of the team "my-team"
     Then the status of the component "app" should contain the public endpoint "foo-bar.httplabs.io"
-
-  Scenario: I'm forbidden when not authenticated
-    Given I am authenticated
-    And I send the built deployment request
-    And I am not authenticated
-    When I request the environment list of the cluster "my-cluster" of the team "my-team" that have the labels "flow=1234567890"
-    Then I should be told that I am forbidden to see these environments
-
-  Scenario: I can get environments using a
-    Given I am authenticated
-    And I send the built deployment request
-    And I am not authenticated
-    When I request the environment list of the cluster "my-cluster" of the team "my-team" that have the labels "flow=1234567890" with a JWT token for the user "system:river"
-    Then I should see the environment "my-environment"

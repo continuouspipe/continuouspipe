@@ -4,11 +4,18 @@ namespace Pipe;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Pipe\Client\Client;
+use ContinuousPipe\Pipe\Client\PipeClientException;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableNamespaceRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
+use ContinuousPipe\Security\User\User;
+use function GuzzleHttp\Promise\unwrap;
+use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Exception\ServerError;
 use Kubernetes\Client\Model\Status;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
@@ -22,11 +29,6 @@ use Ramsey\Uuid\Uuid;
 class EnvironmentContext implements Context
 {
     /**
-     * @var Kernel
-     */
-    private $kernel;
-
-    /**
      * @var Response
      */
     private $response;
@@ -35,16 +37,6 @@ class EnvironmentContext implements Context
      * @var EventStore
      */
     private $eventStore;
-
-    /**
-     * @var Uuid
-     */
-    private $lastDeploymentUuid;
-
-    /**
-     * @var string
-     */
-    private $deploymentEnvironmentName;
 
     /**
      * @var MessageBus
@@ -70,23 +62,39 @@ class EnvironmentContext implements Context
      * @var JWTManagerInterface
      */
     private $jwtManager;
+    /**
+     * @var Client
+     */
+    private $pipeClient;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
 
     public function __construct(
-        Kernel $kernel,
         EventStore $eventStore,
         DeploymentRepository $deploymentRepository,
         MessageBus $eventBus,
         InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         HookableNamespaceRepository $hookableNamespaceRepository,
-        JWTManagerInterface $jwtManager
+        JWTManagerInterface $jwtManager,
+        Client $pipeClient,
+        SerializerInterface $serializer,
+        TeamRepository $teamRepository
     ) {
-        $this->kernel = $kernel;
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
         $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;
         $this->jwtManager = $jwtManager;
+        $this->pipeClient = $pipeClient;
+        $this->serializer = $serializer;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -94,10 +102,14 @@ class EnvironmentContext implements Context
      */
     public function iRequestTheEnvironmentListOfTheCluster($cluster, $team)
     {
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster),
-            'GET'
-        ));
+        try {
+            $environments = $this->pipeClient->getEnvironments($cluster, $this->teamRepository->find($team))->wait();
+            $this->response = Response::create($this->serializer->serialize($environments, 'json'));
+        } catch (PipeClientException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
+        }
     }
 
     /**
@@ -105,39 +117,21 @@ class EnvironmentContext implements Context
      */
     public function iRequestTheEnvironmentListOfTheClusterOfTheTeamThatHaveTheLabels($cluster, $team, $labels)
     {
-        $labelsFilters = ['labels' => []];
+        $labelsFilters = [];
         foreach (explode(',', $labels) as $label) {
             list($key, $value) = explode('=', $label);
 
-            $labelsFilters['labels'][$key] = $value;
+            $labelsFilters[$key] = $value;
         }
 
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster).'?'.http_build_query($labelsFilters),
-            'GET'
-        ));
-    }
-
-    /**
-     * @When I request the environment list of the cluster :cluster of the team :team that have the labels :labels with a JWT token for the user :username
-     */
-    public function iRequestTheEnvironmentListOfTheClusterOfTheTeamThatHaveTheLabelsWithAJwtTokenForTheUser($cluster, $team, $labels, $username)
-    {
-        $labelsFilters = ['labels' => []];
-        foreach (explode(',', $labels) as $label) {
-            list($key, $value) = explode('=', $label);
-
-            $labelsFilters['labels'][$key] = $value;
+        try {
+            $environments = $this->pipeClient->getEnvironmentsLabelled($cluster, $this->teamRepository->find($team), $labelsFilters)->wait();
+            $this->response = Response::create($this->serializer->serialize($environments, 'json'));
+        } catch (PipeClientException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
         }
-
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/teams/%s/clusters/%s/environments', $team, $cluster).'?'.http_build_query($labelsFilters),
-            'GET',
-            [], [], [],
-            [
-                'HTTP_AUTHORIZATION' => 'Bearer '.$this->jwtManager->create(new \Symfony\Component\Security\Core\User\User($username, null)),
-            ]
-        ));
     }
 
     /**
@@ -145,10 +139,35 @@ class EnvironmentContext implements Context
      */
     public function iDeleteTheEnvironmentNamedOfTheClusterOfTheTeam($environment, $cluster, $team)
     {
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/teams/%s/clusters/%s/environments/%s', $team, $cluster, $environment),
-            'DELETE'
-        ));
+        try {
+            $this->pipeClient->deleteEnvironment(new Target($environment, $cluster), $this->teamRepository->find($team), new User('foo', Uuid::uuid4()));
+            $this->response = Response::create('', Response::HTTP_NO_CONTENT);
+        } catch (PipeClientException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
+        }
+    }
+
+    /**
+     * @When I delete the pod named :podName for the team :teamName and the cluster :clusterId
+     */
+    public function iDeleteThePodNamedForTheTeamAndTheCluster($podName, $teamName, $clusterId)
+    {
+        try {
+            $this->pipeClient->deletePod(
+                $this->teamRepository->find($teamName),
+                new User('foo', Uuid::uuid4()),
+                $clusterId,
+                'namespace',
+                $podName
+            );
+            $this->response = Response::create('', Response::HTTP_NO_CONTENT);
+        } catch (PipeClientException $e) {
+            $this->response = Response::create(json_encode([
+                'message' => $e->getMessage(),
+            ]), 400);
+        }
     }
 
     /**
@@ -165,63 +184,6 @@ class EnvironmentContext implements Context
                 $this->response->getStatusCode()
             ));
         }
-    }
-
-    /**
-     * @param string $providerName
-     * @param string $environmentName
-     * @param string $template
-     */
-    public function sendDeploymentRequest($providerName, $environmentName, $template = 'simple-app')
-    {
-        $bucket = new Bucket(UuidTransformer::transform(Uuid::uuid1()));
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
-
-        $simpleAppComposeContents = json_decode(file_get_contents(__DIR__.'/../../pipe/fixtures/'.$template.'.json'), true);
-        $contents = json_encode([
-            'target' => [
-                'environmentName' => $environmentName,
-                'providerName' => $providerName,
-            ],
-            'specification' => [
-                'components' => $simpleAppComposeContents,
-            ],
-            'notification' => [
-                'httpCallbackUrl' => 'http://example.com'
-            ],
-            'credentialsBucket' => (string) $bucket->getUuid()
-        ]);
-
-        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], $contents));
-
-        if (200 !== $this->response->getStatusCode()) {
-            echo $this->response->getContent();
-
-            throw new \RuntimeException(sprintf('Expected response code 200, got %d', $this->response->getStatusCode()));
-        }
-
-        $deployment = json_decode($this->response->getContent(), true);
-        $this->lastDeployment = $deployment;
-        $this->lastDeploymentUuid = Uuid::fromString($deployment['uuid']);
-        $this->deploymentEnvironmentName = $environmentName;
-    }
-
-    /**
-     * @When I send a deployment request without a given target
-     */
-    public function iSendADeploymentRequestWithoutAGivenTarget()
-    {
-        $simpleAppComponents = json_decode(file_get_contents(__DIR__.'/../../pipe/fixtures/simple-app.json'), true);
-        $contents = json_encode([
-            'specification' => [
-                'components' => $simpleAppComponents,
-            ],
-        ], true);
-        $this->response = $this->kernel->handle(Request::create('/deployments', 'POST', [], [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], $contents));
     }
 
     /**
@@ -381,17 +343,6 @@ class EnvironmentContext implements Context
                 sprintf('Unexpected to get HTTP status code %d returned.', $this->response->getStatusCode())
             );
         }
-    }
-
-    /**
-     * @When I delete the pod named :podName for the team :teamName and the cluster :clusterId
-     */
-    public function iDeleteThePodNamedForTheTeamAndTheCluster($podName, $teamName, $clusterId)
-    {
-        $this->response = $this->kernel->handle(Request::create(
-            sprintf('/teams/%s/clusters/%s/namespaces/%s/pods/%s', $teamName, $clusterId, 'namespace', $podName),
-            'DELETE'
-        ));
     }
 
     /**

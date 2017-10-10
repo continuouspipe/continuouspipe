@@ -2,7 +2,6 @@
 
 namespace PipeBundle;
 
-use PipeBundle\DependencyInjection\CompilerPass\AdapterCompilerPass;
 use PipeBundle\DependencyInjection\CompilerPass\DeploymentCommandHandlersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
