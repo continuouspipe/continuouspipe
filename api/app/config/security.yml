@@ -19,6 +19,8 @@ security:
                         roles: ['ROLE_DOWNLOAD_CODE_ARCHIVE']
                     'system:resources_usage_updater':
                         roles: ['ROLE_RESOURCE_USAGE_CREATOR']
+                    'system:river':
+                        roles: ['ROLE_SYSTEM']
 
         chain:
             chain:

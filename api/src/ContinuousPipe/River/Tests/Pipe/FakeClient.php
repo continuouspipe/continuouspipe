@@ -3,9 +3,11 @@
 namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Model\Environment;
-use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\Client\Client;
+use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\Pipe\PodNotFound;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 use GuzzleHttp\Promise;
@@ -28,17 +30,17 @@ class FakeClient implements Client
      */
     public function start(DeploymentRequest $deploymentRequest, User $user)
     {
-        return new Client\Deployment(
+        return new Deployment(
             Uuid::uuid1(),
             $deploymentRequest,
-            Client\Deployment::STATUS_PENDING
+            Deployment::STATUS_PENDING
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
+    public function deleteEnvironment(Target $target, Team $team, User $authenticatedUser)
     {
         if (!array_key_exists($target->getClusterIdentifier(), $this->environmentsPerCluster)) {
             return;

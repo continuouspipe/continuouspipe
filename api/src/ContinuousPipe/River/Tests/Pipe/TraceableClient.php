@@ -3,14 +3,15 @@
 namespace ContinuousPipe\River\Tests\Pipe;
 
 use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest\Target;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\User\User;
 
-class TraceableClient implements Client
+class TraceableClient implements Client\Client
 {
     /**
-     * @var DeploymentRequest\Target[]
+     * @var Target[]
      */
     private $deletions = [];
 
@@ -30,14 +31,14 @@ class TraceableClient implements Client
     private $deployments = [];
 
     /**
-     * @var Client
+     * @var Client\Client
      */
     private $client;
 
     /**
-     * @param Client $client
+     * @param Client\Client $client
      */
-    public function __construct(Client $client)
+    public function __construct(Client\Client $client)
     {
         $this->client = $client;
     }
@@ -58,7 +59,7 @@ class TraceableClient implements Client
     /**
      * {@inheritdoc}
      */
-    public function deleteEnvironment(DeploymentRequest\Target $target, Team $team, User $authenticatedUser)
+    public function deleteEnvironment(Target $target, Team $team, User $authenticatedUser)
     {
         $this->client->deleteEnvironment($target, $team, $authenticatedUser);
         $this->deletions[] = $target;
@@ -106,7 +107,7 @@ class TraceableClient implements Client
     }
 
     /**
-     * @return Client\DeploymentRequest[]
+     * @return DeploymentRequest[]
      */
     public function getRequests()
     {

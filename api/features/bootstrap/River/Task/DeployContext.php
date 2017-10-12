@@ -8,11 +8,11 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension;
-use ContinuousPipe\Pipe\Client\ComponentStatus;
-use ContinuousPipe\Pipe\Client\Deployment;
 use ContinuousPipe\Pipe\Client\DeploymentRequest;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
-use ContinuousPipe\Pipe\Client\PublicEndpointPort;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
+use ContinuousPipe\Pipe\View\ComponentStatus;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Environment\CallbackEnvironmentRepository;
 use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Event\TideEvent;
@@ -33,17 +33,17 @@ use Symfony\Component\HttpKernel\Kernel;
 class DeployContext implements Context
 {
     /**
-     * @var \TideContext
+     * @var \River\TideContext
      */
     private $tideContext;
 
     /**
-     * @var \FlowContext
+     * @var \River\FlowContext
      */
     private $flowContext;
 
     /**
-     * @var \Tide\TasksContext
+     * @var \River\Tide\TasksContext
      */
     private $tideTasksContext;
 

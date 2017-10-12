@@ -2,8 +2,8 @@
 
 namespace ContinuousPipe\River\Task\Run;
 
-use ContinuousPipe\Pipe\Client;
-use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\Client\Client;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\EventDrivenTask;

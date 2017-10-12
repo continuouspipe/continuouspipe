@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Notifications\Slack;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\Notifications\NotificationException;
 use ContinuousPipe\River\Notifications\NotificationNotSupported;
 use ContinuousPipe\River\Notifications\Notifier;

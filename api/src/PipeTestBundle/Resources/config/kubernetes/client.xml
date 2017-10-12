@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="pipe.adapter.kubernetes.in_memory.node_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryNodeRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.namespace_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryNamespaceRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.pod_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryPodRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.service_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryServiceRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryReplicationControllerRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.secret_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemorySecretRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.service_account_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryServiceAccountRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryPersistentVolumeClaimRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.ingress_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryIngressRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.event_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryEventRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.role_binding_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.deployment_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryDeploymentRepository">
+            <argument type="service" id="jms_serializer" />
+        </service>
+
+        <service id="pipe.adapter.kubernetes.hookable.namespace_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableNamespaceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.namespace_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.service_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableServiceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.replication_controller_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableReplicationControllerRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.replication_controller_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.pod_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookablePodRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.pod_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.service_account_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableServiceAccountRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.service_account_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.ingress_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableIngressRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.ingress_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.hookable.deployment_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\HookableDeploymentRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.deployment_repository" />
+        </service>
+
+        <service id="pipe.adapter.kubernetes.traceable.namespace_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableNamespaceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.namespace_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.replication_controller_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableReplicationControllerRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.replication_controller_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.secret_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableSecretRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.secret_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.service_account_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableServiceAccountRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.service_account_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.service_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableServiceRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.service_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.pod_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceablePodRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.pod_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceablePersistentVolumeClaimRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.ingress_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableIngressRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.ingress_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.deployment_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableDeploymentRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.hookable.deployment_repository" />
+        </service>
+        <service id="pipe.adapter.kubernetes.traceable.role_binding_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.role_binding_repository" />
+        </service>
+
+        <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Pipe\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.pod_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.service_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.replication_controller_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.secret_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.service_account_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.persistent_volume_claim_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.ingress_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.deployment_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.event_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.role_binding_repository" />
+        </service>
+
+        <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Pipe\Kubernetes\Tests\InjectedRepositoriesAdapter">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.node_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.namespace_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.namespace_client" />
+        </service>
+        <service id="pipe.adapter.kubernetes.client" class="Kubernetes\Client\Client">
+            <argument type="service" id="pipe.adapter.kubernetes.adapter" />
+        </service>
+        <service id="pipe.adapter.kubernetes.client_factory" class="ContinuousPipe\Pipe\Kubernetes\Tests\InjectedClientFactory">
+            <argument type="service" id="pipe.adapter.kubernetes.client" />
+        </service>
+    </services>
+</container>

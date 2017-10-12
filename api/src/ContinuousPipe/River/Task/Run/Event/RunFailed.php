@@ -2,14 +2,14 @@
 
 namespace ContinuousPipe\River\Task\Run\Event;
 
-use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class RunFailed implements TideEvent
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $tideUuid;
 
@@ -19,10 +19,10 @@ class RunFailed implements TideEvent
     private $deployment;
 
     /**
-     * @param Uuid       $tideUuid
-     * @param Deployment $deployment
+     * @param UuidInterface $tideUuid
+     * @param Deployment    $deployment
      */
-    public function __construct(Uuid $tideUuid, Deployment $deployment)
+    public function __construct(UuidInterface $tideUuid, Deployment $deployment)
     {
         $this->tideUuid = $tideUuid;
         $this->deployment = $deployment;
@@ -45,7 +45,7 @@ class RunFailed implements TideEvent
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getRunUuid()
     {

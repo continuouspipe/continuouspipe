@@ -170,6 +170,10 @@ tasks:
                               value: ${GOOGLE_PUB_SUB_DELAYED_TOPIC}
                             - name: GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME
                               value: ${GOOGLE_PUB_SUB_DELAYED_SUBSCRIPTION_NAME}
+                            - name: GOOGLE_PUB_SUB_LONG_RUNNING_DEPLOYMENTS_TOPIC
+                              value: ${GOOGLE_PUB_SUB_LONG_RUNNING_DEPLOYMENTS_TOPIC}
+                            - name: GOOGLE_PUB_SUB_LONG_RUNNING_DEPLOYMENTS_SUBSCRIPTION_NAME
+                              value: ${GOOGLE_PUB_SUB_LONG_RUNNING_DEPLOYMENTS_SUBSCRIPTION_NAME}
                             - name: LOGITIO_API_KEY
                               value: ${LOGITIO_API_KEY}
                             - name: FLEX_CLUSTER_ADDRESS
@@ -255,6 +259,27 @@ tasks:
                             1003:
                               name: WORKER_CONNECTION_NAME
                               value: delayed
+
+                worker_deployments:
+                    specification:
+                        accessibility:
+                            from_cluster: false
+                        source:
+                            from_service: api
+                        environment_variables:
+                            <<: *ENV
+                            1000:
+                              name: START_NGINX
+                              value: 'false'
+                            1001:
+                              name: START_PHP_FPM
+                              value: 'false'
+                            1002:
+                              name: START_WORKER
+                              value: 'true'
+                            1003:
+                              name: WORKER_CONNECTION_NAME
+                              value: long_running_deployments
 
                 tideways:
                     specification:

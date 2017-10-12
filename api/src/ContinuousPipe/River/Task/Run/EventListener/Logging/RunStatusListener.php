@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\Run\EventListener\Logging;
 
-use ContinuousPipe\Pipe\Client\Deployment;
+use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\Run\Event\RunFailed;
 use ContinuousPipe\River\Task\Run\Event\RunSuccessful;

@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\River\Task\WebHook;
 
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\EventCollection;
 use ContinuousPipe\River\Task\Deploy\Event\DeploymentSuccessful;

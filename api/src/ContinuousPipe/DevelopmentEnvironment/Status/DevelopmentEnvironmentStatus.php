@@ -3,7 +3,7 @@
 namespace ContinuousPipe\DevelopmentEnvironment\Status;
 
 use ContinuousPipe\DevelopmentEnvironment\ReadModel\DevelopmentEnvironment;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\River\View\Tide;
 use JMS\Serializer\Annotation as JMS;
 
@@ -50,7 +50,7 @@ class DevelopmentEnvironmentStatus
     private $lastTide;
 
     /**
-     * @JMS\Type("array<ContinuousPipe\Pipe\Client\PublicEndpoint>")
+     * @JMS\Type("array<ContinuousPipe\Pipe\Environment\PublicEndpoint>")
      * @JMS\Groups({"Default", "DevelopmentEnvironmentStatus"})
      *
      * @var array|PublicEndpoint[]

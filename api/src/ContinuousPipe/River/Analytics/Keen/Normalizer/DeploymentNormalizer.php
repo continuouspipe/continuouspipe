@@ -2,9 +2,9 @@
 
 namespace ContinuousPipe\River\Analytics\Keen\Normalizer;
 
-use ContinuousPipe\Pipe\Client\ComponentStatus;
-use ContinuousPipe\Pipe\Client\Deployment;
-use ContinuousPipe\Pipe\Client\PublicEndpoint;
+use ContinuousPipe\Pipe\Environment\PublicEndpoint;
+use ContinuousPipe\Pipe\View\ComponentStatus;
+use ContinuousPipe\Pipe\View\Deployment;
 
 class DeploymentNormalizer
 {

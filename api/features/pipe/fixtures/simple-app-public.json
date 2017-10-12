@@ -1,0 +1,87 @@
+[
+  {
+    "name": "app",
+    "identifier": "app",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "ports": [
+        {"identifier": "http", "port": 80, "protocol": "TCP"}
+      ],
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "root"
+        }
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ],
+      "resources": {
+        "limits": {
+          "cpu": "250m",
+          "memory": "300Mi"
+        },
+        "requests": {
+          "cpu": "100m",
+          "memory": "250Mi"
+        }
+      }
+    },
+    "labels": {
+      "com.continuouspipe.visibility": "public"
+    }
+  },
+  {
+    "name": "mysql",
+    "identifier": "mysql",
+    "specification": {
+      "source": {
+        "image": "mysql"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "ports": [
+        {"identifier": "mysql", "port": 3306, "protocol": "TCP"}
+      ],
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "root"
+        }
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": {
+      "com.continuouspipe.update": "lock"
+    },
+    "deployment_strategy": {
+      "locked": true
+    }
+  }
+]

@@ -1,10 +1,9 @@
 <?php
 
-
 namespace ContinuousPipe\River\SslCertificate\Generation;
 
 use ContinuousPipe\Model\Component;
-use ContinuousPipe\Pipe\Client\DeploymentRequest;
+use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\River\SslCertificate\SslCertificateException;
 use ContinuousPipe\River\SslCertificate\SslCertificateManager;
 use ContinuousPipe\River\Pipe\DeploymentRequest\DeploymentRequestException;
@@ -62,8 +61,8 @@ class GenerateWhileCreatingDeploymentRequest implements DeploymentRequestFactory
 
                 return $component;
             }, $deploymentRequest->getSpecification()->getComponents())),
-            $deploymentRequest->getNotification(),
-            $deploymentRequest->getCredentialsBucket()
+            $deploymentRequest->getCredentialsBucket(),
+            $deploymentRequest->getNotification()
         );
     }
 

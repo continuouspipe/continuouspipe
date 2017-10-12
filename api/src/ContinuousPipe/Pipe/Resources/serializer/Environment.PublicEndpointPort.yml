@@ -1,0 +1,6 @@
+ContinuousPipe\Pipe\Environment\PublicEndpointPort:
+    properties:
+        number:
+            type: integer
+        protocol:
+            type: string

@@ -5,11 +5,12 @@ namespace ContinuousPipe\River\Task\Run\Event;
 use ContinuousPipe\River\Event\TideEvent;
 use ContinuousPipe\River\Task\TaskEvent;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class RunStarted implements TideEvent, TaskEvent
 {
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $tideUuid;
 
@@ -19,16 +20,16 @@ class RunStarted implements TideEvent, TaskEvent
     private $taskId;
 
     /**
-     * @var Uuid
+     * @var UuidInterface
      */
     private $runUuid;
 
     /**
-     * @param Uuid $tideUuid
+     * @param UuidInterface $tideUuid
      * @param int  $taskId
-     * @param Uuid $runUuid
+     * @param UuidInterface $runUuid
      */
-    public function __construct(Uuid $tideUuid, $taskId, Uuid $runUuid)
+    public function __construct(UuidInterface $tideUuid, $taskId, UuidInterface $runUuid)
     {
         $this->tideUuid = $tideUuid;
         $this->taskId = $taskId;
@@ -52,7 +53,7 @@ class RunStarted implements TideEvent, TaskEvent
     }
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
     public function getRunUuid()
     {
