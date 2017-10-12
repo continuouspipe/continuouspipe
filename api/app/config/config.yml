@@ -396,6 +396,7 @@ message:
                     message_to_connection_mapping:
                         'ContinuousPipe\River\Message\OperationalMessage': operations
                         'ContinuousPipe\Message\Delay\DelayedMessage': delayed
+                        'ContinuousPipe\Pipe\Command\StartDeploymentCommand': long_running_deployments
                         '*': main
 
         main:
@@ -421,6 +422,16 @@ message:
                     service_account_path: %google_pub_sub_service_account_path%
                     topic: %google_pub_sub_delayed_topic%
                     subscription: %google_pub_sub_delayed_subscription_name%
+
+        long_running_deployments:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_long_running_deployments_topic%
+                    subscription: %google_pub_sub_long_running_deployments_subscription_name%
+                    options:
+                        requestTimeout: 60
 
     tideways:
         api_key: %tideways_api_key%
