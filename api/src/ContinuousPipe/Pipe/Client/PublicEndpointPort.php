@@ -8,4 +8,16 @@ namespace ContinuousPipe\Pipe\Client;
  */
 class PublicEndpointPort extends \ContinuousPipe\Pipe\Environment\PublicEndpointPort
 {
+    private $number;
+    private $protocol;
+
+    public function getNumber()
+    {
+        return $this->number ?? parent::getNumber();
+    }
+
+    public function getProtocol()
+    {
+        return $this->protocol ?? parent::getProtocol();
+    }
 }

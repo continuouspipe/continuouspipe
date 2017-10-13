@@ -8,4 +8,10 @@ namespace ContinuousPipe\Pipe\Client\DeploymentRequest;
  */
 class Specification extends \ContinuousPipe\Pipe\DeploymentRequest\Specification
 {
+    private $components;
+
+    public function getComponents()
+    {
+        return $this->components ?? parent::getComponents();
+    }
 }

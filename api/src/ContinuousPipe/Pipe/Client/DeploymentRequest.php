@@ -12,8 +12,33 @@ use Ramsey\Uuid\UuidInterface;
  */
 class DeploymentRequest extends \ContinuousPipe\Pipe\DeploymentRequest
 {
+    private $target;
+    private $specification;
+    private $notification;
+    private $credentialsBucket;
+
     public function __construct(Target $target, Specification $specification, Notification $notification, UuidInterface $credentialsBucket)
     {
         parent::__construct($target, $specification, $credentialsBucket, $notification);
+    }
+
+    public function getTarget()
+    {
+        return $this->target ?? parent::getTarget();
+    }
+
+    public function getSpecification()
+    {
+        return $this->specification ?? parent::getSpecification();
+    }
+
+    public function getNotification()
+    {
+        return $this->notification ?? parent::getNotification();
+    }
+
+    public function getCredentialsBucket()
+    {
+        return $this->credentialsBucket ?? parent::getCredentialsBucket();
     }
 }
