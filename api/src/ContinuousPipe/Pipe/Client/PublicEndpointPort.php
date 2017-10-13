@@ -11,12 +11,12 @@ class PublicEndpointPort extends \ContinuousPipe\Pipe\Environment\PublicEndpoint
     private $number;
     private $protocol;
 
-    public function getNumber()
+    public function getNumber() : int
     {
         return $this->number ?? parent::getNumber();
     }
 
-    public function getProtocol()
+    public function getProtocol() : string
     {
         return $this->protocol ?? parent::getProtocol();
     }
