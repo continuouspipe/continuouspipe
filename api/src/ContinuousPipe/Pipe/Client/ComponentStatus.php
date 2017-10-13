@@ -8,4 +8,22 @@ namespace ContinuousPipe\Pipe\Client;
  */
 class ComponentStatus extends \ContinuousPipe\Pipe\View\ComponentStatus
 {
+    private $created;
+    private $updated;
+    private $deleted;
+
+    public function isCreated()
+    {
+        return $this->created ?? parent::isCreated();
+    }
+
+    public function isUpdated()
+    {
+        return $this->updated ?? parent::isUpdated();
+    }
+
+    public function isDeleted()
+    {
+        return $this->deleted ?? parent::isDeleted();
+    }
 }

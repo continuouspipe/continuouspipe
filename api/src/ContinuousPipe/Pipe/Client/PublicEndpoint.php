@@ -8,4 +8,22 @@ namespace ContinuousPipe\Pipe\Client;
  */
 class PublicEndpoint extends \ContinuousPipe\Pipe\Environment\PublicEndpoint
 {
+    private $name;
+    private $address;
+    private $ports;
+
+    public function getName()
+    {
+        return $this->name ?? parent::getName();
+    }
+
+    public function getAddress()
+    {
+        return $this->address ?? parent::getAddress();
+    }
+
+    public function getPorts()
+    {
+        return $this->ports ?? parent::getPorts();
+    }
 }
