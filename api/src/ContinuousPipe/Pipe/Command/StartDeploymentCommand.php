@@ -3,9 +3,10 @@
 namespace ContinuousPipe\Pipe\Command;
 
 use ContinuousPipe\Message\Message;
+use ContinuousPipe\Message\Transaction\LongRunningMessage;
 use ContinuousPipe\Pipe\View\Deployment;
 
-class StartDeploymentCommand implements Message
+class StartDeploymentCommand implements Message, LongRunningMessage
 {
     /**
      * @var Deployment
