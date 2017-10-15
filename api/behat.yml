@@ -9,7 +9,7 @@ default:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
                 - River\TideConfigurationContext:
@@ -161,7 +161,7 @@ default:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
                 - River\TideConfigurationContext:
@@ -273,7 +273,7 @@ default:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
                 - River\TideConfigurationContext:
@@ -439,7 +439,7 @@ default:
                     - "@authenticator.bucket_repository"
                     - "@jms_serializer"
                     - "@authenticator.team_repository"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
                 - Pipe\Kubernetes\NamespaceContext:
@@ -515,7 +515,7 @@ smoke:
                     - "@security.token_storage"
                     - "@security.authenticator.client.in_memory"
                     - "@kernel"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
                 - River\FlowContext:
@@ -596,7 +596,7 @@ smoke:
                     - "@authenticator.bucket_repository"
                     - "@jms_serializer"
                     - "@authenticator.team_repository"
-                    - "@security.encryption.vault.previously_known"
+                    - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
                 - Pipe\EnvironmentContext:

@@ -27,7 +27,7 @@
 
         <!-- Encryption Vault -->
         <service id="river.flow.encrypted_variable_vault" class="ContinuousPipe\River\Flow\EncryptedVariable\SecurityVaultEncryptedVariableVault">
-            <argument type="service" id="security.encryption.vault" />
+            <argument type="service" id="security.vaults.user_secrets" />
         </service>
     </services>
 </container>
