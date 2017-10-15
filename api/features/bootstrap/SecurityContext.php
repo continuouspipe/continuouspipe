@@ -15,16 +15,21 @@ use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GitHubResourceOwner;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 
 class SecurityContext implements Context, SnippetAcceptingContext
 {
+    const FRONTEND_FIREWALL_NAME = 'main';
+
     /**
      * @var UserProvider
      */
@@ -63,6 +68,14 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var \ContinuousPipe\Security\ApiKey\UserApiKeyRepository
      */
     private $userByApiKeyRepository;
+    /**
+     * @var SessionInterface
+     */
+    private $session;
+    /**
+     * @var Client
+     */
+    private $httpClient;
 
     public function __construct(
         UserProvider $userProvider,
@@ -72,7 +85,9 @@ class SecurityContext implements Context, SnippetAcceptingContext
         EventDispatcherInterface $eventDispatcher,
         GitHubResourceOwner $gitHubResourceOwner,
         KernelInterface $kernel,
-        UserApiKeyRepository $userByApiKeyRepository
+        UserApiKeyRepository $userByApiKeyRepository,
+        SessionInterface $session,
+        Client $httpClient
     ) {
         $this->userProvider = $userProvider;
         $this->tokenStorage = $tokenStorage;
@@ -82,6 +97,8 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $this->gitHubResourceOwner = $gitHubResourceOwner;
         $this->kernel = $kernel;
         $this->userByApiKeyRepository = $userByApiKeyRepository;
+        $this->session = $session;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -281,5 +298,18 @@ class SecurityContext implements Context, SnippetAcceptingContext
         return $user;
     }
 
+    /**
+     * @Given I am authenticated on the frontend as admin :username
+     */
+    public function iAmAuthenticatedOnTheFrontendAsAdmin($username)
+    {
+        $firewallContext = self::FRONTEND_FIREWALL_NAME;
+        $token = new UsernamePasswordToken($username, null, $firewallContext, ['ROLE_USER', 'ROLE_ADMIN']);
+        $this->session->set('_security_'.$firewallContext, serialize($token));
+        $this->session->save();
+
+        $cookie = new Cookie($this->session->getName(), $this->session->getId());
+        $this->httpClient->getCookieJar()->set($cookie);
+    }
 
 }

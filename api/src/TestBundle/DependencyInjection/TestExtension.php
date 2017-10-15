@@ -19,6 +19,7 @@ class TestExtension extends Extension
         $loader->load('in-memory/3rd-parties.xml');
         $loader->load('controllers.xml');
         $loader->load('traces.xml');
+        $loader->load('http.xml');
 
         if ('smoke_test' !== $environment) {
             $loader->load('in-memory/repositories.xml');

@@ -165,6 +165,15 @@ class TeamContext implements Context
     }
 
     /**
+     * @When the team :slug named :name is created
+     */
+    public function theTeamNamedIsCreated($slug, $name, $creatorUsername = 'geza')
+    {
+        $this->securityContext->iAmAuthenticatedAsUser($creatorUsername);
+        $this->iCreateATeamNamed($slug, $name);
+    }
+
+    /**
      * @When I create a team :slug with the billing profile :billingAccountUuid
      * @Given there is a team :slug with the billing profile :billingAccountUuid
      */
