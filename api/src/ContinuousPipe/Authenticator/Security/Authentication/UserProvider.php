@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security\Authentication;
 
+use ContinuousPipe\Authenticator\Security\AuthenticationProvider;
 use ContinuousPipe\Authenticator\Security\Event\UserCreated;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
@@ -14,7 +15,6 @@ use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use ContinuousPipe\Authenticator\WhiteList\WhiteList;
 use HWI\Bundle\OAuthBundle\Connect\AccountConnectorInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\OAuthAwareUserProviderInterface;
@@ -73,18 +73,34 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
     private $accountConnector;
 
     /**
-     * @param SecurityUserRepository    $securityUserRepository
-     * @param UserDetails               $userDetails
-     * @param BucketRepository          $bucketRepository
-     * @param TeamMembershipRepository  $teamMembershipRepository
-     * @param TeamRepository            $teamRepository
-     * @param EventDispatcherInterface  $eventDispatcher
-     * @param LoggerInterface           $logger
-     * @param AccountRepository         $accountRepository
-     * @param AccountConnectorInterface $accountConnector
+     * @var AuthenticationProvider
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, UserDetails $userDetails, BucketRepository $bucketRepository, TeamMembershipRepository $teamMembershipRepository, TeamRepository $teamRepository, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger, AccountRepository $accountRepository, AccountConnectorInterface $accountConnector)
-    {
+    private $authenticationProvider;
+
+    /**
+     * @param SecurityUserRepository $securityUserRepository
+     * @param UserDetails $userDetails
+     * @param BucketRepository $bucketRepository
+     * @param TeamMembershipRepository $teamMembershipRepository
+     * @param TeamRepository $teamRepository
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param LoggerInterface $logger
+     * @param AccountRepository $accountRepository
+     * @param AccountConnectorInterface $accountConnector
+     * @param AuthenticationProvider $authenticationProvider
+     */
+    public function __construct(
+        SecurityUserRepository $securityUserRepository,
+        UserDetails $userDetails,
+        BucketRepository $bucketRepository,
+        TeamMembershipRepository $teamMembershipRepository,
+        TeamRepository $teamRepository,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger,
+        AccountRepository $accountRepository,
+        AccountConnectorInterface $accountConnector,
+        AuthenticationProvider $authenticationProvider
+    ) {
         $this->securityUserRepository = $securityUserRepository;
         $this->userDetails = $userDetails;
         $this->bucketRepository = $bucketRepository;
@@ -94,6 +110,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->logger = $logger;
         $this->accountRepository = $accountRepository;
         $this->accountConnector = $accountConnector;
+        $this->authenticationProvider = $authenticationProvider;
     }
 
     /**
@@ -130,8 +147,15 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         $this->securityUserRepository->save($securityUser);
 
         // Link account if not found
-        if (!$this->userHasAlreadyLinkedGitHubAccount($user, $username)) {
-            $this->accountConnector->connect($securityUser, $response);
+        try {
+            $loggedInUser = $this->securityUserRepository->findOneByUsername(
+                $this->authenticationProvider->getAuthenticatedToken()->getUsername()
+            );
+        } catch (UserNotFound $e) {
+            $loggedInUser = $securityUser;
+        }
+        if (!$this->userHasAlreadyLinkedGitHubAccount($user, $loggedInUser->getUsername())) {
+            $this->accountConnector->connect($loggedInUser, $response);
         }
 
         // Dispatch an event is the user was just created
