@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "06adfbaf3847166966370a0c824689c5",
+    "content-hash": "1c86f2e4d0872aaed882c85ee2d23666",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -501,16 +501,16 @@
         },
         {
             "name": "continuous-pipe/security",
-            "version": "2.9.9",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "git@github.com:continuouspipe/security.git",
-                "reference": "f48eb35ece68021630809e5d54bca1faa296bd85"
+                "reference": "69868a1e03a770212b5c00f0a12485f3b13442be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/f48eb35ece68021630809e5d54bca1faa296bd85",
-                "reference": "f48eb35ece68021630809e5d54bca1faa296bd85",
+                "url": "https://api.github.com/repos/continuouspipe/security/zipball/69868a1e03a770212b5c00f0a12485f3b13442be",
+                "reference": "69868a1e03a770212b5c00f0a12485f3b13442be",
                 "shasum": ""
             },
             "require": {
@@ -532,10 +532,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/security/tree/2.9.9",
+                "source": "https://github.com/continuouspipe/security/tree/master",
                 "issues": "https://github.com/continuouspipe/security/issues"
             },
-            "time": "2017-10-05T15:11:36+00:00"
+            "time": "2017-10-15 12:52:38"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -10101,6 +10101,7 @@
     "stability-flags": {
         "symfony/symfony": 20,
         "csa/guzzle-bundle": 20,
+        "continuous-pipe/security": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
     },

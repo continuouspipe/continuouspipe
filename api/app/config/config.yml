@@ -131,14 +131,19 @@ continuous_pipe_security:
     authenticator_url: "%authenticator_url%"
     api_key: "%authenticator_api_key%"
     cache: true
-    encryption:
-        google_kms:
-            project_id: "%google_kms_project_id%"
-            location: "%google_kms_location%"
-            service_account_path: "%google_kms_service_account_path%"
-            key_ring: "%google_kms_key_ring%"
-            key_cache_service: river.cache
-        cache_service: river.memory_cache
+    vaults:
+        user_secrets:
+            google_kms:
+                project_id: "%google_kms_project_id%"
+                location: "%google_kms_location%"
+                service_account_path: "%google_kms_service_account_path%"
+                key_ring: "%google_kms_key_ring%"
+                key_cache_service: river.cache
+            cache_service: river.memory_cache
+
+        within_clusters:
+            php_encryption:
+                key: %security_php_encryption_key%
 
 fos_rest:
     body_converter:
