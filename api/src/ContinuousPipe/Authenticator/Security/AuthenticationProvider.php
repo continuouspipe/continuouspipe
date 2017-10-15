@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Authenticator\Security;
 
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTManagerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -9,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class AuthenticationProvider
@@ -94,5 +96,18 @@ class AuthenticationProvider
         $url = $callback.'?token='.$jwtToken;
 
         return new RedirectResponse($url);
+    }
+
+    /**
+     * @return TokenInterface
+     *
+     * @throws UserNotFound when the user is not logged in.
+     */
+    public function getAuthenticatedToken(): TokenInterface
+    {
+        if (null === ($token = $this->tokenStorage->getToken())) {
+            throw new UserNotFound('Current user is not logged in');
+        }
+        return $token;
     }
 }

@@ -11,7 +11,7 @@ class ConnectController extends HWIOAuthBundleConnectController
     public function connectAction(Request $request)
     {
         if ($this->isUserAuthenticated()) {
-            return new RedirectResponse($this->generate('account_connected_accounts'));
+            return new RedirectResponse($this->getParameter('default_redirection_url'));
         }
 
         if ($error = $this->getErrorForRequest($request)) {
