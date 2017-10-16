@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c86f2e4d0872aaed882c85ee2d23666",
+    "content-hash": "d5bdbd58e6f8b790213f968af723718f",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -1802,6 +1802,56 @@
                 "search"
             ],
             "time": "2017-07-19T18:44:30+00:00"
+        },
+        {
+            "name": "facile-it/doctrine-mysql-come-back",
+            "version": "v1.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facile-it/doctrine-mysql-come-back.git",
+                "reference": "fcf1998b1cc313e241caa837fb7e3ee2e7e24a77"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facile-it/doctrine-mysql-come-back/zipball/fcf1998b1cc313e241caa837fb7e3ee2e7e24a77",
+                "reference": "fcf1998b1cc313e241caa837fb7e3ee2e7e24a77",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": ">=2.3,<2.7-dev",
+                "php": "^5.6 || ^7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.3",
+                "phpunit/phpunit": "^5.4.3 || ^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Facile\\DoctrineMySQLComeBack\\Doctrine\\DBAL\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache License Version 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Luca Bo",
+                    "email": "luca.boeri@facile.it"
+                }
+            ],
+            "description": "Auto reconnect on Doctrine MySql has gone away exceptions on doctrine/dbal",
+            "keywords": [
+                "Connection",
+                "doctrine",
+                "exception",
+                "has gone away",
+                "mysql",
+                "reconnect",
+                "refresh"
+            ],
+            "time": "2017-09-01T12:58:13+00:00"
         },
         {
             "name": "fig/http-message-util",

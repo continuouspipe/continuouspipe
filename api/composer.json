@@ -66,7 +66,8 @@
         "jamesryanbell/cloudflare": "^1.8",
         "defuse/php-encryption": "^2.0",
         "react/promise": "^2.5",
-        "react/promise-timer": "^1.1"
+        "react/promise-timer": "^1.1",
+        "facile-it/doctrine-mysql-come-back": "^1.6"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.1.6",
