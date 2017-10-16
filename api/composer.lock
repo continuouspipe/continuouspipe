@@ -435,12 +435,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "91ae69c0ec362573dc364c8ae5e2bfbc12ffba23"
+                "reference": "7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/91ae69c0ec362573dc364c8ae5e2bfbc12ffba23",
-                "reference": "91ae69c0ec362573dc364c8ae5e2bfbc12ffba23",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80",
+                "reference": "7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80",
                 "shasum": ""
             },
             "require": {
@@ -467,7 +467,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-10-16 16:07:28"
+            "time": "2017-10-16 20:08:32"
         },
         {
             "name": "continuous-pipe/model",
