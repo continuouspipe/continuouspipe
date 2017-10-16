@@ -31,9 +31,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch == 'production'
       value: rabbitmq.stack-production.svc.cluster.local
-    - name: REDIS_HOST
-      condition: code_reference.branch == 'production'
-      value: redis-sentinel-0.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-production.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-production.svc.cluster.local:26379
     - name: K8S_WATCHER_URL
       condition: code_reference.branch == 'production'
       value: http://api.k8s-watcher-production.svc.cluster.local
@@ -59,9 +56,6 @@ variables:
     - name: STACK_RABBITMQ_HOST
       condition: code_reference.branch != 'production'
       value: rabbitmq.stack-master.svc.cluster.local
-    - name: REDIS_HOST
-      condition: code_reference.branch != 'production'
-      value: redis-sentinel-0.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-1.redis-sentinel-headless.stack-master.svc.cluster.local:26379,redis-sentinel-2.redis-sentinel-headless.stack-master.svc.cluster.local:26379
     - name: K8S_WATCHER_URL
       condition: code_reference.branch != 'production'
       value: http://api.k8s-watcher-master.svc.cluster.local
