@@ -38,12 +38,18 @@
         <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
 
         <service id="river.pipe_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Pipe\ListenForDeploymentStatus">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+        </service>
+
+        <service id="river.pipe_bridge.pipe_deployment_finished_handler" class="ContinuousPipe\River\Bridge\Pipe\Handler\PipeDeploymentFinishedHandler">
             <argument type="service" id="river.tide.transaction_manager"/>
             <argument type="service" id="pipe.view.deployment_repository"/>
             <argument type="service" id="logger"/>
 
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
-            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+            <tag name="command_handler" handles="ContinuousPipe\River\Bridge\Pipe\Command\PipeDeploymentFinishedCommand" />
         </service>
     </services>
 </container>

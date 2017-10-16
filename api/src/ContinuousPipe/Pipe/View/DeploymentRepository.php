@@ -4,17 +4,18 @@ namespace ContinuousPipe\Pipe\View;
 
 use ContinuousPipe\Pipe\DeploymentNotFound;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 interface DeploymentRepository
 {
     /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @throws DeploymentNotFound
      *
      * @return Deployment
      */
-    public function find(Uuid $uuid);
+    public function find(UuidInterface $uuid);
 
     /**
      * Save the given deployment object.

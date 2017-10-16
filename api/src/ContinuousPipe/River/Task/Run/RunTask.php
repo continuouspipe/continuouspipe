@@ -106,6 +106,11 @@ class RunTask extends EventDrivenTask
                 $this->context->getTideUuid(),
                 $deployment
             ));
+        } else {
+            throw new \RuntimeException(sprintf(
+                'Received a deployment notification for status "%s"',
+                $deployment->getStatus()
+            ));
         }
     }
 

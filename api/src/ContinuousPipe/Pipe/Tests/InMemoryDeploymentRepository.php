@@ -5,7 +5,7 @@ namespace ContinuousPipe\Pipe\Tests;
 use ContinuousPipe\Pipe\DeploymentNotFound;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class InMemoryDeploymentRepository implements DeploymentRepository
 {
@@ -17,7 +17,7 @@ class InMemoryDeploymentRepository implements DeploymentRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         $deploymentUuid = (string) $uuid;
         if (!array_key_exists($deploymentUuid, $this->deployments)) {

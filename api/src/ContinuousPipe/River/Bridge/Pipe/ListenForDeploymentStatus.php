@@ -2,76 +2,26 @@
 
 namespace ContinuousPipe\River\Bridge\Pipe;
 
-use ContinuousPipe\River\Task\Deploy\DeployTask;
-use ContinuousPipe\River\Task\Run\RunTask;
-use ContinuousPipe\River\Tide;
-use ContinuousPipe\River\Tide\Transaction\TransactionManager;
+use ContinuousPipe\River\Bridge\Pipe\Command\PipeDeploymentFinishedCommand;
 use ContinuousPipe\Pipe\Event\DeploymentEvent;
-use ContinuousPipe\Pipe\View\DeploymentRepository;
-use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
+use SimpleBus\Message\Bus\MessageBus;
 
 class ListenForDeploymentStatus
 {
     /**
-     * @var TransactionManager
+     * @var MessageBus
      */
-    private $transactionManager;
-    /**
-     * @var DeploymentRepository
-     */
-    private $deploymentRepository;
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private $commandBus;
 
-    public function __construct(TransactionManager $transactionManager, DeploymentRepository $deploymentRepository, LoggerInterface $logger)
+    public function __construct(MessageBus $commandBus)
     {
-        $this->transactionManager = $transactionManager;
-        $this->deploymentRepository = $deploymentRepository;
-        $this->logger = $logger;
+        $this->commandBus = $commandBus;
     }
 
     public function handle(DeploymentEvent $event)
     {
-        $deployment = $this->deploymentRepository->find($event->getDeploymentUuid());
-        $attributes = $deployment->getRequest()->getAttributes();
-        if (!isset($attributes['tide_uuid']) || !isset($attributes['task'])) {
-            $this->logger->error('Was not able to know where this deployment come from', [
-                'deployment_uuid' => $deployment->getUuid()->toString(),
-                'attributes' => $attributes,
-            ]);
-
-            return;
-        }
-
-        $taskType = $attributes['task'];
-        $this->transactionManager->apply(Uuid::fromString($attributes['tide_uuid']), function (Tide $tide) use ($deployment, $taskType) {
-            /** @var DeployTask[] $tasks */
-            if ($taskType == 'deploy') {
-                $tasks = $tide->getTasks()->ofType(DeployTask::class);
-            } elseif ($taskType == 'run') {
-                /** @var RunTask[] $tasks */
-                $tasks = $tide->getTasks()->ofType(RunTask::class);
-            } else {
-                throw new \RuntimeException(sprintf(
-                    'Task type "%s" is invalid',
-                    $taskType
-                ));
-            }
-
-            if (empty($tasks)) {
-                $this->logger->warning('Found no task to receive the notification', [
-                    'tide_uuid' => $tide->getUuid()->toString(),
-                    'task_type' => $taskType,
-                    'deployment_uuid' => $deployment->getUuid()->toString(),
-                ]);
-            }
-
-            foreach ($tasks as $task) {
-                $task->receiveDeploymentNotification($deployment);
-            }
-        });
+        $this->commandBus->handle(new PipeDeploymentFinishedCommand(
+            $event->getDeploymentUuid()
+        ));
     }
 }

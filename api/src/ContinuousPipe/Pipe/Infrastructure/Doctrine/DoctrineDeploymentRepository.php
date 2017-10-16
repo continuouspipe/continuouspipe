@@ -7,7 +7,7 @@ use ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity\DeploymentViewDto;
 use ContinuousPipe\Pipe\View\Deployment;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use Doctrine\ORM\EntityManager;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineDeploymentRepository implements DeploymentRepository
 {
@@ -29,7 +29,7 @@ class DoctrineDeploymentRepository implements DeploymentRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         return $this->fromDto($this->findDto($uuid));
     }
@@ -55,13 +55,13 @@ class DoctrineDeploymentRepository implements DeploymentRepository
     }
 
     /**
-     * @param Uuid $uuid
+     * @param UuidInterface $uuid
      *
      * @return DeploymentViewDto
      *
      * @throws DeploymentNotFound
      */
-    private function findDto(Uuid $uuid)
+    private function findDto(UuidInterface $uuid)
     {
         $dto = $this->getRepository()->findOneBy([
             'deploymentUuid' => (string) $uuid,
