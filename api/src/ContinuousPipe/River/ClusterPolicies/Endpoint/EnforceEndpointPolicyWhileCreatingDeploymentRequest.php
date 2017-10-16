@@ -83,7 +83,8 @@ class EnforceEndpointPolicyWhileCreatingDeploymentRequest implements DeploymentR
                     return $this->enforcePolicyOnComponent($tide, $component, $policy);
                 }, $deploymentRequest->getSpecification()->getComponents())),
                 $deploymentRequest->getCredentialsBucket(),
-                $deploymentRequest->getNotification()
+                $deploymentRequest->getNotification(),
+                $deploymentRequest->getAttributes()
             );
         } catch (ClusterPolicyException $e) {
             throw new DeploymentRequestException($e->getMessage(), $e->getCode(), $e);

@@ -62,7 +62,8 @@ class GenerateWhileCreatingDeploymentRequest implements DeploymentRequestFactory
                 return $component;
             }, $deploymentRequest->getSpecification()->getComponents())),
             $deploymentRequest->getCredentialsBucket(),
-            $deploymentRequest->getNotification()
+            $deploymentRequest->getNotification(),
+            $deploymentRequest->getAttributes()
         );
     }
 
