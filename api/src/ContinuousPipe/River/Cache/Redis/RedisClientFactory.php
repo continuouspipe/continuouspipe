@@ -22,7 +22,7 @@ class RedisClientFactory
             $dsn = $dsn.':6379';
         }
 
-        if (strpos($dsn, 'tcp://') !== 0) {
+        if (strpos($dsn, '://') === false) {
             $dsn = 'tcp://'.$dsn;
         }
 

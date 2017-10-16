@@ -26,6 +26,11 @@ class RedisClientFactorySpec extends ObjectBehavior
             ->shouldBeSentinelReady();
     }
 
+    function it_uses_redis_procotol_if_given()
+    {
+        $this::create('redis://admin:password@hostname.10.dblayer.com:17710')->shouldBeLike(new Client('redis://admin:password@hostname.10.dblayer.com:17710'));;
+    }
+
     public function getMatchers() : array
     {
         return [
