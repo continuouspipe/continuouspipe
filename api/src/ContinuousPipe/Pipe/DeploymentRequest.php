@@ -31,17 +31,19 @@ class DeploymentRequest
     private $credentialsBucket;
 
     /**
-     * @param Target        $target
-     * @param Specification $specification
-     * @param UuidInterface $credentialsBucket
-     * @param Notification  $notification
+     * Key-value pair of attributes.
+     *
+     * @var array
      */
-    public function __construct(Target $target, Specification $specification, UuidInterface $credentialsBucket, Notification $notification = null)
+    private $attributes;
+
+    public function __construct(Target $target, Specification $specification, UuidInterface $credentialsBucket, Notification $notification = null, array $attributes = [])
     {
         $this->target = $target;
         $this->specification = $specification;
         $this->notification = $notification;
         $this->credentialsBucket = $credentialsBucket;
+        $this->attributes = $attributes;
     }
 
     /**
@@ -78,5 +80,13 @@ class DeploymentRequest
         }
 
         return $this->credentialsBucket;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes ?: [];
     }
 }

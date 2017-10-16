@@ -16,11 +16,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class DeploymentRequestFactory
 {
     /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-
-    /**
      * @var TargetEnvironmentFactory
      */
     private $targetEnvironmentFactory;
@@ -30,34 +25,12 @@ class DeploymentRequestFactory
      */
     private $deploymentRequestEnhancer;
 
-    /**
-     * @var string
-     */
-    private $riverHostname;
-    /**
-     * @var bool
-     */
-    private $useSsl;
-
-    /**
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param TargetEnvironmentFactory $targetEnvironmentFactory
-     * @param DeploymentRequestEnhancer $deploymentRequestEnhancer
-     * @param string $riverHostname
-     * @param bool $useSsl
-     */
     public function __construct(
-        UrlGeneratorInterface $urlGenerator,
         TargetEnvironmentFactory $targetEnvironmentFactory,
-        DeploymentRequestEnhancer $deploymentRequestEnhancer,
-        string $riverHostname,
-        bool $useSsl
+        DeploymentRequestEnhancer $deploymentRequestEnhancer
     ) {
-        $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
         $this->deploymentRequestEnhancer = $deploymentRequestEnhancer;
-        $this->riverHostname = $riverHostname;
-        $this->useSsl = $useSsl;
     }
 
     /**
@@ -83,9 +56,13 @@ class DeploymentRequestFactory
             ]),
             $tide->getTeam()->getBucketUuid(),
             new DeploymentRequest\Notification(
-                $this->getNotificationUrl($tide),
+                null,
                 $taskDetails->getLogId()
-            )
+            ),
+            [
+                'tide_uuid' => $tide->getUuid()->toString(),
+                'task' => 'run',
+            ]
         );
 
         return $this->deploymentRequestEnhancer->enhance(
@@ -93,20 +70,6 @@ class DeploymentRequestFactory
             $taskDetails,
             $request
         );
-    }
-
-    /**
-     * Get the notification URL to give to the runner client.
-     *
-     * @param Tide $tide
-     *
-     * @return string
-     */
-    private function getNotificationUrl(Tide $tide)
-    {
-        return 'http'.($this->useSsl ? 's' : '').'://'.$this->riverHostname.$this->urlGenerator->generate('runner_notification_post', [
-            'tideUuid' => $tide->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     /**
