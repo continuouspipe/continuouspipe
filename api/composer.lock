@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5bdbd58e6f8b790213f968af723718f",
+    "content-hash": "e05185f4cdf759a4d732ff5b14e0b02b",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -431,16 +431,16 @@
         },
         {
             "name": "continuous-pipe/message",
-            "version": "dev-add-options-to-pub-sub-puller",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "b9c861e25f3752da34b7d3df004bb6bc4221909e"
+                "reference": "91ae69c0ec362573dc364c8ae5e2bfbc12ffba23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/b9c861e25f3752da34b7d3df004bb6bc4221909e",
-                "reference": "b9c861e25f3752da34b7d3df004bb6bc4221909e",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/91ae69c0ec362573dc364c8ae5e2bfbc12ffba23",
+                "reference": "91ae69c0ec362573dc364c8ae5e2bfbc12ffba23",
                 "shasum": ""
             },
             "require": {
@@ -464,10 +464,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/message/tree/add-options-to-pub-sub-puller",
+                "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-10-13 14:15:09"
+            "time": "2017-10-16 16:07:28"
         },
         {
             "name": "continuous-pipe/model",
