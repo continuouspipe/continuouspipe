@@ -36,5 +36,14 @@
         </service>
 
         <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
+
+        <service id="river.pipe_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Pipe\ListenForDeploymentStatus">
+            <argument type="service" id="river.tide.transaction_manager"/>
+            <argument type="service" id="pipe.view.deployment_repository"/>
+            <argument type="service" id="logger"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+        </service>
     </services>
 </container>
