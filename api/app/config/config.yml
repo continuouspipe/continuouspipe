@@ -400,6 +400,16 @@ message:
     command:
         message_deadline_expiration_manager: continuouspipe.message.delayed.message_puller
 
+        retry_exceptions:
+            - 'Doctrine\DBAL\Exception\DriverException'
+            - 'ContinuousPipe\River\Tide\Concurrency\Lock\LockerException'
+            - '\PDOException'
+            - 'Predis\Connection\ConnectionException'
+            - 'GuzzleHttp\Exception\ConnectException'
+            - '\EngineException'
+            - 'LogStream\Client\ClientException'
+            - 'malkusch\lock\exception\TimeoutException'
+
     connections:
         default:
             driver:

@@ -57,7 +57,7 @@
         "lcobucci/jwt": "^3.2",
         "continuous-pipe/events": "~0.2.0",
         "sroze/kubernetes-client": "~1.10.0",
-        "continuous-pipe/message": "dev-add-options-to-pub-sub-puller",
+        "continuous-pipe/message": "dev-master",
         "continuous-pipe/flex": "dev-master",
         "google/cloud": "^0.39.0",
         "docker-php/docker-php": "~1.21.4",

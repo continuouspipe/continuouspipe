@@ -34,16 +34,12 @@ class SynchronizedTideGeneration implements PipelineTideGenerator
      */
     public function generate(TideGenerationRequest $request): array
     {
-        try {
-            return $this->locker->lock(
-                $this->getLockerReference($request),
-                function () use ($request) {
-                    return $this->decoratedGenerator->generate($request);
-                }
-            );
-        } catch (Tide\Concurrency\Lock\LockerException $e) {
-            throw new TideGenerationException('Locker prevented to generate tides', $e->getCode(), $e);
-        }
+        return $this->locker->lock(
+            $this->getLockerReference($request),
+            function () use ($request) {
+                return $this->decoratedGenerator->generate($request);
+            }
+        );
     }
 
     private function getLockerReference(TideGenerationRequest $request) : string
