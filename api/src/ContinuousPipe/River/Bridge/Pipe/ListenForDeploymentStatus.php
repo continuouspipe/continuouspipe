@@ -61,6 +61,14 @@ class ListenForDeploymentStatus
                 ));
             }
 
+            if (empty($tasks)) {
+                $this->logger->warning('Found no task to receive the notification', [
+                    'tide_uuid' => $tide->getUuid()->toString(),
+                    'task_type' => $taskType,
+                    'deployment_uuid' => $deployment->getUuid()->toString(),
+                ]);
+            }
+
             foreach ($tasks as $task) {
                 $task->receiveDeploymentNotification($deployment);
             }
