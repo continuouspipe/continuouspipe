@@ -185,6 +185,14 @@ tasks:
                             - name: REDIS_HOST
                               value: ${REDIS_HOST}
 
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 400Mi
+                            limits:
+                                cpu: 500m
+                                memory: 500Mi
+
                     deployment_strategy:
                         readiness_probe:
                             type: http
@@ -212,6 +220,14 @@ tasks:
                               name: WORKER_CONNECTION_NAME
                               value: main
 
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 800Mi
+                            limits:
+                                cpu: 500m
+                                memory: 1Gi
+
                 worker_operations:
                     specification:
                         accessibility:
@@ -232,6 +248,14 @@ tasks:
                             1003:
                               name: WORKER_CONNECTION_NAME
                               value: operations
+
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 800Mi
+                            limits:
+                                cpu: 500m
+                                memory: 1Gi
 
                 worker_delayed:
                     specification:
@@ -254,6 +278,14 @@ tasks:
                               name: WORKER_CONNECTION_NAME
                               value: delayed
 
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 800Mi
+                            limits:
+                                cpu: 500m
+                                memory: 1Gi
+
                 worker_deployments:
                     specification:
                         accessibility:
@@ -274,6 +306,14 @@ tasks:
                             1003:
                               name: WORKER_CONNECTION_NAME
                               value: long_running_deployments
+
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 1100Mi
+                            limits:
+                                cpu: 500m
+                                memory: 1200Mi
 
                 tideways:
                     specification:
