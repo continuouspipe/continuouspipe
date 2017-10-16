@@ -13,36 +13,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
 {
     /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-
-    /**
      * @var TargetEnvironmentFactory
      */
     private $targetEnvironmentFactory;
 
-    /**
-     * @var string
-     */
-    private $riverHostname;
-    /**
-     * @var bool
-     */
-    private $useSsl;
-
-    /**
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param TargetEnvironmentFactory $targetEnvironmentFactory
-     * @param string $riverHostname
-     * @param bool $useSsl
-     */
-    public function __construct(UrlGeneratorInterface $urlGenerator, TargetEnvironmentFactory $targetEnvironmentFactory, string $riverHostname, bool $useSsl)
+    public function __construct(TargetEnvironmentFactory $targetEnvironmentFactory)
     {
-        $this->urlGenerator = $urlGenerator;
         $this->targetEnvironmentFactory = $targetEnvironmentFactory;
-        $this->riverHostname = $riverHostname;
-        $this->useSsl = $useSsl;
     }
 
     /**
@@ -50,10 +27,6 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
      */
     public function create(Tide $tide, TaskDetails $taskDetails, DeployTaskConfiguration $configuration)
     {
-        $callbackUrl = 'http'.($this->useSsl ? 's' : '').'://'.$this->riverHostname.$this->urlGenerator->generate('pipe_notification_post', [
-            'tideUuid' => $tide->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_PATH);
-
         $bucketUuid = $tide->getTeam()->getBucketUuid();
 
         return new DeploymentRequest(
@@ -63,9 +36,13 @@ class FlattenDeploymentRequestFactory implements DeploymentRequestFactory
             ),
             $bucketUuid,
             new DeploymentRequest\Notification(
-                $callbackUrl,
+                null,
                 $taskDetails->getLogId()
-            )
+            ),
+            [
+                'tide_uuid' => $tide->getUuid()->toString(),
+                'task' => 'deploy',
+            ]
         );
     }
 }

@@ -9,3 +9,5 @@ ContinuousPipe\Pipe\DeploymentRequest:
         credentialsBucket:
             type: string
             serialized_name: credentialsBucket
+        attributes:
+            type: array<string,string>
