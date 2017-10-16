@@ -36,6 +36,10 @@ class ManifestFactory
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var string
+     */
+    private $riverHost;
 
     public function __construct(
         DockerfileResolver $dockerfileResolver,
@@ -43,7 +47,8 @@ class ManifestFactory
         string $artifactsBucketName,
         string $artifactsServiceAccountFilePath,
         string $firebaseDatabaseUrl,
-        string $firebaseServiceAccountFilePath
+        string $firebaseServiceAccountFilePath,
+        string $riverHost
     ) {
         $this->dockerfileResolver = $dockerfileResolver;
         $this->urlGenerator = $urlGenerator;
@@ -51,15 +56,21 @@ class ManifestFactory
         $this->artifactsServiceAccountFilePath = $artifactsServiceAccountFilePath;
         $this->firebaseDatabaseUrl = $firebaseDatabaseUrl;
         $this->firebaseServiceAccountFilePath = $firebaseServiceAccountFilePath;
+        $this->riverHost = $riverHost;
     }
 
     public function create(Build $build) : array
     {
         $request = $build->getRequest();
-        
+        $buildCompleteEndpoint = sprintf(
+            'https://%s%s',
+            $this->riverHost,
+            $this->urlGenerator->generate('complete_build', ['identifier' => $build->getIdentifier()])
+        );
+
         return [
             'log_boundary' => $build->getIdentifier(),
-            'build_complete_endpoint' => $this->urlGenerator->generate('complete_build', ['identifier' => $build->getIdentifier()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'build_complete_endpoint' => $buildCompleteEndpoint,
             'artifacts_configuration' => [
                 'bucket_name' => $this->artifactsBucketName,
                 'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true),
