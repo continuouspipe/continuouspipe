@@ -399,6 +399,7 @@ message:
 
     command:
         message_deadline_expiration_manager: continuouspipe.message.delayed.message_puller
+        allow_multiple_extenders: false
 
         retry_exceptions:
             - 'Doctrine\DBAL\Exception\DriverException'

@@ -435,12 +435,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80"
+                "reference": "a39588b628d2172022658098b0c53eb4b2ba1896"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80",
-                "reference": "7ab2418bf5a72a44fb31c9ca8d1c1ce2f0d80d80",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/a39588b628d2172022658098b0c53eb4b2ba1896",
+                "reference": "a39588b628d2172022658098b0c53eb4b2ba1896",
                 "shasum": ""
             },
             "require": {
@@ -450,7 +450,8 @@
             },
             "require-dev": {
                 "jms/serializer": "^1.8",
-                "phpspec/phpspec": "^4.0"
+                "phpspec/phpspec": "^4.0",
+                "phpunit/phpunit": "^6.4"
             },
             "type": "library",
             "autoload": {
@@ -467,7 +468,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-10-16 20:08:32"
+            "time": "2017-10-17 15:08:50"
         },
         {
             "name": "continuous-pipe/model",
