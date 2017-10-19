@@ -4,7 +4,6 @@ namespace AppBundle\Controller;
 
 use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Plan\Recurly\RecurlyPlanManager;
-use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;

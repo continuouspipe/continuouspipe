@@ -3,11 +3,15 @@
 namespace AuthBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as HWIOAuthBundleConnectController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class ConnectController extends HWIOAuthBundleConnectController
 {
+    /**
+     * @Route("/connect")
+     */
     public function connectAction(Request $request)
     {
         if ($this->isUserAuthenticated()) {
