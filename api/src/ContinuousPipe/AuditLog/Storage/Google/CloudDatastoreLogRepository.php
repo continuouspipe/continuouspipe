@@ -10,24 +10,31 @@ use DateTime;
 use DateTimeImmutable;
 use DomainException;
 use Google\Cloud\Core\Exception\BadRequestException;
+use Google\Cloud\Core\Exception\GoogleException;
+use Google\Cloud\Core\ServiceBuilder;
 use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Datastore\Entity;
 use Google\Cloud\Datastore\Query\Query;
+use function PasswordCompat\binary\check;
 
 /**
  * Repository class for storing audit log records by Google Cloud Datastore service.
  */
 class CloudDatastoreLogRepository implements LogRepository
 {
-
     /**
-     * @var DatastoreClient
+     * @var DatastoreClient|null
      */
     private $client;
 
-    public function __construct(DatastoreClient $client)
+    /**
+     * @var array
+     */
+    private $clientOptions;
+
+    public function __construct(array $clientOptions = [])
     {
-        $this->client = $client;
+        $this->clientOptions = $clientOptions;
     }
 
     /**
@@ -36,9 +43,9 @@ class CloudDatastoreLogRepository implements LogRepository
     public function insert(Record $record)
     {
         try {
-            $key = $this->client->key($record->type());
-            $entity = $this->client->entity($key, $this->createEntityDataFromRecord($record));
-            $this->client->insert($entity);
+            $key = $this->getClient()->key($record->type());
+            $entity = $this->getClient()->entity($key, $this->createEntityDataFromRecord($record));
+            $this->getClient()->insert($entity);
         } catch (DomainException $e) {
             throw new OperationFailedException('Failed to insert new record.', 0, $e);
         }
@@ -50,7 +57,7 @@ class CloudDatastoreLogRepository implements LogRepository
     public function query(string $eventType, string $pageCursor, int $pageSize): PaginatedResult
     {
         try {
-            $query = $this->client->query()
+            $query = $this->getClient()->query()
                 ->kind($eventType)
                 ->limit($pageSize)
                 ->start($pageCursor)
@@ -59,7 +66,7 @@ class CloudDatastoreLogRepository implements LogRepository
             $records = [];
             $nextPageCursor = '';
             /** @var Entity $entity */
-            foreach ($this->client->runQuery($query) as $entity) {
+            foreach ($this->getClient()->runQuery($query) as $entity) {
                 if ($entity instanceof Entity) {
                     $records[] = $this->createRecordFromEntity($entity);
                     $nextPageCursor = $entity->cursor();
@@ -100,5 +107,18 @@ class CloudDatastoreLogRepository implements LogRepository
             'ContinuousPipe\Authenticator\Event\TeamCreationEvent',
             'ContinuousPipe\Authenticator\Security\Event\UserCreated',
         ];
+    }
+
+    private function getClient()
+    {
+        if (null === $this->client) {
+            try {
+                $this->client = (new ServiceBuilder())->datastore($this->clientOptions);
+            } catch (GoogleException $e) {
+                throw new OperationFailedException('Failed to create the Datastore client.', 0, $e);
+            }
+        }
+
+        return $this->client;
     }
 }

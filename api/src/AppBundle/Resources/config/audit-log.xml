@@ -5,12 +5,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="authenticator.audit_log.storage.google_cloud_factory"
-                 class="Google\Cloud\Core\ServiceBuilder" />
-
-        <service id="authenticator.audit_log.storage.google_cloud_datastore_client"
-                 class="Google\Cloud\Datastore\DatastoreClient" public="false">
-            <factory service="authenticator.audit_log.storage.google_cloud_factory" method="datastore" />
+        <service id="authenticator.audit_log.storage.google_cloud_datastore_log_repository"
+                 class="ContinuousPipe\AuditLog\Storage\Google\CloudDatastoreLogRepository"
+                 public="false">
             <argument type="collection">
                 <argument key="projectId">%google_cloud_audit_log_project_id%</argument>
                 <argument key="keyFilePath">%google_cloud_audit_log_service_account_key_file%</argument>
@@ -18,11 +15,6 @@
             </argument>
         </service>
 
-        <service id="authenticator.audit_log.storage.google_cloud_datastore_log_repository"
-                 class="ContinuousPipe\AuditLog\Storage\Google\CloudDatastoreLogRepository"
-                 public="false">
-            <argument type="service" id="authenticator.audit_log.storage.google_cloud_datastore_client" />
-        </service>
         <service id="authenticator.audit_log.storage.log_repository"
                  alias="authenticator.audit_log.storage.google_cloud_datastore_log_repository" />
 
