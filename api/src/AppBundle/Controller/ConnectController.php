@@ -1,6 +1,6 @@
 <?php
 
-namespace AuthBundle\Controller;
+namespace AppBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as HWIOAuthBundleConnectController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
