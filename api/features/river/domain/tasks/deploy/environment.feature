@@ -418,3 +418,45 @@ Feature:
     Then the component "image0" should be deployed
     And the component "image0" should have a persistent volume mounted at "/var/lib/app"
     And the component "image0" should have a persistent volume with a storage class "default"
+
+  Scenario: I can generic resource specifications
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            resources:
+                                cpu: 250m
+                                memory: 2Gi
+    """
+    When a tide is started
+    Then the component "image0" should be deployed
+    And the component "image0" should request "250m" of CPU
+    And the component "image0" should be limited to "250m" of CPU
+    And the component "image0" should request "2Gi" of memory
+    And the component "image0" should be limited to "2Gi" of memory
+
+  Scenario: I can NOT mix generic resource and specific specifications
+    Given there is 1 application images in the repository
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        deployment:
+            deploy:
+                cluster: foo
+                services:
+                    image0:
+                        specification:
+                            resources:
+                                cpu: 250m
+                                limits:
+                                    memory: 1G
+    """
+    When a tide is started
+    Then the tide should be failed
+    And a log containing 'You cannot combine `cpu` and/or `memory` resource configuration with `requests` and/or `limits`' should be created
