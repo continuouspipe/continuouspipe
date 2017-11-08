@@ -576,6 +576,19 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the component :name should not request any CPU
+     */
+    public function theComponentShouldNotRequestAnyCpu($name)
+    {
+        $component = $this->getDeployedComponentNamed($name);
+        $requests = $component->getSpecification()->getResources()->getRequests();
+
+        if ($requests->getCpu() != null) {
+            throw new \RuntimeException(sprintf('Requested CPU: %s', $requests->getCpu()));
+        }
+    }
+
+    /**
      * @Then the component :name should request :request of CPU
      */
     public function theComponentShouldRequestOfCpu($name, $request)

@@ -160,3 +160,85 @@ Feature:
     And the component "app" should be limited to "1" of CPU
     And the component "app" should request "2Gi" of memory
     And the component "app" should be limited to "3Gi" of memory
+
+  Scenario: It will only add default resources where needed
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "resources",
+        "configuration": {
+          "default-cpu-request": "100m",
+          "default-cpu-limit": "250m",
+          "default-memory-request": "250Mi",
+          "default-memory-limit": "300Mi",
+          "max-cpu-request": "2",
+          "max-cpu-limit": "4",
+          "max-memory-request": "4Gi",
+          "max-memory-limit": "5Gi"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                            resources:
+                                requests:
+                                    memory: 2Gi
+                                limits:
+                                    cpu: 1
+    """
+    When a tide is started for the branch "master"
+    Then the component "app" should request "100m" of CPU
+    And the component "app" should be limited to "1" of CPU
+    And the component "app" should request "2Gi" of memory
+    And the component "app" should be limited to "300Mi" of memory
+
+  Scenario: It do not complain if no limit nor value
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "resources",
+        "configuration": {
+          "default-memory-request": "250Mi",
+          "default-memory-limit": "300Mi",
+          "max-memory-request": "4Gi",
+          "max-memory-limit": "5Gi"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                            resources:
+                                requests:
+                                    memory: 2Gi
+                                limits:
+                                    cpu: 1
+    """
+    When a tide is started for the branch "master"
+    Then the component "app" should not request any CPU
+    And the component "app" should be limited to "1" of CPU

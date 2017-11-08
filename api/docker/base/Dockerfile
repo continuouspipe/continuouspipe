@@ -1,4 +1,4 @@
-FROM quay.io/continuouspipe/symfony-php7.1-nginx:stable
+FROM quay.io/continuouspipe/symfony-php7.1-nginx:latest
 
 MAINTAINER Samuel ROZE <samuel.roze@gmail.com>
 

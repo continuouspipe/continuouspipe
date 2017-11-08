@@ -72,19 +72,8 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
                 $resources = new Component\Resources();
             }
 
-            if (null === ($requests = $resources->getRequests())) {
-                $requests = new Component\ResourcesRequest(
-                    $policyConfiguration['default-cpu-request'] ?? null,
-                    $policyConfiguration['default-memory-request'] ?? null
-                );
-            }
-
-            if (null === ($limits = $resources->getLimits())) {
-                $limits = new Component\ResourcesRequest(
-                    $policyConfiguration['default-cpu-limit'] ?? null,
-                    $policyConfiguration['default-memory-limit'] ?? null
-                );
-            }
+            $requests = $this->resourcesWithDefaults($resources->getRequests(), $policyConfiguration['default-cpu-request'] ?? null, $policyConfiguration['default-memory-request'] ?? null);
+            $limits = $this->resourcesWithDefaults($resources->getLimits(), $policyConfiguration['default-cpu-limit'] ?? null, $policyConfiguration['default-memory-limit'] ?? null);
 
             isset($policyConfiguration['max-cpu-request']) && $this->assertResourceLessThan($component, $requests->getCpu(), $policyConfiguration['max-cpu-request'], 'Component "%s" has a requested "%s" CPU while "%s" is enforced by the cluster policy');
             isset($policyConfiguration['max-cpu-limit']) && $this->assertResourceLessThan($component, $limits->getCpu(), $policyConfiguration['max-cpu-limit'], 'Component "%s" has a requested a limit of "%s" CPU while "%s" is enforced by the cluster policy');
@@ -95,6 +84,23 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
         }, $request->getSpecification()->getComponents());
 
         return $request;
+    }
+
+    private function resourcesWithDefaults(Component\ResourcesRequest $resources = null, $defaultCpu = null, $defaultMemory = null)
+    {
+        if (null === $resources) {
+            $resources = new Component\ResourcesRequest();
+        }
+
+        if (!$resources->getCpu()) {
+            $resources = new Component\ResourcesRequest($defaultCpu, $resources->getMemory());
+        }
+
+        if (!$resources->getMemory()) {
+            $resources = new Component\ResourcesRequest($resources->getCpu(), $defaultMemory);
+        }
+
+        return $resources;
     }
 
     private function assertResourceLessThan(Component $component, string $value, string $maximum, string $exceptionMessage)
