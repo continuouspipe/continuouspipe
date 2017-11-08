@@ -42,6 +42,30 @@ sufficient enough to keep the data (ie the application cache) regardless of rand
 
 ## Recovery
 
+
+### Master lost
+
+Sometimes, when a master is lost, it can be impossible for Redis to know what's is going on. Therefore, you need to manually change redis node to be a master.
+
+1. `exec` into one of the Redis container and make it a master:
+```
+redis-cli ROLE
+redis-cli SLAVEOF NO ONE
+redis-cli ROLE
+```
+
+2. Exec into a sentinel and force a failover
+```
+redis-cli -p 26379
+```
+```
+SENTINEL failover mymaster
+```
+
+3. Delete the other Redis instances
+
+### Sentinels lost
+
 We found ourselves in a situation whilst deploying this where the sentinels could not talk to any redis instance.
 Deleting sentinel instances to try to help recovery did not help.
 As sentinels do not start unless they have other sentinels to talk to to inform of the current master, (see https://github.com/kubernetes/kubernetes/blob/f21ee1a6a88cd145ba18a12d451dc309684cebd4/examples/storage/redis/image/run.sh#L26-L40 ).
