@@ -37,6 +37,9 @@
         </service>
 
         <service id="river.analytics.logitio.guzzle_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="timeout">%logitio_timeout%</argument>
+            </argument>
             <tag name="csa_guzzle.client" />
         </service>
 
