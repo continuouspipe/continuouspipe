@@ -6,6 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="idx_deployment_view_by_uuid", columns={"deployment_uuid"}),
+ * })
  */
 class DeploymentViewDto
 {
