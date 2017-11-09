@@ -40,7 +40,7 @@ module.exports = function(firebase) {
             var eventsLog = log.child('events');
 
             // Watch logs
-            var logsWatcher = new LogsWatcher(client, data, new LogWritter(logChildren));
+            var logsWatcher = new LogsWatcher(client, data, new LogWritter(rawChildren));
             logsWatcher.watch();
 
             // Watch events
