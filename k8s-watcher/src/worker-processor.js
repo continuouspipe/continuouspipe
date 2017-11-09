@@ -1,9 +1,10 @@
-var k8s = require('./kubernetes');
+var k8s = require('./kubernetes'),
+    LogsWatcher = require('./watcher/logs-watcher'),
+    LogWritter = require('./watcher/log-writter');
 
 module.exports = function(firebase) {
     // Configuration
     var timeout = 1000 * 60 * 5,
-        logsWatcher = require('./watcher/logs')(),
         eventsWatcher = require('./watcher/events')();
 
     return function(job, done) {
@@ -39,9 +40,8 @@ module.exports = function(firebase) {
             var eventsLog = log.child('events');
 
             // Watch logs
-            var cancelLogs = logsWatcher(client, data, rawChildren, function() {
-                finish();
-            });
+            var logsWatcher = new LogsWatcher(client, data, new LogWritter(logChildren));
+            logsWatcher.watch();
 
             // Watch events
             var cancelEvents = eventsWatcher(client, data, eventsLog);
@@ -58,7 +58,7 @@ module.exports = function(firebase) {
             // Allow to finish the stream
             var finish = function() {
                 cancelEvents();
-                cancelLogs();
+                logsWatcher.stop();
 
                 // Wait 1 second to allow the content to flush
                 setTimeout(function() {
