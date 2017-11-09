@@ -66,7 +66,7 @@ describe('LogWritter: write logs to Firebase', () => {
             expectedTable.push(['mssql', 'No', 'terminated', 'OOMKilled']);
 
             assertEquals(
-                '[stream closed]'+"\n"+expectedTable.toString(), 
+                '[stream closed]'+"\n\n# Overview of the containers:\n"+expectedTable.toString(), 
                 writer.read()
             );
         });

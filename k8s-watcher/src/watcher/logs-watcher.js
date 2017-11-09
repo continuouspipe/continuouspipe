@@ -43,7 +43,7 @@ module.exports = function(client, target, logWritter) {
                     });
                 }
 
-                logWritter.write("\n"+table.toString());
+                logWritter.write("\n\n# Overview of the containers:\n"+table.toString());
             }).catch(function(error) {
                 // Ignore any error so we always call the callback...
             }).then(function() {
