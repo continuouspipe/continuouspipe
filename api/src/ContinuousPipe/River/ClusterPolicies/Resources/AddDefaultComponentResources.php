@@ -75,6 +75,13 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
             $requests = $this->resourcesWithDefaults($resources->getRequests(), $policyConfiguration['default-cpu-request'] ?? null, $policyConfiguration['default-memory-request'] ?? null);
             $limits = $this->resourcesWithDefaults($resources->getLimits(), $policyConfiguration['default-cpu-limit'] ?? null, $policyConfiguration['default-memory-limit'] ?? null);
 
+            if ('true' === ($policyConfiguration['cpu-requests-and-limits-have-to-be-equals'] ?? '')) {
+                $this->assertResourcesEquals($component, $resources->getLimits()->getCpu(), $resources->getRequests()->getCpu(), 'Component "%s" need to have CPU limits (got "%s") matching CPU requests (got "%s")');
+            }
+            if ('true' === ($policyConfiguration['memory-requests-and-limits-have-to-be-equals'] ?? '')) {
+                $this->assertResourcesEquals($component, $resources->getLimits()->getMemory(), $resources->getRequests()->getMemory(), 'Component "%s" need to have memory limits (got "%s") matching memory requests (got "%s")');
+            }
+
             isset($policyConfiguration['max-cpu-request']) && $this->assertResourceLessThan($component, $requests->getCpu(), $policyConfiguration['max-cpu-request'], 'Component "%s" has a requested "%s" CPU while "%s" is enforced by the cluster policy');
             isset($policyConfiguration['max-cpu-limit']) && $this->assertResourceLessThan($component, $limits->getCpu(), $policyConfiguration['max-cpu-limit'], 'Component "%s" has a requested a limit of "%s" CPU while "%s" is enforced by the cluster policy');
             isset($policyConfiguration['max-memory-request']) && $this->assertResourceLessThan($component, $requests->getMemory(), $policyConfiguration['max-memory-request'], 'Component "%s" has a requested "%s" of memory while "%s" is enforced by the cluster policy');
@@ -103,6 +110,18 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
         return $resources;
     }
 
+    private function assertResourcesEquals(Component $component, $limit, $request, $exceptionMessage)
+    {
+        if (!$this->resourcesEquals($limit, $request)) {
+            throw new DeploymentRequestException(sprintf(
+                $exceptionMessage,
+                $component->getName(),
+                $limit,
+                $request
+            ));
+        }
+    }
+
     private function assertResourceLessThan(Component $component, string $value, string $maximum, string $exceptionMessage)
     {
         if ($this->resourceGreaterThan($value, $maximum)) {
@@ -115,8 +134,21 @@ class AddDefaultComponentResources implements DeploymentRequestEnhancer
         }
     }
 
-    private function resourceGreaterThan(string $value, string $compareTo)
+    private function resourceGreaterThan(string $value, string $compareTo) : bool
     {
         return ResourceConverter::resourceToNumber($value) > ResourceConverter::resourceToNumber($compareTo);
+    }
+
+    private function resourcesEquals($value, $compareTo) : bool
+    {
+        if ($value == null && $compareTo == null) {
+            return true;
+        }
+
+        if ($value == null || $compareTo == null) {
+            return false;
+        }
+
+        return ResourceConverter::resourceToNumber($value) == ResourceConverter::resourceToNumber($compareTo);
     }
 }

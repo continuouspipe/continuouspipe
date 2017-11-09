@@ -242,3 +242,78 @@ Feature:
     When a tide is started for the branch "master"
     Then the component "app" should not request any CPU
     And the component "app" should be limited to "1" of CPU
+
+  Scenario: It requires requests and limits to be equals
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "resources",
+        "configuration": {
+          "memory-requests-and-limits-have-to-be-equals": "true",
+          "cpu-requests-and-limits-have-to-be-equals": "true"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                            resources:
+                                requests:
+                                    memory: 2Gi
+                                limits:
+                                    memory: 2Gi
+    """
+    When a tide is started for the branch "master"
+    Then the component "app" should not request any CPU
+    And the component "app" should request "2Gi" of memory
+    And the component "app" should be limited to "2Gi" of memory
+
+  Scenario: It complains when requests and limits are different
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "resources",
+        "configuration": {
+          "memory-requests-and-limits-have-to-be-equals": "true",
+          "cpu-requests-and-limits-have-to-be-equals": "true"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                            resources:
+                                requests:
+                                    memory: 2Gi
+                                    cpu: 1
+                                limits:
+                                    memory: 2Gi
+                                    cpu: 500m
+    """
+    When a tide is started for the branch "master"
+    Then the tide should be failed
+    And a log containing 'Component "app" need to have CPU limits (got "500m") matching CPU requests (got "1")' should be created

@@ -15,6 +15,7 @@ use LogStream\LoggerFactory;
 use SimpleBus\Message\Bus\MessageBus;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -203,6 +204,26 @@ class DeployTaskFactory implements TaskFactory
                                         ->end()
                                     ->end()
                                     ->arrayNode('resources')
+                                        ->beforeNormalization()
+                                            ->always()->then(function ($value) {
+                                                // Validation...
+                                                if (!isset($value['cpu']) && !isset($value['memory'])) {
+                                                    return $value;
+                                                } elseif (isset($value['requests']) || isset($value['limits'])) {
+                                                    throw new InvalidConfigurationException('You cannot combine `cpu` and/or `memory` resource configuration with `requests` and/or `limits`');
+                                                }
+
+                                                $resources = [
+                                                    'cpu' => $value['cpu'] ?? null,
+                                                    'memory' => $value['memory'] ?? null,
+                                                ];
+
+                                                return [
+                                                    'requests' => $resources,
+                                                    'limits' => $resources,
+                                                ];
+                                            })
+                                        ->end()
                                         ->children()
                                             ->arrayNode('requests')
                                                 ->children()
