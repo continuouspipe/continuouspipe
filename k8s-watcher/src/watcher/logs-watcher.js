@@ -1,3 +1,5 @@
+var Table = require('cli-table');
+
 module.exports = function(client, target, logWritter) {
     var stream = null,
         retryTimeout = null;
@@ -21,6 +23,33 @@ module.exports = function(client, target, logWritter) {
                 tailLines: lines
             }
         });
+
+        var endStream = function() {
+            getPod().then(function(pod) {
+                var table = new Table({ 
+                    head: ["Container", "Ready?", "Last state", "Reason"] 
+                });
+
+                if (pod.status && pod.status.containerStatuses) {
+                    pod.status.containerStatuses.forEach(function(containerStatus) {
+                        var lastState = containerStatus.lastState && containerStatus.lastState.terminated;
+
+                        table.push([
+                            containerStatus.name,
+                            containerStatus.ready ? 'Yes' : 'No',
+                            lastState ? 'terminated' : '',
+                            lastState ? lastState.reason : ''
+                        ])
+                    });
+                }
+
+                logWritter.write("\n"+table.toString());
+            }).catch(function(error) {
+                // Ignore any error so we always call the callback...
+            }).then(function() {
+                callback(hasData);
+            });
+        }
         
         stream.on('data', function(chunk) {
             hasData = true;
@@ -29,25 +58,21 @@ module.exports = function(client, target, logWritter) {
         });
 
         stream.on('close', function() {
-            if (hasData) {
-                logWritter.write('[stream closed]');
-            }
+            logWritter.write('[stream closed]');
 
-            callback(hasData);
+            endStream();
         });
 
         stream.on('error', function(error) {
             logWritter.write('[stream error]');
 
-            callback(hasData);
+            endStream();
         });
 
         stream.on('end', function(result) {
-            if (hasData) {
-                logWritter.write('[stream ended]');
-            }
+            logWritter.write('[stream ended]');
 
-            callback(hasData);
+            endStream();
         });
     };
 
@@ -57,26 +82,34 @@ module.exports = function(client, target, logWritter) {
         }, 1000);
     };
 
+    var getPod = function() {
+        return new Promise(function(resolve, reject) {
+            client.ns(target.namespace).po.get(target.pod, function(error, pod) {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve(pod)
+                }
+            });
+        });
+    }
+
     var tryStream = function() {
-        client.ns(target.namespace).po.get(target.pod, function(error, pod) {
-            if (error) {
-                console.log('Unable to get pod', target.pod, ':', error, '. Retrying in 1 second.');
-
-                retryStream();
-                
-                return;
-            }
-
+        return getPod().then(function(pod) {
             streamLog(pod, function(hasData) {
                 if (!hasData) {
                     retryStream();
                 }
             });
+        }, function(error) {
+            console.log('Unable to get pod', target.pod, ':', error, '. Retrying in 1 second.');
+
+            retryStream();
         });
     };
 
     this.watch = function() {
-        tryStream();
+        return tryStream();
     }
 
     this.stop = function() {

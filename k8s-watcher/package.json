@@ -6,6 +6,8 @@
   "author": "Samuel ROZE <samuel.roze@gmail.com>",
   "dependencies": {
     "ajv": "^4.8.2",
+    "cli-table": "^0.3.1",
+    "diff": "^3.4.0",
     "express": "^4.13.3",
     "firebase": "^2.4.2",
     "firebase-admin": "^5.2.1",
