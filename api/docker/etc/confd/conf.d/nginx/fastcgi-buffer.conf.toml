@@ -1,0 +1,6 @@
+[template]
+src   = "nginx/fastcgi_buffers.conf.tmpl"
+dest  = "/etc/nginx/sites-available/default-20-fastcgi-buffers.conf"
+mode  = "0644"
+keys = [
+]
