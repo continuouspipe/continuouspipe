@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('UsageGraphBuilder', function() {
-
+    .service('UsageNormalizer', function() {
         var normalizeAmount = function(amount) {
             if (typeof amount == 'string') {
                 if (amount.substr(-2) == 'Gi') {
@@ -17,14 +16,15 @@ angular.module('continuousPipeRiver')
             return parseFloat(amount);
         };
 
-        var normalizeUsage = function(usage) {
+        this.normalize = function(usage) {
             Object.keys(usage).forEach(function(key) {
                 return usage[key] = normalizeAmount(usage[key]);
             });
 
             return usage;
         };
-
+    })
+    .service('UsageGraphBuilder', function(UsageNormalizer) {
         var groupEntriesBy = function(entries, groupByFunction) {
             var groupedEntries = {};
 
@@ -32,7 +32,7 @@ angular.module('continuousPipeRiver')
                 var key = groupByFunction(entry);
 
                 // Parse entry's usage
-                entry.usage = normalizeUsage(entry.usage);
+                entry.usage = UsageNormalizer.normalize(entry.usage);
 
                 if (!(key in groupedEntries)) {
                     groupedEntries[key] = entry;
