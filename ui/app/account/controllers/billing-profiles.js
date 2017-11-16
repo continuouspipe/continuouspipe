@@ -33,7 +33,7 @@ angular.module('continuousPipeRiver')
             });
         };
     })
-    .controller('ShowBillingProfileController', function($scope, $mdToast, $mdDialog, $http, $state, BillingProfileRepository, UsageGraphBuilder, billingProfile) {
+    .controller('ShowBillingProfileController', function($scope, $mdToast, $mdDialog, $http, $state, BillingProfileRepository, UsageGraphBuilder, UsageNormalizer, billingProfile) {
         $scope.billingProfile = billingProfile;
 
         $scope.addAdmin = function(username) {
@@ -103,9 +103,23 @@ angular.module('continuousPipeRiver')
         });
 
         BillingProfileRepository.getUsage(billingProfile, 'P31D').then(function(usage) {
-            if (usage.length) {
-                $scope.billingProfile.plan.metrics.used = usage[0].entries[0].usage;
+            if (!usage.length) {
+                return;
             }
+
+            $scope.billingProfile.plan.metrics.used = usage[0].entries.reduce(function(sum, entry) {
+                var usage = UsageNormalizer.normalize(entry.usage);
+
+                sum.tides += usage.tides;
+                sum.cpu += usage.cpu;
+                sum.memory += usage.memory;
+
+                return sum;
+            }, {
+                tides: 0,
+                cpu: 0,
+                memory: 0
+            });
         });
 
         $scope.change = function(ev) {
