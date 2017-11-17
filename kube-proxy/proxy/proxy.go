@@ -7,6 +7,7 @@ import (
 	"github.com/continuouspipe/kube-proxy/cpapi"
 	"github.com/continuouspipe/kube-proxy/keenapi"
 	"github.com/continuouspipe/kube-proxy/parser"
+	"golang.org/x/oauth2/google"
 	"github.com/golang/glog"
 	"io"
 	"io/ioutil"
@@ -17,6 +18,8 @@ import (
 	"os"
 	"strings"
 	"time"
+	"encoding/base64"
+	"context"
 )
 
 const ISO8601 = "2006-01-02T15:04:05.999-0700"
@@ -193,7 +196,13 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 		return
 	}
 
-	req.SetBasicAuth(p.apiCluster.Username, p.apiCluster.Password)
+	err = p.AddCredentialsToRequest(req)
+	if err != nil {
+		glog.V(5).Infof("Error finding credentials for cluster: %s", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		glog.Flush()
+		return
+	}
 
 	if !p.isUpgradeRequest(req) {
 		p.reverseProxy.ServeHTTP(w, newReq)
@@ -203,6 +212,32 @@ func (p *UpgradeAwareSingleHostReverseProxy) ServeHTTP(w http.ResponseWriter, re
 
 	p.serveUpgrade(w, newReq)
 	glog.Flush()
+}
+
+func (p *UpgradeAwareSingleHostReverseProxy) AddCredentialsToRequest(req *http.Request) error {
+	if p.apiCluster.Credentials.GoogleServiceAccount != "" {
+		decodedServiceAccount, err := base64.StdEncoding.DecodeString(p.apiCluster.Credentials.GoogleServiceAccount)
+		if err != nil {
+			return err
+		}
+
+		jwt, err := google.JWTConfigFromJSON(decodedServiceAccount, "https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/appengine.admin", "https://www.googleapis.com/auth/compute")
+
+		if err != nil {
+			return err
+		}
+
+		token, err := jwt.TokenSource(context.Background()).Token()
+		if err != nil {
+			return err
+		}
+
+		req.Header.Add("Authorization", token.Type()+" "+token.AccessToken)
+	} else {
+		req.SetBasicAuth(p.apiCluster.Credentials.Username, p.apiCluster.Credentials.Password)
+	}
+
+	return nil
 }
 
 func (p *UpgradeAwareSingleHostReverseProxy) dialBackend(req *http.Request) (net.Conn, error) {
