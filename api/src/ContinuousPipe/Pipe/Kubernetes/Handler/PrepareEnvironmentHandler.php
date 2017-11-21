@@ -124,8 +124,14 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
             if (null !== ($rbacConfiguration = $this->clusterPolicyConfiguration($cluster, 'rbac'))) {
                 $this->createOrUpdateRbacBinding($client->getNamespaceClient($namespace), $cluster, $rbacConfiguration);
-            } elseif (null !== ($networkConfiguration = $this->clusterPolicyConfiguration($cluster, 'network'))) {
+            }
+
+            if (null !== ($networkConfiguration = $this->clusterPolicyConfiguration($cluster, 'network'))) {
                 $this->createNetworkPolicies($client->getNamespaceClient($namespace), $networkConfiguration);
+            } else {
+                $this->logger->debug('No network policy found in cluster', [
+                    'policies' => $cluster->getPolicies(),
+                ]);
             }
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
@@ -259,7 +265,15 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
         try {
             $namespaceClient->getRoleBindingRepository()->findOneByName($bindingName);
+
+            $this->logger->debug('RBAC role binding {name} found, skipping.', [
+                'name' => $bindingName,
+            ]);
         } catch (ObjectNotFound $e) {
+            $this->logger->debug('RBAC role binding {name} not found, creating it.', [
+                'name' => $bindingName,
+            ]);
+            
             $namespaceClient->getRoleBindingRepository()->create(new RoleBinding(
                 new ObjectMetadata('team-service-account-is-managed-used'),
                 new RoleRef(
@@ -335,10 +349,16 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             try {
                 $existingPolicy = $policyRepository->findByName($policy->getMetadata()->getName());
             } catch (ObjectNotFound $e) {
+                $this->logger->debug('Policy {name} was not found, creating it', [
+                    'name' => $policy->getMetadata()->getName(),
+                ]);
                 $policyRepository->create($policy);
             }
 
             if (isset($existingPolicy)) {
+                $this->logger->debug('Policy {name} was found, updating it', [
+                    'name' => $policy->getMetadata()->getName(),
+                ]);
                 $policyRepository->update($policy);
             }
         }
