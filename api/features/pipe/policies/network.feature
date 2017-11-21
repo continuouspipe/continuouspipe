@@ -20,7 +20,8 @@ Feature:
     """
     {
       "rules": [
-        {"type": "allow-current-namespace"}
+        {"type": "allow-current-namespace"},
+        {"type": "allow-from-namespace", "label-key": "name", "label-value": "ingress-nginx"}
       ]
     }
     """
@@ -43,3 +44,6 @@ Feature:
     And the network policy "allow-current-namespace" should be created
     And the network policy "allow-current-namespace" should have no egress configuration
     And the network policy "allow-current-namespace" should have an ingress rule from "continuous-pipe-environment=my-environment"
+    And the network policy "allow-i-ns-ingress-nginx" should be created
+    And the network policy "allow-i-ns-ingress-nginx" should have no egress configuration
+    And the network policy "allow-i-ns-ingress-nginx" should have an ingress rule from "name=ingress-nginx"

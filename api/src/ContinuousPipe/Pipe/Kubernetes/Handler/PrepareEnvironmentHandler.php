@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Kubernetes\Handler;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Pipe\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Pipe\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Pipe\Kubernetes\KubernetesDeploymentContext;
@@ -338,15 +339,30 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             }
 
             if ('allow-current-namespace' == $rule['type']) {
+                $rule['type'] = 'allow-from-namespace';
+                $rule['label-key'] = 'continuous-pipe-environment';
+                $rule['label-value'] = $namespaceClient->getNamespace()->getMetadata()->getName();
+                $rule['name'] = 'allow-current-namespace';
+            }
+
+            if ('allow-from-namespace' == $rule['type']) {
+                if (!isset($rule['label-value']) || !isset($rule['label-key'])) {
+                    throw new \InvalidArgumentException(sprintf('The rule #%d of type "%s" should have `label-value` and `label-key` parameters to identify the namespace', $index, $rule['type']));
+                }
+
+                if (!isset($rule['name'])) {
+                    $rule['name'] = 'allow-i-ns-'.(new Slugify())->slugify($rule['label-value']);
+                }
+
                 $policies[] = new NetworkPolicy(
-                    new ObjectMetadata('allow-current-namespace'),
+                    new ObjectMetadata($rule['name']),
                     new NetworkPolicySpec(
                         [],
                         [
                             new NetworkPolicyIngressRule(
                                 [
                                     new NetworkPolicyPeer(new LabelSelector([
-                                        'continuous-pipe-environment' => $namespaceClient->getNamespace()->getMetadata()->getName(),
+                                        $rule['label-key'] => $rule['label-value'],
                                     ]))
                                 ]
                             )
