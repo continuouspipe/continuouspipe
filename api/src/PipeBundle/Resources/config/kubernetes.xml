@@ -253,6 +253,7 @@
             <argument type="service" id="kubernetes.naming_strategy.identifier" />
             <argument type="service" id="pipe.adapter.kubernetes.private_images.secret_factory" />
             <argument type="service" id="tolerance.waiter" />
+            <argument type="service" id="logger" />
 
             <tag name="deployment_command_handler" handles="ContinuousPipe\Pipe\Command\PrepareEnvironmentCommand" />
         </service>
