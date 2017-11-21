@@ -7,6 +7,7 @@ use Kubernetes\Client\NamespaceClient;
 use Kubernetes\Client\Repository\DeploymentRepository;
 use Kubernetes\Client\Repository\EventRepository;
 use Kubernetes\Client\Repository\IngressRepository;
+use Kubernetes\Client\Repository\NetworkPolicyRepository;
 use Kubernetes\Client\Repository\PersistentVolumeClaimRepository;
 use Kubernetes\Client\Repository\PodRepository;
 use Kubernetes\Client\Repository\RBAC\RoleBindingRepository;
@@ -71,6 +72,10 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
      * @var RoleBindingRepository
      */
     private $roleBindingRepository;
+    /**
+     * @var NetworkPolicyRepository
+     */
+    private $networkPolicyRepository;
 
     public function __construct(
         PodRepository $podRepository,
@@ -82,7 +87,8 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
         IngressRepository $ingressRepository,
         DeploymentRepository $deploymentRepository,
         EventRepository $eventRepository,
-        RoleBindingRepository $roleBindingRepository
+        RoleBindingRepository $roleBindingRepository,
+        NetworkPolicyRepository $networkPolicyRepository
     ) {
         $this->podRepository = $podRepository;
         $this->serviceRepository = $serviceRepository;
@@ -94,6 +100,7 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
         $this->deploymentRepository = $deploymentRepository;
         $this->eventRepository = $eventRepository;
         $this->roleBindingRepository = $roleBindingRepository;
+        $this->networkPolicyRepository = $networkPolicyRepository;
     }
 
     /**
@@ -174,6 +181,14 @@ class InjectedRepositoriesNamespaceClient implements NamespaceClient
     public function getRoleBindingRepository()
     {
         return $this->roleBindingRepository;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNetworkPolicyRepository()
+    {
+        return $this->networkPolicyRepository;
     }
 
     /**

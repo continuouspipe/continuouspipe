@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\Pipe\Kubernetes\Handler;
 
+use Cocur\Slugify\Slugify;
 use ContinuousPipe\Pipe\Kubernetes\Client\KubernetesClientFactory;
 use ContinuousPipe\Pipe\Kubernetes\Event\NamespaceCreated;
 use ContinuousPipe\Pipe\Kubernetes\KubernetesDeploymentContext;
@@ -18,8 +19,14 @@ use Kubernetes\Client\Client;
 use Kubernetes\Client\Exception\ObjectNotFound;
 use Kubernetes\Client\Exception\SecretNotFound;
 use Kubernetes\Client\Model\KubernetesNamespace;
+use Kubernetes\Client\Model\LabelSelector;
 use Kubernetes\Client\Model\LocalObjectReference;
+use Kubernetes\Client\Model\NetworkPolicy\NetworkPolicy;
+use Kubernetes\Client\Model\NetworkPolicy\NetworkPolicyIngressRule;
+use Kubernetes\Client\Model\NetworkPolicy\NetworkPolicyPeer;
+use Kubernetes\Client\Model\NetworkPolicy\NetworkPolicySpec;
 use Kubernetes\Client\Model\ObjectMetadata;
+use Kubernetes\Client\Model\PodSelector;
 use Kubernetes\Client\Model\RBAC\RoleBinding;
 use Kubernetes\Client\Model\RBAC\RoleRef;
 use Kubernetes\Client\Model\RBAC\Subject;
@@ -71,11 +78,11 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
     /**
      * @param KubernetesClientFactory $kubernetesClientFactory
-     * @param MessageBus              $eventBus
-     * @param LoggerFactory           $loggerFactory
-     * @param NamingStrategy          $namingStrategy
-     * @param SecretFactory           $secretFactory
-     * @param Waiter                  $waiter
+     * @param MessageBus $eventBus
+     * @param LoggerFactory $loggerFactory
+     * @param NamingStrategy $namingStrategy
+     * @param SecretFactory $secretFactory
+     * @param Waiter $waiter
      */
     public function __construct(KubernetesClientFactory $kubernetesClientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy, SecretFactory $secretFactory, Waiter $waiter)
     {
@@ -103,6 +110,8 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
             if (null !== ($rbacConfiguration = $this->clusterPolicyConfiguration($cluster, 'rbac'))) {
                 $this->createOrUpdateRbacBinding($client->getNamespaceClient($namespace), $cluster, $rbacConfiguration);
+            } elseif (null !== ($networkConfiguration = $this->clusterPolicyConfiguration($cluster, 'network'))) {
+                $this->createNetworkPolicies($client->getNamespaceClient($namespace), $networkConfiguration);
             }
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
@@ -118,7 +127,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     }
 
     /**
-     * @param Client            $client
+     * @param Client $client
      * @param DeploymentContext $context
      *
      * @return KubernetesNamespace
@@ -143,8 +152,8 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     }
 
     /**
-     * @param Client              $client
-     * @param DeploymentContext   $context
+     * @param Client $client
+     * @param DeploymentContext $context
      * @param KubernetesNamespace $namespace
      */
     private function createOrUpdateNamespaceCredentials(Client $client, DeploymentContext $context, KubernetesNamespace $namespace)
@@ -186,7 +195,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     }
 
     /**
-     * @param NamespaceClient   $namespaceClient
+     * @param NamespaceClient $namespaceClient
      * @param DeploymentContext $context
      *
      * @return \Kubernetes\Client\Model\Secret
@@ -211,7 +220,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
 
     /**
      * @param ServiceAccount $serviceAccount
-     * @param Secret         $secret
+     * @param Secret $secret
      *
      * @return bool
      */
@@ -265,7 +274,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         return $username;
     }
 
-    private function usernameFromServiceAccount(string $serviceAccountAsBase64) : string
+    private function usernameFromServiceAccount(string $serviceAccountAsBase64): string
     {
         try {
             $serviceAccountJson = \GuzzleHttp\json_decode(base64_decode($serviceAccountAsBase64), true);
@@ -295,5 +304,75 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         }
 
         return null;
+    }
+
+    private function createNetworkPolicies(NamespaceClient $namespaceClient, array $networkConfiguration)
+    {
+        $policies = $this->networkConfigurationToPolicies($namespaceClient, $networkConfiguration);
+        $policyRepository = $namespaceClient->getNetworkPolicyRepository();
+
+        foreach ($policies as $policy) {
+            try {
+                $policyRepository->findByName($policy->getMetadata()->getName());
+            } catch (ObjectNotFound $e) {
+                $policyRepository->create($policy);
+            }
+        }
+    }
+
+    /**
+     * @param NamespaceClient $namespaceClient
+     * @param array $networkConfiguration
+     *
+     * @return NetworkPolicy[]
+     */
+    private function networkConfigurationToPolicies(NamespaceClient $namespaceClient, array $networkConfiguration)
+    {
+        if (!isset($networkConfiguration['rules']) || !is_array($networkConfiguration['rules'])) {
+            throw new \InvalidArgumentException('The network configuration needs to have some `rules`');
+        }
+
+        $policies = [];
+        foreach ($networkConfiguration['rules'] as $index => $rule) {
+            if (!isset($rule['type'])) {
+                throw new \InvalidArgumentException(sprintf('Rule #%d of the network policies do not have type', $index));
+            }
+
+            if ('allow-current-namespace' == $rule['type']) {
+                $rule['type'] = 'allow-from-namespace';
+                $rule['label-key'] = 'continuous-pipe-environment';
+                $rule['label-value'] = $namespaceClient->getNamespace()->getMetadata()->getName();
+                $rule['name'] = 'allow-current-namespace';
+            }
+
+            if ('allow-from-namespace' == $rule['type']) {
+                if (!isset($rule['label-value']) || !isset($rule['label-key'])) {
+                    throw new \InvalidArgumentException(sprintf('The rule #%d of type "%s" should have `label-value` and `label-key` parameters to identify the namespace', $index, $rule['type']));
+                }
+
+                if (!isset($rule['name'])) {
+                    $rule['name'] = 'allow-i-ns-'.(new Slugify())->slugify($rule['label-value']);
+                }
+
+                $policies[] = new NetworkPolicy(
+                    new ObjectMetadata($rule['name']),
+                    new NetworkPolicySpec(
+                        [],
+                        [
+                            new NetworkPolicyIngressRule(
+                                [
+                                    new NetworkPolicyPeer(new LabelSelector([
+                                        $rule['label-key'] => $rule['label-value'],
+                                    ]))
+                                ]
+                            )
+                        ],
+                        new LabelSelector()
+                    )
+                );
+            }
+        }
+
+        return $policies;
     }
 }

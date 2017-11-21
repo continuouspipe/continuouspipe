@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e05185f4cdf759a4d732ff5b14e0b02b",
+    "content-hash": "c3e14e129ed7d71b83f2ac890be5c495",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -7376,16 +7376,16 @@
         },
         {
             "name": "sroze/kubernetes-client",
-            "version": "1.10.0",
+            "version": "dev-add-network-policies",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/kubernetes-client.git",
-                "reference": "fe02eec3f5b90b47e0b720fb00ecf70b344df876"
+                "reference": "28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/fe02eec3f5b90b47e0b720fb00ecf70b344df876",
-                "reference": "fe02eec3f5b90b47e0b720fb00ecf70b344df876",
+                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46",
+                "reference": "28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46",
                 "shasum": ""
             },
             "require": {
@@ -7406,7 +7406,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-10-05T12:21:27+00:00"
+            "time": "2017-11-20 15:38:49"
         },
         {
             "name": "sroze/log-stream",
@@ -10153,6 +10153,7 @@
         "symfony/symfony": 20,
         "csa/guzzle-bundle": 20,
         "continuous-pipe/security": 20,
+        "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
     },

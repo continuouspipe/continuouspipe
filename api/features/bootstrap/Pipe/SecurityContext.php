@@ -5,8 +5,10 @@ namespace Pipe;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryNetworkPolicyRepository;
 use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository;
 use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository;
+use ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableNetworkPolicyRepository;
 use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
@@ -53,6 +55,14 @@ class SecurityContext implements Context
      * @var InMemoryRoleBindingRepository
      */
     private $inMemoryRoleBindingRepository;
+    /**
+     * @var TraceableNetworkPolicyRepository
+     */
+    private $traceableNetworkPolicyRepository;
+    /**
+     * @var InMemoryNetworkPolicyRepository
+     */
+    private $inMemoryNetworkPolicyRepository;
 
     public function __construct(
         BucketRepository $bucketRepository,
@@ -60,7 +70,9 @@ class SecurityContext implements Context
         TeamRepository $teamRepository,
         PreviouslyKnownValuesVault $previouslyKnownValuesVault,
         TraceableRoleBindingRepository $traceableRoleBindingRepository,
-        InMemoryRoleBindingRepository $inMemoryRoleBindingRepository
+        InMemoryRoleBindingRepository $inMemoryRoleBindingRepository,
+        TraceableNetworkPolicyRepository $traceableNetworkPolicyRepository,
+        InMemoryNetworkPolicyRepository $inMemoryNetworkPolicyRepository
     ) {
         $this->bucketRepository = $bucketRepository;
         $this->serializer = $serializer;
@@ -68,6 +80,8 @@ class SecurityContext implements Context
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
         $this->traceableRoleBindingRepository = $traceableRoleBindingRepository;
         $this->inMemoryRoleBindingRepository = $inMemoryRoleBindingRepository;
+        $this->traceableNetworkPolicyRepository = $traceableNetworkPolicyRepository;
+        $this->inMemoryNetworkPolicyRepository = $inMemoryNetworkPolicyRepository;
     }
 
     /**
@@ -175,6 +189,53 @@ class SecurityContext implements Context
                 count($createdBindings)
             ));
         }
+    }
+
+    /**
+     * @Then the network policy :name should be created
+     */
+    public function theNetworkPolicyShouldBeCreated($name)
+    {
+        foreach ($this->traceableNetworkPolicyRepository->getCreated() as $policy) {
+            if ($policy->getMetadata()->getName() == $name) {
+                return $policy;
+            }
+        }
+
+        throw new \RuntimeException('Network policy not found in the created list');
+    }
+
+    /**
+     * @Then the network policy :name should have no egress configuration
+     */
+    public function theNetworkPolicyShouldHaveNoEgressConfiguration($name)
+    {
+        $policy = $this->theNetworkPolicyShouldBeCreated($name);
+
+        if (!empty($policy->getSpec()->getEgress())) {
+            throw new \RuntimeException('Found some egress configuration');
+        }
+    }
+
+    /**
+     * @Then the network policy :name should have an ingress rule from :selector
+     */
+    public function theNetworkPolicyShouldHaveAnIngressRuleFrom($name, $selector)
+    {
+        $policy = $this->theNetworkPolicyShouldBeCreated($name);
+        $expectedFrom = [
+            substr($selector, 0, strpos($selector,'=')) => substr($selector, strpos($selector, '=') + 1),
+        ];
+
+        foreach ($policy->getSpec()->getIngress() as $ingressRule) {
+            foreach ($ingressRule->getFrom() as $from) {
+                if ($from->getNamespaceSelector() !== null && $from->getNamespaceSelector()->getMatchLabels() == $expectedFrom) {
+                    return;
+                }
+            }
+        }
+
+        throw new \RuntimeException('No such selector or ingress rule found');
     }
 
     /**
