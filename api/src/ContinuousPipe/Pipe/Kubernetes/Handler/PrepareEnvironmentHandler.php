@@ -36,6 +36,7 @@ use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\LoggerFactory;
 use LogStream\Node\Text;
+use Psr\Log\LoggerInterface;
 use SimpleBus\Message\Bus\MessageBus;
 use Tolerance\Operation\Callback;
 use Tolerance\Operation\Runner\CallbackOperationRunner;
@@ -77,6 +78,11 @@ class PrepareEnvironmentHandler implements DeploymentHandler
     private $waiter;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param KubernetesClientFactory $kubernetesClientFactory
      * @param MessageBus $eventBus
      * @param LoggerFactory $loggerFactory
@@ -84,14 +90,22 @@ class PrepareEnvironmentHandler implements DeploymentHandler
      * @param SecretFactory $secretFactory
      * @param Waiter $waiter
      */
-    public function __construct(KubernetesClientFactory $kubernetesClientFactory, MessageBus $eventBus, LoggerFactory $loggerFactory, NamingStrategy $namingStrategy, SecretFactory $secretFactory, Waiter $waiter)
-    {
+    public function __construct(
+        KubernetesClientFactory $kubernetesClientFactory,
+        MessageBus $eventBus,
+        LoggerFactory $loggerFactory,
+        NamingStrategy $namingStrategy,
+        SecretFactory $secretFactory,
+        Waiter $waiter,
+        LoggerInterface $logger
+    ) {
         $this->kubernetesClientFactory = $kubernetesClientFactory;
         $this->eventBus = $eventBus;
         $this->loggerFactory = $loggerFactory;
         $this->namingStrategy = $namingStrategy;
         $this->secretFactory = $secretFactory;
         $this->waiter = $waiter;
+        $this->logger = $logger;
     }
 
     /**
@@ -311,11 +325,21 @@ class PrepareEnvironmentHandler implements DeploymentHandler
         $policies = $this->networkConfigurationToPolicies($namespaceClient, $networkConfiguration);
         $policyRepository = $namespaceClient->getNetworkPolicyRepository();
 
+        if (empty($policies)) {
+            $this->logger->warning('No rules were found in the network configuration', [
+                'configuration' => $networkConfiguration,
+            ]);
+        }
+
         foreach ($policies as $policy) {
             try {
-                $policyRepository->findByName($policy->getMetadata()->getName());
+                $existingPolicy = $policyRepository->findByName($policy->getMetadata()->getName());
             } catch (ObjectNotFound $e) {
                 $policyRepository->create($policy);
+            }
+
+            if (isset($existingPolicy)) {
+                $policyRepository->update($policy);
             }
         }
     }
