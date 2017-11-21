@@ -15,6 +15,7 @@
         <service id="pipe.adapter.kubernetes.in_memory.persistent_volume_claim_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryPersistentVolumeClaimRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.ingress_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryIngressRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.event_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryEventRepository" />
+        <service id="pipe.adapter.kubernetes.in_memory.network_policy_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryNetworkPolicyRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.role_binding_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\RBAC\InMemoryRoleBindingRepository" />
         <service id="pipe.adapter.kubernetes.in_memory.deployment_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\InMemoryDeploymentRepository">
             <argument type="service" id="jms_serializer" />
@@ -72,6 +73,9 @@
         <service id="pipe.adapter.kubernetes.traceable.role_binding_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\RBAC\TraceableRoleBindingRepository">
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.role_binding_repository" />
         </service>
+        <service id="pipe.adapter.kubernetes.traceable.network_policy_repository" class="ContinuousPipe\Pipe\Kubernetes\Tests\Repository\Trace\TraceableNetworkPolicyRepository">
+            <argument type="service" id="pipe.adapter.kubernetes.in_memory.network_policy_repository" />
+        </service>
 
         <service id="pipe.adapter.kubernetes.namespace_client" class="ContinuousPipe\Pipe\Kubernetes\Tests\InjectedRepositoriesNamespaceClient">
             <argument type="service" id="pipe.adapter.kubernetes.traceable.pod_repository" />
@@ -84,6 +88,7 @@
             <argument type="service" id="pipe.adapter.kubernetes.traceable.deployment_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.in_memory.event_repository" />
             <argument type="service" id="pipe.adapter.kubernetes.traceable.role_binding_repository" />
+            <argument type="service" id="pipe.adapter.kubernetes.traceable.network_policy_repository" />
         </service>
 
         <service id="pipe.adapter.kubernetes.adapter" class="ContinuousPipe\Pipe\Kubernetes\Tests\InjectedRepositoriesAdapter">

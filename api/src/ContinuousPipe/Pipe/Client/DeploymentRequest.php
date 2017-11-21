@@ -1,6 +1,7 @@
 <?php
 
 namespace ContinuousPipe\Pipe\Client;
+
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Notification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Specification;
 use ContinuousPipe\Pipe\Client\DeploymentRequest\Target;

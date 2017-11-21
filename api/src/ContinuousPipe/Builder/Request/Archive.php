@@ -8,4 +8,3 @@ namespace ContinuousPipe\Builder\Request;
 class Archive extends ArchiveSource
 {
 }
-

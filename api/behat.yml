@@ -442,6 +442,8 @@ default:
                     - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
+                    - "@pipe.adapter.kubernetes.traceable.network_policy_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.network_policy_repository"
                 - Pipe\Kubernetes\NamespaceContext:
                     - "@pipe.adapter.kubernetes.traceable.namespace_repository"
                     - "@event_bus"
@@ -599,6 +601,8 @@ smoke:
                     - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
+                    - "@pipe.adapter.kubernetes.traceable.network_policy_repository"
+                    - "@pipe.adapter.kubernetes.in_memory.network_policy_repository"
                 - Pipe\EnvironmentContext:
                     - "@pipe.event_store"
                     - "@pipe.view.deployment_repository"
