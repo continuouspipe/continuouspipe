@@ -53,6 +53,7 @@ func main() {
 	}
 	h := kproxy.NewHttpHandler()
 
+	glog.V(5).Infof("Starting proxy on %s:%s", listenURL.Hostname(), listenURL.Port())
 	err = http.ListenAndServeTLS(listenURL.Host, sslCertFileName, sslKeyFileName, h)
 
 	if err != nil {

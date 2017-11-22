@@ -138,6 +138,22 @@ func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		glog.V(5).Infof("got unauthorized error from backend for: %s %s", req.Method, req.URL)
+
+		glog.V(8).Infof("Request headers:")
+		for name, value := range req.Header {
+			glog.V(8).Infof("%s: %s", name, value)
+		}
+
+		glog.V(8).Infof("Response headers:")
+		for name, value := range req.Header {
+			glog.V(8).Infof("%s: %s", name, value)
+		}
+
+		output := make([]byte, 2048)
+		resp.Body.Read(output)
+
+		glog.V(8).Infof("Response body (first 2048 bytes):\n%s", string(output))
+
 		// Internal error, backend didn't recognize proxy identity
 		// Surface as a server error to the client
 		resp = &http.Response{
@@ -232,6 +248,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) AddCredentialsToRequest(req *http.R
 			return err
 		}
 
+		req.Header.Del("Authorization")
 		req.Header.Add("Authorization", token.Type()+" "+token.AccessToken)
 	} else {
 		req.SetBasicAuth(p.apiCluster.Credentials.Username, p.apiCluster.Credentials.Password)
