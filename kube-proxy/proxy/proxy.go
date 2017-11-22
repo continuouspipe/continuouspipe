@@ -131,6 +131,25 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 // RoundTrip sends the request to the backend and strips off the CORS headers
 // before returning the response.
 func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http.Response, error) {
+	if authorizationHeaders, ok := req.Header["Authorization"]; ok {
+		if len(authorizationHeaders) > 1 {
+			glog.V(5).Infof("Received more than one authorization header... keeping one.")
+
+			// Use the bearer token if any
+			headerToKeep := authorizationHeaders[0]
+			for _, value := range authorizationHeaders {
+				if value[0:6] == "Bearer" {
+					headerToKeep = value
+					break
+				}
+			}
+
+			req.Header.Del("Authorization")
+			req.Header.Add("Authorization", headerToKeep)
+		}
+	}
+
+
 	resp, err := p.transport.RoundTrip(req)
 	if err != nil {
 		return resp, err
@@ -138,6 +157,22 @@ func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		glog.V(5).Infof("got unauthorized error from backend for: %s %s", req.Method, req.URL)
+
+		glog.V(8).Infof("Request headers:")
+		for name, value := range req.Header {
+			glog.V(8).Infof("%s: %s", name, value)
+		}
+
+		glog.V(8).Infof("Response headers:")
+		for name, value := range req.Header {
+			glog.V(8).Infof("%s: %s", name, value)
+		}
+
+		output := make([]byte, 2048)
+		resp.Body.Read(output)
+
+		glog.V(8).Infof("Response body (first 2048 bytes):\n%s", string(output))
+
 		// Internal error, backend didn't recognize proxy identity
 		// Surface as a server error to the client
 		resp = &http.Response{
