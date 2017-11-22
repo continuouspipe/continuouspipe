@@ -9,7 +9,9 @@ angular.module('continuousPipeRiver')
             {name: 'default'},
             {name: 'environment', configuration: {}, secrets: {}},
             {name: 'endpoint', configuration: {}, secrets: {}},
-            {name: 'resources', configuration: {}, secrets: {}}
+            {name: 'resources', configuration: {}, secrets: {}},
+            {name: 'rbac', configuration: {}},
+            {name: 'network', configuration: {rules: []}}
         ];
 
         $scope.addPolicy = function(policy) {
@@ -73,4 +75,17 @@ angular.module('continuousPipeRiver')
         };
 
         refresh();
+    })
+    .controller('NetworkClusterPolicyController', function($scope) {
+        $scope.deleteNetworkRuleByIndex = function(index) {
+             $scope.policy.configuration['rules'].splice(index, 1);
+        };
+
+        $scope.addNetworkRule = function() {
+            if (!$scope.policy.configuration['rules']) {
+                $scope.policy.configuration['rules'] = [];
+            }
+            
+            $scope.policy.configuration['rules'].push({});
+        };
     });

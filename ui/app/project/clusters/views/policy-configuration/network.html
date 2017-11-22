@@ -1,0 +1,23 @@
+<div ng-controller="NetworkClusterPolicyController">
+    <md-subheader class="md-no-sticky">Rules</md-subheader>
+    <md-content ng-repeat="(ruleIndex, rule) in policy.configuration['rules']" layout-gt-sm="row" layout="column">
+        <md-select ng-model="rule.type" style="display: inline-block;" ng-disabled="!isAdmin" required>
+            <md-option ng-value="'allow-current-namespace'">Allow current namespace</md-option>
+            <md-option ng-value="'allow-from-namespace'">Allow from another namespace</md-option>
+        </md-select>
+        <md-input-container class="md-block" flex-gt-sm="40" flex ng-show="rule.type == 'allow-from-namespace'">
+            <label>Namespace label key</label>
+            <input ng-model="rule['label-key']" ng-disabled="!isAdmin" required>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm="40" flex ng-show="rule.type == 'allow-from-namespace'">
+            <label>Namespace label value</label>
+            <input ng-model="rule['label-value']" ng-disabled="!isAdmin" required>
+        </md-input-container>
+        <md-input-container class="md-block">
+            <md-button ng-click="deleteNetworkRuleByIndex(ruleIndex)">
+                <md-icon>delete</md-icon>
+            </md-button>
+        </md-input-container>
+    </md-content>
+    <md-button class="md-raised" ng-click="addNetworkRule()">Add rule</md-button>
+</div>
