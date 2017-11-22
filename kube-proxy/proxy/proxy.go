@@ -131,25 +131,6 @@ func (m HttpHandler) NewUpgradeAwareSingleHostReverseProxy(r *http.Request) (*Up
 // RoundTrip sends the request to the backend and strips off the CORS headers
 // before returning the response.
 func (p *UpgradeAwareSingleHostReverseProxy) RoundTrip(req *http.Request) (*http.Response, error) {
-	if authorizationHeaders, ok := req.Header["Authorization"]; ok {
-		if len(authorizationHeaders) > 1 {
-			glog.V(5).Infof("Received more than one authorization header... keeping one.")
-
-			// Use the bearer token if any
-			headerToKeep := authorizationHeaders[0]
-			for _, value := range authorizationHeaders {
-				if value[0:6] == "Bearer" {
-					headerToKeep = value
-					break
-				}
-			}
-
-			req.Header.Del("Authorization")
-			req.Header.Add("Authorization", headerToKeep)
-		}
-	}
-
-
 	resp, err := p.transport.RoundTrip(req)
 	if err != nil {
 		return resp, err
@@ -267,6 +248,7 @@ func (p *UpgradeAwareSingleHostReverseProxy) AddCredentialsToRequest(req *http.R
 			return err
 		}
 
+		req.Header.Del("Authorization")
 		req.Header.Add("Authorization", token.Type()+" "+token.AccessToken)
 	} else {
 		req.SetBasicAuth(p.apiCluster.Credentials.Username, p.apiCluster.Credentials.Password)
