@@ -15,7 +15,6 @@ use Google\Cloud\Core\ServiceBuilder;
 use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Datastore\Entity;
 use Google\Cloud\Datastore\Query\Query;
-use function PasswordCompat\binary\check;
 
 /**
  * Repository class for storing audit log records by Google Cloud Datastore service.
