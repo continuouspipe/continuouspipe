@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.intercom.client" class="ContinuousPipe\Authenticator\Tests\Intercom\InMemoryIntercomClient" />
+        <service id="google.http.middleware.predictable_request_mapping" class="GuzzleHttp\PredefinedRequestMappingMiddleware" />
+        <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\PredictableClientFactory">
+            <argument type="service" id="google.http.middleware.predictable_request_mapping" />
+        </service>
+        <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\InMemoryClusterCreator" />
+        <service id="kube_status.http.middleware.predictable_request_mapping" class="GuzzleHttp\PredefinedRequestMappingMiddleware" />
+        <service id="kube_status.http.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+            <call method="unshift">
+                <argument type="service" id="kube_status.http.middleware.predictable_request_mapping" />
+            </call>
+        </service>
+
+        <service id="app.billing.plan_manager" class="ContinuousPipe\Billing\Plan\NullPlanManager">
+            <argument type="service" id="app.billing.plan_repository"/>
+        </service>
+
+        <service id="authenticator.audit_log.storage.log_repository"
+                 class="AuthenticatorTestBundle\AuditLog\Storage\InMemoryLogRepository" />
+    </services>
+</container>

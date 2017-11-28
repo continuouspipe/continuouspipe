@@ -6,7 +6,7 @@ use ContinuousPipe\AuditLog\Record;
 use ContinuousPipe\AuditLog\Storage\LogRepository;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Request;
-use TestBundle\AuditLog\Storage\TracedLogRepository;
+use AuthenticatorTestBundle\AuditLog\Storage\TracedLogRepository;
 
 class AuditLogContext implements Context
 {
