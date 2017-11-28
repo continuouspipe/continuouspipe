@@ -4,10 +4,10 @@ namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine\Type;
 
 use ContinuousPipe\Security\Credentials\Cluster\ClusterPolicy;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\JsonArrayType;
+use Doctrine\DBAL\Types\JsonType;
 use JMS\Serializer\SerializerBuilder;
 
-class JsonPoliciesType extends JsonArrayType
+class JsonPoliciesType extends JsonType
 {
     /**
      * {@inheritdoc}
