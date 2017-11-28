@@ -1,0 +1,254 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.team_creator" class="ContinuousPipe\Authenticator\Team\TeamCreator">
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.repository.team_membership" />
+            <argument type="service" id="app.repository.billing_profile" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="security.authorization_checker"/>
+        </service>
+
+        <!-- Controllers -->
+        <service id="api.controller.user" class="ApiBundle\Controller\UserController">
+            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
+            <argument type="service" id="validator" />
+        </service>
+        <service id="api.controller.credentials_bucket" class="ApiBundle\Controller\CredentialsBucketController">
+            <argument type="service" id="app.repository.credentials_bucket" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="security.authorization_checker"/>
+        </service>
+        <service id="api.controller.team" class="ApiBundle\Controller\TeamController">
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.repository.team_membership" />
+            <argument type="service" id="app.team_creator" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="authenticator.alerts.finder" />
+            <argument type="service" id="app.repository.billing_profile" />
+        </service>
+        <service id="api.controller.invitation" class="ApiBundle\Controller\InvitationController">
+            <argument type="service" id="validator" />
+            <argument type="service" id="app.repository.user_invitation" />
+            <argument type="service" id="app.repository.team_membership" />
+        </service>
+        <service id="api.controller.account" class="ApiBundle\Controller\AccountController">
+            <argument type="service" id="app.repository.account" />
+        </service>
+        <service id="api.controller.google" class="ApiBundle\Controller\GoogleController">
+            <argument type="service" id="google.project_repository" />
+            <argument type="service" id="google.cluster_repository" />
+        </service>
+        <service id="api.controller.billing_profile" class="ApiBundle\Controller\BillingProfileController">
+            <argument type="service" id="app.repository.billing_profile" />
+            <argument type="service" id="app.user_billing_profile_creator" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="app.billing.plan_manager"/>
+        </service>
+        <service id="api.controller.api_key" class="ApiBundle\Controller\ApiKeyController">
+            <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
+        </service>
+        <service id="api.controller.kube_status_proxy" class="ApiBundle\Controller\KubeStatusProxyController">
+            <argument type="service" id="kube_status.http_client" />
+            <argument type="service" id="app.repository.team"/>
+            <argument type="service" id="security.authorization_checker"/>
+        </service>
+        <service id="api.controller.billing_plan" class="ApiBundle\Controller\BillingPlanController">
+            <argument type="service" id="app.billing.plan_repository" />
+        </service>
+        <service id="api.controller.managed_cluster" class="ApiBundle\Controller\ManagedClusterController">
+            <argument type="service" id="app.repository.credentials_bucket"/>
+            <argument type="service" id="app.managed.cluster_creator"/>
+        </service>
+
+        <!-- Authentication -->
+        <service id="api.security.api_key.system_user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey">
+            <argument>%api_keys%</argument>
+        </service>
+        <service id="api.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserApiKeyRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+        <service id="api.security.api_key.user_by_api_key" class="ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyCollection">
+            <argument type="collection">
+                <argument type="service" id="api.security.api_key.system_user_by_api_key" />
+                <argument type="service" id="api.security.api_key.user_by_api_key_repository" />
+            </argument>
+        </service>
+        <service id="api.security.user_by_api_key" alias="api.security.api_key.user_by_api_key" />
+
+        <service id="api.api_key_user_provider" class="ContinuousPipe\Security\Authentication\ApiKeyUserFromRepositoryProvider">
+            <argument type="service" id="app.security.user_provider" />
+            <argument type="service" id="api.security.api_key.user_by_api_key" />
+        </service>
+
+        <service id="api.api_key_authenticator"
+                 class="ContinuousPipe\Security\Authentication\ApiKeyAuthenticator"
+                 public="false" />
+
+        <!-- Param Converter -->
+        <service id="request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
+            <argument type="service" id="app.repository.team" />
+
+            <tag name="request.param_converter" converter="team" />
+        </service>
+        <service id="request.param_converter.bucket" class="ContinuousPipe\Security\Request\ParamConverter\BucketParamConverter">
+            <argument type="service" id="app.repository.credentials_bucket" />
+
+            <tag name="request.param_converter" converter="bucket" />
+        </service>
+        <service id="request.param_converter.account" class="ContinuousPipe\Security\Request\ParamConverter\AccountParamConverter">
+            <argument type="service" id="app.repository.account" />
+
+            <tag name="request.param_converter" converter="account" />
+        </service>
+
+        <!-- Security Voter -->
+        <service id="security.access.user_billing_profile_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\UserBillingProfileVoter"
+                 public="false">
+            <argument type="service" id="app.repository.billing_profile" />
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.team_voter"
+                 class="ContinuousPipe\Security\Voter\TeamPermissionVoter"
+                 public="false">
+            <argument type="service" id="app.repository.team_membership" />
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.bucket_voter"
+                 class="ContinuousPipe\Security\Voter\BucketPermissionVoter"
+                 public="false">
+            <argument type="service" id="app.repository.team_membership" />
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.user_voter"
+                 class="ContinuousPipe\Security\Voter\UserPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.ghost_voter"
+                 class="ContinuousPipe\Security\Voter\GhostUserPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.system_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\SystemUserPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.cluster_voter"
+                 class="ContinuousPipe\Authenticator\Security\Voter\ClusterPermissionVoter"
+                 public="false">
+            <tag name="security.voter" />
+        </service>
+        <service id="security.access.account_voter"
+                 class="ContinuousPipe\Security\Voter\AccountPermissionVoter"
+                 public="false">
+            <argument type="service" id="app.repository.account" />
+            <tag name="security.voter" />
+        </service>
+
+        <!-- Event listeners -->
+        <service id="app.listener.before_team_creation.create_credentials_bucket"
+                 class="ContinuousPipe\Authenticator\EventListener\BeforeTeamCreation\CreateCredentialsBucket">
+            <argument type="service" id="app.repository.credentials_bucket" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="app.listener.after_team_creation.copy_creator_credentials"
+                 class="ContinuousPipe\Authenticator\EventListener\AfterTeamCreation\CopyCreatorCredentials">
+            <argument type="service" id="app.repository.credentials_bucket" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
+            <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
+        </service>
+        <service id="app.listener.serializer.obfuscate_credentials" class="ContinuousPipe\Authenticator\Obfuscate\Serializer\ObfuscateCredentialsSubscriber">
+            <argument type="service" id="security.token_storage"/>
+
+            <tag name="jms_serializer.event_subscriber" />
+        </service>
+
+        <!-- Validation -->
+        <service id="app.validator.unique_team" class="ApiBundle\Validator\Constraints\UniqueTeamConstraintValidator">
+            <argument type="service" id="app.repository.team" />
+
+            <tag name="validator.constraint_validator" alias="unique_team" />
+        </service>
+
+        <!-- Google -->
+        <service id="google.http.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="google.http.token_resolver" class="ContinuousPipe\Google\Http\HttpTokenResolver">
+            <argument type="service" id="google.http.http_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument>%google_client_id%</argument>
+            <argument>%google_client_secret%</argument>
+        </service>
+        <service id="google.token_resolver" alias="google.http.token_resolver" />
+        <service id="google.http.client_factory" class="ContinuousPipe\Google\Http\TokenClientFactory">
+            <argument type="service" id="google.token_resolver"/>
+        </service>
+        <service id="google.token_resolver.cached"
+                 class="ContinuousPipe\Google\Cache\RedisCachedTokenResolver"
+                 decorates="google.token_resolver">
+            <argument type="service" id="google.token_resolver.cached.inner" />
+            <argument type="service" id="snc_redis.default_client"/>
+            <argument type="service" id="logger"/>
+            <argument>10</argument>
+        </service>
+        <service id="google.project_repository.http" class="ContinuousPipe\Google\Http\HttpProjectRepository">
+            <argument type="service" id="google.http.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="google.project_repository" alias="google.project_repository.http" />
+        <service id="google.cluster_repository.http" class="ContinuousPipe\Google\Http\HttpContainerEngineClusterRepository">
+            <argument type="service" id="google.http.client_factory" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="google.cluster_repository" alias="google.cluster_repository.http" />
+
+        <!-- Kube Status proxy -->
+        <service id="kube_status.http.handler" class="GuzzleHttp\HandlerStack">
+            <factory class="GuzzleHttp\HandlerStack" method="create" />
+        </service>
+
+        <service id="kube_status.http_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="handler" type="service" id="kube_status.http.handler" />
+                <argument key="base_uri">%kube_status_base_uri%</argument>
+            </argument>
+        </service>
+
+        <!-- Managed cluster -->
+        <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\GoogleCloud\GKEClusterAccountCreator">
+            <argument type="service" id="google.cluster_repository.http" />
+            <argument>%managed_google_service_account_file_path%</argument>
+            <argument>%managed_google_project_id%</argument>
+            <argument>%managed_google_cluster_identifier%</argument>
+        </service>
+
+        <service id="app.managed.cluster_creator.add_cluster_policies"
+                 class="ContinuousPipe\Managed\ClusterCreation\AddManagedClusterPolicies"
+                 decorates="app.managed.cluster_creator">
+            <argument type="service" id="app.managed.cluster_creator.add_cluster_policies.inner" />
+            <argument>%managed_cloud_flare_credentials%</argument>
+            <argument>%managed_google_rbac_cluster_role%</argument>
+        </service>
+
+        <service id="app.managed.cluster_creator.ensure_team_billing"
+                 class="ContinuousPipe\Managed\ClusterCreation\Permissions\EnsureTeamHasSufficientBilling"
+                 decorates="app.managed.cluster_creator">
+            <argument type="service" id="app.managed.cluster_creator.ensure_team_billing.inner" />
+            <argument type="service" id="app.repository.billing_profile" />
+        </service>
+    </services>
+</container>

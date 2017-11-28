@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\Security\Account\Account" inheritance-type="SINGLE_TABLE">
+        <discriminator-column name="type" type="string" />
+        <discriminator-map>
+            <discriminator-mapping value="google" class="ContinuousPipe\Security\Account\GoogleAccount" />
+            <discriminator-mapping value="github" class="ContinuousPipe\Security\Account\GitHubAccount" />
+            <discriminator-mapping value="bitbucket" class="ContinuousPipe\Security\Account\BitBucketAccount" />
+        </discriminator-map>
+
+        <id name="uuid" type="string" />
+        <field name="username" type="string" nullable="false" />
+        <field name="identifier" type="string" nullable="false" />
+        <field name="email" type="string" nullable="true" />
+        <field name="name" type="string" nullable="true" />
+        <field name="pictureUrl" type="string" nullable="true" />
+    </entity>
+</doctrine-mapping>

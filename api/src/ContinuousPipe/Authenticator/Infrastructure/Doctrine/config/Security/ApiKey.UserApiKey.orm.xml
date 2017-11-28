@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\Security\ApiKey\UserApiKey">
+        <id name="uuid" type="uuid" />
+
+        <field name="apiKey" type="string" nullable="false" />
+        <field name="creationDate" type="datetime" nullable="false" />
+        <field name="description" type="text" nullable="true" />
+
+        <many-to-one field="user" target-entity="ContinuousPipe\Security\User\User">
+            <join-column name="user_id" referenced-column-name="username" />
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

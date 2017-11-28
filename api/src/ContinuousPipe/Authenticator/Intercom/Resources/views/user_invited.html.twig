@@ -1,0 +1,11 @@
+<p>You've been invited to join the team "{{ team.name | default(team.slug) }}"{% if "ADMIN" in invitation.permissions %} as an administrator{% endif %} on ContinuousPipe.</p>
+
+<p>By clicking the following button you'll accept the invitation and will be able to access the flows of the {{ team.name | default(team.slug) }} team.</p>
+
+<p class="intercom-container" style="text-align: center;">
+    <a href="{{ accept_invitation_url }}">
+        Accept invitation
+    </a>
+</p>
+
+<p>Have a lovely day,</p>
