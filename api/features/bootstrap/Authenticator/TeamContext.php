@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
@@ -70,7 +72,7 @@ class TeamContext implements Context
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->securityContext = $scope->getEnvironment()->getContext('SecurityContext');
+        $this->securityContext = $scope->getEnvironment()->getContext('Authenticator\SecurityContext');
     }
 
     /**

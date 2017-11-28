@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

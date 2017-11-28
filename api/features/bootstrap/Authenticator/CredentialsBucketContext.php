@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
@@ -15,7 +17,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class CredentialsBucketContext implements Context
 {
     /**
-     * @var \TeamContext
+     * @var TeamContext
      */
     private $teamContext;
 
@@ -49,7 +51,7 @@ class CredentialsBucketContext implements Context
      */
     public function gatherContexts(BeforeScenarioScope $scope)
     {
-        $this->teamContext = $scope->getEnvironment()->getContext('TeamContext');
+        $this->teamContext = $scope->getEnvironment()->getContext('Authenticator\TeamContext');
     }
 
     /**

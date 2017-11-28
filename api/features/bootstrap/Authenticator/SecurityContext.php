@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use ContinuousPipe\Authenticator\Security\ApiKey\SystemUserApiKey;

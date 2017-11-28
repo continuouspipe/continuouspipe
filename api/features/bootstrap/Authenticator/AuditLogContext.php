@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\AuditLog\Record;
@@ -64,7 +66,7 @@ class AuditLogContext implements Context
                 list($key, $value) = explode('=', $property);
                 $data[$key] = $value;
             }
-            $eventDate = DateTimeImmutable::createFromFormat(DateTime::W3C, $row['Event Date']);
+            $eventDate = \DateTimeImmutable::createFromFormat(\DateTime::W3C, $row['Event Date']);
             $record = new Record($row['Event Name'], $row['Event Type'], $data, $eventDate);
             $this->logRepository->insert($record);
         }

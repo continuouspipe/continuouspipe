@@ -1,11 +1,9 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use ContinuousPipe\Billing\Subscription\InMemorySubscriptionClient;
-use ContinuousPipe\Billing\Subscription\Subscription;
-use ContinuousPipe\Billing\Subscription\TracedSubscriptionClient;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;

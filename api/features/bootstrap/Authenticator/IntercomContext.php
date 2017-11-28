@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use ContinuousPipe\Authenticator\Intercom\Client\IntercomException;
 use ContinuousPipe\Authenticator\Intercom\HookableIntercomClient;

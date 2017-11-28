@@ -1,5 +1,7 @@
 <?php
 
+namespace Authenticator;
+
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
@@ -46,7 +48,7 @@ class InvitationContext implements Context
     {
         $environment = $scope->getEnvironment();
 
-        $this->securityContext = $environment->getContext('SecurityContext');
+        $this->securityContext = $environment->getContext('Authenticator\SecurityContext');
     }
 
     /**
