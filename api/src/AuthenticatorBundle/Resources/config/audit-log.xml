@@ -21,7 +21,7 @@
         <service id="authenticator.audit_log.record_factory"
             class="ContinuousPipe\AuditLog\RecordFactory"
             public="false">
-            <argument type="service" id="serializer" />
+            <argument type="service" id="jms_serializer" />
         </service>
 
         <service id="authenticator.audit_log.event_listener.save_log_record"

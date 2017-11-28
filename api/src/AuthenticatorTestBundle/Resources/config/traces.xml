@@ -22,7 +22,7 @@
             <argument type="service" id="authenticator.audit_log.storage.traced_log_repository.inner" />
         </service>
 
-        <service id="test.http_client" class="%test.client.class%">
+        <service id="test.http_client" class="Symfony\Bundle\FrameworkBundle\Client">
             <argument type="service" id="kernel" />
             <argument>%test.client.parameters%</argument>
             <argument type="service" id="test.client.history" />

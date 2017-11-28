@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="test.http_client" class="%test.client.class%">
+        <service id="test.http_client" class="Symfony\Bundle\FrameworkBundle\Client">
             <argument type="service" id="kernel" />
             <argument>%test.client.parameters%</argument>
             <argument type="service" id="test.client.history" />
