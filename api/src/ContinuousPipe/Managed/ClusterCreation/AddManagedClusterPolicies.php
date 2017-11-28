@@ -96,6 +96,12 @@ class AddManagedClusterPolicies implements ClusterCreator
                 // SSL certificates
                 'ssl-certificate-key' => 'automatic',
                 'ssl-certificate-cert' => 'automatic',
+            ]),
+            new Cluster\ClusterPolicy('network', [
+                'rules' => [
+                    ['type' => 'allow-current-namespace'],
+                    ['type' => 'allow-from-namespace', 'label-key' => 'name', 'label-value' => 'ingress-nginx'],
+                ],
             ])
         ];
 
