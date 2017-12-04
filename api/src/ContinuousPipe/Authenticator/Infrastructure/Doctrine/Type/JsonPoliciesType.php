@@ -46,7 +46,7 @@ class JsonPoliciesType extends JsonType
     private function serializer()
     {
         return SerializerBuilder::create()
-            ->addMetadataDir(__DIR__.'/../../../../../../vendor/continuous-pipe/security/src/ContinuousPipe/Security/Resources/serializer', 'ContinuousPipe\\Security')
+            ->addMetadataDir(__DIR__.'/../../../../../../src/ContinuousPipe/Security/Resources/serializer', 'ContinuousPipe\\Security')
             ->build()
         ;
     }

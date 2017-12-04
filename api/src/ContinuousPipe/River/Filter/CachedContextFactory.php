@@ -41,9 +41,6 @@ class CachedContextFactory implements ContextFactory
             $this->cache->save($cacheKey, $cachedData, 3600);
         }
 
-        var_dump('after cached');
-        print_r($cachedData);
-
         return $cachedData;
     }
 }

@@ -11,6 +11,9 @@ use ContinuousPipe\Authenticator\Security\Authentication\UserProvider;
 use ContinuousPipe\Authenticator\Security\User\SecurityUserRepository;
 use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Tests\Security\GitHubOAuthResponse;
+use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamNotFound;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
 use HWI\Bundle\OAuthBundle\OAuth\ResourceOwner\GitHubResourceOwner;
@@ -78,6 +81,10 @@ class SecurityContext implements Context, SnippetAcceptingContext
      * @var Client
      */
     private $httpClient;
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
 
     public function __construct(
         UserProvider $userProvider,
@@ -89,7 +96,8 @@ class SecurityContext implements Context, SnippetAcceptingContext
         KernelInterface $kernel,
         UserApiKeyRepository $userByApiKeyRepository,
         SessionInterface $session,
-        Client $httpClient
+        Client $httpClient,
+        TeamRepository $teamRepository
     ) {
         $this->userProvider = $userProvider;
         $this->tokenStorage = $tokenStorage;
@@ -101,6 +109,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $this->userByApiKeyRepository = $userByApiKeyRepository;
         $this->session = $session;
         $this->httpClient = $httpClient;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -314,4 +323,16 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $this->httpClient->getCookieJar()->set($cookie);
     }
 
+    public function thereIsATeam($slug)
+    {
+        try {
+            $team = $this->teamRepository->find($slug);
+        } catch (TeamNotFound $e) {
+            $team = new Team($team, $team, Uuid::uuid4());
+
+            $this->teamRepository->save($team);
+        }
+
+        return $team;
+    }
 }

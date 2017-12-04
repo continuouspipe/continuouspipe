@@ -2,7 +2,6 @@
 
 namespace River;
 
-use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
@@ -20,6 +19,7 @@ use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
 use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
+use Helpers\FixturesHelper;
 use Lcobucci\JWT\Builder;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerInterface;
@@ -31,14 +31,20 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class BitBucketContext implements CodeRepositoryContext
 {
+    use FixturesHelper;
+
     /**
-     * @var \FlowContext
+     * @var FlowContext
      */
     private $flowContext;
     /**
-     * @var \TideContext
+     * @var TideContext
      */
     private $tideContext;
+    /**
+     * @var \River\BitBucket\AddonContext
+     */
+    private $addonContext;
     /**
      * @var MatchingHandler
      */
@@ -123,6 +129,7 @@ class BitBucketContext implements CodeRepositoryContext
     {
         $this->flowContext = $scope->getEnvironment()->getContext('River\FlowContext');
         $this->tideContext = $scope->getEnvironment()->getContext('River\TideContext');
+        $this->addonContext = $scope->getEnvironment()->getContext('River\BitBucket\AddonContext');
     }
 
     /**
@@ -149,7 +156,7 @@ class BitBucketContext implements CodeRepositoryContext
         $this->inMemoryCodeRepositoryRepository->add($repository);
         $this->repository = $repository;
 
-        $this->thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username);
+        $this->addonContext->thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($name, $username);
 
         return $repository;
     }
@@ -587,100 +594,6 @@ class BitBucketContext implements CodeRepositoryContext
     }
 
     /**
-     * @When the add-on :clientKey is installed for the user account :principalUsername
-     */
-    public function theAddOnIsInstalledForTheUserAccount($clientKey, $principalUsername)
-    {
-        $addon = $this->createAddonArray($clientKey, $principalUsername);
-
-        $this->response = $this->kernel->handle(Request::create(
-            '/connect/service/bitbucket/addon/installed',
-            'POST',
-            [], [], [],
-            [
-                'CONTENT_TYPE' => 'application/json'
-            ],
-            json_encode($addon)
-        ));
-
-        $this->assertResponseStatus(204);
-    }
-
-    /**
-     * @When the add-on :clientKey is uninstalled for the user account :principalUsername
-     */
-    public function theAddOnIsUninstalledForTheUserAccount($clientKey, $principalUsername)
-    {
-        $addon = $this->createAddonArray($clientKey, $principalUsername);
-
-        $this->response = $this->kernel->handle(Request::create(
-            '/connect/service/bitbucket/addon/uninstalled',
-            'POST',
-            [], [], [],
-            [
-                'CONTENT_TYPE' => 'application/json'
-            ],
-            json_encode($addon)
-        ));
-
-        $this->assertResponseStatus(204);
-    }
-
-    /**
-     * @Then the add-on :clientKey should be removed
-     */
-    public function theAddOnShouldBeRemoved($clientKey)
-    {
-        $saved = $this->traceableInstallationRepository->getRemoved();
-
-        if (count($saved) == 0) {
-            throw new \RuntimeException('Found 0 removed installation');
-        }
-    }
-
-    /**
-     * @Then the installation should be saved
-     */
-    public function theInstallationShouldBeSaved()
-    {
-        $saved = $this->traceableInstallationRepository->getSaved();
-
-        if (count($saved) == 0) {
-            throw new \RuntimeException('Found 0 saved installation');
-        }
-    }
-
-    /**
-     * @Given there is the add-on :clientKey installed for the user account :principalUsername
-     */
-    public function thereIsTheAddOnInstalledForTheUserAccount($clientKey, $principalUsername)
-    {
-        $addon = $this->createAddonArray($clientKey, $principalUsername);
-        $installation = $this->serializer->deserialize(
-            json_encode($addon),
-            Installation::class,
-            'json'
-        );
-
-        $this->traceableInstallationRepository->save($installation);
-    }
-
-    /**
-     * @Given there is the add-on installed for the BitBucket repository :repositoryName owned by user :ownerUsername
-     */
-    public function thereIsTheAddOnInstalledForTheBitbucketRepositoryOwnedByUser($repositoryName, $ownerUsername)
-    {
-        $addon = $this->createAddonArray('test-client-key', $ownerUsername);
-        $installation = $this->serializer->deserialize(
-            json_encode($addon),
-            Installation::class,
-            'json'
-        );
-
-        $this->traceableInstallationRepository->save($installation);
-    }
-
-    /**
      * @Given there is a :path file in my BitBucket repository that contains:
      * @Given there is a :path file in the BitBucket repository :slug owned by :owner that contains:
      */
@@ -974,16 +887,6 @@ class BitBucketContext implements CodeRepositoryContext
         return new Response(200, ['Content-Type' => 'application/json'], json_encode($body));
     }
 
-    private function createAddonArray(string $clientKey, string $principalUsername): array
-    {
-        $addon = \GuzzleHttp\json_decode($this->readFixture('addon-installed.json'), true);
-        $addon['clientKey'] = $clientKey;
-        $addon['principal']['type'] = 'user';
-        $addon['principal']['username'] = $principalUsername;
-
-        return $addon;
-    }
-
     /**
      * @param int $expectedStatus
      */
@@ -998,16 +901,6 @@ class BitBucketContext implements CodeRepositoryContext
                 $this->response->getStatusCode()
             ));
         }
-    }
-
-    /**
-     * @param string $fixture
-     *
-     * @return string
-     */
-    private function readFixture(string $fixture): string
-    {
-        return file_get_contents(__DIR__ . '/../../river/integrations/code-repositories/bitbucket/fixtures/' . $fixture);
     }
 
     /**
@@ -1103,5 +996,10 @@ class BitBucketContext implements CodeRepositoryContext
         $account = $this->serializer->deserialize($accountData, Account::class, 'json');
         $jwt = $this->createJsonWebToken($account, $webTokenOptions);
         $request->headers->set('Authorization', 'JWT ' . $jwt);
+    }
+
+    private function readFixture($fixture)
+    {
+        return $this->loadFixture($fixture, 'river/integrations/code-repositories/bitbucket');
     }
 }

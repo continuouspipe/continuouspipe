@@ -53,7 +53,7 @@ Feature:
   Scenario: It allows to delete a flow that have tides that have pipelines
     Given the team "samuel" exists
     And the user "samuel" is "ADMIN" of the team "samuel"
-    And I have a flow with UUID "00000000-0000-0000-0000-000000000000" in the team "samuel"
+    And I have a flow with UUID "00000000-0000-0000-0000-111122223333" in the team "samuel"
     Given I have a "continuous-pipe.yml" file in my repository that contains:
     """
     tasks:
@@ -65,7 +65,7 @@ Feature:
           tasks: [ images ]
     """
     And a tide is created
-    When I delete the flow "00000000-0000-0000-0000-000000000000"
+    When I delete the flow "00000000-0000-0000-0000-111122223333"
     Then the flow should be successfully deleted
 
   Scenario: The list looks good even with non flexified flows

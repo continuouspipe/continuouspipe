@@ -69,7 +69,6 @@ class InMemoryTeamRepository implements TeamRepository
      */
     public function findAll()
     {
-        var_dump($this->teams);
         return $this->teams;
     }
 

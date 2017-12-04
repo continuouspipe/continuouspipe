@@ -3,6 +3,7 @@
 namespace Pipe;
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
@@ -47,8 +48,12 @@ class ApiContext implements Context
      */
     public function iAmAuthenticated()
     {
-        $user = new User('samuel', Uuid::uuid1());
-        $this->userRepository->save($user);
+        try {
+            $user = $this->userRepository->findOneByUsername('samuel');
+        } catch (UserNotFound $e) {
+            $user = new User('samuel', Uuid::uuid1());
+            $this->userRepository->save($user);
+        }
 
         $token = new JWTUserToken(['ROLE_USER']);
         $token->setUser(new SecurityUser($user));

@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Authenticator\Security\ApiKey\PredictableApiKeyUuidGenerator;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Authenticator\Team\TeamUsageLimitsRepository;
 use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\Account\BitBucketAccount;
@@ -191,9 +192,12 @@ class SecurityContext implements Context
      */
     public function thereIsAUser($username)
     {
-        $user = new User($username, Uuid::uuid1());
-
-        $this->userRepository->save($user);
+        try {
+            $user = $this->userRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            $user = new User($username, Uuid::uuid1());
+            $this->userRepository->save($user);
+        }
 
         return $user;
     }

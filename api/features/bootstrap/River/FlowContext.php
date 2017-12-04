@@ -997,7 +997,7 @@ EOF;
     {
         $uuid = $uuid ?: Uuid::uuid1();
         $team = $team ?: $this->securityContext->theTeamExists('samuel');
-        $user = new User('samuel.roze@gmail.com', Uuid::uuid1());
+        $user = $this->securityContext->thereIsAUser('samuel.roze@gmail.com');
         $repository = $codeRepository ?: $this->generateRepository();
 
         array_map(function($event) use ($uuid) {
@@ -1015,9 +1015,8 @@ EOF;
             )
         ]);
 
-        $this->codeRepositoryRepository->add($repository);
-        $this->userRepository->save($user);
 
+        $this->codeRepositoryRepository->add($repository);
         $this->flowUuid = (string) $uuid;
         $this->currentFlow = $flow = $this->flowRepository->find($uuid);
 

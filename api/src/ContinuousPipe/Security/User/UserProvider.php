@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Security\User;
 
-use ContinuousPipe\Security\Authenticator\UserNotFound;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;

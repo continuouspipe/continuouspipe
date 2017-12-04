@@ -52,7 +52,7 @@ class TeamUsageLimitsRepositoryFromBillingProfile implements TeamUsageLimitsRepo
         } catch (UserBillingProfileNotFound $e) {
             $billingProfile = $this->billingProfileCreator->create(
                 new UserBillingProfileCreationRequest($team->getName() ?: $team->getSlug()),
-                $this->teamMembershipRepository->findByTeam($team)->admins()
+                $this->teamMembershipRepository->findByTeam($team)->admins()->toArray()
             );
 
             // Add the team to the billing profile

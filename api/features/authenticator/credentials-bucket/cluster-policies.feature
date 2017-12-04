@@ -25,6 +25,7 @@ Feature:
     """
     {"policies": [{"name": "rbac"}, {"name": "network-policies"}]}
     """
+    And the cluster is successfully updated
     And I ask the list of the clusters in the bucket "00000000-0000-0000-0000-000000000000"
     Then the cluster "my-kube" should have the policy rbac
     And the cluster "my-kube" should have the policy "network-policies"

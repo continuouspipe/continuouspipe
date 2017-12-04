@@ -633,6 +633,14 @@ class CredentialsBucketContext implements Context
     }
 
     /**
+     * @Then the cluster is successfully updated
+     */
+    public function theClusterIsSuccessfullyUpdated()
+    {
+        $this->assertResponseCodeIs($this->response, 200);
+    }
+
+    /**
      * @Then the new credentials should not have been saved successfully
      */
     public function theNewCredentialsShouldNotHaveBeenSavedSuccessfully()

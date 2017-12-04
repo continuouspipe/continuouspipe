@@ -53,6 +53,7 @@ class DoctrineUserBillingProfileRepository implements UserBillingProfileReposito
         /** @var UserBillingProfile $merged */
         $merged = $this->entityManager->merge($billingProfile);
         $merged->setAdmins($billingProfile->getAdmins());
+        $merged->setTeams($billingProfile->getTeams());
 
         $this->entityManager->persist($merged);
         $this->entityManager->flush();

@@ -13,11 +13,11 @@ build:
         # Domain tests
         - vendor/bin/phpspec run
         - vendor/bin/phpunit
-        - vendor/bin/behat -fprogress
+        - vendor/bin/behat --profile=domain -fprogress
 
         # Smoke tests
         - bin/console doctrine:migrations:migrate --no-interaction
-        - vendor/bin/behat --profile=smoke
+        - vendor/bin/behat --profile=smoke -fprogress
 
 cache:
     mount:

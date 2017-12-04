@@ -203,7 +203,7 @@ class AccountsContext implements Context
     public function theTeamIsLinkedToTheBillingProfile($team, $billingProfileUuid)
     {
         $this->userBillingProfileRepository->link(
-            new Team($team, $team),
+            $this->securityContext->thereIsATeam($team),
             $this->userBillingProfileRepository->find(Uuid::fromString($billingProfileUuid))
         );
     }

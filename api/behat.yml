@@ -1,4 +1,4 @@
-default:
+domain:
     suites:
         river_domain:
             paths:
@@ -282,6 +282,11 @@ default:
                     - "@river.code_repository.branch_query.in_memory"
                     - "@river.pull_request_resolver"
 
+                - River\BitBucket\AddonContext:
+                    - "@kernel"
+                    - "@atlassian_addon.installation_repository.traceable"
+                    - "@jms_serializer"
+
                 # Common contexts
                 - River\SecurityContext:
                     - "@security.token_storage"
@@ -534,6 +539,7 @@ default:
                     - "@app.security.api_key.user_by_api_key_repository"
                     - "@session"
                     - "@test.http_client"
+                    - "@app.repository.team"
                 - Authenticator\UserContext:
                     - "@app.repository.security_user"
                     - "@app.repository.credentials_bucket"
@@ -581,6 +587,9 @@ default:
 smoke:
     suites:
         river:
+            paths:
+                - %paths.base%/features/river
+
             contexts:
                 - River\SecurityContext:
                     - "@security.token_storage"
@@ -636,6 +645,10 @@ smoke:
                     - "@repository_river.code_repository_repository"
                     - "@river.github.guzzle_http_client.handler.matching"
                     - "@river.code_repository.branch_query.in_memory"
+                - River\BitBucket\AddonContext:
+                    - "@kernel"
+                    - "@atlassian_addon.installation_repository.traceable"
+                    - "@jms_serializer"
                 - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
@@ -658,13 +671,32 @@ smoke:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
+                - River\Task\DeployContext:
+                    - "@river.tide_event_store"
+                    - "@event_bus"
+                    - "@river.pipe_client"
+                    - "@river.task.deploy.naming.environment_strategy"
+                    - "@kernel"
+                    - "@jms_serializer"
+                    - "@river.flow.environment_client.callback"
+                - River\Task\RunContext:
+                    - "@kernel"
+                    - "@river.pipe_client"
+                    - "@jms_serializer"
                 - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
                 - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
+                - River\LoggingContext:
+                    - "@kernel"
+                    - "@log_stream.client.in_memory"
+                    - "@logger"
 
         pipe:
+            paths:
+                - %paths.base%/features/pipe/
+
             contexts:
                 - Pipe\ApiContext:
                     - "@security.token_storage"
@@ -732,6 +764,9 @@ smoke:
                     - "@log_stream.hookable_factory"
 
         authenticator:
+            paths:
+                - %paths.base%/features/authenticator/
+
             contexts:
                 - Authenticator\SmokeContext:
                     - "@doctrine.orm.entity_manager"
@@ -746,6 +781,7 @@ smoke:
                     - "@app.security.api_key.user_by_api_key_repository"
                     - "@session"
                     - "@test.http_client"
+                    - "@app.repository.team"
                 - Authenticator\UserContext:
                     - "@app.repository.security_user"
                     - "@app.repository.credentials_bucket"
