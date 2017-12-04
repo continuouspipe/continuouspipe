@@ -70,7 +70,7 @@
         <service id="river.github.client_factory" class="ContinuousPipe\River\GitHub\GitHubClientFactory">
             <argument type="service" id="security.token_storage" />
             <argument type="service" id="river.github.http_client" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="github.integration.installation_repository" />
             <argument type="service" id="river.github.installation_client_factory" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />

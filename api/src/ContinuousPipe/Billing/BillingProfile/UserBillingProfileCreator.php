@@ -18,15 +18,20 @@ class UserBillingProfileCreator
         $this->userBillingProfileRepository = $userBillingProfileRepository;
     }
 
+    /**
+     * @param UserBillingProfileCreationRequest $userBillingProfileCreationRequest
+     * @param User|User[] $userOrCollection
+     * @return UserBillingProfile
+     */
     public function create(
         UserBillingProfileCreationRequest $userBillingProfileCreationRequest,
-        User $user
+        $userOrCollection
     ): UserBillingProfile {
         $billingProfile = new UserBillingProfile(
             Uuid::uuid4(),
             $userBillingProfileCreationRequest->name,
             new \DateTime(),
-            [$user]
+            !is_array($userOrCollection) ? [$userOrCollection] : $userOrCollection
         );
 
         $this->userBillingProfileRepository->save($billingProfile);

@@ -176,7 +176,6 @@ class FlowController
         $this->flowRepository->remove($flow->getUuid());
     }
 
-
     /**
      * @Route("/flows/{uuid}/encrypt-variable", methods={"POST"})
      * @ParamConverter("flow", converter="flow", options={"identifier"="uuid", "flat"=true})

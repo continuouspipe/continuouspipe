@@ -40,7 +40,7 @@
         <!-- Docker Registries -->
         <service id="river.resources.reference_docker_registry_resolver" class="ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver">
             <argument type="service" id="river.flow.projections.flat_flow_repository"/>
-            <argument type="service" id="authenticator.bucket_repository"/>
+            <argument type="service" id="app.repository.credentials_bucket"/>
         </service>
     </services>
 </container>

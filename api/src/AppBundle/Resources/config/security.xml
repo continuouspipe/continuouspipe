@@ -6,21 +6,7 @@
 
     <services>
         <service id="river.security.voter.flow" class="AppBundle\Security\Voter\FlowSecurityVoter" public="false">
-            <argument type="service" id="authenticator.team_membership_finder"/>
-
-            <tag name="security.voter" />
-        </service>
-
-        <service id="river.security.voter.ghost" class="ContinuousPipe\Security\Voter\GhostUserPermissionVoter"  public="false">
-            <tag name="security.voter" />
-        </service>
-
-        <service id="river.security.voter.team" class="ContinuousPipe\Security\Voter\TeamVoter"  public="false">
-            <tag name="security.voter" />
-        </service>
-
-        <service id="river.security.voter.account" class="ContinuousPipe\Security\Voter\AccountPermissionVoter"  public="false">
-            <argument type="service" id="authenticator.account_repository" />
+            <argument type="service" id="app.repository.team_membership"/>
 
             <tag name="security.voter" />
         </service>

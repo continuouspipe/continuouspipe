@@ -13,7 +13,7 @@
         <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
 
         <service id="river.pipe.deployment_request.cluster_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\FromTeamBucketClusterResolver">
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
         <service id="river.pipe.deployment_request.target_cluster_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterFromConfiguration">
             <argument type="service" id="river.pipe.deployment_request.cluster_resolver"/>

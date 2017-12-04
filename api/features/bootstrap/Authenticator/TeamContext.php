@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Kernel;
 class TeamContext implements Context
 {
     /**
-     * @var \SecurityContext
+     * @var SecurityContext
      */
     private $securityContext;
 
@@ -135,7 +135,7 @@ class TeamContext implements Context
     public function iCreateATeam($slug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams',
+            '/teams',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -153,7 +153,7 @@ class TeamContext implements Context
     public function iCreateATeamNamed($slug, $name)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams',
+            '/teams',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -182,7 +182,7 @@ class TeamContext implements Context
     public function iCreateATeamWithTheBillingProfile($slug, $billingAccountUuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams',
+            '/teams',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -203,7 +203,7 @@ class TeamContext implements Context
     public function iUpdateTheTeamWithTheName($slug, $name)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/'.$slug,
+            '/teams/'.$slug,
             'PATCH',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -221,7 +221,7 @@ class TeamContext implements Context
     public function iUpdateTheTeamWithTheSlug($slug, $updatedSlug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/'.$slug,
+            '/teams/'.$slug,
             'PATCH',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -239,7 +239,7 @@ class TeamContext implements Context
     public function iUpdateTheTeamWithTheBillingProfile($slug, $billingProfileUuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/'.$slug,
+            '/teams/'.$slug,
             'PATCH',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -257,7 +257,7 @@ class TeamContext implements Context
     public function iRequestAManagedClusterToBeCreatedForTheTeam($teamSlug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/'.$teamSlug.'/managed/create-cluster',
+            '/teams/'.$teamSlug.'/managed/create-cluster',
             'POST'
         ));
     }
@@ -267,7 +267,7 @@ class TeamContext implements Context
      */
     public function iRequestTheListOfTeams()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/teams', 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/teams', 'GET'));
     }
 
     /**
@@ -275,7 +275,7 @@ class TeamContext implements Context
      */
     public function iRequestTheDetailsOfTeam($team)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$team, 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$team, 'GET'));
     }
 
     /**
@@ -283,7 +283,7 @@ class TeamContext implements Context
      */
     public function iRequestTheBillingProfileOfTheTeam($team)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$team.'/billing-profile', 'GET'));
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$team.'/billing-profile', 'GET'));
     }
 
     /**
@@ -291,7 +291,7 @@ class TeamContext implements Context
      */
     public function iRequestTheBillingProfile($uuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/billing-profile/' . $uuid));
+        $this->response = $this->kernel->handle(Request::create('/billing-profile/' . $uuid));
     }
 
     /**
@@ -326,7 +326,7 @@ class TeamContext implements Context
     public function iChangeTheBillingProfileWithThePlan($billingProfileUuid, $planIdentifier)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/billing-profile/'.$billingProfileUuid.'/change-plan',
+            '/billing-profile/'.$billingProfileUuid.'/change-plan',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -355,7 +355,7 @@ class TeamContext implements Context
     public function iRequestTheDetailsOfTeamWithTheApiKey($team, $key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/'.$team, 'GET',
+            '/teams/'.$team, 'GET',
             [],
             [],
             [],
@@ -384,7 +384,7 @@ class TeamContext implements Context
     public function iRequestTheListOfTeamsWithTheApiKey($key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams',
+            '/teams',
             'GET',
             [],
             [],
@@ -429,7 +429,7 @@ class TeamContext implements Context
      */
     public function iAddTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, urlencode($username));
+        $url = sprintf('/teams/%s/users/%s', $teamSlug, urlencode($username));
         $this->response = $this->kernel->handle(Request::create($url, 'PUT'));
     }
 
@@ -441,7 +441,7 @@ class TeamContext implements Context
     {
         $permissions = explode(',', $permissions);
 
-        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
+        $url = sprintf('/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'PUT', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'permissions' => $permissions
         ])));
@@ -452,7 +452,7 @@ class TeamContext implements Context
      */
     public function iRemoveTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/teams/%s/users/%s', $teamSlug, $username);
+        $url = sprintf('/teams/%s/users/%s', $teamSlug, $username);
         $this->response = $this->kernel->handle(Request::create($url, 'DELETE'));
     }
 
@@ -534,7 +534,7 @@ class TeamContext implements Context
      */
     public function iCanSeeTheUserInTheTeam($username, $teamSlug)
     {
-        $url = sprintf('/api/teams/%s', $teamSlug);
+        $url = sprintf('/teams/%s', $teamSlug);
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
         $this->assertResponseCodeIs($this->response, 200);
 
@@ -695,7 +695,7 @@ class TeamContext implements Context
      */
     public function iRequestTheAlertsOfTheTeam($slug)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/teams/'.$slug.'/alerts'));
+        $this->response = $this->kernel->handle(Request::create('/teams/'.$slug.'/alerts'));
 
         $this->assertResponseCodeIs($this->response, 200);
     }
@@ -753,7 +753,7 @@ class TeamContext implements Context
     public function iDeleteTheTeam($slug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/' . $slug,
+            '/teams/' . $slug,
             'DELETE'
         ));
 
@@ -766,7 +766,7 @@ class TeamContext implements Context
     public function iRequestTheLimitationsForTheTeam($slug)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/teams/' . $slug . '/usage-limits',
+            '/teams/' . $slug . '/usage-limits',
             'GET'
         ));
 
@@ -809,7 +809,7 @@ class TeamContext implements Context
      */
     public function iRequestTheProxiedKubeStatusPath($path)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/kube-status'.$path));
+        $this->response = $this->kernel->handle(Request::create('/kube-status'.$path));
     }
 
     /**
@@ -870,6 +870,7 @@ class TeamContext implements Context
     {
         $this->assertResponseCodeIs($this->response, 200);
         $list = json_decode($this->response->getContent(), true);
+
         $matchingTeam = array_filter($list, function (array $team) use ($slug) {
             return $team['slug'] == $slug;
         });

@@ -22,15 +22,16 @@ class UserParamConverter implements ParamConverterInterface
      * @var TokenStorageInterface
      */
     private $tokenStorage;
-
     /**
-     * @param SecurityUserRepository $securityUserRepository
-     * @param TokenStorageInterface  $tokenStorage
+     * @var string
      */
-    public function __construct(SecurityUserRepository $securityUserRepository, TokenStorageInterface $tokenStorage)
+    private $converterName;
+
+    public function __construct(SecurityUserRepository $securityUserRepository, TokenStorageInterface $tokenStorage, string $converterName = 'user')
     {
         $this->securityUserRepository = $securityUserRepository;
         $this->tokenStorage = $tokenStorage;
+        $this->converterName = $converterName;
     }
 
     /**
@@ -61,7 +62,7 @@ class UserParamConverter implements ParamConverterInterface
      */
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getConverter() == 'user';
+        return $configuration->getConverter() == $this->converterName;
     }
 
     /**

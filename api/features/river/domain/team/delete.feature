@@ -8,14 +8,14 @@ Feature:
 
   Scenario: Able to delete a team
     Given the team "continuous-pipe" exists
-    And the user "geza" is "user" of the team "continuous-pipe"
+    And the user "geza" is "ADMIN" of the team "continuous-pipe"
     When I delete the team named "continuous-pipe"
     Then the team is successfully deleted
     And I should not see the team "continuous-pipe"
 
   Scenario: Unable to delete a team when it has flows associated with it
     Given the team "continuous-pipe" exists
-    And the user "geza" is "user" of the team "continuous-pipe"
+    And the user "geza" is "ADMIN" of the team "continuous-pipe"
     And I have a flow in the team "continuous-pipe"
     When I delete the team named "continuous-pipe"
     Then the team deletion should fail
@@ -27,6 +27,6 @@ Feature:
   Scenario: Unable to delete a team as non-member
     Given the team "continuous-pipe" exists
     And the team "other-team" exists
-    And the user "geza" is "user" of the team "other-team"
+    And the user "geza" is "USER" of the team "other-team"
     When I delete the team named "continuous-pipe"
     Then the team deletion should fail

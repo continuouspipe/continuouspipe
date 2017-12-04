@@ -27,6 +27,7 @@ use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\User\UserRepository;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Stream;
 use Ramsey\Uuid\Uuid;
@@ -52,7 +53,7 @@ use Jms\Serializer\SerializerInterface;
 class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingContext
 {
     /**
-     * @var \SecurityContext
+     * @var \River\SecurityContext
      */
     private $securityContext;
 
@@ -85,11 +86,6 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var InMemoryCodeRepositoryRepository
      */
     private $codeRepositoryRepository;
-
-    /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $authenticatorClient;
 
     /**
      * @var FakeClient
@@ -146,6 +142,10 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
      * @var MessageBus
      */
     private $commandBus;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
     public function __construct(
         FakeClient $pipeClient,
@@ -154,17 +154,16 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         Kernel $kernel,
         FlowRepository $flowRepository,
         InMemoryCodeRepositoryRepository $codeRepositoryRepository,
-        InMemoryAuthenticatorClient $authenticatorClient,
         TeamRepository $teamRepository,
         MessageBus $eventBus,
         SerializerInterface $serializer,
         TracedUsageHistoryRepository $tracedUsageHistoryRepository,
-        MessageBus $commandBus
+        MessageBus $commandBus,
+        UserRepository $userRepository
     ) {
         $this->flowRepository = $flowRepository;
         $this->kernel = $kernel;
         $this->codeRepositoryRepository = $codeRepositoryRepository;
-        $this->authenticatorClient = $authenticatorClient;
         $this->pipeClient = $pipeClient;
         $this->teamRepository = $teamRepository;
         $this->traceablePipeClient = $traceablePipeClient;
@@ -173,6 +172,7 @@ class FlowContext implements Context, \Behat\Behat\Context\SnippetAcceptingConte
         $this->serializer = $serializer;
         $this->tracedUsageHistoryRepository = $tracedUsageHistoryRepository;
         $this->commandBus = $commandBus;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -1016,7 +1016,7 @@ EOF;
         ]);
 
         $this->codeRepositoryRepository->add($repository);
-        $this->authenticatorClient->addUser($user);
+        $this->userRepository->save($user);
 
         $this->flowUuid = (string) $uuid;
         $this->currentFlow = $flow = $this->flowRepository->find($uuid);

@@ -32,6 +32,6 @@ class ConnectController extends HWIOAuthBundleConnectController
      */
     private function isUserAuthenticated()
     {
-        return $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        return $this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
     }
 }

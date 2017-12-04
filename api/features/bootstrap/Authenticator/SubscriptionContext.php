@@ -32,7 +32,7 @@ class SubscriptionContext implements Context
      */
     public function iRequestTheListOfAvailablePlans()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/billing/plans'));
+        $this->response = $this->kernel->handle(Request::create('/billing/plans'));
     }
 
     /**
@@ -58,7 +58,7 @@ class SubscriptionContext implements Context
      */
     public function iRequestTheListOfAvailableAddOns()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/billing/add-ons'));
+        $this->response = $this->kernel->handle(Request::create('/billing/add-ons'));
     }
 
     /**

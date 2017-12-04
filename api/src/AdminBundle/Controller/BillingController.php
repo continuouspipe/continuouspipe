@@ -4,6 +4,7 @@ namespace AdminBundle\Controller;
 
 use ContinuousPipe\Billing\BillingProfile\BillingProfileNotFound;
 use ContinuousPipe\Billing\BillingProfile\BillingProfileRepository;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageSummaryProjector;
 use ContinuousPipe\Security\Team\Team;
@@ -27,7 +28,7 @@ class BillingController
      */
     private $flatFlowRepository;
     /**
-     * @var BillingProfileRepository
+     * @var UserBillingProfileRepository
      */
     private $billingProfileRepository;
     /**
@@ -38,7 +39,7 @@ class BillingController
     public function __construct(
         TeamRepository $teamRepository,
         FlatFlowRepository $flatFlowRepository,
-        BillingProfileRepository $billingProfileRepository,
+        UserBillingProfileRepository $billingProfileRepository,
         UsageSummaryProjector $usageProjector
     ) {
         $this->teamRepository = $teamRepository;

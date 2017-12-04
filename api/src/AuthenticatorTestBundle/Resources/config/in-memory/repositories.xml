@@ -16,7 +16,7 @@
         <service id="app.repository.team" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository">
             <argument type="service" id="app.repository.team_membership" />
         </service>
-        <service id="api.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Security\ApiKey\InMemoryUserApiKeyRepository" />
+        <service id="app.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Security\ApiKey\InMemoryUserApiKeyRepository" />
 
         <service id="google.token_resolver.cached"
                  class="ContinuousPipe\Google\Cache\InMemoryCachedTokenResolver"

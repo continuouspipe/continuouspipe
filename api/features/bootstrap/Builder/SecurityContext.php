@@ -5,6 +5,7 @@ namespace Builder;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Credentials\GitHubToken;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
@@ -18,11 +19,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class SecurityContext implements Context
 {
     /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $inMemoryAuthenticatorClient;
-
-    /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
@@ -31,17 +27,16 @@ class SecurityContext implements Context
      * @var KernelInterface
      */
     private $kernel;
-
     /**
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
-     * @param TokenStorageInterface $tokenStorage
-     * @param KernelInterface $kernel
+     * @var BucketRepository
      */
-    public function __construct(InMemoryAuthenticatorClient $inMemoryAuthenticatorClient, TokenStorageInterface $tokenStorage, KernelInterface $kernel)
+    private $bucketRepository;
+
+    public function __construct(BucketRepository $bucketRepository, TokenStorageInterface $tokenStorage, KernelInterface $kernel)
     {
-        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->tokenStorage = $tokenStorage;
         $this->kernel = $kernel;
+        $this->bucketRepository = $bucketRepository;
     }
 
     /**
@@ -71,7 +66,7 @@ class SecurityContext implements Context
      */
     public function thereIsTheBucket($uuid)
     {
-        $this->inMemoryAuthenticatorClient->addBucket(new Bucket(Uuid::fromString($uuid)));
+        $this->bucketRepository->save(new Bucket(Uuid::fromString($uuid)));
     }
 
     /**
@@ -79,7 +74,7 @@ class SecurityContext implements Context
      */
     public function theBucketContainsTheFollowingDockerRegistryCredentials($uuid, array $credentials)
     {
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
+        $bucket = $this->bucketRepository->find(Uuid::fromString($uuid));
 
         foreach ($credentials as $credential) {
             $bucket->getDockerRegistries()->add($credential);
@@ -91,7 +86,7 @@ class SecurityContext implements Context
      */
     public function theBucketContainsTheDockerRegistryCredentials($uuid)
     {
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
+        $bucket = $this->bucketRepository->find(Uuid::fromString($uuid));
         $testCredentials = $this->kernel->getContainer()->getParameter('test_docker_credentials');
 
         foreach ($testCredentials as $row) {
@@ -104,7 +99,7 @@ class SecurityContext implements Context
      */
     public function theBucketContainsTheFollowingGithubTokens($uuid, TableNode $table)
     {
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid(Uuid::fromString($uuid));
+        $bucket = $this->bucketRepository->find(Uuid::fromString($uuid));
 
         foreach ($table->getHash() as $row) {
             $bucket->getGitHubTokens()->add(new GitHubToken($row['identifier'], $row['token']));

@@ -19,7 +19,7 @@ Feature:
   @smoke
   Scenario: I can create an initialization token that will be used by the client
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"
-    And the created API key for the user "samuel" will have the key "API-KEY-1234"
+    And the created API key for the user "samuel" will have the key "00000000-1111-0000-0000-000000000000"
     When I create an initialization token for the development environment "00000000-0000-0000-0000-000000000000" of the flow "00000000-0000-0000-0000-000000000000" with the following parameters:
     """
     {
@@ -28,7 +28,7 @@ Feature:
     """
     Then I receive a token that contains the following base64 decoded and comma separated values:
       # | api-key    | environment-uuid                     | flow-uuid                                   |  username         | git-branch  |
-      | API-KEY-1234 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000        |  samuel           | cpdev/sroze |
+      | 00000000-1111-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000 | 00000000-0000-0000-0000-000000000000        |  samuel           | cpdev/sroze |
 
   Scenario: Delete the development environment
     Given the user "samuel" have a development environment "00000000-0000-0000-0000-000000000000" for the flow "00000000-0000-0000-0000-000000000000"

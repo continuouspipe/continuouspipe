@@ -30,6 +30,9 @@
         <service id="app.repository.user_invitation" class="ContinuousPipe\Authenticator\Infrastructure\Doctrine\DoctrineUserInvitationRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
+        <service id="app.repository.user" class="ContinuousPipe\Authenticator\Security\User\UserFromSecurityUserRepository">
+            <argument type="service" id="app.repository.security_user" />
+        </service>
         <service id="app.invitation.event_producer.user_invitation_repository"
                  class="ContinuousPipe\Authenticator\Invitation\EventProducer\EventProducerUserInvitationRepository"
                  decorates="app.repository.user_invitation">
@@ -58,11 +61,12 @@
             <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJwtCreated" />
         </service>
 
-        <service id="request.param_converter.security_user" class="ContinuousPipe\Authenticator\Request\ParamConverter\UserParamConverter">
+        <service id="authenticator.request.param_converter.security_user" class="ContinuousPipe\Authenticator\Request\ParamConverter\UserParamConverter">
             <argument type="service" id="app.repository.security_user" />
             <argument type="service" id="security.token_storage" />
+            <argument>authenticator_user</argument>
 
-            <tag name="request.param_converter" converter="user" />
+            <tag name="request.param_converter" converter="authenticator_user" />
         </service>
 
         <service id="request.param_converter.user_billing_profile" class="ContinuousPipe\Billing\BillingProfile\Request\ParamConverter\UserBillingProfileParamConverter">

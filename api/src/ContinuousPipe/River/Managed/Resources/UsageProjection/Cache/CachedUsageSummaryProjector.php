@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Managed\Resources\UsageProjection\Cache;
 
 use ContinuousPipe\Billing\BillingProfile\BillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageSummary;
 use ContinuousPipe\River\Managed\Resources\UsageProjection\UsageSummaryProjector;
@@ -19,6 +20,7 @@ class CachedUsageSummaryProjector implements UsageSummaryProjector
      * @var Cache
      */
     private $cache;
+
     /**
      * @var int
      */
@@ -32,7 +34,7 @@ class CachedUsageSummaryProjector implements UsageSummaryProjector
         $this->lifeTime = $lifeTime;
     }
 
-    public function forFlows(array $flows, \DateTime $left, \DateTime $right, \DateInterval $interval, BillingProfile $billingProfile = null): UsageSummary
+    public function forFlows(array $flows, \DateTime $left, \DateTime $right, \DateInterval $interval, UserBillingProfile $billingProfile = null): UsageSummary
     {
         $cacheKey = sprintf(
             'usage-summary:%s:%s:%s:%s:%s',

@@ -2,9 +2,7 @@
 
 namespace AuthenticatorBundle\Controller;
 
-use ContinuousPipe\Authenticator\EarlyAccess\BypassWhiteListToggleFactory;
 use ContinuousPipe\Authenticator\Invitation\InvitationNotFound;
-use ContinuousPipe\Authenticator\Invitation\InvitationToggleFactory;
 use ContinuousPipe\Authenticator\Invitation\InvitationToTeamMembershipTransformer;
 use ContinuousPipe\Authenticator\Invitation\UserInvitation;
 use ContinuousPipe\Authenticator\Invitation\UserInvitationRepository;
@@ -63,7 +61,7 @@ class InvitationController
 
     /**
      * @Route("/invitation/{uuid}/transform", name="transform_invitation")
-     * @ParamConverter("user", converter="user", options={"fromSecurityContext"=true})
+     * @ParamConverter("user", converter="authenticator_user", options={"fromSecurityContext"=true})
      */
     public function transformAction(User $user, $uuid)
     {

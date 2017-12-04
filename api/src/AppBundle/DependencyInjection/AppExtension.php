@@ -58,6 +58,6 @@ class AppExtension extends Extension
         $loader->load('quayio.xml');
         $loader->load('managed.xml');
         $loader->load('cluster-policies.xml');
-        $loader->load('billing.xml');
+        $loader->load('authenticator.xml');
     }
 }

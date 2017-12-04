@@ -68,8 +68,8 @@ class RecordAddingAndRemovingEvents implements EventSubscriberInterface
         $user = $membership->getUser();
         $team = $membership->getTeam();
 
-        $numberOfMemberships = $this->teamMembershipRepository->findByTeam($team);
-        if (count($numberOfMemberships) <= 1) {
+        $numberOfMemberships = $this->teamMembershipRepository->findByTeam($team)->count();
+        if ($numberOfMemberships <= 1) {
             // Don't create the added-to-team event if it's after a creation, probably
             return;
         }

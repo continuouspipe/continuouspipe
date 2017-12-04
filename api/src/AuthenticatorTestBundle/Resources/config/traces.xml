@@ -28,5 +28,11 @@
             <argument type="service" id="test.client.history" />
             <argument type="service" id="test.client.cookiejar" />
         </service>
+
+        <service id="security.user_api_key.uuid_generator.predictable"
+                 class="ContinuousPipe\Authenticator\Security\ApiKey\PredictableApiKeyUuidGenerator"
+                 decorates="security.user_api_key.uuid_generator">
+            <argument type="service" id="security.user_api_key.uuid_generator.predictable.inner" />
+        </service>
     </services>
 </container>

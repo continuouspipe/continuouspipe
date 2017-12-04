@@ -6,6 +6,9 @@ use ContinuousPipe\Billing\Plan\Plan;
 use Ramsey\Uuid\UuidInterface;
 use JMS\Serializer\Annotation as JMS;
 
+/**
+ * @deprecated Use `UserBillingProfile` instead
+ */
 class BillingProfile
 {
     /**

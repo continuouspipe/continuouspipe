@@ -5,8 +5,13 @@ namespace AppBundle\Security\Voter;
 use ContinuousPipe\River\Flow;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\Security\Team\Team;
+use ContinuousPipe\Security\Team\TeamMembership;
 use ContinuousPipe\Security\Team\TeamMembershipFinder;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
+use ContinuousPipe\Security\Team\TeamNotFound;
+use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -18,22 +23,20 @@ class FlowSecurityVoter extends Voter
     const ATTRIBUTE_CREATE_TIDE = 'CREATE_TIDE';
 
     /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
+
+    /**
      * @var int
      */
     private $lifetime;
 
-    /**
-     * @var TeamMembershipFinder
-     */
-    private $membershipFinder;
-
-    /**
-     * @param TeamMembershipFinder $membershipFinder
-     * @param int $lifetime
-     */
-    public function __construct(TeamMembershipFinder $membershipFinder, $lifetime = 1600)
-    {
-        $this->membershipFinder = $membershipFinder;
+    public function __construct(
+        TeamMembershipRepository $teamMembershipRepository,
+        $lifetime = 1600
+    ) {
+        $this->teamMembershipRepository = $teamMembershipRepository;
         $this->lifetime = $lifetime;
     }
 
@@ -58,7 +61,7 @@ class FlowSecurityVoter extends Voter
         }
 
         // Reload the memberships of the team
-        if (null === ($membership = $this->membershipFinder->findOneByTeamAndUser($team, $user->getUser()))) {
+        if (null === ($membership = $this->findMembershipByTeamAndUser($team, $user->getUser()))) {
             return false;
         } elseif (in_array($attribute, ['READ', 'CREATE_TIDE'])) {
             return true;
@@ -79,5 +82,24 @@ class FlowSecurityVoter extends Voter
         }
 
         throw new \InvalidArgumentException(sprintf('Unable to extract the project from %s', get_class($subject)));
+    }
+
+    private function findMembershipByTeamAndUser(Team $team, User $user)
+    {
+        try {
+            $memberships = $this->teamMembershipRepository->findByTeam($team);
+        } catch (TeamNotFound $e) {
+            return null;
+        }
+
+        $matchingMemberships = $memberships->filter(function (TeamMembership $membership) use ($user) {
+            return $membership->getUser()->getUsername() == $user->getUsername();
+        });
+
+        if ($matchingMemberships->count() === 1) {
+            return $matchingMemberships->first();
+        }
+
+        return null;
     }
 }

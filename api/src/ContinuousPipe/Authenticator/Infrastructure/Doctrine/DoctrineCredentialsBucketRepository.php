@@ -7,6 +7,7 @@ use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use Doctrine\ORM\EntityManager;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class DoctrineCredentialsBucketRepository implements BucketRepository
 {
@@ -26,7 +27,7 @@ class DoctrineCredentialsBucketRepository implements BucketRepository
     /**
      * {@inheritdoc}
      */
-    public function find(Uuid $uuid)
+    public function find(UuidInterface $uuid)
     {
         if ($bucket = $this->getRepository()->find((string) $uuid)) {
             return $bucket;

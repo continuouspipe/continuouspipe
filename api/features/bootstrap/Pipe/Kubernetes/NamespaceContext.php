@@ -21,7 +21,6 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\DeploymentRequest;
 use ContinuousPipe\Pipe\Tests\MessageBus\TraceableMessageBus;
 use ContinuousPipe\Security\Credentials\Bucket;
-use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\User;
 use Kubernetes\Client\Exception\ClientError;
 use Kubernetes\Client\Exception\NamespaceNotFound;
@@ -66,10 +65,6 @@ class NamespaceContext implements Context
      */
     private $loggerFactory;
     /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $inMemoryAuthenticatorClient;
-    /**
      * @var InMemoryServiceAccountRepository
      */
     private $inMemoryServiceAccountRepository;
@@ -92,7 +87,6 @@ class NamespaceContext implements Context
      * @param TraceableSecretRepository $secretRepository
      * @param TraceableServiceAccountRepository $serviceAccountRepository
      * @param LoggerFactory $loggerFactory
-     * @param InMemoryAuthenticatorClient $inMemoryAuthenticatorClient
      * @param InMemoryServiceAccountRepository $inMemoryServiceAccountRepository
      * @param HookableServiceAccountRepository $hookableServiceAccountRepository
      * @param HookableNamespaceRepository $hookableNamespaceRepository
@@ -103,7 +97,6 @@ class NamespaceContext implements Context
         TraceableSecretRepository $secretRepository,
         TraceableServiceAccountRepository $serviceAccountRepository,
         LoggerFactory $loggerFactory,
-        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         InMemoryServiceAccountRepository $inMemoryServiceAccountRepository,
         InMemorySecretRepository $inMemorySecretRepository,
         HookableServiceAccountRepository $hookableServiceAccountRepository,
@@ -115,7 +108,6 @@ class NamespaceContext implements Context
         $this->secretRepository = $secretRepository;
         $this->serviceAccountRepository = $serviceAccountRepository;
         $this->loggerFactory = $loggerFactory;
-        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->inMemoryServiceAccountRepository = $inMemoryServiceAccountRepository;
         $this->hookableServiceAccountRepository = $hookableServiceAccountRepository;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;

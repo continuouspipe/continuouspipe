@@ -111,7 +111,7 @@ class CredentialsBucketContext implements Context
         }
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            sprintf('/bucket/%s/docker-registries', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($registry)
@@ -129,7 +129,7 @@ class CredentialsBucketContext implements Context
         }
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries/%s', $bucket, urlencode($registryAddress)),
+            sprintf('/bucket/%s/docker-registries/%s', $bucket, urlencode($registryAddress)),
             'PATCH', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($registry)
@@ -146,7 +146,7 @@ class CredentialsBucketContext implements Context
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            sprintf('/bucket/%s/docker-registries', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json', 'HTTP_X_API_KEY' => $apiKey],
             $content
@@ -159,7 +159,7 @@ class CredentialsBucketContext implements Context
     public function iDeleteTheCredentialsOfTheDockerRegistry($serverAddress, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries/%s', $bucket, urlencode($serverAddress)),
+            sprintf('/bucket/%s/docker-registries/%s', $bucket, urlencode($serverAddress)),
             'DELETE'
         ));
 
@@ -172,7 +172,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheDockerRegistryCredentialsInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            sprintf('/bucket/%s/docker-registries', $bucket),
             'GET'
         ));
     }
@@ -183,7 +183,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheDockerRegistryCredentialsInTheBucketWithTheApiKey($bucket, $key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/docker-registries', $bucket),
+            sprintf('/bucket/%s/docker-registries', $bucket),
             'GET',
             [],
             [],
@@ -200,7 +200,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheDetailsOfTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s', $bucket),
+            sprintf('/bucket/%s', $bucket),
             'GET'
         ));
     }
@@ -213,7 +213,7 @@ class CredentialsBucketContext implements Context
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/github-tokens', $bucket),
+            sprintf('/bucket/%s/github-tokens', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             $content
@@ -226,7 +226,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheGithubTokensInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/github-tokens', $bucket),
+            sprintf('/bucket/%s/github-tokens', $bucket),
             'GET'
         ));
     }
@@ -237,7 +237,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheGithubTokensInTheBucketWithTheApiKey($bucket, $key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/github-tokens', $bucket),
+            sprintf('/bucket/%s/github-tokens', $bucket),
             'GET',
             [],
             [],
@@ -254,7 +254,7 @@ class CredentialsBucketContext implements Context
     public function iDeleteTheGithubTokenOfFromTheBucket($identifier, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/github-tokens/%s', $bucket, $identifier),
+            sprintf('/bucket/%s/github-tokens/%s', $bucket, $identifier),
             'DELETE'
         ));
     }
@@ -273,7 +273,7 @@ class CredentialsBucketContext implements Context
         }
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters', $bucket),
+            sprintf('/bucket/%s/clusters', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($content)
@@ -286,7 +286,7 @@ class CredentialsBucketContext implements Context
     public function iUpdateTheClusterOfTheBucketWithTheFollowingRequest($clusterIdentifier, $bucketUuid, PyStringNode $request)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters/%s', $bucketUuid, $clusterIdentifier),
+            sprintf('/bucket/%s/clusters/%s', $bucketUuid, $clusterIdentifier),
             'PATCH', [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
             $request->getRaw()
@@ -301,7 +301,7 @@ class CredentialsBucketContext implements Context
         $content = json_encode($table->getHash()[0]);
 
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters', $bucket),
+            sprintf('/bucket/%s/clusters', $bucket),
             'POST', [], [], [],
             ['CONTENT_TYPE' => 'application/json', 'HTTP_X_API_KEY' => $apiKey],
             $content
@@ -314,7 +314,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheClustersInTheBucket($bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters', $bucket),
+            sprintf('/bucket/%s/clusters', $bucket),
             'GET'
         ));
     }
@@ -325,7 +325,7 @@ class CredentialsBucketContext implements Context
     public function iAskTheListOfTheClustersInTheBucketWithTheApiKey($bucket, $key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters', $bucket),
+            sprintf('/bucket/%s/clusters', $bucket),
             'GET',
             [],
             [],
@@ -342,7 +342,7 @@ class CredentialsBucketContext implements Context
     public function iDeleteTheClusterFromTheBucket($identifier, $bucket)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/bucket/%s/clusters/%s', $bucket, $identifier),
+            sprintf('/bucket/%s/clusters/%s', $bucket, $identifier),
             'DELETE'
         ));
     }
@@ -466,6 +466,13 @@ class CredentialsBucketContext implements Context
      */
     private function getClusterFromList($identifier)
     {
+        if ($this->response->getStatusCode() < 200 || $this->response->getStatusCode() >= 300) {
+            throw new \RuntimeException(sprintf(
+                'Expected a response code 2xx but got %d',
+                $this->response->getStatusCode()
+            ));
+        }
+
         $decoded = json_decode($this->response->getContent(), true);
         if (!is_array($decoded)) {
             throw new \RuntimeException('Expected to get an array in the JSON response');

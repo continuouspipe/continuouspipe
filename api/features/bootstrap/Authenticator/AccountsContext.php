@@ -213,7 +213,7 @@ class AccountsContext implements Context
      */
     public function iRequestTheListOfGoogleProjectForTheAccount($account)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/accounts/' . $account . '/google/projects'));
+        $this->response = $this->kernel->handle(Request::create('/accounts/' . $account . '/google/projects'));
     }
 
     /**
@@ -221,7 +221,7 @@ class AccountsContext implements Context
      */
     public function iRequestMyBillingProfile()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profile'));
+        $this->response = $this->kernel->handle(Request::create('/me/billing-profile'));
     }
 
     /**
@@ -229,7 +229,7 @@ class AccountsContext implements Context
      */
     public function iRequestMyBillingProfiles()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/me/billing-profiles'));
+        $this->response = $this->kernel->handle(Request::create('/me/billing-profiles'));
     }
 
     /**
@@ -237,7 +237,7 @@ class AccountsContext implements Context
      */
     public function iDeleteTheBillingProfile($uuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/billing-profile/'.$uuid, 'DELETE'));
+        $this->response = $this->kernel->handle(Request::create('/billing-profile/'.$uuid, 'DELETE'));
     }
 
     /**
@@ -427,7 +427,7 @@ class AccountsContext implements Context
      */
     public function thereIsAClusterNamedInTheZoneInTheProject($clusterName, $zone, $project)
     {
-        $cluster = \GuzzleHttp\json_decode('{"name":"builder-eu-west1-b","nodeConfig":{"machineType":"n1-standard-2","diskSizeGb":100,"oauthScopes":["https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/service.management","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring"],"imageType":"GCI","serviceAccount":"default"},"masterAuth":{"username":"admin","password":"ATOXm3tRzh0NuuBi","clusterCaCertificate":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUROekNDQWgrZ0F3SUJBZ0lRRHdMV096dXF2WFNtV2dYcWRNNGNhakFOQmdrcWhraUc5dzBCQVFzRkFEQkYKTVVNd1FRWURWUVFERERwbGRYSnZjR1V0ZDJWemRERXRZaTB4TURFMU5ERTJNRGc0TXprM0xXSjFhV3hrWlhJdApaWFV0ZDJWemRERXRZa0F4TkRZNU9UVXpOVFF3TUI0WERURTJNRGN6TVRBNE1qVTBNRm9YRFRJeE1EY3pNREE0Ck1qVTBNRm93UlRGRE1FRUdBMVVFQXd3NlpYVnliM0JsTFhkbGMzUXhMV0l0TVRBeE5UUXhOakE0T0RNNU55MWkKZFdsc1pHVnlMV1YxTFhkbGMzUXhMV0pBTVRRMk9UazFNelUwTURDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQU4vUCszMmo3VFM1OHJtUWpUd3F0UTU4cTN5QVRuUGUzMEZSUlZJcmZuMVZaQklICll2bVJNTTQydHQwRHJmQjlMZzJkcDkvOG5YcXlCaGQvZlZnZmlxbjlhWUY3ZDFKYklBb0tEdDBsN0F3U0dJV3cKSUNSaWRld0dLNDdtVGF6aWIybWh0NVdhRmhZSFVmQlVCT1MxdzFKSjk5YVQxOVlaT2pQTHRaa214T3ZGUGVKVgo2cVFteHdxYVlPbStDanZCL0YwVmhoWHZLTkowVUIrNVdyeFFicDBKS0d5azBoMmN2Nk5QMTRKR2Y4cmJmUFd4CmFFcXFHZ2pCRFV2NHZKSTFLaVlrWWpCOFRoY2Ivcm80YmtwOUFoSkVWTXNHSFk2aHR0ajhvZkVFcklZNytQalYKZmdEWDdFb2NwUnVIbHdySVhTdXlpNFQ0NzFQaE0vcVk2U3hoQzhjQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFILwpCQVFEQWdJRU1BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFGbEwrdUc4CnNMd29NUk1zSS8rUE1hSVBrVjUrS1A2dHFBWTR4WFhBL0JGTm9ZU2o1eXlDY3pUc2ZqNkhzN1lFd3RSTUJZcFUKaG5YdldtbTlVOTVZMHpIcjJ0L2JpelhCMGlsOHRNWk04cG9UaXhVbjg5cUZiM3FiRGpBT0M3ays5RlU4dmtjVQpGbWNNcm8vbCszbUU4Uzd0SEd0Znh3TDlZL2NZSWZoVVNabHByNnRJSTZmVnZZY2dZeE4vTVhVUit1a0J3WjE5CmRLRGhFMHdZMTVyeHJ1cTRNQUl6MC82RURXZHA1NG55T2x5OXVVcWZUVVJYUnNQR0xhSGEzeTIrcGRFa1U4alQKUWhhd3F1ZlpBK1lYbnBhOEF4d2FzdjdRQXE5UjlsZFkxZjBleTFPdEQwL3NIZlFSSjFEYkZlNno4THdyNy9EdAoxL1J6S2ZzSyt5MjJBY1E9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K","clientCertificate":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lRY1ZMVXk2TWwxYlpJVWFIak00cXVNREFOQmdrcWhraUc5dzBCQVFzRkFEQkYKTVVNd1FRWURWUVFERERwbGRYSnZjR1V0ZDJWemRERXRZaTB4TURFMU5ERTJNRGc0TXprM0xXSjFhV3hrWlhJdApaWFV0ZDJWemRERXRZa0F4TkRZNU9UVXpOVFF3TUI0WERURTJNRGN6TVRBNE1qVTBNbG9YRFRJeE1EY3pNREE0Ck1qVTBNbG93RVRFUE1BMEdBMVVFQXhNR1kyeHBaVzUwTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEEKTUlJQkNnS0NBUUVBcXlYK3hLN1FHbGdGeWxvTC9KWVh6VXhUdUgwSmE2VVhJb3lvOEFxMU5IRmxVRUlHcEdlMApVZW5RTjZ5aXRJbmw2a1VaNVY4eWRpMm5HMWhLKzMxeUUvQVRGTkpiK2VEZXJkTzlDYUtuRXBXb1J3REhZUXZMClNQc1ZiNCtCaFZ0SEZpTzI3VGxwMEptV2lOdGpIWnJVRWxaR1NjN3R6OFlRWmRqM3F1YUJqcnpGL0VWR2VGL3YKYWNHS2ViVGc4cWVrZllPQTR5N1Mwd3MzanE0b25ZbE1pVWV1Rithc294MlpDb3NZbXhwNTk4WDFUcUhUUFJmeQo2cUlOM01lTlRxejVhOHcxMEJ1dTlKTFVWOWMyaC9nanVxUThPNytqeTRvd2J6SlRyaUxiN1hHM21MZTdSVWNvCmdUaU9OeUJSa3piSW1UcGNYbGZJdEREWkRaaytHbmdWM1FJREFRQUJvelV3TXpBT0JnTlZIUThCQWY4RUJBTUMKQmFBd0V3WURWUjBsQkF3d0NnWUlLd1lCQlFVSEF3SXdEQVlEVlIwVEFRSC9CQUl3QURBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUEzdzhxWDRmb3RoMENuQ0tzT0pQQjBET28rMmpNRmM1QTdhb2ZhT1ZwNWxvcjUxU1RRa3Y5CjJ4dGQ3QUtVZFZuVkJmaWF4QkQ2SWhwOXFNS05rQ1h4TS9ld1BzcGZEak01SEVQSG5CMHB3LzNlZTdMcy9IL3oKUE5KS1RneFpmSHJFaFVkeVlKcE8vZlpuOTVaNHZWQTIwRkRXcmZocUpwTEVuL1pTWnZpRjg5ZzhjV1IycGJmUQp5ZFJKNTNaZ1RSWVNUZ2lkR0Jqc0hyTGNXdythV1BqbFQzUEVjMVZKN21ML2JCa1JpcXNwMmUrZXR0Uld1NXQ4CmRLRjcveDdnbDh4QmF1d0Fla3g5Ky9CVzgvTmVZOEpBbUpId3l1dmlHTkc3d25JYXBPOWd5K1dCelM1ak1JZCsKSnVES0VyYWU5clQweVU4NnB6TncrNVRjYXB6MGNhU1B5UT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K","clientKey":"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBcXlYK3hLN1FHbGdGeWxvTC9KWVh6VXhUdUgwSmE2VVhJb3lvOEFxMU5IRmxVRUlHCnBHZTBVZW5RTjZ5aXRJbmw2a1VaNVY4eWRpMm5HMWhLKzMxeUUvQVRGTkpiK2VEZXJkTzlDYUtuRXBXb1J3REgKWVF2TFNQc1ZiNCtCaFZ0SEZpTzI3VGxwMEptV2lOdGpIWnJVRWxaR1NjN3R6OFlRWmRqM3F1YUJqcnpGL0VWRwplRi92YWNHS2ViVGc4cWVrZllPQTR5N1Mwd3MzanE0b25ZbE1pVWV1Rithc294MlpDb3NZbXhwNTk4WDFUcUhUClBSZnk2cUlOM01lTlRxejVhOHcxMEJ1dTlKTFVWOWMyaC9nanVxUThPNytqeTRvd2J6SlRyaUxiN1hHM21MZTcKUlVjb2dUaU9OeUJSa3piSW1UcGNYbGZJdEREWkRaaytHbmdWM1FJREFRQUJBb0gvWVBBa1hVS21uRVUvQWwzKwpiQktYYUxEU3Vxd1hxZURZT2JseDlvUWFIcG9ieUZtZGFZRlRvUkhOM2JycWJWZXQ0Z05CcDZsRDY2dnYrbzBICjYyb2lNeWpIcGdPQUZRaEpHQ3ZWNXA4NkFrekNBM1Z0ZUlvMW1pQ2RBNU5FeVVQcC82QTYvQ0tJeko0eHBWS2QKMFNiZzk0SG1UZWZteXNoa2dVdGkvR21TK0VVR1dMQW9JdHhmbW5ETEliVmdUMWdWSUlTOC9tcXE4OHlOeFVTOQpDaXJkUXJreUZvM3VJNlREZzFCOXlLb2lMVnloeDAxQnBZUVZwZmkwTUwxNm5nU0lEZklQTXVRRmt1dGoxK1FHCjNnUW9PVVpXK3pqR2c2aThVb2pocFFJeGNma3o4VFpQMnBuaUlIWmZpeFFEeEk5d2E3NDQxWkk2TlhpMzdDMGEKSURqZEFvR0JBTVZyZXpRdVBSUTdPTXF0U3p2NWo4WEFnaGtGZktjNlpvMzM0cUdVTXFVdmtVS0V0aGVKY0wzawo5WElyZ2dyMXRseDFMOEhnajlIdU9YbHRHZEVPYUdTeHE1ejNIZDZTWUpIUFF5Yk85OVY2bHYzU0Vzc1dtVjdhCldBUVVLNGUwMWkzc1QyeTdNR1pvVnlYVU8ranVveUYvNDFrdDA1TkdhM3plenZSZ1A5dUxBb0dCQU4zdTNsNkUKWGZ2b1BlV2hKMnh4cEdzbDRCbEhXbjNza0ZraWxhbk5laUl1VFhMNFEvaUNsOWRXNFk5UGluU1ZmV1ZtemRBZwo1L0VHNXhORWhiWlN6OHRVcHBOTDFwVk5IU01zUnB1Z05UcG41V2hWUTFoS1BnOW9QTkh1NTduUjZkZUJUV0FUCjgrbHJQOXptZ2xIMmluV3lua04ra0hWZ0xhZG5lUWZldVNFM0FvR0FhWEFnR3h4ZTdzRTZjYlRnSzZYOERZZmwKYyt1a1NjUTlKYkd3enM5UnhUdUVmMXhWekhoUlNIcFNSS25NQ0lKMjVTYUpYU2pNWnppdVpaWEpaZ2dsNVRHbgpFR3hDL2E1NytTUVRIMVVHdEhPRzFRVXZtRnYzaWR0ZmlyNGpDWldobG1GUmdpYnZrS0pGZVNUQzRvTWhpVEMrCmdkQ2g0VlNJNytZbjdnakIwa1VDZ1lFQTE1TE9aMHIySzlvVVBiaERIaUJwRURjekxmclVXSnJ3UDlUTFFhdzQKNVhqS2ZGSFJYRlFsLytNQnFINGZ4RXp0Q0JGSys4N3EzWUhSOVRKTEc2WG05OS9iQ2hyUmJpY0FsWWpOY1IrMgpkR3cxTnhvVEYzRE9SWkwvK1AreUVScG9wWStReERHOWJFOWtNa09wOU1taEJ1Q2d3SGp4QTBLUU5oclpRcDdDCmZ4TUNnWUVBblR3NHF4ZGRseWMwZkREem1KQ0ZXd1ZEZ09RQjZQZktDQ2JkWmxQNTh2TFc5RnVJVmhwbVE3N1IKZjljVzlUd2pXUGVDbmZCWk9nNGNZVkhkRnFNQTZhVEhjMU9FcFJvR3VUblBhWHZIVHNPRTRqMm03cjJoM1liSgpXMDh1cjdmTmtvTGU3YXY1YWdyaGVWYkZ5UEM3eXdMQUluZWJUMklrenY2T2xEbmtORTQ9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg=="},"loggingService":"logging.googleapis.com","monitoringService":"monitoring.googleapis.com","network":"default","clusterIpv4Cidr":"10.148.0.0/14","nodePools":[{"name":"pool-2-cpus","config":{"machineType":"n1-standard-2","diskSizeGb":100,"oauthScopes":["https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/service.management","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring"],"imageType":"GCI","serviceAccount":"default"},"initialNodeCount":1,"autoscaling":{"enabled":true,"minNodeCount":1,"maxNodeCount":2},"selfLink":"https://container.googleapis.com/v1/projects/continuous-pipe-1042/zones/europe-west1-b/clusters/builder-eu-west1-b/nodePools/pool-2-cpus","version":"1.4.5","instanceGroupUrls":["https://www.googleapis.com/compute/v1/projects/continuous-pipe-1042/zones/europe-west1-b/instanceGroupManagers/gke-builder-eu-west1-b-pool-2-cpus-ca01d004-grp"],"status":"RUNNING"}],"locations":["europe-west1-b"],"selfLink":"https://container.googleapis.com/v1/projects/continuous-pipe-1042/zones/europe-west1-b/clusters/builder-eu-west1-b","zone":"europe-west1-b","endpoint":"104.155.47.227","initialClusterVersion":"1.3.3","currentMasterVersion":"1.4.5","currentNodeVersion":"1.4.5","createTime":"2016-07-31T08:25:27+00:00","status":"RUNNING","nodeIpv4CidrSize":24,"servicesIpv4Cidr":"10.151.240.0/20","instanceGroupUrls":["https://www.googleapis.com/compute/v1/projects/continuous-pipe-1042/zones/europe-west1-b/instanceGroupManagers/gke-builder-eu-west1-b-pool-2-cpus-ca01d004-grp"],"currentNodeCount":1}', true);
+        $cluster = \GuzzleHttp\json_decode('{"name":"builder-eu-west1-b","nodeConfig":{"machineType":"n1-standard-2","diskSizeGb":100,"oauthScopes":["https://www.googleapis.com/api/compute","https://www.googleapis.com/api/devstorage.read_only","https://www.googleapis.com/api/service.management","https://www.googleapis.com/api/servicecontrol","https://www.googleapis.com/api/logging.write","https://www.googleapis.com/api/monitoring"],"imageType":"GCI","serviceAccount":"default"},"masterAuth":{"username":"admin","password":"ATOXm3tRzh0NuuBi","clusterCaCertificate":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUROekNDQWgrZ0F3SUJBZ0lRRHdMV096dXF2WFNtV2dYcWRNNGNhakFOQmdrcWhraUc5dzBCQVFzRkFEQkYKTVVNd1FRWURWUVFERERwbGRYSnZjR1V0ZDJWemRERXRZaTB4TURFMU5ERTJNRGc0TXprM0xXSjFhV3hrWlhJdApaWFV0ZDJWemRERXRZa0F4TkRZNU9UVXpOVFF3TUI0WERURTJNRGN6TVRBNE1qVTBNRm9YRFRJeE1EY3pNREE0Ck1qVTBNRm93UlRGRE1FRUdBMVVFQXd3NlpYVnliM0JsTFhkbGMzUXhMV0l0TVRBeE5UUXhOakE0T0RNNU55MWkKZFdsc1pHVnlMV1YxTFhkbGMzUXhMV0pBTVRRMk9UazFNelUwTURDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRApnZ0VQQURDQ0FRb0NnZ0VCQU4vUCszMmo3VFM1OHJtUWpUd3F0UTU4cTN5QVRuUGUzMEZSUlZJcmZuMVZaQklICll2bVJNTTQydHQwRHJmQjlMZzJkcDkvOG5YcXlCaGQvZlZnZmlxbjlhWUY3ZDFKYklBb0tEdDBsN0F3U0dJV3cKSUNSaWRld0dLNDdtVGF6aWIybWh0NVdhRmhZSFVmQlVCT1MxdzFKSjk5YVQxOVlaT2pQTHRaa214T3ZGUGVKVgo2cVFteHdxYVlPbStDanZCL0YwVmhoWHZLTkowVUIrNVdyeFFicDBKS0d5azBoMmN2Nk5QMTRKR2Y4cmJmUFd4CmFFcXFHZ2pCRFV2NHZKSTFLaVlrWWpCOFRoY2Ivcm80YmtwOUFoSkVWTXNHSFk2aHR0ajhvZkVFcklZNytQalYKZmdEWDdFb2NwUnVIbHdySVhTdXlpNFQ0NzFQaE0vcVk2U3hoQzhjQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFILwpCQVFEQWdJRU1BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFGbEwrdUc4CnNMd29NUk1zSS8rUE1hSVBrVjUrS1A2dHFBWTR4WFhBL0JGTm9ZU2o1eXlDY3pUc2ZqNkhzN1lFd3RSTUJZcFUKaG5YdldtbTlVOTVZMHpIcjJ0L2JpelhCMGlsOHRNWk04cG9UaXhVbjg5cUZiM3FiRGpBT0M3ays5RlU4dmtjVQpGbWNNcm8vbCszbUU4Uzd0SEd0Znh3TDlZL2NZSWZoVVNabHByNnRJSTZmVnZZY2dZeE4vTVhVUit1a0J3WjE5CmRLRGhFMHdZMTVyeHJ1cTRNQUl6MC82RURXZHA1NG55T2x5OXVVcWZUVVJYUnNQR0xhSGEzeTIrcGRFa1U4alQKUWhhd3F1ZlpBK1lYbnBhOEF4d2FzdjdRQXE5UjlsZFkxZjBleTFPdEQwL3NIZlFSSjFEYkZlNno4THdyNy9EdAoxL1J6S2ZzSyt5MjJBY1E9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K","clientCertificate":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURGVENDQWYyZ0F3SUJBZ0lRY1ZMVXk2TWwxYlpJVWFIak00cXVNREFOQmdrcWhraUc5dzBCQVFzRkFEQkYKTVVNd1FRWURWUVFERERwbGRYSnZjR1V0ZDJWemRERXRZaTB4TURFMU5ERTJNRGc0TXprM0xXSjFhV3hrWlhJdApaWFV0ZDJWemRERXRZa0F4TkRZNU9UVXpOVFF3TUI0WERURTJNRGN6TVRBNE1qVTBNbG9YRFRJeE1EY3pNREE0Ck1qVTBNbG93RVRFUE1BMEdBMVVFQXhNR1kyeHBaVzUwTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEEKTUlJQkNnS0NBUUVBcXlYK3hLN1FHbGdGeWxvTC9KWVh6VXhUdUgwSmE2VVhJb3lvOEFxMU5IRmxVRUlHcEdlMApVZW5RTjZ5aXRJbmw2a1VaNVY4eWRpMm5HMWhLKzMxeUUvQVRGTkpiK2VEZXJkTzlDYUtuRXBXb1J3REhZUXZMClNQc1ZiNCtCaFZ0SEZpTzI3VGxwMEptV2lOdGpIWnJVRWxaR1NjN3R6OFlRWmRqM3F1YUJqcnpGL0VWR2VGL3YKYWNHS2ViVGc4cWVrZllPQTR5N1Mwd3MzanE0b25ZbE1pVWV1Rithc294MlpDb3NZbXhwNTk4WDFUcUhUUFJmeQo2cUlOM01lTlRxejVhOHcxMEJ1dTlKTFVWOWMyaC9nanVxUThPNytqeTRvd2J6SlRyaUxiN1hHM21MZTdSVWNvCmdUaU9OeUJSa3piSW1UcGNYbGZJdEREWkRaaytHbmdWM1FJREFRQUJvelV3TXpBT0JnTlZIUThCQWY4RUJBTUMKQmFBd0V3WURWUjBsQkF3d0NnWUlLd1lCQlFVSEF3SXdEQVlEVlIwVEFRSC9CQUl3QURBTkJna3Foa2lHOXcwQgpBUXNGQUFPQ0FRRUEzdzhxWDRmb3RoMENuQ0tzT0pQQjBET28rMmpNRmM1QTdhb2ZhT1ZwNWxvcjUxU1RRa3Y5CjJ4dGQ3QUtVZFZuVkJmaWF4QkQ2SWhwOXFNS05rQ1h4TS9ld1BzcGZEak01SEVQSG5CMHB3LzNlZTdMcy9IL3oKUE5KS1RneFpmSHJFaFVkeVlKcE8vZlpuOTVaNHZWQTIwRkRXcmZocUpwTEVuL1pTWnZpRjg5ZzhjV1IycGJmUQp5ZFJKNTNaZ1RSWVNUZ2lkR0Jqc0hyTGNXdythV1BqbFQzUEVjMVZKN21ML2JCa1JpcXNwMmUrZXR0Uld1NXQ4CmRLRjcveDdnbDh4QmF1d0Fla3g5Ky9CVzgvTmVZOEpBbUpId3l1dmlHTkc3d25JYXBPOWd5K1dCelM1ak1JZCsKSnVES0VyYWU5clQweVU4NnB6TncrNVRjYXB6MGNhU1B5UT09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K","clientKey":"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBcXlYK3hLN1FHbGdGeWxvTC9KWVh6VXhUdUgwSmE2VVhJb3lvOEFxMU5IRmxVRUlHCnBHZTBVZW5RTjZ5aXRJbmw2a1VaNVY4eWRpMm5HMWhLKzMxeUUvQVRGTkpiK2VEZXJkTzlDYUtuRXBXb1J3REgKWVF2TFNQc1ZiNCtCaFZ0SEZpTzI3VGxwMEptV2lOdGpIWnJVRWxaR1NjN3R6OFlRWmRqM3F1YUJqcnpGL0VWRwplRi92YWNHS2ViVGc4cWVrZllPQTR5N1Mwd3MzanE0b25ZbE1pVWV1Rithc294MlpDb3NZbXhwNTk4WDFUcUhUClBSZnk2cUlOM01lTlRxejVhOHcxMEJ1dTlKTFVWOWMyaC9nanVxUThPNytqeTRvd2J6SlRyaUxiN1hHM21MZTcKUlVjb2dUaU9OeUJSa3piSW1UcGNYbGZJdEREWkRaaytHbmdWM1FJREFRQUJBb0gvWVBBa1hVS21uRVUvQWwzKwpiQktYYUxEU3Vxd1hxZURZT2JseDlvUWFIcG9ieUZtZGFZRlRvUkhOM2JycWJWZXQ0Z05CcDZsRDY2dnYrbzBICjYyb2lNeWpIcGdPQUZRaEpHQ3ZWNXA4NkFrekNBM1Z0ZUlvMW1pQ2RBNU5FeVVQcC82QTYvQ0tJeko0eHBWS2QKMFNiZzk0SG1UZWZteXNoa2dVdGkvR21TK0VVR1dMQW9JdHhmbW5ETEliVmdUMWdWSUlTOC9tcXE4OHlOeFVTOQpDaXJkUXJreUZvM3VJNlREZzFCOXlLb2lMVnloeDAxQnBZUVZwZmkwTUwxNm5nU0lEZklQTXVRRmt1dGoxK1FHCjNnUW9PVVpXK3pqR2c2aThVb2pocFFJeGNma3o4VFpQMnBuaUlIWmZpeFFEeEk5d2E3NDQxWkk2TlhpMzdDMGEKSURqZEFvR0JBTVZyZXpRdVBSUTdPTXF0U3p2NWo4WEFnaGtGZktjNlpvMzM0cUdVTXFVdmtVS0V0aGVKY0wzawo5WElyZ2dyMXRseDFMOEhnajlIdU9YbHRHZEVPYUdTeHE1ejNIZDZTWUpIUFF5Yk85OVY2bHYzU0Vzc1dtVjdhCldBUVVLNGUwMWkzc1QyeTdNR1pvVnlYVU8ranVveUYvNDFrdDA1TkdhM3plenZSZ1A5dUxBb0dCQU4zdTNsNkUKWGZ2b1BlV2hKMnh4cEdzbDRCbEhXbjNza0ZraWxhbk5laUl1VFhMNFEvaUNsOWRXNFk5UGluU1ZmV1ZtemRBZwo1L0VHNXhORWhiWlN6OHRVcHBOTDFwVk5IU01zUnB1Z05UcG41V2hWUTFoS1BnOW9QTkh1NTduUjZkZUJUV0FUCjgrbHJQOXptZ2xIMmluV3lua04ra0hWZ0xhZG5lUWZldVNFM0FvR0FhWEFnR3h4ZTdzRTZjYlRnSzZYOERZZmwKYyt1a1NjUTlKYkd3enM5UnhUdUVmMXhWekhoUlNIcFNSS25NQ0lKMjVTYUpYU2pNWnppdVpaWEpaZ2dsNVRHbgpFR3hDL2E1NytTUVRIMVVHdEhPRzFRVXZtRnYzaWR0ZmlyNGpDWldobG1GUmdpYnZrS0pGZVNUQzRvTWhpVEMrCmdkQ2g0VlNJNytZbjdnakIwa1VDZ1lFQTE1TE9aMHIySzlvVVBiaERIaUJwRURjekxmclVXSnJ3UDlUTFFhdzQKNVhqS2ZGSFJYRlFsLytNQnFINGZ4RXp0Q0JGSys4N3EzWUhSOVRKTEc2WG05OS9iQ2hyUmJpY0FsWWpOY1IrMgpkR3cxTnhvVEYzRE9SWkwvK1AreUVScG9wWStReERHOWJFOWtNa09wOU1taEJ1Q2d3SGp4QTBLUU5oclpRcDdDCmZ4TUNnWUVBblR3NHF4ZGRseWMwZkREem1KQ0ZXd1ZEZ09RQjZQZktDQ2JkWmxQNTh2TFc5RnVJVmhwbVE3N1IKZjljVzlUd2pXUGVDbmZCWk9nNGNZVkhkRnFNQTZhVEhjMU9FcFJvR3VUblBhWHZIVHNPRTRqMm03cjJoM1liSgpXMDh1cjdmTmtvTGU3YXY1YWdyaGVWYkZ5UEM3eXdMQUluZWJUMklrenY2T2xEbmtORTQ9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg=="},"loggingService":"logging.googleapis.com","monitoringService":"monitoring.googleapis.com","network":"default","clusterIpv4Cidr":"10.148.0.0/14","nodePools":[{"name":"pool-2-cpus","config":{"machineType":"n1-standard-2","diskSizeGb":100,"oauthScopes":["https://www.googleapis.com/api/compute","https://www.googleapis.com/api/devstorage.read_only","https://www.googleapis.com/api/service.management","https://www.googleapis.com/api/servicecontrol","https://www.googleapis.com/api/logging.write","https://www.googleapis.com/api/monitoring"],"imageType":"GCI","serviceAccount":"default"},"initialNodeCount":1,"autoscaling":{"enabled":true,"minNodeCount":1,"maxNodeCount":2},"selfLink":"https://container.googleapis.com/v1/projects/continuous-pipe-1042/zones/europe-west1-b/clusters/builder-eu-west1-b/nodePools/pool-2-cpus","version":"1.4.5","instanceGroupUrls":["https://www.googleapis.com/compute/v1/projects/continuous-pipe-1042/zones/europe-west1-b/instanceGroupManagers/gke-builder-eu-west1-b-pool-2-cpus-ca01d004-grp"],"status":"RUNNING"}],"locations":["europe-west1-b"],"selfLink":"https://container.googleapis.com/v1/projects/continuous-pipe-1042/zones/europe-west1-b/clusters/builder-eu-west1-b","zone":"europe-west1-b","endpoint":"104.155.47.227","initialClusterVersion":"1.3.3","currentMasterVersion":"1.4.5","currentNodeVersion":"1.4.5","createTime":"2016-07-31T08:25:27+00:00","status":"RUNNING","nodeIpv4CidrSize":24,"servicesIpv4Cidr":"10.151.240.0/20","instanceGroupUrls":["https://www.googleapis.com/compute/v1/projects/continuous-pipe-1042/zones/europe-west1-b/instanceGroupManagers/gke-builder-eu-west1-b-pool-2-cpus-ca01d004-grp"],"currentNodeCount":1}', true);
         $cluster['name'] = $clusterName;
 
         $this->predefinedRequestMappingMiddleware->addMapping([
@@ -446,7 +446,7 @@ class AccountsContext implements Context
      */
     public function iRequestTheListOfTheClustersForTheAccountAndTheProject($account, $project)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/accounts/' . $account . '/google/projects/' . $project .'/clusters'));
+        $this->response = $this->kernel->handle(Request::create('/accounts/' . $account . '/google/projects/' . $project .'/clusters'));
     }
 
     /**
@@ -502,7 +502,7 @@ class AccountsContext implements Context
      */
     public function iRequestTheListOfMyAccounts()
     {
-        $this->response = $this->kernel->handle(Request::create('/api/me/accounts'));
+        $this->response = $this->kernel->handle(Request::create('/me/accounts'));
     }
 
     /**
@@ -510,7 +510,7 @@ class AccountsContext implements Context
      */
     public function iRequestTheDetailsOfTheAccount($uuid)
     {
-        $this->response = $this->kernel->handle(Request::create('/api/accounts/'.$uuid));
+        $this->response = $this->kernel->handle(Request::create('/accounts/'.$uuid));
     }
 
     /**
@@ -518,7 +518,7 @@ class AccountsContext implements Context
      */
     public function iUnlinkMyGithubAccount($uuid)
     {
-        $this->kernel->handle(Request::create('/api/accounts/'.$uuid.'/unlink', Request::METHOD_POST));
+        $this->kernel->handle(Request::create('/accounts/'.$uuid.'/unlink', Request::METHOD_POST));
     }
 
     /**
@@ -653,7 +653,7 @@ class AccountsContext implements Context
     public function iCreateABillingProfile($name)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/me/billing-profiles',
+            '/me/billing-profiles',
             'POST',
             [], [], [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -669,7 +669,7 @@ class AccountsContext implements Context
     public function iAddAsAnAdministratorOfTheBillingProfile($username, $uuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/billing-profile/'.$uuid.'/admins/'.$username,
+            '/billing-profile/'.$uuid.'/admins/'.$username,
             'POST'
         ));
     }
@@ -680,7 +680,7 @@ class AccountsContext implements Context
     public function iRemoveAsAnAdministratorOfTheBillingProfile($username, $uuid)
     {
         $this->response = $this->kernel->handle(Request::create(
-            '/api/billing-profile/'.$uuid.'/admins/'.$username,
+            '/billing-profile/'.$uuid.'/admins/'.$username,
             'DELETE'
         ));
     }

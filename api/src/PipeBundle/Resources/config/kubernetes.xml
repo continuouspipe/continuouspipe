@@ -111,7 +111,7 @@
         <service id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" class="ContinuousPipe\Pipe\Kubernetes\PrivateImages\DockerCfgFileGenerator" />
         <service id="pipe.adapter.kubernetes.private_images.secret_factory" class="ContinuousPipe\Pipe\Kubernetes\PrivateImages\SecretFactory">
             <argument type="service" id="pipe.adapter.kubernetes.primate_images.docker_cfg_file_generator" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
         <service id="pipe.adapter.kubernetes.listener.wait_public_services" class="ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\WaitReadiness\EventListener\PublicServicesCreated\WaitPublicServicesEndpoints">
             <argument type="service" id="event_bus" />

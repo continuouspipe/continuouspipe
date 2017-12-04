@@ -30,7 +30,7 @@ use Symfony\Component\Security\Http\SecurityEvents;
 
 class SecurityContext implements Context, SnippetAcceptingContext
 {
-    const FRONTEND_FIREWALL_NAME = 'main';
+    const FRONTEND_FIREWALL_NAME = 'auth';
 
     /**
      * @var UserProvider
@@ -228,7 +228,7 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $token->setAuthenticated(true);
 
         $session = $this->kernel->getContainer()->get('session');
-        $session->set('_security_main', serialize($token));
+        $session->set('_security_'.self::FRONTEND_FIREWALL_NAME, serialize($token));
         $session->save();
 
         $this->tokenStorage->setToken($token);

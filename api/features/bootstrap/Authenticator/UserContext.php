@@ -93,7 +93,7 @@ class UserContext implements Context
      */
     public function iRequestTheDetailsOfUser($username)
     {
-        $this->response = $this->kernel->handle(Request::create(sprintf('/api/user/%s', $username), 'GET'));
+        $this->response = $this->kernel->handle(Request::create(sprintf('/user/%s', $username), 'GET'));
     }
 
     /**
@@ -102,7 +102,7 @@ class UserContext implements Context
     public function iRequestTheDetailsOfUserWithTheApiKey($username, $key)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/user/%s', $username),
+            sprintf('/user/%s', $username),
             'GET',
             [],
             [],
@@ -119,7 +119,7 @@ class UserContext implements Context
     public function iRequestTheUserBehindTheApiKey($key, $systemKey)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/api-keys/%s/user', $key),
+            sprintf('/api-keys/%s/user', $key),
             'GET',
             [],
             [],
@@ -136,7 +136,7 @@ class UserContext implements Context
     public function iCreateAnApiKeyDescribedForTheUser($description, $username)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/user/%s/api-keys', $username),
+            sprintf('/user/%s/api-keys', $username),
             'POST',
             [],
             [],
@@ -156,7 +156,7 @@ class UserContext implements Context
     public function iRequestTheListOfApiKeysOfTheUser($username)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/user/%s/api-keys', $username),
+            sprintf('/user/%s/api-keys', $username),
             'GET'
         ));
     }
@@ -167,7 +167,7 @@ class UserContext implements Context
     public function iDeleteTheApiKeyOfTheUser($key, $username)
     {
         $this->response = $this->kernel->handle(Request::create(
-            sprintf('/api/user/%s/api-keys/%s', $username, $key),
+            sprintf('/user/%s/api-keys/%s', $username, $key),
             'DELETE'
         ));
 

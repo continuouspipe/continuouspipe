@@ -76,7 +76,7 @@ class InvitationContext implements Context
      */
     public function iInviteTheUserToTheTeam($email, $team)
     {
-        $url = sprintf('/api/teams/%s/invitations', $team);
+        $url = sprintf('/teams/%s/invitations', $team);
         $response = $this->kernel->handle(Request::create(
             $url,
             'POST',
@@ -99,7 +99,7 @@ class InvitationContext implements Context
      */
     public function iRequestTheListOfInvitationsForTheTeam($team)
     {
-        $url = sprintf('/api/teams/%s/invitations', $team);
+        $url = sprintf('/teams/%s/invitations', $team);
         $this->response = $this->kernel->handle(Request::create($url));
 
         $this->assertResponseStatusCode($this->response, 200);
@@ -111,7 +111,7 @@ class InvitationContext implements Context
     public function iDeleteTheInvitationForTheUserWithEmailForTheTeam($email, $team)
     {
         $invitation = $this->findInvitationByUserAndTeam($email, $team);
-        $url = sprintf('/api/teams/%s/invitations/%s', $team, $invitation->getUuid());
+        $url = sprintf('/teams/%s/invitations/%s', $team, $invitation->getUuid());
         $response = $this->kernel->handle(Request::create($url, 'DELETE'));
 
         $this->assertResponseStatusCode($response, Response::HTTP_NO_CONTENT);
@@ -122,7 +122,7 @@ class InvitationContext implements Context
      */
     public function iRequestTheStatusOfMembersForTheTeam($team)
     {
-        $url = sprintf('/api/teams/%s/members-status', $team);
+        $url = sprintf('/teams/%s/members-status', $team);
         $this->response = $this->kernel->handle(Request::create($url, 'GET'));
 
         $this->assertResponseStatusCode($this->response, Response::HTTP_OK);
@@ -133,10 +133,11 @@ class InvitationContext implements Context
      */
     public function theUserOpenTheLinkOfTheInvitation($uuid, $username, $email)
     {
-        $this->response = $this->kernel->handle(Request::create('/account/invitation/'.$uuid.'/accept', 'GET', [], [
+        $this->response = $this->kernel->handle(Request::create('/auth/account/invitation/'.$uuid.'/accept', 'GET', [], [
             'MOCKSESSID' => $this->kernel->getContainer()->get('session')->getId(),
         ]));
 
+        // Should be redirecting to login
         $this->assertResponseStatusCode($this->response, Response::HTTP_FOUND);
         $location = $this->response->headers->get('Location');
 

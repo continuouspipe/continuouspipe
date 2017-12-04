@@ -3,6 +3,7 @@
 namespace ContinuousPipe\River\Managed\Resources\UsageProjection;
 
 use ContinuousPipe\Billing\BillingProfile\BillingProfile;
+use ContinuousPipe\Billing\BillingProfile\UserBillingProfile;
 use ContinuousPipe\Model\Component\ResourcesRequest;
 use ContinuousPipe\River\Managed\Resources\Calculation\AggregateResourcesRequest;
 use ContinuousPipe\River\Managed\Resources\Calculation\ResourceConverter;
@@ -19,7 +20,7 @@ class CalculateUsageSummary implements UsageSummaryProjector
         $this->usageProjector = $usageProjector;
     }
 
-    public function forFlows(array $flows, \DateTime $left, \DateTime $right, \DateInterval $interval, BillingProfile $billingProfile = null) : UsageSummary
+    public function forFlows(array $flows, \DateTime $left, \DateTime $right, \DateInterval $interval, UserBillingProfile $billingProfile = null) : UsageSummary
     {
         $usage = $this->usageProjector->forFlows(
             $flows,

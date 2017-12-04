@@ -4,6 +4,7 @@ namespace ContinuousPipe\Authenticator\Infrastructure\Doctrine;
 
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamMembershipCollection;
 use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\User\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,7 +43,7 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
             'user' => $user,
         ]);
 
-        return new ArrayCollection($memberships);
+        return new TeamMembershipCollection($memberships);
     }
 
     /**
@@ -54,7 +55,7 @@ class DoctrineTeamMembershipRepository implements TeamMembershipRepository
             'team' => $team,
         ]);
 
-        return new ArrayCollection($memberships);
+        return new TeamMembershipCollection($memberships);
     }
 
     /**

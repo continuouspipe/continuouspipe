@@ -35,12 +35,25 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new BuilderBundle\BuilderBundle(),
             new PipeBundle\PipeBundle(),
+            new AuthenticatorBundle\AuthenticatorBundle(),
+
+            // Administration dependencies
+            new Sonata\CoreBundle\SonataCoreBundle(),
+            new Sonata\BlockBundle\SonataBlockBundle(),
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
+            new Sonata\AdminBundle\SonataAdminBundle(),
+            new Snc\RedisBundle\SncRedisBundle(),
+
+            // API dependencies
+            new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
         );
 
         if (in_array($this->getEnvironment(), ['test', 'smoke_test'])) {
             $bundles[] = new AppTestBundle\AppTestBundle();
             $bundles[] = new BuilderTestBundle\BuilderTestBundle();
             $bundles[] = new PipeTestBundle\PipeTestBundle();
+            $bundles[] = new AuthenticatorTestBundle\AuthenticatorTestBundle();
         }
 
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle();
