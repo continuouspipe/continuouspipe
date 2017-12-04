@@ -31,7 +31,6 @@
         "sroze/log-stream": "~0.4.5",
         "tolerance/tolerance": "^0.4.0",
         "continuous-pipe/model": "~2.4.6",
-        "continuous-pipe/security": "dev-master",
         "simple-bus/symfony-bridge": "~5.0",
         "simple-bus/rabbitmq-bundle-bridge": "~4.0.0",
         "simple-bus/jms-serializer-bundle-bridge": "~3.0.0",
@@ -112,10 +111,6 @@
         }]
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/continuouspipe/security"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/model"

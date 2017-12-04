@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fe70f14963cee693744e04442829903",
+    "content-hash": "7c1f2dbf8c00d90b5eccf2e39c1e1d10",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -776,44 +776,6 @@
                 "issues": "https://github.com/continuouspipe/model/issues"
             },
             "time": "2017-08-23T07:35:47+00:00"
-        },
-        {
-            "name": "continuous-pipe/security",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:continuouspipe/security.git",
-                "reference": "4f8d13e7b58b2270243a92a8755a4763f65cbc3c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/security/zipball/4f8d13e7b58b2270243a92a8755a4763f65cbc3c",
-                "reference": "4f8d13e7b58b2270243a92a8755a4763f65cbc3c",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/cache": "^1.6",
-                "guzzlehttp/guzzle": "~6.0",
-                "jms/serializer": "~1.0",
-                "lexik/jwt-authentication-bundle": "~1.0",
-                "ramsey/uuid": "^3.1"
-            },
-            "require-dev": {
-                "defuse/php-encryption": "^2.0",
-                "google/apiclient": "^2.1.3",
-                "phpspec/phpspec": "~3.0.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "ContinuousPipe\\": "src/"
-                }
-            },
-            "support": {
-                "source": "https://github.com/continuouspipe/security/tree/master",
-                "issues": "https://github.com/continuouspipe/security/issues"
-            },
-            "time": "2017-10-23 10:47:51"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -11347,7 +11309,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
-        "continuous-pipe/security": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
