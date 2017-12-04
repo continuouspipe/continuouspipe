@@ -1,0 +1,11 @@
+ContinuousPipe\Security\Team\TeamMembership:
+    properties:
+        team:
+            type: ContinuousPipe\Security\Team\Team
+            groups: ['Default']
+        user:
+            type: ContinuousPipe\Security\User\User
+            groups: ['Default']
+        permissions:
+            type: array<string>
+            groups: ['Default']

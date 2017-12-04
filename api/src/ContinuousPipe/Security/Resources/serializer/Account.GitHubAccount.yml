@@ -1,0 +1,5 @@
+ContinuousPipe\Security\Account\GitHubAccount:
+    properties:
+        token:
+            type: string
+            groups: ['Default', 'Account']

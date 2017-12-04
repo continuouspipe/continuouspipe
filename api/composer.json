@@ -68,7 +68,9 @@
         "react/promise": "^2.5",
         "react/promise-timer": "^1.1",
         "facile-it/doctrine-mysql-come-back": "^1.6",
-        "behat/symfony2-extension": "2.1.1"
+        "behat/symfony2-extension": "2.1.1",
+        "lexik/jwt-authentication-bundle": "~1.0",
+        "ramsey/uuid": "^3.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.1.6",

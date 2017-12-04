@@ -121,7 +121,7 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
             );
             $this->limit = 0;
         }
-        
+
         return $this->limit;
     }
 }

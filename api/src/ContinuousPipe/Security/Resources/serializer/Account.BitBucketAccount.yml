@@ -1,0 +1,5 @@
+ContinuousPipe\Security\Account\BitBucketAccount:
+    properties:
+        refreshToken:
+            type: string
+            groups: ['Default', 'Account']

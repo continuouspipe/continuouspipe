@@ -1,0 +1,16 @@
+ContinuousPipe\Security\Team\Team:
+    properties:
+        slug:
+            type: string
+            groups: ['Default']
+        name:
+            type: string
+            groups: ['Default']
+        bucketUuid:
+            type: uuid
+            groups: ['Default']
+            accessor:
+                getter: getBucketUuid
+        memberships:
+            type: ArrayCollection<ContinuousPipe\Security\Team\TeamMembership>
+            groups: ['TeamMemberships']

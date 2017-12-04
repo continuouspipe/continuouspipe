@@ -15,7 +15,7 @@
 
         <service id="river.repository.flow.deprecated.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="security.user_repository" />
+            <argument type="service" id="app.repository.user" />
         </service>
 
         <service id="river.event_store.events_adapter" class="ContinuousPipe\River\EventStore\ContinuousPipeEventsAdapter">
