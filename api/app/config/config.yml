@@ -126,6 +126,7 @@ doctrine:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
             datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
             uuid:  Ramsey\Uuid\Doctrine\UuidType
+            json_policies: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Type\JsonPoliciesType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -152,6 +153,26 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/Pipe/Infrastructure/Doctrine/Entity'
                 prefix: ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticatorEntity:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticator:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Authenticator'
+                prefix: ContinuousPipe\Authenticator
+            ContinuousPipeSecurity:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Security'
+                prefix: ContinuousPipe\Security
+            ContinuousPipeBilling:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Billing/Infrastructure/Doctrine/config'
+                prefix: ContinuousPipe\Billing
             ContinuousPipeRiver:
                 type: xml
                 is_bundle: false
