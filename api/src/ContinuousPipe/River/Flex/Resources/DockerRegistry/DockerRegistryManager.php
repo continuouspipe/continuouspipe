@@ -120,7 +120,7 @@ class DockerRegistryManager
 
         try {
             $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
-            $matchingRegistries = $bucket->getDockerRegistries()->filter(function(DockerRegistry $r) use ($registry) {
+            $matchingRegistries = $bucket->getDockerRegistries()->filter(function (DockerRegistry $r) use ($registry) {
                 return $r->equals($registry);
             });
 

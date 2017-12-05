@@ -39,8 +39,7 @@ class UserController
         UserApiKeyRepository $userByApiKeyRepository,
         ValidatorInterface $validator,
         UserApiKeyFactory $userApiKeyFactory
-    )
-    {
+    ) {
         $this->userByApiKeyRepository = $userByApiKeyRepository;
         $this->validator = $validator;
         $this->userApiKeyFactory = $userApiKeyFactory;

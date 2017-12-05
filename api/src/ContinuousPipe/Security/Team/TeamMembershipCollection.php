@@ -22,9 +22,9 @@ class TeamMembershipCollection extends ArrayCollection
      */
     public function admins()
     {
-        return $this->filter(function(TeamMembership $membership) {
+        return $this->filter(function (TeamMembership $membership) {
             return $membership->isAdmin();
-        })->map(function(TeamMembership $membership) {
+        })->map(function (TeamMembership $membership) {
             return $membership->getUser();
         });
     }

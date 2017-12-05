@@ -12,7 +12,7 @@ class PredictableTimeResolver implements TimeResolver
     private $decoratedResolver;
 
     /**
-     * @var \DateTime
+     * @var \DateTime|null
      */
     private $current;
 
@@ -29,13 +29,13 @@ class PredictableTimeResolver implements TimeResolver
      */
     public function resolve()
     {
-        return $this->current ?: $this->decoratedResolver->resolve();
+        return $this->current !== null ? clone $this->current : $this->decoratedResolver->resolve();
     }
 
     /**
      * @param \DateTime $datetime
      */
-    public function setCurrent(\DateTime $datetime)
+    public function setCurrent(\DateTime $datetime = null)
     {
         $this->current = $datetime;
     }
