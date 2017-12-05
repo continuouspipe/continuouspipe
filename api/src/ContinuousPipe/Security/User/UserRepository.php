@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Security\User;
 
-use ContinuousPipe\Security\Authenticator\UserNotFound;
+use ContinuousPipe\Security\User\UserNotFound;
 
 interface UserRepository
 {

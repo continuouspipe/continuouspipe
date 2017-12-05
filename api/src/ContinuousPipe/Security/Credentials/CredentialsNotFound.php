@@ -1,6 +1,6 @@
 <?php
 
-namespace ContinuousPipe\Security\Authenticator;
+namespace ContinuousPipe\Security\Credentials;
 
 class CredentialsNotFound extends \Exception
 {

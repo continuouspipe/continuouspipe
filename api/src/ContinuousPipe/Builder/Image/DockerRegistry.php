@@ -4,7 +4,7 @@ namespace ContinuousPipe\Builder\Image;
 
 use ContinuousPipe\Builder\Docker\CredentialsRepository;
 use ContinuousPipe\Builder\Image;
-use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\DockerRegistry as DockerRegistryCredentials;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;

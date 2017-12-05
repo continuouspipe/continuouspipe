@@ -1,8 +1,9 @@
 <?php
 
-namespace ContinuousPipe\Security\Authenticator;
+namespace ContinuousPipe\Security\User;
 
 use ContinuousPipe\Security\User\SecurityUser;
+use ContinuousPipe\Security\User\UserNotFound;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserContext

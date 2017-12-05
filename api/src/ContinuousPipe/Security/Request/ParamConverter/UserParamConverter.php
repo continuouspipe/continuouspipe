@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Security\Request\ParamConverter;
 
-use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\User\UserContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
