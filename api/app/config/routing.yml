@@ -12,6 +12,14 @@ admin:
     type: annotation
     prefix: /admin
 
+atlassian_connect_home:
+    path: /connect/service/bitbucket
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+        route: hwi_oauth_connect_service
+        service: bitbucket
+        permanent: true
+
 atlassian:
     resource: "@AtlassianAddonBundle/Controller/"
     type: annotation
