@@ -28,8 +28,15 @@
             <argument type="service" id="river.resources.reference_docker_registry_resolver"/>
         </service>
 
-        <service id="river.builder_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Builder\ListenForBuildStatus" public="true">
+        <service id="river.builder_bridge.handler.report_completion" class="ContinuousPipe\River\Bridge\Builder\Handler\ReportImageBuildCompletionToAggregate">
             <argument type="service" id="river.tide.transaction_manager" />
+            <argument type="service" id="builder.view.build_repository" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Bridge\Builder\Command\ReportImageBuildCompletion" />
+        </service>
+
+        <service id="river.builder_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Builder\ListenForBuildStatus" public="true">
+            <argument type="service" id="command_bus" />
             <argument type="service" id="builder.view.build_repository" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />

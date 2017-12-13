@@ -2,32 +2,30 @@
 
 namespace ContinuousPipe\River\Bridge\Builder;
 
+use ContinuousPipe\River\Bridge\Builder\Command\ReportImageBuildCompletion;
 use ContinuousPipe\River\Task\Build\BuildTask;
 use ContinuousPipe\River\Tide;
 use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use Ramsey\Uuid\Uuid;
 use ContinuousPipe\Builder\Aggregate\Event\BuildEvent;
 use ContinuousPipe\Builder\View\BuildViewRepository;
+use SimpleBus\Message\Bus\MessageBus;
 
 class ListenForBuildStatus
 {
     /**
-     * @var TransactionManager
+     * @var MessageBus
      */
-    private $transactionManager;
+    private $commandBus;
 
     /**
      * @var BuildViewRepository
      */
     private $buildRepository;
 
-    /**
-     * @param TransactionManager $transactionManager
-     * @param BuildViewRepository $buildRepository
-     */
-    public function __construct(TransactionManager $transactionManager, BuildViewRepository $buildRepository)
+    public function __construct(MessageBus $commandBus, BuildViewRepository $buildRepository)
     {
-        $this->transactionManager = $transactionManager;
+        $this->commandBus = $commandBus;
         $this->buildRepository = $buildRepository;
     }
 
@@ -40,13 +38,9 @@ class ListenForBuildStatus
             throw new \RuntimeException('Build was created without a `tide_uuid` attribute');
         }
 
-        $this->transactionManager->apply(Uuid::fromString($attributes['tide_uuid']), function (Tide $tide) use ($build) {
-            /** @var BuildTask[] $tasks */
-            $tasks = $tide->getTasks()->ofType(BuildTask::class);
-
-            foreach ($tasks as $task) {
-                $task->receiveBuildNotification($build);
-            }
-        });
+        $this->commandBus->handle(new ReportImageBuildCompletion(
+            Uuid::fromString($attributes['tide_uuid']),
+            $event->getBuildIdentifier()
+        ));
     }
 }
