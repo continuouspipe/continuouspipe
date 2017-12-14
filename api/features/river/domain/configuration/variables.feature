@@ -162,7 +162,7 @@ Feature:
     Given I have a flow with the following configuration:
     """
     variables:
-        FOO : BAR
+        FOO: BAR
     """
     And I have a "docker-compose.yml" file in my repository that contains:
     """
@@ -284,4 +284,34 @@ Feature:
             deploy:
                 cluster: my-cluster
                 services: []
+    """
+
+  Scenario: It converts key-value pairs to array of variables even when using an expression
+    Given I have a flow with the following configuration:
+    """
+    variables:
+        SHA1:
+            expression: code_reference.sha
+    """
+    And I have a "docker-compose.yml" file in my repository that contains:
+    """
+    container:
+        image: helloworld
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: ${SHA1}
+                services:
+                    container: ~
+    """
+    When a tide is created for branch "master" and commit "1234abc"
+    Then the configuration of the tide should contain at least:
+    """
+    tasks:
+        named:
+            deploy:
+                cluster: 1234abc
     """

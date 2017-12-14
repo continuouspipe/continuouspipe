@@ -110,11 +110,15 @@ class ConfigurationDefinition implements ConfigurationInterface
                 ->ifArray()
                 ->then(function ($array) {
                     foreach ($array as $key => $value) {
-                        if (is_string($key) && !is_array($value)) {
-                            $array[$key] = [
-                                'name' => $key,
-                                'value' => $value,
-                            ];
+                        if (is_string($key)) {
+                            if (is_array($value)) {
+                                $array[$key]['name'] = $key;
+                            } else {
+                                $array[$key] = [
+                                    'name' => $key,
+                                    'value' => $value,
+                                ];
+                            }
                         }
                     }
                     return $array;
