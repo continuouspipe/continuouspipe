@@ -3,7 +3,7 @@
 namespace ContinuousPipe\Builder\Aggregate;
 
 use ContinuousPipe\Builder\Request\BuildRequest;
-use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\User\UserContext;
 use SimpleBus\Message\Bus\MessageBus;
 
 class BuildFactory

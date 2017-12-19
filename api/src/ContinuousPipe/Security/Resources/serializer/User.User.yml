@@ -1,0 +1,16 @@
+ContinuousPipe\Security\User\User:
+    properties:
+        username:
+            type: string
+            groups: ['Default', 'User']
+        email:
+            type: string
+            groups: ['Default', 'User']
+        bucketUuid:
+            type: string
+            groups: ['Default', 'User']
+            accessor:
+                getter: getBucketUuid
+        roles:
+            type: array<string>
+            groups: ['Default', 'User']

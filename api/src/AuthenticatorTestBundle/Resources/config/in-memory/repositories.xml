@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.repository.security_user" class="ContinuousPipe\Authenticator\Tests\Security\InMemorySecurityUserRepository"/>
+        <service id="app.repository.credentials_bucket" class="ContinuousPipe\Security\Tests\Credentials\InMemoryBucketRepository" />
+        <service id="app.repository.account" class="ContinuousPipe\Security\Account\InMemoryAccountRepository" />
+        <service id="app.repository.team_membership" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamMembershipRepository" />
+        <service id="app.repository.user_invitation" class="ContinuousPipe\Authenticator\Tests\Invitation\InMemoryUserInvitationRepository" />
+        <service id="app.repository.billing_profile" class="ContinuousPipe\Billing\BillingProfile\InMemoryBillingProfileRepository">
+            <argument type="service" id="app.repository.team" />
+        </service>
+        <service id="app.repository.team" class="ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository">
+            <argument type="service" id="app.repository.team_membership" />
+        </service>
+        <service id="app.security.api_key.user_by_api_key_repository" class="ContinuousPipe\Security\ApiKey\InMemoryUserApiKeyRepository" />
+
+        <service id="google.token_resolver.cached"
+                 class="ContinuousPipe\Google\Cache\InMemoryCachedTokenResolver"
+                 decorates="google.token_resolver">
+            <argument type="service" id="google.token_resolver.cached.inner" />
+        </service>
+    </services>
+</container>

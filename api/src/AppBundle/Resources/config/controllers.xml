@@ -11,7 +11,7 @@
 
         <service id="app.controller.cluster" class="AppBundle\Controller\ClusterController">
             <argument type="service" id="river.k8s_health_checker" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
 
         <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
@@ -71,15 +71,12 @@
         </service>
         <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
             <argument type="service" id="river.flow.environment_client" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
             <argument type="service" id="river.k8s_watcher" />
         </service>
         <service id="app.controller.account" class="AppBundle\Controller\AccountController">
             <argument type="service" id="river.code_repository.explorer" />
-        </service>
-        <service id="app.controller.team" class="AppBundle\Controller\TeamController">
-            <argument type="service" id="security.authenticator.client" />
-            <argument type="service" id="validator" />
+            <argument type="service" id="app.repository.account"/>
         </service>
         <service id="app.controller.features" class="AppBundle\Controller\FlowFeaturesController">
             <argument type="service" id="command_bus"/>
@@ -87,13 +84,13 @@
         </service>
         <service id="app.controller.resources" class="AppBundle\Controller\FlowResourcesController">
             <argument type="service" id="river.flex.resources.docker_registry_managed"/>
-            <argument type="service" id="authenticator.bucket_repository"/>
+            <argument type="service" id="app.repository.credentials_bucket"/>
         </service>
         <service id="app.controller.usage" class="AppBundle\Controller\UsageController">
             <argument type="service" id="river.managed.resources.history_repository" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="app.repository.team" />
             <argument type="service" id="logger"/>
             <argument type="service" id="continuouspipe.message.time_resolver" />
             <argument type="service" id="river.managed.resources.usage_projection.flow_projector"/>
@@ -121,7 +118,7 @@
         </service>
 
         <service id="app.request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
-            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="app.repository.team" />
 
             <tag name="request.param_converter" converter="team" />
         </service>
@@ -133,7 +130,7 @@
         </service>
 
         <service id="app.request.param_converter.account" class="ContinuousPipe\Security\Request\ParamConverter\AccountParamConverter">
-            <argument type="service" id="authenticator.account_repository" />
+            <argument type="service" id="app.repository.account" />
 
             <tag name="request.param_converter" converter="account" />
         </service>

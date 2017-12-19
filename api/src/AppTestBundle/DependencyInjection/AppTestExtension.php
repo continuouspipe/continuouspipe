@@ -22,7 +22,6 @@ class AppTestExtension extends Extension
             $loader->load('in-memory/repositories.xml');
         }
 
-        $loader->load('integration/authenticator.xml');
         $loader->load('integration/builder.xml');
         $loader->load('integration/github.xml');
         $loader->load('integration/bitbucket.xml');

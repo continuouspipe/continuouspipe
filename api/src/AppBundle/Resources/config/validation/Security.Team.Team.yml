@@ -1,0 +1,11 @@
+ContinuousPipe\Security\Team\Team:
+    constraints:
+        - AppBundle\Validator\Constraints\UniqueTeamConstraint: ~
+
+    properties:
+        slug:
+            - Regex:
+                pattern: '/^([a-z0-9_-]{4,50})$/'
+                message: The slug should only contain letters, number, `_` or `-` and be between 4 and 50 characters.
+            - NotBlank:
+                message: The slug should not be empty.

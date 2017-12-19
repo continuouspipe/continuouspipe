@@ -4,7 +4,7 @@ namespace ContinuousPipe\Builder\Docker;
 
 use ContinuousPipe\Builder\Image;
 use ContinuousPipe\Builder\RegistryCredentials;
-use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\CredentialsNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use Ramsey\Uuid\Uuid;

@@ -18,11 +18,6 @@ use ContinuousPipe\Security\Team\Team;
 class DockerRegistryManager
 {
     /**
-     * @var AuthenticatorClient
-     */
-    private $authenticatorClient;
-
-    /**
      * @var QuayClient
      */
     private $quayClient;
@@ -32,9 +27,10 @@ class DockerRegistryManager
      */
     private $bucketRepository;
 
-    public function __construct(AuthenticatorClient $authenticatorClient, QuayClient $quayClient, BucketRepository $bucketRepository)
-    {
-        $this->authenticatorClient = $authenticatorClient;
+    public function __construct(
+        QuayClient $quayClient,
+        BucketRepository $bucketRepository
+    ) {
         $this->quayClient = $quayClient;
         $this->bucketRepository = $bucketRepository;
     }
@@ -81,10 +77,9 @@ class DockerRegistryManager
             );
 
             try {
-                $this->authenticatorClient->addDockerRegistryToBucket(
-                    $bucket->getUuid(),
-                    $registry
-                );
+                $bucket->getDockerRegistries()->add($registry);
+
+                $this->bucketRepository->save($bucket);
             } catch (AuthenticatorException $e) {
                 throw new FlexResourcesException('Could not save created Docker registry into project\'s credentials', $e->getCode(), $e);
             }
@@ -124,14 +119,17 @@ class DockerRegistryManager
         }
 
         try {
-            $this->authenticatorClient->updateRegistryAttributes(
-                $flow->getTeam()->getBucketUuid(),
-                $registry->getFullAddress(),
-                array_merge($registry->getAttributes(), [
-                    'visibility' => $visibility,
-                ])
-            );
-        } catch (AuthenticatorException $e) {
+            $bucket = $this->bucketRepository->find($flow->getTeam()->getBucketUuid());
+            $matchingRegistries = $bucket->getDockerRegistries()->filter(function (DockerRegistry $r) use ($registry) {
+                return $r->equals($registry);
+            });
+
+            $matchingRegistries->first()->setAttributes(array_merge($registry->getAttributes(), [
+                'visibility' => $visibility,
+            ]));
+
+            $this->bucketRepository->save($bucket);
+        } catch (\Exception $e) {
             throw new FlexResourcesException('Could not update the registry\'s attributes', $e->getCode(), $e);
         }
     }

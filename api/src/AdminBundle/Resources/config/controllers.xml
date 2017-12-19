@@ -6,10 +6,10 @@
 
     <services>
         <service id="admin.controller.team" class="AdminBundle\Controller\TeamController">
-            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="app.repository.team" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
             <argument type="service" id="river.view.tide_repository" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
 
         <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
@@ -39,14 +39,14 @@
         </service>
 
         <service id="admin.controller.cluster" class="AdminBundle\Controller\ClusterController">
-            <argument type="service" id="authenticator.team_repository" />
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
 
         <service id="admin.controller.billing" class="AdminBundle\Controller\BillingController">
-            <argument type="service" id="authenticator.team_repository" />
+            <argument type="service" id="app.repository.team" />
             <argument type="service" id="river.flow.projections.flat_flow_repository" />
-            <argument type="service" id="river.billing.user_profile_repository"/>
+            <argument type="service" id="app.repository.billing_profile"/>
             <argument type="service" id="river.managed.resources.usage_projection.summary_projector"/>
         </service>
 

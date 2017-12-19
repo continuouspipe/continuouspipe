@@ -4,7 +4,10 @@ security:
 
     providers:
         authenticator:
-            id: security.user_provider
+            id: app.security.user_provider
+
+        api_key:
+            id: security.api_key.user_provider
 
         in_memory:
             memory:
@@ -37,6 +40,33 @@ security:
             http_basic: ~
             provider: in_memory
 
+        auth:
+            pattern: ^/auth
+            provider: authenticator
+            anonymous: true
+            oauth:
+                resource_owners:
+                    github: "/auth/login/check-github"
+                    google: "/auth/login/check-google"
+                    bitbucket: "/auth/login/check-bitbucket"
+                login_path: /auth/login
+                use_forward: false
+                failure_path: /auth/login
+                require_previous_session: false
+                check_path: /auth/login_check
+                oauth_user_provider:
+                    service: app.security.user_provider
+
+            remember_me:
+                secret:   '%secret%'
+                lifetime: 31536000 # 1 year in seconds
+                path:     /auth/
+                always_remember_me: true
+
+            logout:
+                path:           /auth/logout
+                target:         /auth/login
+
         api:
             pattern:   ^/
             stateless: true
@@ -47,10 +77,16 @@ security:
             anonymous: ~
             provider: chain
             simple_preauth:
-                authenticator: api.api_key_authenticator
-                provider: authenticator
+                authenticator: security.api_key_authenticator
+                provider: api_key
+
 
     access_control:
+        # Auth pages
+        - { path: ^/auth/(login|connect), roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/auth/billing-redirection, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/auth/account/invitation/[\d-]+/accept$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
         # TODO: Secure with GitHub IPs
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/github/integration/webhook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }

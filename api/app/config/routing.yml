@@ -12,6 +12,14 @@ admin:
     type: annotation
     prefix: /admin
 
+atlassian_connect_home:
+    path: /connect/service/bitbucket
+    defaults:
+        _controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+        route: hwi_oauth_connect_service
+        service: bitbucket
+        permanent: true
+
 atlassian:
     resource: "@AtlassianAddonBundle/Controller/"
     type: annotation
@@ -21,3 +29,44 @@ development_environment:
     resource: "@DevelopmentEnvironmentBundle/Controller/"
     type: annotation
     prefix: /
+
+import_hwi_oauth_redirect:
+    resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
+    prefix:   /auth/connect
+
+import_hwi_oauth_login:
+    resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
+    prefix:   /auth/login
+
+import_hwi_oauth_connect:
+    resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
+    prefix:   /auth/connect
+
+authenticator:
+    resource: "@AuthenticatorBundle/Controller/"
+    type:     annotation
+    prefix:   /auth
+
+sona_admin:
+    resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
+    prefix: /sonata-admin
+
+_sonata_admin:
+    resource: .
+    type: sonata_admin
+    prefix: /sonata-admin
+
+github_login:
+    path: /auth/login/check-github
+
+google_login:
+    path: /auth/login/check-google
+
+logout:
+    path: /auth/logout
+
+# Override the controller of HWIOAuthBundle
+hwi_oauth_connect:
+    path: /auth/login/
+    defaults:
+        _controller: AuthenticatorBundle:Connect:connect

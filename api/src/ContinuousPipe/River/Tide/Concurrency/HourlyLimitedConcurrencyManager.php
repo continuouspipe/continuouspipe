@@ -2,12 +2,11 @@
 
 namespace ContinuousPipe\River\Tide\Concurrency;
 
-use ContinuousPipe\River\Repository\TideRepository;
+use ContinuousPipe\Authenticator\Team\TeamUsageLimitsRepository;
 use ContinuousPipe\River\Tide\Transaction\TransactionManager;
 use ContinuousPipe\River\View\TimeResolver;
 use ContinuousPipe\River\View\Tide;
 use ContinuousPipe\River\View\TideRepository as TideViewRepository;
-use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
 use LogStream\LoggerFactory;
 use ContinuousPipe\River\Tide as TideAggregate;
 use Psr\Log\LoggerInterface;
@@ -26,10 +25,6 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var TimeResolver
      */
     private $timeResolver;
-    /**
-     * @var AuthenticatorClient
-     */
-    private $authenticatorClient;
     /**
      * @var LoggerFactory
      */
@@ -50,12 +45,16 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
      * @var int
      */
     private $retryStartInterval;
+    /**
+     * @var TeamUsageLimitsRepository
+     */
+    private $teamUsageLimitsRepository;
 
     public function __construct(
         TideConcurrencyManager $decoratedConcurrencyManager,
         TideViewRepository $tideViewRepository,
         TimeResolver $timeResolver,
-        AuthenticatorClient $authenticatorClient,
+        TeamUsageLimitsRepository $teamUsageLimitsRepository,
         LoggerFactory $loggerFactory,
         LoggerInterface $logger,
         TransactionManager $transactionManager,
@@ -64,11 +63,11 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         $this->decoratedConcurrencyManager = $decoratedConcurrencyManager;
         $this->tideViewRepository = $tideViewRepository;
         $this->timeResolver = $timeResolver;
-        $this->authenticatorClient = $authenticatorClient;
         $this->loggerFactory = $loggerFactory;
         $this->logger = $logger;
         $this->transactionManager = $transactionManager;
         $this->retryStartInterval = $retryStartInterval;
+        $this->teamUsageLimitsRepository = $teamUsageLimitsRepository;
     }
 
     /**
@@ -114,15 +113,15 @@ class HourlyLimitedConcurrencyManager implements TideConcurrencyManager
         }
 
         try {
-            $this->limit = $this->authenticatorClient->findTeamUsageLimitsBySlug($tide->getTeam()->getSlug())->getTidesPerHour();
+            $this->limit = $this->teamUsageLimitsRepository->findByTeam($tide->getTeam())->getTidesPerHour();
         } catch (\Exception $exception) {
             $this->logger->warning(
                 'Can\'t get team usage limits',
                 ['exception' => $exception, 'tide' => $tide, 'team' => $tide->getTeam()->getSlug()]
             );
             $this->limit = 0;
-        } finally {
-            return $this->limit;
         }
+
+        return $this->limit;
     }
 }

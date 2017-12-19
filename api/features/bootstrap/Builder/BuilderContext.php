@@ -30,7 +30,6 @@ use ContinuousPipe\Builder\Tests\TraceableBuildCreator;
 use ContinuousPipe\Events\AggregateNotFound;
 use ContinuousPipe\Events\EventStore\EventStore;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
-use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher;
 use JMS\Serializer\SerializerInterface;
 use SimpleBus\Message\Bus\MessageBus;
@@ -59,11 +58,6 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
      * @var TraceableDockerClient
      */
     private $traceableDockerClient;
-
-    /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $inMemoryAuthenticatorClient;
 
     /**
      * @var Response|null
@@ -127,7 +121,6 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     public function __construct(
         Kernel $kernel,
         TraceableDockerClient $traceableDockerClient,
-        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         TraceableArchiveBuilder $traceableArchiveBuilder,
         BuildRepository $buildRepository,
         BuildStepRepository $buildStepRepository,
@@ -144,7 +137,6 @@ class BuilderContext implements Context, \Behat\Behat\Context\SnippetAcceptingCo
     ) {
         $this->kernel = $kernel;
         $this->traceableDockerClient = $traceableDockerClient;
-        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->traceableArchiveBuilder = $traceableArchiveBuilder;
         $this->buildRepository = $buildRepository;
         $this->buildStepRepository = $buildStepRepository;

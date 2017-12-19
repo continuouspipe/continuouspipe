@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\DevelopmentEnvironment\Aggregate;
 
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyFactory;
 use ContinuousPipe\DevelopmentEnvironment\Aggregate\Events\DevelopmentEnvironmentCreated;
 use ContinuousPipe\DevelopmentEnvironment\Aggregate\Events\InitializationTokenCreated;
 use ContinuousPipe\DevelopmentEnvironment\InitializationToken\InitializationToken;
@@ -9,6 +10,7 @@ use ContinuousPipe\DevelopmentEnvironment\ReadModel\DevelopmentEnvironment as Re
 use ContinuousPipe\DevelopmentEnvironmentBundle\Request\InitializationTokenCreationRequest;
 use ContinuousPipe\River\EventBased\ApplyEventCapability;
 use ContinuousPipe\River\EventBased\RaiseEventCapability;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\Uuid;
@@ -41,9 +43,9 @@ final class DevelopmentEnvironment
         return $developmentEnvironment;
     }
 
-    public function createInitializationToken(AuthenticatorClient $authenticatorClient, User $user, InitializationTokenCreationRequest $request)
+    public function createInitializationToken(UserApiKeyFactory $userApiKeyFactory, User $user, InitializationTokenCreationRequest $request)
     {
-        $apiKey = $authenticatorClient->createApiKey($user, 'API key for remote environment "'.$this->name.'""');
+        $apiKey = $userApiKeyFactory->create($user, 'API key for remote environment "'.$this->name.'""');
         $token = new InitializationToken(
             $this->flowUuid,
             $this->uuid,

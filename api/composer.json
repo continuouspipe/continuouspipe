@@ -12,7 +12,7 @@
     },
     "require": {
         "php": ">=5.3.9",
-        "symfony/symfony": "3.4.x-dev",
+        "symfony/symfony": "~3.3",
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "sensio/distribution-bundle": "~5.0",
         "doctrine/orm": "~2.5",
@@ -31,7 +31,6 @@
         "sroze/log-stream": "~0.4.5",
         "tolerance/tolerance": "^0.4.0",
         "continuous-pipe/model": "~2.4.6",
-        "continuous-pipe/security": "dev-master",
         "simple-bus/symfony-bridge": "~5.0",
         "simple-bus/rabbitmq-bundle-bridge": "~4.0.0",
         "simple-bus/jms-serializer-bundle-bridge": "~3.0.0",
@@ -67,14 +66,17 @@
         "defuse/php-encryption": "^2.0",
         "react/promise": "^2.5",
         "react/promise-timer": "^1.1",
-        "facile-it/doctrine-mysql-come-back": "^1.6"
+        "facile-it/doctrine-mysql-come-back": "^1.6",
+        "behat/symfony2-extension": "2.1.1",
+        "lexik/jwt-authentication-bundle": "~1.0",
+        "ramsey/uuid": "^3.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.1.6",
         "phpspec/phpspec": "~3.0",
         "behat/behat": "~3.0",
-        "behat/symfony2-extension": "~2.0",
-        "phpunit/phpunit": "^5.6"
+        "phpunit/phpunit": "^5.6",
+        "doctrine/data-fixtures": "^1.3"
     },
     "scripts": {
         "symfony-scripts": [
@@ -110,10 +112,6 @@
         }]
     },
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/continuouspipe/security"
-        },
         {
             "type": "vcs",
             "url": "https://github.com/continuouspipe/model"

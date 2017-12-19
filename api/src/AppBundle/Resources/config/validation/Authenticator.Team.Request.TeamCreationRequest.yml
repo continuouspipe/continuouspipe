@@ -1,0 +1,5 @@
+ContinuousPipe\Authenticator\Team\Request\TeamCreationRequest:
+    properties:
+        team:
+            - NotNull: ~
+            - Valid: ~

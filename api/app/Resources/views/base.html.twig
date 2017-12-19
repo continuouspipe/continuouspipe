@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html{% block html_attributes %}{% endblock %}>
+    <head>
+        {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}ContinuousPipe{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
+        {% endblock %}
+    </head>
+    <body{% block body_attributes %}{% endblock %}>
+        {% block body %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

@@ -7,6 +7,60 @@ imports:
 parameters:
     locale: en
     firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
+    api_keys:
+        - rcZUz8zcBEh1w4YUtWEf4Sp12kzborOXPaoDFv3h # River, Builder, Pipe
+        - eed1304N3du2jbdaD72h3khdugqjndh82nm4972n # Feature-Timeline
+    managed_cloud_flare_credentials:
+        'domain-name': "%managed_cloudflare_domain_name%"
+        'zone-identifier': "%managed_cloudflare_zone_identifier%"
+        'email': "%managed_cloudflare_email%"
+        'api-key': "%managed_cloudflare_api_key%"
+
+    billing_plans:
+        - identifier: toolkit
+          name: Toolkit
+          price: 25
+          metrics: { tides: 100, memory: 0, docker_image: 0, storage: 0}
+        - identifier: starter
+          name: Starter
+          price: 150
+          metrics: { tides: 100, memory: 4.5, docker_image: 1, storage: 5 }
+        - identifier: lean
+          name: Lean
+          price: 320
+          metrics: { tides: 250, memory: 9, docker_image: 1, storage: 10 }
+        - identifier: medium
+          name: Medium
+          price: 575
+          metrics: { tides: 500, memory: 15, docker_image: 1, storage: 20 }
+        - identifier: large
+          name: Large
+          price: 950
+          metrics: { tides: 750, memory: 23, docker_image: 5, storage: 100 }
+
+    billing_addons:
+        - identifier: 50tides
+          name: 50 extra deployments
+          price: 25
+          metrics: { tides: 50, memory: 0, docker_image: 0, storage: 0 }
+        - identifier: memory
+          name: Extra GB of memory
+          price: 20
+          metrics: { tides: 0, memory: 1, docker_image: 0, storage: 0 }
+        - identifier: dockerimage
+          name: Private Docker image
+          price: 5
+          metrics: { tides: 0, memory: 0, docker_image: 1, storage: 0 }
+        - identifier: 5gbstorage
+          name: 5 GB of persistent storage
+          price: 5
+          metrics: { tides: 0, memory: 0, docker_image: 0, storage: 5 }
+
+services:
+    twig.extension.date:
+       class: \Twig_Extensions_Extension_Date
+       tags:
+            - { name: twig.extension }
 
 framework:
     #esi:             ~
@@ -35,19 +89,18 @@ framework:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+    paths:
+        "%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Intercom/Resources/views": intercom
 
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:        [ ]
-    #java: /usr/bin/java
+    bundles:        [ AuthenticatorBundle, HWIOAuthBundle ]
     filters:
         cssrewrite: ~
-        #closure:
-        #    jar: "%kernel.root_dir%/Resources/java/compiler.jar"
-        #yui_css:
-        #    jar: "%kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar"
+        scssphp:
+            formatter: 'Leafo\ScssPhp\Formatter\Compressed'
 
 # Doctrine Configuration
 doctrine:
@@ -73,6 +126,7 @@ doctrine:
             b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
             datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
             uuid:  Ramsey\Uuid\Doctrine\UuidType
+            json_policies: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Type\JsonPoliciesType
 
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
@@ -99,6 +153,26 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.root_dir%/../src/ContinuousPipe/Pipe/Infrastructure/Doctrine/Entity'
                 prefix: ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticatorEntity:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticator:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Authenticator'
+                prefix: ContinuousPipe\Authenticator
+            ContinuousPipeSecurity:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Security'
+                prefix: ContinuousPipe\Security
+            ContinuousPipeBilling:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Billing/Infrastructure/Doctrine/config'
+                prefix: ContinuousPipe\Billing
             ContinuousPipeRiver:
                 type: xml
                 is_bundle: false
@@ -126,6 +200,9 @@ jms_serializer:
             ContinuousPipePipe:
                 namespace_prefix: "ContinuousPipe\\Pipe"
                 path: "%kernel.root_dir%/../src/ContinuousPipe/Pipe/Resources/serializer"
+            ContinuousPipeSecurity:
+                namespace_prefix: "ContinuousPipe\\Security"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Security/Resources/serializer"
 
 lexik_jwt_authentication:
     private_key_path: %jwt_private_key_path%
@@ -134,9 +211,6 @@ lexik_jwt_authentication:
     token_ttl:        %jwt_token_ttl%
 
 continuous_pipe_security:
-    authenticator_url: "%authenticator_url%"
-    api_key: "%authenticator_api_key%"
-    cache: true
     vaults:
         user_secrets:
             google_kms:
@@ -167,6 +241,10 @@ fos_rest:
     exception:
         codes:
             'ContinuousPipe\Builder\Request\BuildRequestException': 400
+            'ContinuousPipe\Authenticator\CredentialsNotFound': 404
+            'ContinuousPipe\Authenticator\Security\User\UserNotFound': 404
+            'Symfony\Component\Security\Core\Exception\AccessDeniedException': 403
+            'ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound': 404
         messages:
             'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
             'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
@@ -457,3 +535,61 @@ message:
 
     tideways:
         api_key: %tideways_api_key%
+
+
+hwi_oauth:
+    firewall_names: [auth]
+    resource_owners:
+        github:
+            type:                github
+            client_id:           "%github_client_id%"
+            client_secret:       "%github_client_secret%"
+            scope: user:email,repo
+            options:
+                auth_with_one_url: true
+
+        google:
+            type:                google
+            client_id:           "%google_client_id%"
+            client_secret:       "%google_client_secret%"
+            scope:               "email profile https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/compute.readonly"
+            options:
+                access_type:     offline
+                prompt:          consent
+
+        bitbucket:
+            type:                bitbucket2
+            client_id:           "%bitbucket_oauth_key%"
+            client_secret:       "%bitbucket_oauth_secret%"
+            scope:               "account team repository email webhook"
+
+    connect:
+        account_connector: app.security.account_connector
+
+    target_path_parameter: redirectUrl
+
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+
+sonata_admin:
+    title: ContinuousPipe
+
+snc_redis:
+    clients:
+        session:
+            type: predis
+            alias: session
+            dsn: "%redis_dsn%"
+
+        default:
+            type: predis
+            alias: default
+            dsn: "%redis_dsn%"
+
+    session:
+        client: session
+        prefix: authenticator
+        ttl: 43200 # 12h

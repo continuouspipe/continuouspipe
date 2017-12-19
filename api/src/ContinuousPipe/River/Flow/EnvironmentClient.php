@@ -11,7 +11,7 @@ use ContinuousPipe\River\Environment\DeployedEnvironmentException;
 use ContinuousPipe\River\Environment\DeployedEnvironmentRepository;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Pipe\ClusterIdentifierResolver;
-use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\User\UserContext;
 use ContinuousPipe\Security\Credentials\BucketNotFound;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
@@ -54,7 +54,7 @@ class EnvironmentClient implements DeployedEnvironmentRepository
     /**
      * @param \ContinuousPipe\Pipe\Client\Client $pipeClient
      * @param ClusterIdentifierResolver $clusterIdentifierResolver
-     * @param UserContext $userContext
+     * @param \ContinuousPipe\Security\User\UserContext $userContext
      * @param BucketRepository $bucketRepository
      * @param LoggerInterface $logger
      */

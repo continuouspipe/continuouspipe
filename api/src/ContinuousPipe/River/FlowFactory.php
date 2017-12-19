@@ -8,7 +8,7 @@ use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Flow\Projections\FlatFlowRepository;
 use ContinuousPipe\River\Flow\Request\FlowCreationRequest;
 use ContinuousPipe\River\Flow\Request\FlowUpdateRequest;
-use ContinuousPipe\Security\Authenticator\UserContext;
+use ContinuousPipe\Security\User\UserContext;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
 use SimpleBus\Message\Bus\MessageBus;

@@ -45,7 +45,7 @@
         <service id="development_environment.initialization_token_factory" class="ContinuousPipe\DevelopmentEnvironment\InitializationToken\InitializationTokenFactory">
             <argument type="service" id="development_environment.aggregate.repository" />
             <argument type="service" id="event_bus" />
-            <argument type="service" id="security.authenticator.client" />
+            <argument type="service" id="security.user_api_key_factory" />
         </service>
 
         <!-- Controller -->

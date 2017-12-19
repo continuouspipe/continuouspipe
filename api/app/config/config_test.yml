@@ -24,9 +24,6 @@ web_profiler:
     toolbar: false
     intercept_redirects: false
 
-continuous_pipe_security:
-    cache: true
-
 beberlei_metrics:
     collectors:
         statsd:

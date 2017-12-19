@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\Billing\BillingProfile\UserBillingProfile">
+        <id name="uuid" type="uuid" />
+        <field name="name" type="string" nullable="false" />
+        <field name="creationDate" type="datetime" nullable="true" />
+        <field name="trialEndDate" type="datetime" nullable="true" />
+        <field name="tidesPerHour" type="integer" nullable="true" />
+        <field name="status" type="string" nullable="true" />
+
+        <embedded name="plan" class="ContinuousPipe\Billing\Plan\Plan" column-prefix="plan_" />
+
+        <many-to-many field="teams" target-entity="ContinuousPipe\Security\Team\Team">
+            <join-table name="billing_profile_teams">
+                <join-columns>
+                    <join-column name="billing_profile_uuid" referenced-column-name="uuid" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="team_slug" referenced-column-name="slug" unique="true" on-delete="CASCADE" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <many-to-many field="admins" target-entity="ContinuousPipe\Security\User\User">
+            <join-table name="user_billing_profiles">
+                <join-columns>
+                    <join-column name="billing_profile_uuid" referenced-column-name="uuid" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="user_username" referenced-column-name="username" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+
+</doctrine-mapping>

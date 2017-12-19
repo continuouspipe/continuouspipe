@@ -5,23 +5,28 @@ namespace River;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Authenticator\Security\ApiKey\PredictableApiKeyUuidGenerator;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
+use ContinuousPipe\Authenticator\Team\TeamUsageLimitsRepository;
+use ContinuousPipe\Security\Account\AccountRepository;
 use ContinuousPipe\Security\Account\BitBucketAccount;
 use ContinuousPipe\Security\ApiKey\UserApiKey;
+use ContinuousPipe\Security\ApiKey\UserApiKeyRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
+use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault;
 use ContinuousPipe\Security\Team\Team;
 use ContinuousPipe\Security\Team\TeamMembership;
+use ContinuousPipe\Security\Team\TeamMembershipRepository;
 use ContinuousPipe\Security\Team\TeamNotFound;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\Team\TeamUsageLimits;
-use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
-use ContinuousPipe\Security\Tests\Team\InMemoryTeamRepository;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use ContinuousPipe\Security\User\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use JMS\Serializer\SerializerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
@@ -40,10 +45,6 @@ class SecurityContext implements Context
      * @var TokenStorageInterface
      */
     private $tokenStorage;
-    /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $inMemoryAuthenticatorClient;
     /**
      * @var KernelInterface
      */
@@ -70,21 +71,67 @@ class SecurityContext implements Context
      * @var User|null
      */
     private $currentUser;
+    /**
+     * @var UserApiKeyRepository
+     */
+    private $userApiKeyRepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+    /**
+     * @var BucketRepository
+     */
+    private $bucketRepository;
+    /**
+     * @var TeamUsageLimitsRepository
+     */
+    private $teamUsageLimitsRepository;
+    /**
+     * @var AccountRepository
+     */
+    private $accountRepository;
+    /**
+     * @var TeamMembershipRepository
+     */
+    private $teamMembershipRepository;
+    /**
+     * @var PredictableApiKeyUuidGenerator
+     */
+    private $predictableApiKeyUuidGenerator;
 
     public function __construct(
         TokenStorageInterface $tokenStorage,
-        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         KernelInterface $kernel,
         PreviouslyKnownValuesVault $previouslyKnownValuesVault,
         JWTManagerInterface $jwtManager,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        UserApiKeyRepository $userApiKeyRepository,
+        UserRepository $userRepository,
+        TeamRepository $teamRepository,
+        BucketRepository $bucketRepository,
+        TeamUsageLimitsRepository $teamUsageLimitsRepository,
+        AccountRepository $accountRepository,
+        TeamMembershipRepository $teamMembershipRepository,
+        PredictableApiKeyUuidGenerator $predictableApiKeyUuidGenerator
     ) {
         $this->tokenStorage = $tokenStorage;
-        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->kernel = $kernel;
         $this->previouslyKnownValuesVault = $previouslyKnownValuesVault;
         $this->jwtManager = $jwtManager;
         $this->serializer = $serializer;
+        $this->userApiKeyRepository = $userApiKeyRepository;
+        $this->userRepository = $userRepository;
+        $this->teamRepository = $teamRepository;
+        $this->bucketRepository = $bucketRepository;
+        $this->teamUsageLimitsRepository = $teamUsageLimitsRepository;
+        $this->accountRepository = $accountRepository;
+        $this->teamMembershipRepository = $teamMembershipRepository;
+        $this->predictableApiKeyUuidGenerator = $predictableApiKeyUuidGenerator;
     }
 
     /**
@@ -92,15 +139,7 @@ class SecurityContext implements Context
      */
     public function theCreatedApiKeyForTheUserWillHaveTheKey($username, $apiKey)
     {
-        $this->inMemoryAuthenticatorClient->setApiKeyCreationHook(function(User $user, string $description) use ($username, $apiKey) {
-            return new UserApiKey(
-                Uuid::uuid4(),
-                $user,
-                $apiKey,
-                new \DateTime(),
-                $description
-            );
-        });
+        $this->predictableApiKeyUuidGenerator->setUuidToGenerate(Uuid::fromString($apiKey));
     }
 
     /**
@@ -116,15 +155,13 @@ class SecurityContext implements Context
      */
     public function theUserHaveTheApiKey($username, $apiKey)
     {
-        $this->inMemoryAuthenticatorClient->addApiKey(
-            new UserApiKey(
-                Uuid::uuid4(),
-                $this->inMemoryAuthenticatorClient->getUserByUsername($username),
-                $apiKey,
-                new \DateTime(),
-                $apiKey
-            )
-        );
+        $this->userApiKeyRepository->save(new UserApiKey(
+            Uuid::uuid4(),
+            $this->userRepository->findOneByUsername($username),
+            $apiKey,
+            new \DateTime(),
+            $apiKey
+        ));
     }
 
     /**
@@ -155,9 +192,12 @@ class SecurityContext implements Context
      */
     public function thereIsAUser($username)
     {
-        $user = new User($username, Uuid::uuid1());
-
-        $this->inMemoryAuthenticatorClient->addUser($user);
+        try {
+            $user = $this->userRepository->findOneByUsername($username);
+        } catch (UserNotFound $e) {
+            $user = new User($username, Uuid::uuid1());
+            $this->userRepository->save($user);
+        }
 
         return $user;
     }
@@ -169,13 +209,14 @@ class SecurityContext implements Context
     public function theTeamExists($slug)
     {
         try {
-            $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($slug);
+            $team = $this->teamRepository->find($slug);
         } catch (TeamNotFound $e) {
+
             $bucket = new Bucket(Uuid::uuid1());
-            $this->inMemoryAuthenticatorClient->addBucket($bucket);
+            $this->bucketRepository->save($bucket);
 
             $team = new Team($slug, $slug, $bucket->getUuid());
-            $this->inMemoryAuthenticatorClient->addTeam($team);
+            $this->teamRepository->save($team);
         }
 
         return $team;
@@ -199,7 +240,11 @@ class SecurityContext implements Context
     public function theTeamHasATidesPerHourUsageLimit($slug, $tidesPerHour)
     {
         $team = $this->theTeamExists($slug);
-        $this->inMemoryAuthenticatorClient->addTeamUsageLimit($team, new TeamUsageLimits($tidesPerHour));
+
+        $this->teamUsageLimitsRepository->save(
+            $team,
+            new TeamUsageLimits($tidesPerHour)
+        );
     }
 
     /**
@@ -207,23 +252,10 @@ class SecurityContext implements Context
      */
     public function theUserIsOfTheTeam($username, $permission, $team)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $user = $this->inMemoryAuthenticatorClient->getUserByUsername($username);
+        $team = $this->teamRepository->find($team);
+        $user = $this->userRepository->findOneByUsername($username);
 
-        $memberships = $team->getMemberships()->filter(function(TeamMembership $teamMembership) use ($user) {
-            return $teamMembership->getUser()->getUsername() == $user->getUsername();
-        });
-
-        $memberships->add(new TeamMembership($team, $user, [$permission]));
-
-        $team = new Team(
-            $team->getSlug(),
-            $team->getName(),
-            $team->getBucketUuid(),
-            $memberships->toArray()
-        );
-
-        $this->inMemoryAuthenticatorClient->addTeam($team);
+        $this->teamMembershipRepository->save(new TeamMembership($team, $user, [$permission]));
     }
 
     /**
@@ -231,18 +263,10 @@ class SecurityContext implements Context
      */
     public function theUserIsNotInTheTeam($user, $team)
     {
-        $teams = $this->inMemoryAuthenticatorClient->findAllTeams();
-
-        if (!isset($teams[$team])) {
-            throw new \RuntimeException(sprintf('Team %s not found', $team));
-        }
-        $selectedTeam = $teams[$team];
-        $memberships = $selectedTeam->getMemberships()->filter(function(TeamMembership $membership) use ($user) {
-            return $membership->getUser()->getUsername() === $user;
-        });
-        if ($memberships) {
-            $this->inMemoryAuthenticatorClient->deleteTeam($selectedTeam);
-        }
+        $this->teamMembershipRepository->remove(new TeamMembership(
+            $this->teamRepository->find($team),
+            $this->userRepository->findOneByUsername($user)
+        ));
     }
 
     /**
@@ -251,13 +275,13 @@ class SecurityContext implements Context
      */
     public function theTeamHaveTheCredentialsOfACluster($team, $cluster, $address = null)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $team = $this->teamRepository->find($team);
+        $bucket = $this->bucketRepository->find($team->getBucketUuid());
         $address = $address ?: 'https://1.2.3.4';
 
         $bucket->getClusters()->add(new Kubernetes($cluster, $address, 'v1', '', ''));
 
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        $this->bucketRepository->save($bucket);
     }
 
     /**
@@ -265,14 +289,14 @@ class SecurityContext implements Context
      */
     public function theClusterOfTheTeamHaveTheFollowingPolicies($clusterIdentifier, $team, PyStringNode $string)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $team = $this->teamRepository->find($team);
+        $bucket = $this->bucketRepository->find($team->getBucketUuid());
 
         $bucket->getClusters()->add(new Kubernetes($clusterIdentifier, 'https://1.2.3.4', 'v1', '', '',
             $this->serializer->deserialize($string->getRaw(), 'array<'.Cluster\ClusterPolicy::class.'>', 'json')
         ));
 
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        $this->bucketRepository->save($bucket);
     }
 
     /**
@@ -379,10 +403,10 @@ class SecurityContext implements Context
      */
     public function theUserIsAGhost($username)
     {
-        $user = $this->inMemoryAuthenticatorClient->getUserByUsername($username);
+        $user = $this->userRepository->findOneByUsername($username);
         $user->setRoles(array_merge($user->getRoles(), ['ROLE_GHOST']));
 
-        $this->inMemoryAuthenticatorClient->addUser($user);
+        $this->userRepository->save($user);
     }
 
     /**
@@ -390,8 +414,8 @@ class SecurityContext implements Context
      */
     public function iHaveABitbucketAccountForTheUser($uuid, $username)
     {
-        $this->inMemoryAuthenticatorClient->addAccount(
-            $this->currentUser,
+        $this->accountRepository->link(
+            $this->currentUser->getUsername(),
             new BitBucketAccount(
                 Uuid::fromString($uuid),
                 $username,
@@ -421,18 +445,6 @@ class SecurityContext implements Context
                 $code,
                 $this->response->getStatusCode()
             ));
-        }
-    }
-
-    /**
-     * @Given the authenticator cache is on
-     */
-    public function securityCacheIsOn()
-    {
-        if (!$this->kernel->getContainer()->has(self::CACHE_SERVICE_ID)) {
-            throw new \RuntimeException(
-                sprintf('Authenticator cache is disabled. Undefined service "%s".', self::CACHE_SERVICE_ID)
-            );
         }
     }
 
@@ -469,19 +481,19 @@ class SecurityContext implements Context
 
     private function findTeamBucket($teamSlug) : Bucket
     {
-        return $this->inMemoryAuthenticatorClient->findBucketByUuid(
-            $this->inMemoryAuthenticatorClient->findTeamBySlug($teamSlug)->getBucketUuid()
+        return $this->bucketRepository->find(
+            $this->teamRepository->find($teamSlug)->getBucketUuid()
         );
     }
 
     private function addRegistryToTeam(string $team, DockerRegistry $registry)
     {
-        $team = $this->inMemoryAuthenticatorClient->findTeamBySlug($team);
-        $bucket = $this->inMemoryAuthenticatorClient->findBucketByUuid($team->getBucketUuid());
+        $team = $this->teamRepository->find($team);
+        $bucket = $this->bucketRepository->find($team->getBucketUuid());
 
         $bucket->getDockerRegistries()->add($registry);
 
-        $this->inMemoryAuthenticatorClient->addBucket($bucket);
+        $this->bucketRepository->save($bucket);
     }
 
     public function tokenForUser($username)

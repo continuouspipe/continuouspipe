@@ -1,4 +1,4 @@
-default:
+domain:
     suites:
         river_domain:
             paths:
@@ -7,11 +7,18 @@ default:
             contexts:
                 - River\SecurityContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@app.repository.user"
+                    - "@app.repository.team"
+                    - "@app.repository.credentials_bucket"
+                    - "@security.team_usage_limits"
+                    - "@app.repository.account"
+                    - "@app.repository.team_membership"
+                    - "@security.user_api_key.uuid_generator"
                 - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
                 - River\TideContext:
@@ -47,8 +54,8 @@ default:
                     kernel: "@kernel"
                     flowRepository: "@river.repository.flow"
                     codeRepositoryRepository: "@repository_river.code_repository_repository"
-                    authenticatorClient: "@security.authenticator.client.in_memory"
-                    teamRepository: "@authenticator.team_repository"
+                    userRepository: "@app.repository.user"
+                    teamRepository: "@app.repository.team"
                     eventBus: "@event_bus"
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
@@ -79,7 +86,7 @@ default:
                     - "@kernel"
                 - River\TeamContext:
                     - "@kernel"
-                    - "@authenticator.team_repository"
+                    - "@app.repository.team"
                 - River\TideSummaryContext:
                     - "@kernel"
                 - River\AnalyticsContext:
@@ -159,11 +166,18 @@ default:
                 # Common contexts
                 - River\SecurityContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@app.repository.user"
+                    - "@app.repository.team"
+                    - "@app.repository.credentials_bucket"
+                    - "@security.team_usage_limits"
+                    - "@app.repository.account"
+                    - "@app.repository.team_membership"
+                    - "@security.user_api_key.uuid_generator"
                 - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
                 - River\TideContext:
@@ -199,8 +213,8 @@ default:
                     kernel: "@kernel"
                     flowRepository: "@river.repository.flow"
                     codeRepositoryRepository: "@repository_river.code_repository_repository"
-                    authenticatorClient: "@security.authenticator.client.in_memory"
-                    teamRepository: "@authenticator.team_repository"
+                    userRepository: "@app.repository.user"
+                    teamRepository: "@app.repository.team"
                     eventBus: "@event_bus"
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
@@ -268,14 +282,26 @@ default:
                     - "@river.code_repository.branch_query.in_memory"
                     - "@river.pull_request_resolver"
 
+                - River\BitBucket\AddonContext:
+                    - "@kernel"
+                    - "@atlassian_addon.installation_repository.traceable"
+                    - "@jms_serializer"
+
                 # Common contexts
                 - River\SecurityContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@app.repository.user"
+                    - "@app.repository.team"
+                    - "@app.repository.credentials_bucket"
+                    - "@security.team_usage_limits"
+                    - "@app.repository.account"
+                    - "@app.repository.team_membership"
+                    - "@security.user_api_key.uuid_generator"
                 - River\TideConfigurationContext:
                     - "@river.tide_configuration_factory"
                 - River\TideContext:
@@ -311,8 +337,8 @@ default:
                     kernel: "@kernel"
                     flowRepository: "@river.repository.flow"
                     codeRepositoryRepository: "@repository_river.code_repository_repository"
-                    authenticatorClient: "@security.authenticator.client.in_memory"
-                    teamRepository: "@authenticator.team_repository"
+                    userRepository: "@app.repository.user"
+                    teamRepository: "@app.repository.team"
                     eventBus: "@event_bus"
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
@@ -370,7 +396,6 @@ default:
                 - Builder\BuilderContext:
                     - "@kernel"
                     - "@builder.docker.client.traceable"
-                    - "@security.authenticator.client.in_memory"
                     - "@builder.archive_builder.traceable"
                     - "@builder.build.repository"
                     - "@builder.build_step.repository"
@@ -390,7 +415,7 @@ default:
                 - Builder\DockerOutputContext:
                     - "@builder.docker.client.output_handler"
                 - Builder\SecurityContext:
-                    - "@security.authenticator.client.in_memory"
+                    - "@app.repository.credentials_bucket"
                     - "@security.token_storage"
                     - "@kernel"
                 - Builder\Mock\DockerContext:
@@ -414,7 +439,7 @@ default:
             contexts:
                 - Pipe\ApiContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
+                    - "@app.repository.user"
                     - "@kernel"
                 - Pipe\DeploymentContext:
                     - "@pipe.view.deployment_repository"
@@ -426,19 +451,18 @@ default:
                     - "@pipe.event_store"
                     - "@pipe.view.deployment_repository"
                     - "@event_bus"
-                    - "@security.authenticator.client.in_memory"
                     - "@pipe.adapter.kubernetes.hookable.namespace_repository"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@pipe.client"
                     - "@jms_serializer"
-                    - "@authenticator.team_repository"
+                    - "@app.repository.team"
                 - Pipe\NotificationContext:
                     - "@pipe.notification.notifier.traceable"
                     - "@pipe.notification.notifier.hookable"
                 - Pipe\SecurityContext:
-                    - "@authenticator.bucket_repository"
+                    - "@app.repository.credentials_bucket"
                     - "@jms_serializer"
-                    - "@authenticator.team_repository"
+                    - "@app.repository.team"
                     - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
@@ -450,7 +474,6 @@ default:
                     - "@pipe.adapter.kubernetes.traceable.secret_repository"
                     - "@pipe.adapter.kubernetes.traceable.service_account_repository"
                     - "@log_stream.logger_factory"
-                    - "@security.authenticator.client.in_memory"
                     - "@pipe.adapter.kubernetes.in_memory.service_account_repository"
                     - "@pipe.adapter.kubernetes.in_memory.secret_repository"
                     - "@pipe.adapter.kubernetes.hookable.service_account_repository"
@@ -500,6 +523,58 @@ default:
                     - "@logger"
                     - "@log_stream.hookable_factory"
 
+        authenticator:
+            paths:
+                - %paths.base%/features/authenticator/
+
+            contexts:
+                - Authenticator\SecurityContext:
+                    - "@app.security.user_provider"
+                    - "@security.token_storage"
+                    - "@app.repository.security_user"
+                    - "@app.security.api_key.system_user_by_api_key"
+                    - "@event_dispatcher"
+                    - "@hwi_oauth.resource_owner.github"
+                    - "@kernel"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@session"
+                    - "@test.http_client"
+                    - "@app.repository.team"
+                - Authenticator\UserContext:
+                    - "@app.repository.security_user"
+                    - "@app.repository.credentials_bucket"
+                    - "@kernel"
+                    - "@app.security.api_key.system_user_by_api_key"
+                - Authenticator\CredentialsBucketContext:
+                    - "@kernel"
+                    - "@app.repository.credentials_bucket"
+                - Authenticator\TeamContext:
+                    - "@kernel"
+                    - "@app.repository.team"
+                    - "@app.repository.team_membership"
+                    - "@app.repository.credentials_bucket"
+                    - "@kube_status.http.middleware.predictable_request_mapping"
+                - Authenticator\InvitationContext:
+                    - "@kernel"
+                    - "@app.repository.user_invitation"
+                - Authenticator\IntercomContext:
+                    - "@app.intercom.traceable_client"
+                    - "@app.intercom.hookable_client"
+                - Authenticator\AccountsContext:
+                    - "@app.repository.account"
+                    - "@kernel"
+                    - "@google.http.middleware.predictable_request_mapping"
+                    - "@app.repository.billing_profile"
+                    - "@app.billing.plan_repository"
+                - Authenticator\LoggingContext:
+                    - "@kernel"
+                    - "@logger"
+                - Authenticator\SubscriptionContext:
+                    - "@kernel"
+                - Authenticator\AuditLogContext:
+                    - "@authenticator.audit_log.storage.traced_log_repository"
+                    - "@test.http_client"
+
     extensions:
         Behat\Symfony2Extension:
             kernel:
@@ -512,14 +587,24 @@ default:
 smoke:
     suites:
         river:
+            paths:
+                - %paths.base%/features/river
+
             contexts:
                 - River\SecurityContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
                     - "@kernel"
                     - "@security.vaults.user_secrets.previously_known"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@jms_serializer"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@app.repository.user"
+                    - "@app.repository.team"
+                    - "@app.repository.credentials_bucket"
+                    - "@security.team_usage_limits"
+                    - "@app.repository.account"
+                    - "@app.repository.team_membership"
+                    - "@security.user_api_key.uuid_generator"
                 - River\FlowContext:
                     pipeClient: "@river.pipe_client.fake"
                     hookablePipeClient: "@river.hookable_pipe_client"
@@ -527,8 +612,8 @@ smoke:
                     kernel: "@kernel"
                     flowRepository: "@river.repository.flow"
                     codeRepositoryRepository: "@repository_river.code_repository_repository"
-                    authenticatorClient: "@security.authenticator.client.in_memory"
-                    teamRepository: "@authenticator.team_repository"
+                    userRepository: "@app.repository.user"
+                    teamRepository: "@app.repository.team"
                     eventBus: "@event_bus"
                     serializer: "@jms_serializer"
                     tracedUsageHistoryRepository: "@river.managed.resources.history_repository.traced"
@@ -560,6 +645,10 @@ smoke:
                     - "@repository_river.code_repository_repository"
                     - "@river.github.guzzle_http_client.handler.matching"
                     - "@river.code_repository.branch_query.in_memory"
+                - River\BitBucket\AddonContext:
+                    - "@kernel"
+                    - "@atlassian_addon.installation_repository.traceable"
+                    - "@jms_serializer"
                 - River\CodeRepositoriesContext:
                     - "@river.commit_resolver.predictable"
                     - "@event_bus"
@@ -582,22 +671,41 @@ smoke:
                     - "@kernel"
                     - "@jms_serializer"
                     - "@tolerance.metrics.publisher.statsd"
+                - River\Task\DeployContext:
+                    - "@river.tide_event_store"
+                    - "@event_bus"
+                    - "@river.pipe_client"
+                    - "@river.task.deploy.naming.environment_strategy"
+                    - "@kernel"
+                    - "@jms_serializer"
+                    - "@river.flow.environment_client.callback"
+                - River\Task\RunContext:
+                    - "@kernel"
+                    - "@river.pipe_client"
+                    - "@jms_serializer"
                 - River\NotificationsContext:
                     - "@river.notifications.notifier.slack.traceable"
                 - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
+                - River\LoggingContext:
+                    - "@kernel"
+                    - "@log_stream.client.in_memory"
+                    - "@logger"
 
         pipe:
+            paths:
+                - %paths.base%/features/pipe/
+
             contexts:
                 - Pipe\ApiContext:
                     - "@security.token_storage"
-                    - "@security.authenticator.client.in_memory"
+                    - "@app.repository.user"
                     - "@kernel"
                 - Pipe\SecurityContext:
-                    - "@authenticator.bucket_repository"
+                    - "@app.repository.credentials_bucket"
                     - "@jms_serializer"
-                    - "@authenticator.team_repository"
+                    - "@app.repository.team"
                     - "@security.vaults.within_clusters.previously_known"
                     - "@pipe.adapter.kubernetes.traceable.role_binding_repository"
                     - "@pipe.adapter.kubernetes.in_memory.role_binding_repository"
@@ -607,12 +715,11 @@ smoke:
                     - "@pipe.event_store"
                     - "@pipe.view.deployment_repository"
                     - "@event_bus"
-                    - "@security.authenticator.client.in_memory"
                     - "@pipe.adapter.kubernetes.hookable.namespace_repository"
                     - "@lexik_jwt_authentication.jwt_manager"
                     - "@pipe.client"
                     - "@jms_serializer"
-                    - "@authenticator.team_repository"
+                    - "@app.repository.team"
                 - Pipe\DeploymentContext:
                     - "@pipe.view.deployment_repository"
                     - "@pipe.event_store"
@@ -628,7 +735,6 @@ smoke:
                     - "@pipe.adapter.kubernetes.traceable.secret_repository"
                     - "@pipe.adapter.kubernetes.traceable.service_account_repository"
                     - "@log_stream.logger_factory"
-                    - "@security.authenticator.client.in_memory"
                     - "@pipe.adapter.kubernetes.in_memory.service_account_repository"
                     - "@pipe.adapter.kubernetes.in_memory.secret_repository"
                     - "@pipe.adapter.kubernetes.hookable.service_account_repository"
@@ -656,6 +762,51 @@ smoke:
                 - Pipe\LogContext:
                     - "@logger"
                     - "@log_stream.hookable_factory"
+
+        authenticator:
+            paths:
+                - %paths.base%/features/authenticator/
+
+            contexts:
+                - Authenticator\SmokeContext:
+                    - "@doctrine.orm.entity_manager"
+                - Authenticator\SecurityContext:
+                    - "@app.security.user_provider"
+                    - "@security.token_storage"
+                    - "@app.repository.security_user"
+                    - "@app.security.api_key.system_user_by_api_key"
+                    - "@event_dispatcher"
+                    - "@hwi_oauth.resource_owner.github"
+                    - "@kernel"
+                    - "@app.security.api_key.user_by_api_key_repository"
+                    - "@session"
+                    - "@test.http_client"
+                    - "@app.repository.team"
+                - Authenticator\UserContext:
+                    - "@app.repository.security_user"
+                    - "@app.repository.credentials_bucket"
+                    - "@kernel"
+                    - "@app.security.api_key.system_user_by_api_key"
+                - Authenticator\CredentialsBucketContext:
+                    - "@kernel"
+                    - "@app.repository.credentials_bucket"
+                - Authenticator\TeamContext:
+                    - "@kernel"
+                    - "@app.repository.team"
+                    - "@app.repository.team_membership"
+                    - "@app.repository.credentials_bucket"
+                    - "@kube_status.http.middleware.predictable_request_mapping"
+                - Authenticator\InvitationContext:
+                    - "@kernel"
+                    - "@app.repository.user_invitation"
+                - Authenticator\AccountsContext:
+                    - "@app.repository.account"
+                    - "@kernel"
+                    - "@google.http.middleware.predictable_request_mapping"
+                    - "@app.repository.billing_profile"
+                    - "@app.billing.plan_repository"
+                - Authenticator\SubscriptionContext:
+                    - "@kernel"
 
     extensions:
         Behat\Symfony2Extension:

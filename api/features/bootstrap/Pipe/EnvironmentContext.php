@@ -12,7 +12,6 @@ use ContinuousPipe\Pipe\Uuid\UuidTransformer;
 use ContinuousPipe\Pipe\View\DeploymentRepository;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Team\TeamRepository;
-use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\User;
 use function GuzzleHttp\Promise\unwrap;
 use JMS\Serializer\SerializerInterface;
@@ -49,11 +48,6 @@ class EnvironmentContext implements Context
     private $deploymentRepository;
 
     /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $inMemoryAuthenticatorClient;
-
-    /**
      * @var HookableNamespaceRepository
      */
     private $hookableNamespaceRepository;
@@ -79,7 +73,6 @@ class EnvironmentContext implements Context
         EventStore $eventStore,
         DeploymentRepository $deploymentRepository,
         MessageBus $eventBus,
-        InMemoryAuthenticatorClient $inMemoryAuthenticatorClient,
         HookableNamespaceRepository $hookableNamespaceRepository,
         JWTManagerInterface $jwtManager,
         Client $pipeClient,
@@ -89,7 +82,6 @@ class EnvironmentContext implements Context
         $this->eventStore = $eventStore;
         $this->deploymentRepository = $deploymentRepository;
         $this->eventBus = $eventBus;
-        $this->inMemoryAuthenticatorClient = $inMemoryAuthenticatorClient;
         $this->hookableNamespaceRepository = $hookableNamespaceRepository;
         $this->jwtManager = $jwtManager;
         $this->pipeClient = $pipeClient;

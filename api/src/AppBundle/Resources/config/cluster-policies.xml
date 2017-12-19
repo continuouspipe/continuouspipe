@@ -5,7 +5,7 @@
 
     <services>
         <service id="river.cluster_policies.policy_resolver" class="ContinuousPipe\River\ClusterPolicies\ClusterResolution\GetFromClusterInTeamBucket">
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
         <service id="river.cluster_policies.endpoint.enforce_policy_while_creating_deployment_request"
                  class="ContinuousPipe\River\ClusterPolicies\Endpoint\EnforceEndpointPolicyWhileCreatingDeploymentRequest"

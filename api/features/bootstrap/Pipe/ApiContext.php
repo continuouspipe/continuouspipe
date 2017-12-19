@@ -3,9 +3,11 @@
 namespace Pipe;
 
 use Behat\Behat\Context\Context;
+use ContinuousPipe\Authenticator\Security\User\UserNotFound;
 use ContinuousPipe\Security\Tests\Authenticator\InMemoryAuthenticatorClient;
 use ContinuousPipe\Security\User\SecurityUser;
 use ContinuousPipe\Security\User\User;
+use ContinuousPipe\Security\User\UserRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,10 +23,6 @@ class ApiContext implements Context
     private $tokenStorage;
 
     /**
-     * @var InMemoryAuthenticatorClient
-     */
-    private $authenticatorClient;
-    /**
      * @var KernelInterface
      */
     private $kernel;
@@ -33,17 +31,16 @@ class ApiContext implements Context
      * @var Response|null
      */
     private $response;
-
     /**
-     * @param TokenStorageInterface $tokenStorage
-     * @param InMemoryAuthenticatorClient $authenticatorClient
-     * @param KernelInterface $kernel
+     * @var UserRepository
      */
-    public function __construct(TokenStorageInterface $tokenStorage, InMemoryAuthenticatorClient $authenticatorClient, KernelInterface $kernel)
+    private $userRepository;
+
+    public function __construct(TokenStorageInterface $tokenStorage, UserRepository $userRepository, KernelInterface $kernel)
     {
         $this->tokenStorage = $tokenStorage;
-        $this->authenticatorClient = $authenticatorClient;
         $this->kernel = $kernel;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -51,8 +48,12 @@ class ApiContext implements Context
      */
     public function iAmAuthenticated()
     {
-        $user = new User('samuel', Uuid::uuid1());
-        $this->authenticatorClient->addUser($user);
+        try {
+            $user = $this->userRepository->findOneByUsername('samuel');
+        } catch (UserNotFound $e) {
+            $user = new User('samuel', Uuid::uuid1());
+            $this->userRepository->save($user);
+        }
 
         $token = new JWTUserToken(['ROLE_USER']);
         $token->setUser(new SecurityUser($user));

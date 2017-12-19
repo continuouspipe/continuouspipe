@@ -1,0 +1,7 @@
+{% extends '::base.html.twig' %}
+{% block head %}
+<meta http-equiv="refresh" content="0;URL='{{ url('home') }}'" />
+{% endblock %}
+{% block body %}
+<p>Redirecting to <a href="{{ path('home') }}">the account page</a>.</p>
+{% endblock %}

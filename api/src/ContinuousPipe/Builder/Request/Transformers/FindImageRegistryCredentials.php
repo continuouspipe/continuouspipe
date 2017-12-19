@@ -7,7 +7,7 @@ use ContinuousPipe\Builder\Docker\CredentialsRepository;
 use ContinuousPipe\Builder\Request\BuildRequest;
 use ContinuousPipe\Builder\Request\BuildRequestException;
 use ContinuousPipe\Builder\Request\BuildRequestTransformer;
-use ContinuousPipe\Security\Authenticator\CredentialsNotFound;
+use ContinuousPipe\Security\Credentials\CredentialsNotFound;
 
 class FindImageRegistryCredentials implements BuildRequestTransformer
 {

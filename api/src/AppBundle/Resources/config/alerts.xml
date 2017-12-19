@@ -14,7 +14,7 @@
         </service>
 
         <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\OnRuntime\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">
-            <argument type="service" id="authenticator.bucket_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
         </service>
 
         <service id="river.alerts.on_runtime.missing_variables" class="ContinuousPipe\River\Alerts\OnRuntime\MissingVariablesOnDefaultBranch">

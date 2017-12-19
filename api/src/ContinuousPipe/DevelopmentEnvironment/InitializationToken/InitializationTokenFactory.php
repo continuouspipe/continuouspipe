@@ -2,10 +2,12 @@
 
 namespace ContinuousPipe\DevelopmentEnvironment\InitializationToken;
 
+use ContinuousPipe\Authenticator\Security\ApiKey\UserApiKeyFactory;
 use ContinuousPipe\DevelopmentEnvironment\Aggregate\DevelopmentEnvironment;
 use ContinuousPipe\DevelopmentEnvironment\Aggregate\DevelopmentEnvironmentRepository;
 use ContinuousPipe\DevelopmentEnvironmentBundle\Request\InitializationTokenCreationRequest;
 use ContinuousPipe\Events\Transaction\TransactionManager;
+use ContinuousPipe\Security\ApiKey\UserApiKey;
 use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
 use ContinuousPipe\Security\User\User;
 use Ramsey\Uuid\UuidInterface;
@@ -24,21 +26,24 @@ class InitializationTokenFactory
     private $eventBus;
 
     /**
-     * @var AuthenticatorClient
+     * @var UserApiKeyFactory
      */
-    private $authenticatorClient;
+    private $userApiKeyFactory;
 
-    public function __construct(DevelopmentEnvironmentRepository $developmentEnvironmentRepository, MessageBus $eventBus, AuthenticatorClient $authenticatorClient)
-    {
+    public function __construct(
+        DevelopmentEnvironmentRepository $developmentEnvironmentRepository,
+        MessageBus $eventBus,
+        UserApiKeyFactory $userApiKeyFactory
+    ) {
         $this->developmentEnvironmentRepository = $developmentEnvironmentRepository;
         $this->eventBus = $eventBus;
-        $this->authenticatorClient = $authenticatorClient;
+        $this->userApiKeyFactory = $userApiKeyFactory;
     }
 
     public function create(UuidInterface $developmentEnvironmentUuid, User $user, InitializationTokenCreationRequest $creationRequest) : InitializationToken
     {
         $developmentEnvironment = $this->developmentEnvironmentRepository->find($developmentEnvironmentUuid);
-        $developmentEnvironment->createInitializationToken($this->authenticatorClient, $user, $creationRequest);
+        $developmentEnvironment->createInitializationToken($this->userApiKeyFactory, $user, $creationRequest);
 
         foreach ($developmentEnvironment->raisedEvents() as $event) {
             $this->eventBus->handle($event);

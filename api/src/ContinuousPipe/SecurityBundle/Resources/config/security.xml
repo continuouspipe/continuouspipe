@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="security.user_context" class="ContinuousPipe\Security\User\UserContext">
+            <argument type="service" id="security.token_storage" />
+        </service>
+
+        <!-- Param converters -->
+        <service id="security.request.param_converter.user" class="ContinuousPipe\Security\Request\ParamConverter\UserParamConverter">
+            <argument type="service" id="security.user_context" />
+
+            <tag name="request.param_converter" converter="user" />
+        </service>
+
+        <!-- API key authentication -->
+        <service id="security.api_key.user_provider.from_user_repository" class="ContinuousPipe\Security\User\UserProvider">
+            <argument type="service" id="app.repository.user" />
+        </service>
+
+        <service id="security.api_key.user_provider" class="ContinuousPipe\Security\Authentication\ApiKeyUserFromRepositoryProvider">
+            <argument type="service" id="security.api_key.user_provider.from_user_repository" />
+            <argument type="service" id="app.repository.user_api_key" />
+        </service>
+
+        <service id="security.api_key_authenticator"
+                 class="ContinuousPipe\Security\Authentication\ApiKeyAuthenticator"
+                 public="false" />
+    </services>
+</container>
