@@ -54,7 +54,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
     public function findByTeam(Team $team) : array
     {
         return $this->getRepository()->findBy([
-            'team.slug' => $team->getSlug(),
+            'team' => $team->getSlug(),
         ]);
     }
 
