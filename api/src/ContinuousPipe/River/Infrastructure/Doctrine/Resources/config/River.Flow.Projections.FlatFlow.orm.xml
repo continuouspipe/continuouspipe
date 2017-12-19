@@ -7,7 +7,11 @@
     <entity name="ContinuousPipe\River\Flow\Projections\FlatFlow">
         <id name="uuid" type="uuid" />
         <field name="configuration" type="json_array" />
+        <field name="pinnedBranches" type="simple_array" nullable="true"/>
+        <embedded name="flexConfiguration" class="ContinuousPipe\River\Flex\FlexConfiguration" />
+
         <one-to-many field="pipelines" target-entity="ContinuousPipe\River\Flow\Projections\FlatPipeline" mapped-by="flow" />
+
         <many-to-one field="repository" target-entity="ContinuousPipe\River\AbstractCodeRepository">
             <cascade>
                 <cascade-persist/>
@@ -15,10 +19,12 @@
             <join-column name="repository_identifier" referenced-column-name="identifier" />
         </many-to-one>
 
-        <embedded name="team" class="ContinuousPipe\Security\Team\Team" />
-        <embedded name="user" class="ContinuousPipe\Security\User\User" />
-        <embedded name="flexConfiguration" class="ContinuousPipe\River\Flex\FlexConfiguration" />
+        <many-to-one field="user" target-entity="ContinuousPipe\Security\User\User">
+            <join-column name="user_username" referenced-column-name="username" />
+        </many-to-one>
 
-        <field name="pinnedBranches" type="simple_array" nullable="true"/>
+        <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team">
+            <join-column name="team_slug" referenced-column-name="slug" />
+        </many-to-one>
     </entity>
 </doctrine-mapping>
