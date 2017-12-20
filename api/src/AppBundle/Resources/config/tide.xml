@@ -153,6 +153,8 @@
             <argument type="service" id="river.tide_configuration_factory" />
             <argument type="service" id="river.commit_resolver" />
             <argument type="service" id="river.tide.task_runner" />
+            <argument type="service" id="app.repository.team"/>
+            <argument type="service" id="app.repository.user"/>
         </service>
 
         <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">

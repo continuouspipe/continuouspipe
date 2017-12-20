@@ -14,6 +14,8 @@ use ContinuousPipe\River\Task\TaskFactoryNotFound;
 use ContinuousPipe\River\Task\TaskFactoryRegistry;
 use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
+use ContinuousPipe\Security\Team\TeamRepository;
+use ContinuousPipe\Security\User\UserRepository;
 use LogStream\LoggerFactory;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -44,21 +46,31 @@ class TideFactory
      * @var TaskRunner
      */
     private $taskRunner;
-
     /**
-     * @param LoggerFactory            $loggerFactory
-     * @param TaskFactoryRegistry      $taskFactoryRegistry
-     * @param TideConfigurationFactory $configurationFactory
-     * @param CommitResolver           $commitResolver
-     * @param TaskRunner               $taskRunner
+     * @var TeamRepository
      */
-    public function __construct(LoggerFactory $loggerFactory, TaskFactoryRegistry $taskFactoryRegistry, TideConfigurationFactory $configurationFactory, CommitResolver $commitResolver, TaskRunner $taskRunner)
-    {
+    private $teamRepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    public function __construct(
+        LoggerFactory $loggerFactory,
+        TaskFactoryRegistry $taskFactoryRegistry,
+        TideConfigurationFactory $configurationFactory,
+        CommitResolver $commitResolver,
+        TaskRunner $taskRunner,
+        TeamRepository $teamRepository,
+        UserRepository $userRepository
+    ) {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
         $this->configurationFactory = $configurationFactory;
         $this->commitResolver = $commitResolver;
         $this->taskRunner = $taskRunner;
+        $this->teamRepository = $teamRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -83,8 +95,8 @@ class TideFactory
         $tideUuid = $tideUuid ?: $request->getTargetTideUuid() ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
             $flow->getUuid(),
-            $flow->getTeam(),
-            $flow->getUser(),
+            $this->teamRepository->find($flow->getTeam()->getSlug()),
+            $this->userRepository->findOneByUsername($flow->getUser()->getUsername()),
             $tideUuid,
             $request->getCodeReference(),
             $log,
