@@ -14,6 +14,7 @@ RUN if [ -n "$GITHUB_TOKEN" ]; then \
         composer config github-oauth.github.com $GITHUB_TOKEN && \
         composer install -o --no-interaction; \
         bin/console assets:install; \
+        bin/console assetic:dump; \
     fi;
 
 # Remove cache and logs if some and fixes permissions
