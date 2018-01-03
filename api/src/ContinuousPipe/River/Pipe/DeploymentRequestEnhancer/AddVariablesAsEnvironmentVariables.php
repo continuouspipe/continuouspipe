@@ -5,22 +5,19 @@ namespace ContinuousPipe\River\Pipe\DeploymentRequestEnhancer;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Model\Component\EnvironmentVariable;
 use ContinuousPipe\Pipe\DeploymentRequest;
+use ContinuousPipe\River\Flow\Variable\FlowVariableResolver;
 use ContinuousPipe\River\Task\TaskDetails;
 use ContinuousPipe\River\Tide;
 
 class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
 {
-    /**
-     * @var DeploymentRequestEnhancer
-     */
     private $decoratedEnhancer;
+    private $flowVariableResolver;
 
-    /**
-     * @param DeploymentRequestEnhancer $decoratedEnhancer
-     */
-    public function __construct(DeploymentRequestEnhancer $decoratedEnhancer)
+    public function __construct(DeploymentRequestEnhancer $decoratedEnhancer, FlowVariableResolver $flowVariableResolver)
     {
         $this->decoratedEnhancer = $decoratedEnhancer;
+        $this->flowVariableResolver = $flowVariableResolver;
     }
 
     /**
@@ -49,9 +46,10 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
     private function addDefaultComponentEnvironmentVariables(Tide $tide, Component $component, array $variables) : array
     {
         $tideVariables = $tide->getConfiguration()['variables'];
+        $context = $this->flowVariableResolver->createContext($tide->getFlowUuid(), $tide->getCodeReference());
 
         foreach ($tideVariables as $tideVariable) {
-            if ($this->shouldBeAddedAsDefault($component, $tideVariable)) {
+            if ($this->shouldBeAddedAsDefault($component, $tideVariable, $context)) {
                 if (!$this->hasEnvironmentVariable($variables, $tideVariable['name'])) {
                     $variables[] = new EnvironmentVariable($tideVariable['name'], $tideVariable['value']);
                 }
@@ -78,8 +76,16 @@ class AddVariablesAsEnvironmentVariables implements DeploymentRequestEnhancer
         return false;
     }
 
-    private function shouldBeAddedAsDefault(Component $component, array $tideVariable) : bool
+    private function shouldBeAddedAsDefault(Component $component, array $tideVariable, Tide\Configuration\ArrayObject $context) : bool
     {
+        if (isset($tideVariable['condition'])) {
+            $conditionMatches = (bool) $this->flowVariableResolver->resolveExpression($tideVariable['condition'], $context);
+
+            if (!$conditionMatches) {
+                return false;
+            }
+        }
+
         foreach ($tideVariable['as_environment_variable'] as $serviceName) {
             if ($serviceName == '*' || $serviceName == $component->getName()) {
                 return true;

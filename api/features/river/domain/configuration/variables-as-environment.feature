@@ -79,6 +79,39 @@ Feature:
       | name        | value |
       | ENVIRONMENT | prod  |
 
+  Scenario: Condition is kept even if the variable is exposed as environment variable
+    Given I have a flow with the following configuration:
+    """
+    variables:
+    - name: ENVIRONMENT
+      value: dev
+      as_environment_variable: true
+      condition: code_reference.branch != 'master'
+    - name: ENVIRONMENT
+      value: prod
+      as_environment_variable: true
+      condition: code_reference.branch == 'master'
+    """
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    defaults:
+        cluster: foo
+
+    tasks:
+        deployment:
+            deploy:
+                services:
+                    foo:
+                        specification:
+                            source:
+                                image: busyboxy
+    """
+    When a tide is started for the branch "master"
+    And the deployment succeed
+    Then the component "foo" should be deployed with the following environment variables:
+      | name        | value |
+      | ENVIRONMENT | prod  |
+
   Scenario: Environment variable is overwritten by the tasks
     Given I have a flow with the following configuration:
     """
