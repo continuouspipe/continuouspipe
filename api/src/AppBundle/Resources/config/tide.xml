@@ -6,9 +6,16 @@
 
     <services>
         <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
-        <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
+        <service id="river.repository.tide.from_bus" class="ContinuousPipe\River\Repository\EventBusTideRepository">
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.tide_factory" />
+        </service>
+        <service id="river.repository.tide" alias="river.repository.tide.from_bus" />
+
+        <service id="river.repository.tide.keep_aggregate_in_memory"
+                class="ContinuousPipe\River\Repository\KeepTideAggregateInMemory"
+                decorates="river.repository.tide">
+            <argument type="service" id="river.repository.tide.keep_aggregate_in_memory.inner" />
         </service>
 
         <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
