@@ -33,6 +33,7 @@
                  class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\AddVariablesAsEnvironmentVariables"
                  decorates="river.pipe.deployment_request_enhancer">
             <argument type="service" id="river.pipe.deployment_request_enhancer.add_variables_as_environment_variables.inner" />
+            <argument type="service" id="river.flow.variable.flow_variable_resolver"/>
         </service>
 
         <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
