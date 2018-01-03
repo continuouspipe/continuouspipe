@@ -19,6 +19,8 @@ class PopAndDispatchEventsTransactionManager implements TransactionManager
      */
     private $eventBus;
 
+    private $cache = [];
+
     public function __construct(TideRepository $tideRepository, MessageBus $eventBus)
     {
         $this->tideRepository = $tideRepository;
@@ -30,7 +32,11 @@ class PopAndDispatchEventsTransactionManager implements TransactionManager
      */
     public function apply(UuidInterface $tideUuid, callable $transaction) : Tide
     {
-        $tide = $this->tideRepository->find($tideUuid);
+        if (isset($this->cache[(string) $tideUuid])) {
+            $tide = $this->cache[(string) $tideUuid];
+        } else {
+            $tide = $this->tideRepository->find($tideUuid);
+        }
 
         if (null !== ($result = $transaction($tide))) {
             if (!$tide instanceof Tide) {
@@ -43,6 +49,8 @@ class PopAndDispatchEventsTransactionManager implements TransactionManager
         foreach ($tide->popNewEvents() as $event) {
             $this->eventBus->handle($event);
         }
+
+        $this->cache[(string) $tideUuid] = $tide;
 
         return $tide;
     }
