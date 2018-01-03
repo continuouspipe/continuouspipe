@@ -244,10 +244,13 @@
         </service>
 
         <!-- Transactions -->
-        <service id="river.tide.transaction_manager" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
+        <service id="river.tide.transaction_manager.pop_and_dispatch_events" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="event_bus" />
+
+            <tag name="kernel.event_subscriber" />
         </service>
+        <service id="river.tide.transaction_manager" alias="river.tide.transaction_manager.pop_and_dispatch_events" />
 
         <!-- Concurrency -->
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">

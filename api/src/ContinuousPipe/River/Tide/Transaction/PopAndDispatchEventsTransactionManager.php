@@ -2,12 +2,14 @@
 
 namespace ContinuousPipe\River\Tide\Transaction;
 
+use ContinuousPipe\Message\Bridge\Symfony\Events;
 use ContinuousPipe\River\Repository\TideRepository;
 use ContinuousPipe\River\Tide;
 use Ramsey\Uuid\UuidInterface;
 use SimpleBus\Message\Bus\MessageBus;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PopAndDispatchEventsTransactionManager implements TransactionManager
+class PopAndDispatchEventsTransactionManager implements TransactionManager, EventSubscriberInterface
 {
     /**
      * @var TideRepository
@@ -53,5 +55,20 @@ class PopAndDispatchEventsTransactionManager implements TransactionManager
         $this->cache[(string) $tideUuid] = $tide;
 
         return $tide;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            Events::MESSAGE_PROCESSED => 'messageProcessed',
+        ];
+    }
+
+    public function messageProcessed()
+    {
+        $this->cache = [];
     }
 }
