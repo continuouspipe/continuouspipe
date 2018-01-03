@@ -6,10 +6,11 @@
 
     <services>
         <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
-        <service id="river.repository.tide" class="ContinuousPipe\River\Repository\EventBusTideRepository">
+        <service id="river.repository.tide.from_bus" class="ContinuousPipe\River\Repository\EventBusTideRepository">
             <argument type="service" id="river.tide_event_store" />
             <argument type="service" id="river.tide_factory" />
         </service>
+        <service id="river.repository.tide" alias="river.repository.tide.from_bus" />
 
         <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
             <argument type="service" id="river.tide_event_store" />
@@ -243,10 +244,13 @@
         </service>
 
         <!-- Transactions -->
-        <service id="river.tide.transaction_manager" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
+        <service id="river.tide.transaction_manager.pop_and_dispatch_events" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
             <argument type="service" id="river.repository.tide" />
             <argument type="service" id="event_bus" />
+
+            <tag name="kernel.event_subscriber" />
         </service>
+        <service id="river.tide.transaction_manager" alias="river.tide.transaction_manager.pop_and_dispatch_events" />
 
         <!-- Concurrency -->
         <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">

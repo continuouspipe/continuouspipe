@@ -712,12 +712,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "a39588b628d2172022658098b0c53eb4b2ba1896"
+                "reference": "529ae70557dc0095e22d58cb2b9c419c5326b0d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/a39588b628d2172022658098b0c53eb4b2ba1896",
-                "reference": "a39588b628d2172022658098b0c53eb4b2ba1896",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/529ae70557dc0095e22d58cb2b9c419c5326b0d7",
+                "reference": "529ae70557dc0095e22d58cb2b9c419c5326b0d7",
                 "shasum": ""
             },
             "require": {
@@ -745,7 +745,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2017-10-17 15:08:50"
+            "time": "2018-01-03 16:21:22"
         },
         {
             "name": "continuous-pipe/model",
