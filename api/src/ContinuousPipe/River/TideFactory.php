@@ -16,7 +16,9 @@ use ContinuousPipe\River\Task\TaskList;
 use ContinuousPipe\River\Task\TaskRunner;
 use ContinuousPipe\Security\Team\TeamRepository;
 use ContinuousPipe\Security\User\UserRepository;
+use JMS\Serializer\SerializerInterface;
 use LogStream\LoggerFactory;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
@@ -54,6 +56,14 @@ class TideFactory
      * @var UserRepository
      */
     private $userRepository;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     public function __construct(
         LoggerFactory $loggerFactory,
@@ -62,7 +72,9 @@ class TideFactory
         CommitResolver $commitResolver,
         TaskRunner $taskRunner,
         TeamRepository $teamRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        LoggerInterface $logger,
+        SerializerInterface $serializer
     ) {
         $this->loggerFactory = $loggerFactory;
         $this->taskFactoryRegistry = $taskFactoryRegistry;
@@ -71,6 +83,8 @@ class TideFactory
         $this->taskRunner = $taskRunner;
         $this->teamRepository = $teamRepository;
         $this->userRepository = $userRepository;
+        $this->logger = $logger;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -91,12 +105,18 @@ class TideFactory
         $log = $this->loggerFactory->create()->getLog();
         $trigger = $request->getGenerationTrigger();
 
+        $this->logger->warning('Creating tide', [
+            'flow_team' => $this->serializer->serialize($flow->getTeam(), 'json'),
+            'flow_user' => $this->serializer->serialize($flow->getUser(), 'json'),
+            'repository_team' => $this->serializer->serialize($this->teamRepository->find($flow->getTeam()->getSlug()), 'json'),
+        ]);
+
         $events = new EventCollection();
         $tideUuid = $tideUuid ?: $request->getTargetTideUuid() ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
             $flow->getUuid(),
-            $this->teamRepository->find($flow->getTeam()->getSlug()),
-            $this->userRepository->findOneByUsername($flow->getUser()->getUsername()),
+            $flow->getTeam(),
+            $flow->getUser(),
             $tideUuid,
             $request->getCodeReference(),
             $log,
