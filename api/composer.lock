@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4428c871e5123dd7599bd44dcb6f5e60",
+    "content-hash": "1f62b920a06821da826275fa05684728",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -643,16 +643,16 @@
         },
         {
             "name": "continuous-pipe/events",
-            "version": "0.2.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/events.git",
-                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49"
+                "reference": "9f5109b78aea6126641ade5d6887377d8badbe7d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/events/zipball/603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
-                "reference": "603f3a2c51ed9f68dd2acfb7ea9a1b360add8d49",
+                "url": "https://api.github.com/repos/continuouspipe/events/zipball/9f5109b78aea6126641ade5d6887377d8badbe7d",
+                "reference": "9f5109b78aea6126641ade5d6887377d8badbe7d",
                 "shasum": ""
             },
             "type": "library",
@@ -662,10 +662,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/continuouspipe/events/tree/0.2.0",
+                "source": "https://github.com/continuouspipe/events/tree/master",
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
-            "time": "2017-03-02T13:13:17+00:00"
+            "time": "2018-01-04 14:47:49"
         },
         {
             "name": "continuous-pipe/flex",
@@ -11408,6 +11408,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "csa/guzzle-bundle": 20,
+        "continuous-pipe/events": 20,
         "sroze/kubernetes-client": 20,
         "continuous-pipe/message": 20,
         "continuous-pipe/flex": 20
