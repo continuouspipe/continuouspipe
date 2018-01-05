@@ -1,0 +1,109 @@
+variables:
+    - name: KUBE_PROXY_HOSTNAME
+      condition: code_reference.branch == "production"
+      value: kube-proxy.continuouspipe.io
+    - name: KUBE_PROXY_HOSTNAME
+      condition: code_reference.branch == "master"
+      value: kube-proxy-staging.continuouspipe.io
+
+tasks:
+    images:
+        build:
+            services:
+                api:
+                    image: docker.io/inviqasession/cp-k8s-watcher
+
+    deploy:
+        deploy:
+            cluster: ${CLUSTER}
+            environment:
+                name: '"k8s-watcher-" ~ code_reference.branch'
+
+            services:
+                api:
+                    specification:
+                        environment_variables: &ENV
+                            - name: SENTRY_DSN
+                              value: http://c6f81870b55f41d482a8300ec7ff0d42@sentry.tools.sroze.io/15
+                            - name: FIREBASE_APP
+                              value: continuous-pipe
+                            - name: STATSD_HOST
+                              value: statsd.hostedgraphite.com
+                            - name: STATSD_PORT
+                              value: 8125
+                            - name: STATSD_PREFIX
+                              value: eeea7603-a2d5-4d51-adc4-0c3f8f042b28.k8s-watcher.
+                            - name: KUBE_PROXY_HOSTNAME
+                              value: ${KUBE_PROXY_HOSTNAME}
+                            - name: FIREBASE_SERVICE_ACCOUNT
+                              value: ${FIREBASE_SERVICE_ACCOUNT}
+
+                    deployment_strategy:
+                        readiness_probe:
+                            type: tcp
+                            port: 80
+
+                redis:
+                    deployment_strategy:
+                        readiness_probe:
+                            type: tcp
+                            port: 6379
+
+                    specification:
+                        resources:
+                            requests:
+                                cpu: 50m
+                                memory: 100Mi
+                            limits:
+                                cpu: 250m
+                                memory: 250Mi
+
+                        ports:
+                            - 6379
+
+                worker:
+                    specification:
+                        environment_variables:
+                            <<: *ENV
+
+                        source:
+                            from_service: api
+
+                        accessibility:
+                            from_cluster: false
+
+                        command:
+                            - node
+                            - /app/worker.js
+
+                        resources:
+                            requests:
+                                cpu: 25m
+                                memory: 25Mi
+                            limits:
+                                cpu: 250m
+                                memory: 250Mi
+
+                cron:
+                    specification:
+                        environment_variables:
+                            <<: *ENV
+
+                        source:
+                            from_service: api
+
+                        accessibility:
+                            from_cluster: false
+
+                        command:
+                            - node
+                            - /app/stats.js
+
+                        resources:
+                            requests:
+                                cpu: 25m
+                                memory: 25Mi
+                            limits:
+                                cpu: 250m
+                                memory: 250Mi
+

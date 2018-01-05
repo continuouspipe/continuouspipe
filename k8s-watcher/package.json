@@ -1,0 +1,30 @@
+{
+  "name": "k8s-watcher",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Kubernetes Watcher",
+  "author": "Samuel ROZE <samuel.roze@gmail.com>",
+  "dependencies": {
+    "ajv": "^4.8.2",
+    "cli-table": "^0.3.1",
+    "diff": "^3.4.0",
+    "express": "^4.13.3",
+    "firebase": "^2.4.2",
+    "firebase-admin": "^5.2.1",
+    "googleapis": "^21.3.0",
+    "kubernetes-client": "^2.2.2",
+    "kue": "^0.11.5",
+    "node-statsd": "^0.1.1",
+    "raven": "^0.12.0",
+    "ws": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^3.5.0",
+    "sinon": "^3.2.1",
+    "sleep": "^5.1.1"
+  },
+  "scripts": {
+    "test": "mocha spec/**/*.spec.js"
+  }
+}
