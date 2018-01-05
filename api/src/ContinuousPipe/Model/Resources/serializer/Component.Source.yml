@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Component\Source:
+    properties:
+        image:
+            type: string
+        tag:
+            type: string
+        repository:
+            type: string

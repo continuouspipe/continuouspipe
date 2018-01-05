@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Resources:
+    properties:
+        requests:
+            type: ContinuousPipe\Model\Component\ResourcesRequest
+        limits:
+            type: ContinuousPipe\Model\Component\ResourcesRequest

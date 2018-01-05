@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Scalability:
+    properties:
+        enabled:
+            type: boolean
+        numberOfReplicas:
+            type: integer

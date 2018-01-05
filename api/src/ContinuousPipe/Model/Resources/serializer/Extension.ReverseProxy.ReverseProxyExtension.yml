@@ -1,0 +1,9 @@
+ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension:
+    properties:
+        domainNames:
+            serialized_name: domain_names
+            type: array<string>
+    virtual_properties:
+        getName:
+            serialized_name: name
+            type: string

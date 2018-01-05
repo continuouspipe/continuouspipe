@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Application:
+    properties:
+        identifier:
+            type: string
+        name:
+            type: string
+        environments:
+            type: array<ContinuousPipe\Model\Environment>

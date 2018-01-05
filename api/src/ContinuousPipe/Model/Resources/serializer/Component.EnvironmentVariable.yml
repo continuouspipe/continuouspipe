@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\EnvironmentVariable:
+    properties:
+        name:
+            type: string
+        value:
+            type: string

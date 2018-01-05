@@ -1,0 +1,14 @@
+ContinuousPipe\Model\Environment:
+    properties:
+        identifier:
+            type: string
+        name:
+            type: string
+        components:
+            type: array<ContinuousPipe\Model\Component>
+        application:
+            type: ContinuousPipe\Model\Application
+        labels:
+            type: array<string,string>
+        status:
+            type: string

@@ -1,0 +1,17 @@
+ContinuousPipe\Model\Component\Endpoint:
+    properties:
+        name:
+            type: string
+        type:
+            type: string
+        annotations:
+            type: array<string,string>
+        sslCertificates:
+            type: array<ContinuousPipe\Model\Component\Endpoint\SslCertificate>
+        cloudFlareZone:
+            type: ContinuousPipe\Model\Component\Endpoint\CloudFlareZone
+        httpLabs:
+            type: ContinuousPipe\Model\Component\Endpoint\HttpLabs
+            serialized_name: httplabs
+        ingress:
+            type: ContinuousPipe\Model\Component\Endpoint\EndpointIngress

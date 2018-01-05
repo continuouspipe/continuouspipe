@@ -1,0 +1,20 @@
+ContinuousPipe\Model\Component:
+    properties:
+        identifier:
+            type: string
+        name:
+            type: string
+        specification:
+            type: ContinuousPipe\Model\Component\Specification
+        environment:
+            type: ContinuousPipe\Model\Environment
+        labels:
+            type: array<string,string>
+        status:
+            type: ContinuousPipe\Model\Component\Status
+        extensions:
+            type: array<ContinuousPipe\Model\Extension>
+        deploymentStrategy:
+            type: ContinuousPipe\Model\Component\DeploymentStrategy
+        endpoints:
+            type: array<ContinuousPipe\Model\Component\Endpoint>

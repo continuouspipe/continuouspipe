@@ -1,0 +1,4 @@
+ContinuousPipe\Model\Component\RuntimePolicy:
+    properties:
+        privileged:
+            type: boolean

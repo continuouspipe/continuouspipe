@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Accessibility:
+    properties:
+        fromCluster:
+            type: boolean
+        fromExternal:
+            type: boolean

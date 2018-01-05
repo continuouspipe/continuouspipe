@@ -1,0 +1,11 @@
+ContinuousPipe\Model\Component\Volume:
+    discriminator:
+        field_name: type
+        map:
+            nfs: ContinuousPipe\Model\Component\Volume\NFS
+            emptyDirectory: ContinuousPipe\Model\Component\Volume\EmptyDirectory
+            hostPath: ContinuousPipe\Model\Component\Volume\HostPath
+            persistent: ContinuousPipe\Model\Component\Volume\Persistent
+    properties:
+        name:
+            type: string

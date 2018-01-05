@@ -190,7 +190,7 @@ jms_serializer:
                 path: "%kernel.root_dir%/../src/ContinuousPipe/Builder/Resources/serializer"
             ContinuousPipeModel:
                 namespace_prefix: "ContinuousPipe\\Model"
-                path: "%kernel.root_dir%/../vendor/continuous-pipe/model/src/Resources/serializer"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Model/Resources/serializer"
             KubernetesClient:
                 namespace_prefix: "Kubernetes\\Client"
                 path: "%kernel.root_dir%/../vendor/sroze/kubernetes-client/src/Resources/serializer"
