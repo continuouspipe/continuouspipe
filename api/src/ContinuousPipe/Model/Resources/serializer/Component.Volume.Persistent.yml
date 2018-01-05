@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Volume\Persistent:
+    properties:
+        capacity:
+            type: string
+        storageClass:
+            type: string

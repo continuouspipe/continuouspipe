@@ -1,0 +1,23 @@
+ContinuousPipe\Model\Component\Specification:
+    properties:
+        source:
+            type: ContinuousPipe\Model\Component\Source
+        accessibility:
+            type: ContinuousPipe\Model\Component\Accessibility
+        scalability:
+            type: ContinuousPipe\Model\Component\Scalability
+        ports:
+            type: array<ContinuousPipe\Model\Component\Port>
+        environmentVariables:
+            type: array<ContinuousPipe\Model\Component\EnvironmentVariable>
+        volumes:
+            type: array<ContinuousPipe\Model\Component\Volume>
+        volumeMounts:
+            type: array<ContinuousPipe\Model\Component\VolumeMount>
+        command:
+            type: array<string>
+        runtimePolicy:
+            type: ContinuousPipe\Model\Component\RuntimePolicy
+        resources:
+            type: ContinuousPipe\Model\Component\Resources
+            access_type: public_method

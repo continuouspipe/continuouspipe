@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Component\Status:
+    properties:
+        status:
+            type: string
+        publicEndpoints:
+            type: array<string>
+        containers:
+            type: array<ContinuousPipe\Model\Component\Status\ContainerStatus>

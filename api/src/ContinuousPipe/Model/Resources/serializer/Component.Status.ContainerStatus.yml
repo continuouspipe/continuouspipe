@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Component\Status\ContainerStatus:
+    properties:
+        identifier:
+            type: string
+        status:
+            type: string
+        restartCount:
+            type: integer

@@ -1,0 +1,16 @@
+ContinuousPipe\Model\Component\Endpoint\CloudFlareZone:
+    properties:
+        zoneIdentifier:
+            type: string
+        hostname:
+            type: string
+        recordSuffix:
+            type: string
+        authentication:
+            type: ContinuousPipe\Model\Component\Endpoint\CloudFlareAuthentication
+        proxied:
+            type: boolean
+        ttl:
+            type: integer
+        backendAddress:
+            type: string

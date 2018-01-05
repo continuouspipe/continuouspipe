@@ -1,0 +1,5 @@
+ContinuousPipe\Model\Extension:
+    discriminator:
+        field_name: name
+        map:
+            reverse_proxy: ContinuousPipe\Model\Extension\ReverseProxy\ReverseProxyExtension

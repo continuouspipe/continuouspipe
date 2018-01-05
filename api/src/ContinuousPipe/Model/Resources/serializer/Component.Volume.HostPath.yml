@@ -1,0 +1,4 @@
+ContinuousPipe\Model\Component\Volume\HostPath:
+    properties:
+        path:
+            type: string

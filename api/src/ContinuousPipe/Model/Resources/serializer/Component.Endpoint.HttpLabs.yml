@@ -1,0 +1,10 @@
+ContinuousPipe\Model\Component\Endpoint\HttpLabs:
+    properties:
+        apiKey:
+            type: string
+        projectIdentifier:
+            type: string
+        incoming:
+            type: string
+        middlewares:
+            type: array<array>

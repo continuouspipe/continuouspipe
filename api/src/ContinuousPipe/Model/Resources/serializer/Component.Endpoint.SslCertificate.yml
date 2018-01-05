@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Component\Endpoint\SslCertificate:
+    properties:
+        name:
+            type: string
+        cert:
+            type: string
+        key:
+            type: string
