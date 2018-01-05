@@ -1,0 +1,8 @@
+web:
+    build: .
+    expose:
+        - 443
+    volumes:
+        - .:/go/src/github.com/continuouspipe/kube-proxy/bin
+    environment:
+        KUBE_STATUS_LISTEN_ADDRESS:
