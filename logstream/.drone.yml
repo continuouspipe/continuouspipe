@@ -1,0 +1,13 @@
+image: sroze/drone-node0.10-php
+env:
+    - NODE_ENV=test
+script:
+    - npm config set cache /tmp/npm
+    - npm install
+    - meteor &
+    - sleep 30
+    - cd tests/cucumber
+    - node_modules/chimp/bin/chimp --ddp=http://localhost:3000 --browser=phantomjs
+cache:
+    - /tmp/npm
+

@@ -1,0 +1,9 @@
+api:
+    build: api
+    expose:
+        - 443
+        - 80
+    environment:
+        PORT: 443
+        FIREBASE_APP: continuous-pipe
+        SENTRY_DSN: http://f1da07bd0b8a487d8a1ce5aa10ada99c:95f16eb70f08439d9d60a99c78cc0a90@sentry.tools.sroze.io/14
