@@ -1,0 +1,78 @@
+{{ if .IsPage }}
+
+{{ $previous := .NextInSection }}
+{{ $next := .PrevInSection }}
+
+{{ if $previous | or $next }}
+<nav class="pagination" aria-label="Footer">
+  <div class="previous">
+  {{ if $previous }}
+      <a href="{{ $previous.Permalink }}" title="{{ $previous.Title }}">
+        <span class="direction">
+          Previous
+        </span>
+        <div class="page">
+          <div class="button button-previous" role="button" aria-label="Previous">
+            <i class="icon icon-back"></i>
+          </div>
+          <div class="stretch">
+            <div class="title">
+              {{ $previous.Title }}
+            </div>
+          </div>
+        </div>
+      </a>
+  {{ end }}
+  </div>
+
+  <div class="next">
+  {{ if $next }}
+      <a href="{{ $next.Permalink }}" title="{{ $next.Title }}">
+        <span class="direction">
+          Next
+        </span>
+        <div class="page">
+          <div class="stretch">
+            <div class="title">
+              {{ $next.Title }}
+            </div>
+          </div>
+          <div class="button button-next" role="button" aria-label="Next">
+            <i class="icon icon-forward"></i>
+          </div>
+        </div>
+      </a>
+  {{ end }}
+  </div>
+</nav>
+{{ end }}
+{{ end }}
+
+{{ if .IsHome }}
+{{ if gt (len .Site.Pages) 2 }}
+<nav class="pagination" aria-label="Footer">
+  <div class="previous">
+  </div>
+
+  {{ $title := (index (.Site.Pages.ByDate) 1).Title  }}
+  {{ $permalink := (index (.Site.Pages.ByDate) 1).Permalink }}
+  <div class="next">
+      <a href="{{ $permalink }}" title="{{ $title }}">
+        <span class="direction">
+          Next
+        </span>
+        <div class="page">
+          <div class="stretch">
+            <div class="title">
+              {{ $title }}
+            </div>
+          </div>
+          <div class="button button-next" role="button" aria-label="Next">
+            <i class="icon icon-forward"></i>
+          </div>
+        </div>
+      </a>
+  </div>
+</nav>
+{{ end }}
+{{ end }}

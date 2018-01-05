@@ -1,0 +1,9 @@
+.*
+.idea
+.git
+*___jb_old___
+*___jb_tmp___
+/cp-remote-logs**
+/.cp-remote-settings.yml
+/.cp-remote-env-settings.yml
+/.cp-remote-ignore

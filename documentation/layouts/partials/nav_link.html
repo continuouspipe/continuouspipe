@@ -1,0 +1,8 @@
+{{ $currentMenuEntry := .Scratch.Get "currentMenuEntry" }}
+{{ $isCurrent := eq .URL $currentMenuEntry.URL }}
+{{ $isCurrentParent := hasPrefix .URL $currentMenuEntry.URL }}
+
+<a {{ if (or $isCurrent $isCurrentParent) }}class="current"{{ end }} title="{{ $currentMenuEntry.Name }}" href="{{ $currentMenuEntry.URL | relURL}}">
+	{{ $currentMenuEntry.Pre }}
+	{{ $currentMenuEntry.Name }}
+</a>

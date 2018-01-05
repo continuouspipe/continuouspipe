@@ -1,0 +1,216 @@
+/* CP custom font */
+@font-face {
+  font-family: 'cp';
+  src:  url('../fonts/cp.eot?h159zp');
+  src:  url('../fonts/cp.eot?h159zp#iefix') format('embedded-opentype'),
+    url('../fonts/cp.ttf?h159zp') format('truetype'),
+    url('../fonts/cp.woff?h159zp') format('woff'),
+    url('../fonts/cp.svg?h159zp#cp') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="cp-icon-"], [class*=" cp-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'cp' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.cp-icon-PageLoad:before {
+  content: "\e907";
+}
+.cp-icon-Downtime:before {
+  content: "\e908";
+}
+.cp-icon-Onboarding:before {
+  content: "\e909";
+}
+.cp-icon-Sprint:before {
+  content: "\e90a";
+}
+.cp-icon-Feedback:before {
+  content: "\e90b";
+}
+.cp-icon-Deploying:before {
+  content: "\e90c";
+}
+.cp-icon-logo:before {
+  content: "\e906";
+}
+.cp-icon-old-logo:before {
+  content: "\e901";
+}
+.cp-icon-github:before {
+  content: "\e902";
+}
+.cp-icon-git-branch:before {
+  content: "\e903";
+}
+.cp-icon-arrow-right-up:before {
+  content: "\e904";
+}
+.cp-icon-commit:before {
+  content: "\e905";
+}
+.cp-icon-bitbucket:before {
+  content: "\e900";
+}
+.cp-icon-google:before {
+  content: "\ea8a";
+}
+
+.article .data {
+    text-align: left;
+}
+
+.header {
+    /* overwrites inherited style */
+    overflow: initial !important;
+}
+
+.ds-suggestions {
+    /* increase algolia font-size */
+    font-size: 1.5em;
+}
+
+@media only screen and (max-width: 768px) {
+    .ds-dropdown-menu {
+        position: fixed !important;
+        max-width: initial !important;
+        min-width: 100% !important;
+    }
+}
+
+header.header nav {
+    height: 56px;
+}
+
+.bar a {
+    display: inline;
+}
+
+.cp-website-link {
+    vertical-align: middle;
+}
+
+.cp-icon-logo {
+    cursor: pointer;
+}
+
+.bar.search {
+    transform: translate3d(0,-112px,0);
+}
+
+main.main article.article div.wrapper {
+    padding: 80px 16px 132px
+}
+main.main article.article div.wrapper h1 {
+    padding-bottom: 10px;
+}
+
+main.main nav div.wrapper div.toc ul > a {
+    color: rgba(0, 0, 0, 0.870588);    
+}
+
+main.main nav div.wrapper div.toc ul > li > ul:not(.current) {
+    display: none;
+}
+
+.highlight pre, .article pre {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.article code.hljs {
+    /* overwrites highlight js style */
+    background: none !important;    
+}
+
+.highlight pre {
+    color: #FFF;
+}
+
+.article .data {
+    padding: 0;
+}
+
+.article h2, .article h3, .article h4 {
+    font-weight: 700;
+}
+
+.article h2 {
+    font-size: 22px;
+}
+
+.article h3 {
+    font-size: 18px;
+    color: #5677fc;
+}
+
+.article h4 {
+    font-size: 14px;
+    color: #5677fc;
+    font-style: normal;
+}
+
+.admonition a {
+    color: initial !important;
+}
+
+.palette-primary-blue .article table th {
+    background-color: #5677fc;
+}
+
+figure {
+    margin-top: 1.5em;
+    text-align: center;
+}
+
+figure.half-width {
+    max-width: 50%;
+}
+
+figure.concepts {
+    max-width: 60%;
+}
+
+figure.three-quarter-width {
+    max-width: 75%;
+}
+
+table.highlighttable {
+    width: 95%;
+}
+
+table.highlighttable td {
+    padding: 0;
+}
+
+table.highlighttable td.code {
+    width: 100%;
+}
+
+table.highlighttable pre {
+    margin-top: 0;
+}
+
+table.highlighttable td div.linenodiv {
+    padding-right: 0 !important;
+}
+
+table.highlighttable td.code span[style*="color: #ae81ff"] {
+    color: #66d9ef !important;
+}
+
+div.highlight span[style*="color: #ae81ff"] {
+    color: #66d9ef !important;
+}
