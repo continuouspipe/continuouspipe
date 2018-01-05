@@ -105,12 +105,6 @@ class TideFactory
         $log = $this->loggerFactory->create()->getLog();
         $trigger = $request->getGenerationTrigger();
 
-        $this->logger->warning('Creating tide', [
-            'flow_team' => $this->serializer->serialize($flow->getTeam(), 'json'),
-            'flow_user' => $this->serializer->serialize($flow->getUser(), 'json'),
-            'repository_team' => $this->serializer->serialize($this->teamRepository->find($flow->getTeam()->getSlug()), 'json'),
-        ]);
-
         $events = new EventCollection();
         $tideUuid = $tideUuid ?: $request->getTargetTideUuid() ?: Uuid::uuid4();
         $tideContext = TideContext::createTide(
