@@ -1,0 +1,61 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Dashboard</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-tide"><md-icon>play_arrow</md-icon> Start manually</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" ng-if="isLoading">
+    <remote-resource resource-name="pipelines"></remote-resource>
+</md-content>
+<md-content flex id="content" ng-if="!isLoading && pipelines.length == 0">
+    <div class="zero-content-help">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <h3>Push something to your repository! Or manually run a deployment.</h3>
+        <p>By default, a tide starts automatically when you push to your code repository. Learn how to <a href="https://continuouspipe.io/docs/configure/introduction/" target="_blank">configure your flow</a> to <a href="https://continuouspipe.io/docs/configure/images/" target="_blank">build your Docker images</a>, <a href="https://continuouspipe.io/docs/configure/deployments/" target="_blank">deploy your services</a> or manage the <a href="https://continuouspipe.io/docs/configure/notifications/">notifications</a>.</p>
+    </div>
+</md-content>
+<md-content flex id="content" class="flow-dashboard" ng-if="!isLoading && pipelines.length != 0">
+    <div class="pipeline-content-container">
+        <pipeline-overview ng-repeat="pipeline in pipelines | orderBy:'name'" ng-class="{'pipelineSelected': pipeline === selectedPipeline}" ng-click="selectPipeline(pipeline)" class="pipeline-content" flow="flow" pipeline="pipeline">Loading...</pipeline-overview>
+    </div>
+
+    <md-subheader class="md-primary">Tides for <span class="md-subheader--large">{{ selectedPipeline.name }}</span></md-subheader>
+    <ul class="tide-list">
+        <li class="header">
+            <a>
+            <div class="tide-status">Status</div>
+            <div class="tide-source">Source</div>
+            <div class="tide-tasks">Tasks</div>
+            <div class="tide-creation-date">Creation date</div>
+            </a>
+        </li>
+
+        <li ng-repeat="tide in tidesForPipeline(selectedPipeline) | orderBy: '-creation_date'" ng-class="['status-'+tide.status]">
+            <a ui-sref="tide.logs({tideUuid: tide.uuid})">
+                <div class="tide-status status-text" ng-class="['status-'+tide.status]">{{ tide.status }}</div>
+                <div class="tide-source">
+                    <span>
+                        <md-tooltip md-direction="bottom">{{ tide.code_reference.branch }} ({{ tide.code_reference.sha1 }})</md-tooltip>
+                        <i class="cp-icon-git-branch"></i> <code>{{ tide.code_reference.branch }}</code>
+                    </span>
+                </div>
+                <div class="tide-tasks">
+                    <task-list tide="tide" />
+                </div>
+                <div class="tide-creation-date">
+                    <md-tooltip md-direction="left">{{ tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                    {{ tide.creation_date | timeAgo }}
+                </div>
+            </a>
+        </li>
+    </ul>
+    <div class="more">
+        <md-button class="md-raised" ng-click="loadMoreTides(selectedPipeline)" ng-disabled="isLoadingMore">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoadingMore"></md-progress-circular>
+            Load more
+        </md-button>
+    </div>
+</md-content>

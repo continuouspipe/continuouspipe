@@ -1,0 +1,102 @@
+div.list-items {
+    width: 100%;
+    color: #333;
+
+    [class^="list-col-"], [class*=" list-col-"] {
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .list-col-8 {
+        flex: 5;
+    }
+
+    .list-col-2 {
+        flex: 2;
+    }
+
+    .list-item, .list-items-header {
+        display: flex;
+        flex-flow: row nowrap;
+        flex-grow: 1;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .list-item {
+        background: #fff;
+        margin-bottom: 10px;
+        border: 1px solid #dfdfdf;
+
+        &.clickable {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+
+            > li[role="button"] {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .list-environment {
+        margin-bottom: 10px;
+
+        .list-item {
+            margin-bottom: 0;
+        }
+
+        .environment-details {
+            background: #fff;
+            margin-left: 20px;
+
+            table.components {
+                width: 100%;
+                border: 1px solid #dfdfdf;
+                border-top: none;
+
+                td, th {
+                    text-align: left;
+                    padding: 5px 10px;
+                }
+            }
+        }
+    }
+}
+
+@include smallScreen {
+    div.list-items {
+        &.responsive-list-items {
+            .list-item {
+                display: block;
+            }
+
+            .list-items-header {
+                display: none;
+            }
+
+            .list-col-8,
+            .list-col-2 {
+                display: block;
+                width: 100%;
+
+                &:before {
+                    content: attr(data-th) ": ";
+                    font-weight: bold;
+                    display: block;
+                    text-transform: uppercase;
+                    margin: 0 0 3px;
+                }
+            }
+        }
+    }
+}

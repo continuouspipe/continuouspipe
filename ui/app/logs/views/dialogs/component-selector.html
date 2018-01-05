@@ -1,0 +1,32 @@
+<form>
+    <md-toolbar>
+      <div class="md-toolbar-tools console-popup">
+        <h2>{{ title }}</code></h2>
+        <span flex></span>
+        <md-input-container>
+            <label>Pod</label>
+            <md-select ng-model="selectedPod">
+                <md-option ng-repeat="pod in component.status.containers" ng-value="pod">{{ pod.identifier }} ({{ pod.status }})</md-option>
+            </md-select>
+        </md-input-container>
+
+        <div class="modal-buttons">
+            <md-button class="md-icon-button expand-btn" ng-click="$root.expandModal = !$root.expandModal" ng-class="{'expanded-modal' : $root.expandModal}">
+                <md-icon class="material-icons" aria-label="Expand">&#xE56B;</md-icon>
+            </md-button>
+
+            <md-button class="md-icon-button" ng-click="close()">
+                <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
+            </md-button>
+        </div>
+      </div>
+    </md-toolbar>
+    <md-dialog-content ng-if="!selectedPod">
+        <div class="zero-content-help">
+            <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+            <h3>Select the pod</h3>
+            <p>This component have more than one pod, you have to select which one would you like to see the logs and events for.</p>
+        </div>
+    </md-dialog-content>
+    <md-dialog-content ng-if="selectedPod" ng-transclude></md-dialog-content>
+</form>

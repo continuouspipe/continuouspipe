@@ -1,0 +1,46 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="branches">Branches and Pull Requests</span>
+            <span ng-hide="branches">Loading...</span>
+        </h2>
+        <span flex></span>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help" ng-if="tides.length == 0">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <h3>Push something to your repository! Or manually run a deployment.</h3>
+    </div>
+    <md-subheader class="md-primary">Pinned Branches</md-subheader>
+    <ul class="branch-list">
+        <li ng-repeat="branch in branches | filter:{data: {pinned: true}} | orderBy:['data.name']"
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="(branches | filter:{data: {pinned: true}}).length == 0" class="branch-placeholder">
+            <p><strong>No pinned branches.</strong> Click on the icon on the right of the "other" branches to pin a branch.</p>
+        </li>
+    </ul>
+
+    <md-subheader class="md-primary">Branches with pull requests</md-subheader>
+    <ul class="branch-list">
+        <li ng-repeat="branch in pullRequests | orderBy:['data.name']"
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="pullRequests.length == 0" class="branch-placeholder">
+            <p>No pull-request found.</p>
+        </li>
+    </ul>
+
+    <md-subheader class="md-primary">Other branches</md-subheader>
+    <ul class="branch-list">
+        <li ng-repeat="branch in branches | filter:{data: {pinned: false}} | branchesWithoutPullRequest | orderBy:['data.name']"
+            ng-class="'status-'+(branch | latestTideInBranch).status"
+            ng-include="'flow/views/branches/list-branch-template.html'" />
+        <li ng-if="(branches | filter:{data: {pinned: false}} | branchesWithoutPullRequest).length == 0" class="branch-placeholder">
+            <p>No other branches.</p>
+        </li>
+    </ul>
+
+    </remote-resource>
+</md-content>

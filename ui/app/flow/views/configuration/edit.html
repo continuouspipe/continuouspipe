@@ -1,0 +1,84 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2><span>Configuration saved on CP</span></h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="configuration-content" ng-if="!configuration">
+    <remote-resource resource-name="configuration"></remote-resource>
+</md-content>
+<md-content flex id="content" class="configuration-content" ng-if="configuration">
+    <md-subheader class="md-primary">Variables</md-subheader>
+    <md-content class="form-variable-container" layout-gt-sm="row" layout-padding ng-repeat="(key, variable) in variables">
+        <form name="variableForm" layout-gt-sm="row" flex-gt-sm ng-model-options="{ updateOn: 'blur'}">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Name</label>
+                <input name="name" ng-model="variable.name" required ng-pattern="'([A-Za-z0-9_\.-]+)'">
+                <div ng-messages="variableForm.name.$error">
+                    <div ng-message="required">The name is required.</div>
+                    <div ng-message="pattern">The variable name should match the regex <code>([A-Za-z0-9_\.-]+)</code></div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm ng-if="!variable.encrypted_value">
+                <label>Value</label>
+                <input name="value" ng-model="variable.value" required>
+                <div ng-messages="variableForm.value.$error">
+                    <div ng-message="required">The value is required.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm ng-if="variable.encrypted_value">
+                <label>Encrypted value</label>
+                <input name="encrypted_value" ng-model="variable.encrypted_value" required>
+                <div ng-messages="variableForm.encrypted_value.$error">
+                    <div ng-message="required">The value is required.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Optional condition</label>
+                <input ng-model="variable.condition">
+            </md-input-container>
+
+            <md-input-container>
+                <md-button class="md-fab md-mini md-black" ng-click="changeExposedAsEnvironment($event, key)">
+                    <md-tooltip md-direction="left">
+                        <span ng-if="variable.as_environment_variable === true">Variable will be injected as environment variable in all the containers</span>
+                        <span ng-if="variable.as_environment_variable.length">Variable will be injected as environment variable to some of your containers</span>
+                        <span ng-if="!variable.as_environment_variable">Variable will NOT be injected as environment variable</span>
+                    </md-tooltip>
+                    <md-icon ng-if="variable.as_environment_variable === true">cloud_done</md-icon>
+                    <md-icon ng-if="variable.as_environment_variable.length">cloud</md-icon>
+                    <md-icon ng-if="!variable.as_environment_variable">cloud_off</md-icon>
+                </md-button>
+
+                <md-button class="md-fab md-mini md-primary" aria-label="Encrypt the value" ng-click="encryptByKey(key)" ng-show="!variable.encrypted_value">
+                    <md-tooltip md-direction="left">Encrypt variable's value</md-tooltip>
+                    <md-icon>enhanced_encryption</md-icon>
+                </md-button>
+
+                <md-button class="md-fab md-mini md-warn" aria-label="Remove environment variable" ng-click="removeVariableByKey(key)">
+                    <md-tooltip md-direction="left">Delete the variable</md-tooltip>
+                    <md-icon>delete</md-icon>
+                </md-button>
+            </md-input-container>
+        </form>
+   </md-content>
+   <md-content class="layout-padding">
+        <div>
+            <md-button class="md-raised md-primary" ng-click="addVariable()"><md-icon>add</md-icon> Add a variable</md-button>
+        </div>
+    </md-content>
+
+    <md-subheader class="md-primary">YAML file</md-subheader>
+    <div flex class="yaml-editor" ui-ace="aceOption" ng-model="flow.yml_configuration"></div>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete flow</md-button>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Save" ng-click="save()" ng-disabled="isLoading"><md-icon>save</md-icon> Save</md-button>
+    </div>
+</md-toolbar>

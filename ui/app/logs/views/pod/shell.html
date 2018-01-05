@@ -1,0 +1,11 @@
+<md-dialog-content>
+    <div class="md-dialog-content shell-not-connected" ng-if="!isConnected">
+        <h2 class="md-title">Not connected</h2>
+        <p ng-if="!hasStarted">You are not (yet?) connected to the container. Click the "Connect" button to open a remote shell session with this running container.</p>
+        <md-button ng-click="connect()" md-autofocus flex>
+            <md-icon class="materials-icon">autorenew</md-icon>
+            Connect
+        </md-button>
+    </div>
+    <div id="terminal-container"></div>
+</md-dialog-content>

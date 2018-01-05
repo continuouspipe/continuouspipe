@@ -1,0 +1,36 @@
+<md-card class="pipeline-card" ng-class="['status-'+pipeline.last_tide.status]">
+    <md-card-content layout="column" class="card-content">
+        <div layout="column" class="pipeline-details-row">
+            <div layout="row" layout-align="space-between center">
+                <span class="md-headline">
+                    <span ng-if="headline">{{ headline }}</span>
+                    <span ng-if="!headline">{{ pipeline.name }}</span>
+                </span>
+                <span ng-if="!disableDeletion">
+                    <md-button class="md-icon-button delete-pipeline-btn" ng-click="deletePipeline(pipeline.uuid)">
+                        <md-icon>clear</md-icon>
+                    </md-button>
+                </span>
+            </div>
+            <span layout="column" class="pipeline-details-row__details" ng-show="pipeline.last_tide">
+                <span class="cp-span-git-branch"><i class="cp-icon-git-branch"></i> {{ pipeline.last_tide.code_reference.branch }}</span>
+                <span><md-icon>code</md-icon> {{ pipeline.last_tide.code_reference.sha1 | limitTo:7 }}</span>
+                <span>
+                    <md-tooltip md-direction="bottom">{{ pipeline.last_tide.creation_date | date:'dd/MM/yyyy HH:mm:ss' }}</md-tooltip>
+                    <md-icon>schedule</md-icon> {{ pipeline.last_tide.creation_date | timeAgo }}
+                </span>
+            </span>
+        </div>
+        <div layout="row" layout-align="space-between center" ng-show="pipeline.last_tide">
+            <span class="status-text" ng-class="['status-'+pipeline.last_tide.status]">{{ pipeline.last_tide.status }}</span>
+            <span flex></span>
+            <task-list tide="pipeline.last_tide" />
+        </div>
+        <div layout="column" ng-show="!pipeline.last_tide && isLoading">
+            <span>Loading...</span>
+        </div>
+        <div layout="column" ng-show="!pipeline.last_tide && !isLoading">
+            <span>No matching tide found.</span>
+        </div>
+    </md-card-content>
+</md-card>

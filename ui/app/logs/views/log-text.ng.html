@@ -1,0 +1,10 @@
+<div class="content" ng-click="toggleChildrenDisplay(logId)" ng-show="log.contents">
+    <i ng-if="log.children && !displayChildrenOf[logId]" class="material-icons expand-icon">keyboard_arrow_right</i>
+    <i ng-if="log.children && displayChildrenOf[logId]" class="material-icons expand-icon">keyboard_arrow_down</i>
+    <i ng-if="log.status == 'running'" class="material-icons glyphicon-spin status-icon running-icon">settings</i>
+    <span ng-bind-html="log.contents"></span>
+    <span ng-if="level == 2" class="duration" log-duration="log"></span>
+</div>
+<div class="children">
+    <logs ng-if="shouldDisplayChildrenOf(logId)" parent="log" level="{{ level + 1 }}" follow="{{ follow }}"></logs>
+</div>

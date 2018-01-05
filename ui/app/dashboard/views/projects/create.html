@@ -1,0 +1,14 @@
+<md-content flex>
+    <form name="projectForm">
+        <ng-include src="'dashboard/views/projects/create.form.html'" />
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="projectForm.$invalid || isLoading" ng-click="create(project)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

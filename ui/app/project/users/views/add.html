@@ -1,0 +1,33 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Add a user</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="membershipForm">
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Username or email</label>
+                <input ng-model="membership.user.username" required />
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Permissions</label>
+                <md-select ng-model="membership.permissions" multiple="true">
+                    <md-option value="USER">User</md-option>
+                    <md-option value="ADMIN">Administrator</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Add" ng-disabled="membershipForm.$invalid || isLoading" ng-click="addMembership(membership)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+            Add
+        </md-button>
+    </div>
+</md-toolbar>

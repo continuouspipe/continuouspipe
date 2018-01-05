@@ -1,0 +1,64 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>{{ developmentEnvironmentStatus.development_environment.name }} ({{ developmentEnvironmentStatus.status }})</h2>
+        <span flex></span>
+        <md-button ng-repeat="endpoint in developmentEnvironmentStatus.public_endpoints"
+                 class="md-raised md-primary"
+                 ng-click="openEndpoint(endpoint)">
+            Open <code>{{ endpoint.name }}</code>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help zero-content-help--remote" ng-if="!hasBeenCreated">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <p>To use your development environment, you'll need to install the <a href="https://docs.continuouspipe.io/remote-development/getting-started/#installation" target="_blank">cp-remote command line tool</a> on your
+            machine.</p>
+
+        <p>You will then need to generate an initialization token below. You can then pass the token as an argument into the <a href="https://docs.continuouspipe.io/remote-development/init-command/" target="_blank"><code>cp-remote init</code></a> command.</p>
+
+        <p>You'll find all the help you need in the <a href="https://docs.continuouspipe.io/remote-development/" target="_blank">remote development documentation.</a></p>
+        <form name="remoteEnvForm" ng-show="!token">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Remote Branch Name</label>
+                <input type="text" name="branchName" ng-model="tokenRequest.git_branch" ng-disabled="token" />
+            </md-input-container>
+
+            <md-button class="md-raised" ng-click="getToken()" ng-hide="token" ng-disabled="isLoading">
+                Generate an initialization token
+            </md-button>
+        </form>
+        <div ng-show="token">
+            <h3>Get started by running the following command in your project repository:</h3>
+            <pre ng-show="token" style="white-space: pre-wrap; word-wrap: break-word;">cp-remote init {{ token }}</pre>
+            <md-button class="md-raised" ng-click="refresh()" ng-disabled="isLoading">
+                <md-icon>autorenew</md-icon> Refresh environment status
+            </md-button>
+        </div>
+    </div>
+    <div ng-if="hasBeenCreated">
+        <pipeline-overview 
+            flow="flow" 
+            pipeline="developmentEnvironmentStatus.last_tide.pipeline"
+            headline="Last tide"
+            branch="developmentEnvironmentStatus.last_tide.code_reference.branch"
+            disable-deletion="true">
+            Loading...
+        </pipeline-overview>
+
+        <div class="zero-content-help">
+            <h3>You should be ready to go!</h3>
+            <p>Use the <code>cp-remote</code> command line tool to <a href="https://docs.continuouspipe.io/remote-development/watch-command/"><code>watch</code> your local changes</a>, <a href="https://docs.continuouspipe.io/remote-development/bash-command/"><code>bash</code> into your running container</a>, do some <a href="https://docs.continuouspipe.io/remote-development/forward-command/">port forwarding</a> to the running container and much more!</p>
+        </div>
+    </div>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <md-button class="md-raised md-warn" aria-label="Delete" ng-click="delete()" ng-disabled="isLoading"><md-icon>delete</md-icon> Delete</md-button>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Re-deploy" ng-click="rebuild()" ng-disabled="isLoading">
+            <md-icon>play_arrow</md-icon>
+            Re-deploy
+        </md-button>
+    </div>
+</md-toolbar>

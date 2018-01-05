@@ -1,0 +1,22 @@
+<remote-resource resource-name="log">
+    <md-dialog-content ng-if="log">
+        <md-tabs ng-if="!timedOut">
+            <md-tab label="Logs">
+                <logs parent="log" level="1" class="log-container in-popup" ng-if="!timedOut"></logs>
+            </md-tab>
+            <md-tab label="Events">
+                <md-content class="log type-events" ng-include="'logs/views/log-events.ng.html'"></md-content>
+            </md-tab>
+        </md-tabs>
+        <div class="md-dialog-content" ng-if="timedOut">
+            <h2 class="md-title">Timed-out</h2>
+            <p>In order to reduce the pressure on cluster logs, we timeout the streaming of the logs after 5 minutes. You can reload for another 5 minutes session by clicking the following button.</p>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions ng-if="timedOut" layout="row">
+        <md-button ng-click="reload()" md-autofocus flex>
+            <md-icon class="materials-icon">autorenew</md-icon>
+            Reload
+        </md-button>
+    </md-dialog-actions>
+</remote-resource>

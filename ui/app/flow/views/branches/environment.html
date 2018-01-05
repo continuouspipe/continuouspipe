@@ -1,0 +1,9 @@
+<md-dialog class="logs-dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Environment "{{ environment | environmentName:flow }}"</h2>
+        </div>
+    </md-toolbar>
+    <md-dialog-content ng-include="'flow/views/environments/inline/environment-components.html'">
+    </md-dialog-content>
+</md-dialog>

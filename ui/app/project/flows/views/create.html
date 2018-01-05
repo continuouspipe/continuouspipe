@@ -1,0 +1,97 @@
+<md-content flex id="content" layout="column" class="flow-wizard">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                <span>Select your code repository</span>
+            </h2>
+            <span flex></span>
+            <md-button class="md-icon-button icon-link icon-link--help" href="https://docs.continuouspipe.io/quick-start/creating-a-flow/" target="_blank">
+                <md-icon>help</md-icon>
+            </md-button>
+            <md-input-container>
+                <label>Account</label>
+                <md-select ng-model="account">
+                    <md-optgroup label="Your accounts">
+                        <md-option ng-repeat="account in accounts" ng-value="account">
+                            <md-icon ng-class="'cp-icon-'+account.type" />
+                            <span>{{ account.username }}</span>
+                        </md-option>
+                    </md-optgroup>
+                    <md-divider></md-divider>
+                    <md-option ng-value="'add'"><md-icon>add</md-icon> <small>Add an account</small></md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+    </md-toolbar>
+    <md-content flex layout="row" ng-if="!account">
+        <remote-resource resource-name="accounts" flex>
+            <div class="zero-content-help" ng-if="accounts.length == 0">
+                <h3>You don't have any code repository account</h3>
+                <p>In order to list the different repositories you could use, ContinuousPipe needs you to link at least one code repository. <a href="{{ linkAccountUrl }}">Click here to link some accounts.</a></p>
+            </div>
+            <div class="zero-content-help" ng-if="accounts.length > 0">
+                <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+                <h3>Which account do you want to use?</h3>
+                <p>Select the account ContinuousPipe should use to list the different repositories.</p>
+            </div>
+        </remote-resource>
+    </md-content>    
+    <md-content flex layout="row" ng-if="account">
+        <md-sidenav md-is-locked-open="true" class="organisation-list md-whiteframe-3dp">
+            <md-list flex>
+                <md-list-item class="md-1-line" ng-click="wizard.organisation = null;" ng-class="{'selected': !wizard.organisation}">
+                    <img ng-src="http://www.gravatar.com/avatar/{{ user.email | gravatar }}" class="md-avatar" />
+                    <div class="md-list-item-text" layout="column">
+                        <p>Personal repositories</p>
+                    </div>
+                </md-list-item>
+                <md-divider ></md-divider>
+                <md-subheader class="md-no-sticky">Organisations</md-subheader>
+                <md-divider ></md-divider>
+                <remote-resource resource-name="organisations">
+                    <md-list-item class="md-1-line" ng-repeat="organisation in organisations" ng-click="wizard.organisation = organisation;" ng-class="{'selected': wizard.organisation == organisation}">
+                        <img ng-src="{{ organisation.avatar_url }}" class="md-avatar" />
+                        <div class="md-list-item-text" layout="column">
+                            <p>{{ organisation.identifier }}</p>
+                        </div>
+                    </md-list-item>
+                    <div class="empty-placeholder" ng-if="organisations.length === 0">No organisation found</div>
+                </remote-resource>
+            </md-list>
+        </md-sidenav>
+        <md-content flex id="content" layout="column">
+            <md-toolbar class="filter-repository-toolbar">
+                <div class="md-toolbar-tools">
+                    <md-input-container md-no-float class="md-block">
+                        <md-icon><i class="material-icons">search</i></md-icon>
+                        <input ng-model="wizard.repositoryFilter.$" type="text" placeholder="Filter repository">
+                    </md-input-container>
+                </div>
+            </md-toolbar>
+            <md-content flex>
+                <remote-resource resource-name="repositories">
+                    <md-list>
+                        <md-list-item class="md-1-line" ng-repeat="repository in repositories | filter:wizard.repositoryFilter" ng-click="wizard.repository = repository;" ng-class="{'selected': wizard.repository == repository}">
+                            <md-icon class="md-avatar-icon" ng-if="repository.private">lock</md-icon>
+                            <md-icon class="md-avatar-icon" ng-if="!repository.private">public</md-icon>
+                            <p>{{ repository.name }}</p>
+                            <span flex></span>
+                            <md-icon ng-show="wizard.repository == repository">done</md-icon>
+                        </md-list-item>
+                    </md-list>
+                    <div class="empty-placeholder" ng-if="repositories.length === 0">No repositories found</div>
+                    <div class="empty-placeholder" ng-if="(repositories | filter:wizard.repositoryFilter).length === 0 && repositories.length !== 0">No repository matching "{{ wizard.repositoryFilter.$ }}"</div>
+                </remote-resource>
+            </md-content>
+        </md-content>
+    </md-content>
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <span flex></span>
+            <md-button class="md-raised" aria-label="Next" ng-click="create()" ng-disabled="!wizard.repository || isLoading">
+                <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                Create
+            </md-button>
+        </div>
+    </md-toolbar>
+</md-content>

@@ -1,0 +1,31 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="environments">{{ environments.length }} environments</span>
+            <span ng-hide="environments">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-development-environment">
+            <md-icon>control_point</md-icon>
+            Create my environment
+        </md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid half environment-grid">
+    <remote-resource resource-name="environments">
+        <md-card ng-repeat="environment in environments" ui-sref="flow.development-environment({environmentUuid: environment.uuid})">
+            <md-card-header>
+                <md-card-avatar>
+                    <md-icon class="md-avatar-icon">
+                        <i class="material-icons">computer</i>
+                    </md-icon>
+                </md-card-avatar>
+                <md-card-header-text>
+                    <span class="md-title">{{ environment.name }}</span>
+                    <span class="md-subhead">User: <span
+                        class="status-text status-success">{{ environment.username }}</span></span>
+                </md-card-header-text>
+            </md-card-header>
+        </md-card>
+    </remote-resource>
+</md-content>

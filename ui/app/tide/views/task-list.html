@@ -1,0 +1,11 @@
+<span class="task-list">
+    <span class="task" ng-repeat="task in tide.tasks" ng-class="['status-'+task.status]" ui-sref="tide.logs({tideUuid: tide.uuid})">
+        <md-icon ng-if="task.status == 'pending'">hourglass_empty</md-icon>
+        <md-icon ng-if="task.status == 'running'">autorenew</md-icon>
+        <md-icon ng-if="task.status == 'successful'">done</md-icon>
+        <md-icon ng-if="task.status == 'cancelled'">not_interested</md-icon>
+        <md-icon ng-if="task.status == 'failed'">error</md-icon>
+        <md-icon ng-if="task.status == 'skipped'">skip_next</md-icon>
+        <md-tooltip md-direction="bottom">{{ task.label }} ({{ task.status }})</md-tooltip>
+    </span>
+</span>

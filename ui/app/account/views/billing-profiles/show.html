@@ -1,0 +1,153 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>Billing profile "{{ billingProfile.name }}"</h2>
+    </div>
+</md-toolbar>
+<md-content class="md-padding" flex>
+    <div layout="row" layout-wrap>
+        <div layout="column" flex="100" flex-gt-sm="30">
+            <div flex-xs layout="row" layout-wrap>
+                <div flex="100" flex-gt-xs="50" flex-gt-sm="100" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Your plan</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content ng-if="!billingProfile.plan">
+                            <p>You don't have any plan for now, select one!</p>
+                        </md-card-content>
+                        <md-card-content ng-if="billingProfile.plan">
+                            <table width="100%">
+                                <tbody>
+                                <tr>
+                                    <th>Plan name</th>
+                                    <td>{{ billingProfile.plan.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Monthly price</th>
+                                    <td>£{{ billingProfile.plan.price }}</td>
+                                </tr>
+                                <tr class="separator"></tr>
+                                <tr>
+                                    <th>Tides</th>
+                                    <td>{{ billingProfile.plan.metrics.tides }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Memory Available</th>
+                                    <td>{{ billingProfile.plan.metrics.memory }} GB</td>
+                                </tr>
+                                <tr>
+                                    <th>Storage Available</th>
+                                    <td>{{ billingProfile.plan.metrics.storage }} GB</td>
+                                </tr>
+                                <tr>
+                                    <th>Available private Docker image</th>
+                                    <td>{{ billingProfile.plan.metrics.docker_image }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Teams linked</th>
+                                    <td>
+                                        <span ng-if="!billingProfile.teams.length">No team</span>
+                                        <span ng-repeat="team in billingProfile.teams">{{ team.name }}</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="block block__background">
+                                <div class="block__title">Tides used: {{ billingProfile.plan.metrics.used.tides }} of {{ billingProfile.plan.metrics.tides }}</div>
+                                <md-progress-linear md-mode="determinate" value="{{ (billingProfile.plan.metrics.used.tides / billingProfile.plan.metrics.tides) * 100 }}"></md-progress-linear>
+                            </div>
+                        </md-card-content>
+                        <md-card-actions layout="row" layout-align="space-between">
+                            <div flex="2" layout="column">
+                                <md-button class="md-raised md-primary" ng-click="change($event)">Change</md-button>
+                            </div>
+                            <div flex="2" layout="column">
+                                <md-button class="md-raised md-primary" ng-if="billingProfile.invoices_url" ng-href="{{ billingProfile.invoices_url }}">Invoices</md-button>
+                            </div>
+                        </md-card-actions>
+                    </md-card>
+                </div>
+                <div flex="100" flex-gt-xs="50" flex-gt-sm="100" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Billing admin</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <md-list>
+                                <md-subheader class="md-no-sticky">Users</md-subheader>
+                                <md-list-item ng-repeat="admin in billingProfile.admins">
+                                    <md-icon>person</md-icon>
+                                    <p>{{ admin.username }}</p>
+                                    <md-button ng-click="removeAdmin(admin)">
+                                        <md-icon>delete</md-icon>
+                                    </md-button>
+                                </md-list-item>
+                            </md-list>
+                            <md-card-actions>
+                                <md-list>
+                                    <md-subheader class="md-no-sticky">Add User</md-subheader>
+                                    <md-list-item>
+                                        <form name="addAdminForm" flex="100">
+                                            <div layout-gt-xs="row">
+                                                <md-input-container class="md-block" flex-gt-xs>
+                                                    <label>Username</label>
+                                                    <input ng-model="newAdminUsername" required />
+                                                </md-input-container>
+                                                <md-input-container class="md-block">
+                                                    <md-button class="md-raised" aria-label="Add" ng-disabled="addAdminForm.$invalid || isLoading" ng-click="addAdmin(newAdminUsername)">
+                                                        <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+                                                        Add
+                                                    </md-button>
+                                                </md-input-container>
+                                            </div>
+                                        </form>
+                                    </md-list-item>
+                                </md-list>
+                            </md-card-actions>
+                        </md-card-content>
+                    </md-card>
+                </div>
+                <div flex="100" flex-gt-xs="50" flex-gt-sm="100" layout="column">
+                    <md-button class="md-raised md-warn" ng-click="delete()">Delete</md-button>
+                </div>
+            </div>
+        </div>
+        <div layout="column" flex-gt-sm="70">
+            <div layout="row" layout-wrap>
+                <div flex="100" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Tides usage</span>
+                            </md-card-title-text>
+                            <div ng-show="billingProfile.plan.metrics.used.tides">Total: {{ billingProfile.plan.metrics.used.tides }}</div>
+                        </md-card-title>
+                        <md-card-content>
+                            <div ng-if="billingProfile.teams.length > 0 && usage.length > 0" google-chart chart="tidesGraph" style="height:450px; width:100%;"></div>
+                            <p ng-if="!billingProfile.teams.length">Connect this billing profile to projects to see the usage here.</p>
+                            <p ng-if="billingProfile.teams.length && usage.length == 0">No usage to display here.</p>
+                        </md-card-content>
+                    </md-card>
+                </div>
+                <div flex="100" layout="column">
+                    <md-card>
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">Resources usage (MB of memory)</span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <div ng-if="billingProfile.teams.length > 0 && usage.length > 0" google-chart chart="resourcesGraph" style="height:450px; width:100%;"></div>
+                            <p ng-if="!billingProfile.teams.length">Connect this billing profile to projects to see the usage here.</p>                            <p ng-if="billingProfile.teams.length && usage.length == 0">No usage to display here.</p>
+
+                        </md-card-content>
+                    </md-card>
+                </div>
+            </div>
+        </div>
+    </div>
+</md-content>

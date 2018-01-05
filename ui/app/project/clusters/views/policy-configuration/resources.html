@@ -1,0 +1,64 @@
+<!-- Defaults -->
+
+<md-input-container class="md-block">
+    <md-checkbox ng-model="policy.configuration['default-requests']" ng-disabled="!isAdmin" >
+       Add default resource requests
+    </md-checkbox>
+</md-input-container>
+
+<md-input-container class="md-block" ng-show="policy.configuration['default-requests']">
+    <label>Default CPU request (Example: 500m)</label>
+    <input ng-model="policy.configuration['default-cpu-request']" ng-disabled="!isAdmin" required>
+</md-input-container>
+<md-input-container class="md-block" ng-show="policy.configuration['default-requests']">
+    <label>Default memory request (Example: 500Mi)</label>
+    <input ng-model="policy.configuration['default-memory-request']" ng-disabled="!isAdmin" required>
+</md-input-container>
+
+<md-input-container class="md-block">
+    <md-checkbox ng-model="policy.configuration['default-limits']" ng-disabled="!isAdmin" >
+       Add default resource limits
+    </md-checkbox>
+</md-input-container>
+
+<md-input-container class="md-block" ng-show="policy.configuration['default-limits']">
+    <label>Default CPU limit (Example: 1)</label>
+    <input ng-model="policy.configuration['default-cpu-limit']" ng-disabled="!isAdmin" required>
+</md-input-container>
+<md-input-container class="md-block" ng-show="policy.configuration['default-limits']">
+    <label>Default memory limit (Example: 2Gi)</label>
+    <input ng-model="policy.configuration['default-memory-limit']" ng-disabled="!isAdmin" required>
+</md-input-container>
+
+<!-- Maxs -->
+
+<md-input-container class="md-block">
+    <md-checkbox ng-model="policy.configuration['max-requests']" ng-disabled="!isAdmin" >
+       Add maximum resource requests
+    </md-checkbox>
+</md-input-container>
+
+<md-input-container class="md-block" ng-show="policy.configuration['max-requests']">
+    <label>Maximum CPU request (Example: 500m)</label>
+    <input ng-model="policy.configuration['max-cpu-request']" ng-disabled="!isAdmin" required>
+</md-input-container>
+<md-input-container class="md-block" ng-show="policy.configuration['max-requests']">
+    <label>Maximum memory request (Example: 500Mi)</label>
+    <input ng-model="policy.configuration['max-memory-request']" ng-disabled="!isAdmin" required>
+</md-input-container>
+
+<md-input-container class="md-block">
+    <md-checkbox ng-model="policy.configuration['max-limits']" ng-disabled="!isAdmin" >
+       Add maximum resource limits
+    </md-checkbox>
+</md-input-container>
+
+<md-input-container class="md-block" ng-show="policy.configuration['max-limits']">
+    <label>Maximum CPU limit (Example: 1)</label>
+    <input ng-model="policy.configuration['max-cpu-limit']" ng-disabled="!isAdmin" required>
+</md-input-container>
+<md-input-container class="md-block" ng-show="policy.configuration['max-limits']">
+    <label>Maximum memory limit (Example: 2Gi)</label>
+    <input ng-model="policy.configuration['max-memory-limit']" ng-disabled="!isAdmin" required>
+</md-input-container>
+

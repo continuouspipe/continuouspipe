@@ -1,0 +1,49 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+
+        <h2>
+            <span ng-show="flows">{{ flows.length }} flows</span>
+            <span ng-hide="flows">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create a flow" ui-sref="flows.create"><md-icon>add</md-icon> Create a flow</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content" class="card-grid">
+    <div class="zero-content-help" ng-if="flows.length == 0">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>Create your first flow!</h3>
+        <p>A flow is a code repository and some configuration. It will represent your pipeline and contain your deployments.</p>
+    </div>
+    <remote-resource resource-name="flows">
+        <div ng-show="flows.length" class="list-items responsive-list-items">
+            <div class="list-items-header">
+                <div class="list-col-8">Name</div>
+                <div class="list-col-8">Repository</div>
+                <div class="list-col-8">Last tide</div>
+            </div>
+
+            <div class="list-item clickable" ng-repeat="flow in flows | orderBy:'repository.name'" ui-sref="flow.dashboard({uuid: flow.uuid})">
+                <div data-th="Name" class="list-col-8">
+                    <md-icon class="md-avatar-icon"><i class="material-icons">widgets</i></md-icon>
+                    <span>{{ flow.repository.name }}</span>
+                </div>
+                <div data-th="Repository" class="list-col-8">
+                    <md-icon class="md-avatar-icon">
+                        <i ng-if="flow.repository.type == 'bitbucket'" class="cp-icon-bitbucket"></i>
+                        <i ng-if="flow.repository.type == 'github'" class="cp-icon-github"></i>
+                    </md-icon>
+                    <span>
+                        {{ flow.repository.organisation || flow.repository.owner.username }}
+                        /
+                        {{ flow.repository.name }}
+                    </span>
+                </div>
+                <div data-th="Last tide" class="list-col-8">
+                    <span ng-if="!flow.tides.length">ø</span>
+                    <span ng-if="flow.tides.length" class="status-container" ng-class="flow.tides[0].status | tideStatusClass">Last tide ran <strong>{{ flow.tides[0].creation_date | timeAgo }}</strong></span>
+                </div>
+            </div>
+        </div>
+    </remote-resource>
+</md-content>

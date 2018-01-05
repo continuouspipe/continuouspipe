@@ -1,0 +1,189 @@
+<!doctype html>
+<html class="no-js" ng-app="continuousPipeRiver">
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <title ng-bind="title + 'ContinuousPipe'">ContinuousPipe</title>
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <meta name="viewport" content="width=device-width">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
+    <link rel="stylesheet" href="bower_components/loaders.css/loaders.css" />
+    <link rel="stylesheet" type="text/css" href="bower_components/sweetalert2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css" />
+    <link rel="stylesheet" href="bower_components/angular-resizable/src/angular-resizable.css" />
+    <link rel="stylesheet" href="bower_components/xterm.js/dist/xterm.css" />
+    <link rel="stylesheet" href="bower_components/xterm.js/dist/addons/fullscreen/fullscreen.css" />
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/application.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/logstream.css">
+    <!-- endbuild -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,700' rel='stylesheet' type='text/css'>
+</head>
+<body ng-class="{'expanded-modal' : $root.expandModal}" layout="column">
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<md-toolbar layout="row" ui-view="header"></md-toolbar>
+<md-content layout="row" ui-view="alerts"></md-content>
+<md-content flex class="content" layout="column" ui-view="content"></md-content>
+
+<!-- build:js(.) scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-aria/angular-aria.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-breadcrumb/release/angular-breadcrumb.js"></script>
+<script src="bower_components/angular-google-analytics/dist/angular-google-analytics.min.js"></script>
+<script src="bower_components/angular-jwt/dist/angular-jwt.js"></script>
+<script src="bower_components/angular-loading-bar/build/loading-bar.js"></script>
+<script src="bower_components/angular-messages/angular-messages.js"></script>
+<script src="bower_components/angular-material/angular-material.js"></script>
+<script src="bower_components/angular-md5/angular-md5.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-slugify/angular-slugify.js"></script>
+<script src="bower_components/angular-timeago/dist/angular-timeago.js"></script>
+<script src="bower_components/angular-touch/angular-touch.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/sweetalert2/dist/sweetalert2.js"></script>
+<script src="bower_components/angular-recursion/angular-recursion.js"></script>
+<script src="bower_components/firebase/firebase.js"></script>
+<script src="bower_components/angularfire/dist/angularfire.js"></script>
+<script src="bower_components/ansi_up/ansi_up.js"></script>
+<script src="bower_components/raven-js/dist/raven.js"></script>
+<script src="bower_components/angular-resizable/src/angular-resizable.js"></script>
+<script src="bower_components/xterm.js/dist/xterm.js"></script>
+<!-- endbower -->
+<script src="bower_components/xterm.js/dist/addons/fit/fit.js"></script>
+<script src="bower_components/xterm.js/dist/addons/fullscreen/fullscreen.js"></script>
+<script src="bower_components/xterm.js/dist/addons/attach/attach.js"></script>
+<script src="bower_components/raven-js/dist/plugins/angular.js"></script>
+<script src="bower_components/ace-builds/src-min-noconflict/ace.js"></script>
+<script src="bower_components/angular-ui-ace/ui-ace.js"></script>
+<script src="bower_components/js-yaml/dist/js-yaml.js"></script>
+<script src="bower_components/angular-google-chart/ng-google-chart.js"></script>
+
+<script src="bower_components/kube-status/ui/app/dashboard/module.js"></script>
+<script src="bower_components/kube-status/ui/app/dashboard/controllers/clusters.js"></script>
+<script src="bower_components/kube-status/ui/app/dashboard/controllers/status.js"></script>
+<script src="bower_components/kube-status/ui/app/dashboard/services/history-chart-factory.js"></script>
+<script src="bower_components/kube-status/ui/app/dashboard/models/cluster.js"></script>
+<script src="bower_components/kube-status/ui/app/dashboard/models/status.js"></script>
+
+<!-- endbuild -->
+
+<script src="scripts/config.js"></script>
+
+<!-- build:js({.tmp,app}) scripts/app.js -->
+<script src="scripts/app.js"></script>
+
+<script src="security/services/authentication-provider.js"></script>
+<script src="security/services/request-listener.js"></script>
+<script src="security/services/token-storage.js"></script>
+<script src="security/services/user-context.js"></script>
+<script src="security/services/flow-context.js"></script>
+<script src="security/services/project-context.js"></script>
+<script src="security/model/repository/user-repository.js"></script>
+<script src="security/model/repository/project-repository.js"></script>
+<script src="security/model/repository/project-membership-repository.js"></script>
+<script src="security/model/repository/invitation-repository.js"></script>
+<script src="security/model/repository/account-repository.js"></script>
+<script src="security/routing.js"></script>
+
+<script src="dashboard/controllers/projects.js"></script>
+<script src="dashboard/routing.js"></script>
+
+<script src="layout/controllers/header.js"></script>
+<script src="layout/controllers/error.js"></script>
+<script src="layout/directives/remote-resource.js"></script>
+<script src="layout/services/remote-resource.js"></script>
+<script src="layout/listeners/aside.js"></script>
+<script src="layout/routing.js"></script>
+<script src="layout/config.js"></script>
+
+<!-- Accounts Component -->
+<script src="account/controllers/billing-profiles.js"></script>
+<script src="account/controllers/connected-accounts.js"></script>
+<script src="account/controllers/api-keys.js"></script>
+<script src="account/services/usage-graph-builder.js"></script>
+<script src="account/models/billing-profile-repository.js"></script>
+<script src="account/routing.js"></script>
+
+<script src="flow/controllers/tides.js"></script>
+<script src="flow/controllers/dashboard.js"></script>
+<script src="flow/controllers/environments.js"></script>
+<script src="flow/controllers/configuration.js"></script>
+<script src="flow/controllers/alerts.js"></script>
+<script src="flow/controllers/remote.js"></script>
+<script src="flow/controllers/branches.js"></script>
+<script src="flow/filters/latest-tide-in-branch.js"></script>
+<script src="flow/filters/environment.js"></script>
+<script src="flow/models/branch-factory.js"></script>
+<script src="flow/models/repository/remote-repository.js"></script>
+<script src="flow/models/repository/environment-repository.js"></script>
+<script src="flow/models/repository/pipeline-repository.js"></script>
+<script src="flow/models/repository/alerts-repository.js"></script>
+<script src="flow/models/repository/pinned-branch-repository.js"></script>
+<script src="flow/models/repository/features-repository.js"></script>
+<script src="flow/directives/pipeline-overview.js"></script>
+<script src="flow/directives/array-to-comma-list.js"></script>
+<script src="flow/services/authenticated-firebase-database.js"></script>
+<script src="flow/routing.js"></script>
+
+<script src="tide/routing.js"></script>
+<script src="tide/controllers/logs.js"></script>
+<script src="tide/models/repository/tide-repository.js"></script>
+<script src="tide/directives/task-list.js"></script>
+<script src="tide/services/endpoint-opener.js"></script>
+<script src="tide/services/remote-shell-opener.js"></script>
+<script src="tide/filters/httpify.js"></script>
+<script src="tide/filters/tide-status-class.js"></script>
+<script src="tide/filters/first-upper-case.js"></script>
+
+<script src="logs/controllers/logs.js"></script>
+<script src="logs/controllers/dialogs.js"></script>
+<script src="logs/directives/logs.js"></script>
+<script src="logs/directives/log-duration.js"></script>
+<script src="logs/directives/follow-scroll.js"></script>
+<script src="logs/directives/pod-logs.js"></script>
+<script src="logs/directives/pod-shell.js"></script>
+<script src="logs/directives/raw-logs-content.js"></script>
+<script src="logs/services/log-finder.js"></script>
+
+<script src="project/routing.js"></script>
+<script src="project/layout/filters/join.js"></script>
+<script src="project/users/controllers/list.js"></script>
+<script src="project/users/controllers/add.js"></script>
+<script src="project/configuration/controllers/edit.js"></script>
+<script src="project/flows/controllers/create.js"></script>
+<script src="project/flows/controllers/list.js"></script>
+<script src="project/flows/models/repositories/flow-repository.js"></script>
+<script src="project/flows/models/repositories/wizard-repository.js"></script>
+<script src="project/models/repository/alerts-repository.js"></script>
+<script src="project/controllers/alerts.js"></script>
+<script src="project/registry-credentials/controllers/list.js"></script>
+<script src="project/registry-credentials/controllers/create.js"></script>
+<script src="project/registry-credentials/models/repository/registry-credentials-repository.js"></script>
+<script src="project/clusters/controllers/list.js"></script>
+<script src="project/clusters/controllers/add.js"></script>
+<script src="project/clusters/controllers/health.js"></script>
+<script src="project/clusters/controllers/policies.js"></script>
+<script src="project/clusters/models/repository/cluster-repository.js"></script>
+
+<script src="team/routing.js"></script>
+<!-- endbuild -->
+
+<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/jzwmwqmf';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
+<script>
+    (function() { window.satismeter = window.satismeter || function() {(window.satismeter.q = window.satismeter.q || []).push(arguments);};window.satismeter.l = 1 * new Date();var script = document.createElement("script");var parent = document.getElementsByTagName("script")[0].parentNode;script.async = 1;script.src = "https://app.satismeter.com/satismeter.js";parent.appendChild(script);})();
+</script>
+</body>
+</html>

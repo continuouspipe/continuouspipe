@@ -1,0 +1,44 @@
+<md-dialog>
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Change billing profile</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <md-icon class="material-icons" aria-label="Close dialog">clear</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-content style="padding: 20px; min-width: 400px;">
+                <div layout="row" ng-if="!hasBeenRedirected">
+                    <md-input-container flex>
+                        <label>Plan</label>
+                        <md-select name="plan" ng-model="changeRequest.plan" required md-on-open="loadPlans()" >
+                              <md-option ng-value="plan" ng-repeat="plan in plans">{{ plan.name }} (£{{ plan.price }} / month)</md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+                <div layout="row" ng-if="hasBeenRedirected">
+                    <p>You have been redirected to our subscription confirmation page. Please follow the steps and press <strong>Done</strong> when finished.</p>
+                </div>
+            </md-content>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" ng-if="!hasBeenRedirected">
+            <md-button ng-click="close()" class="md-warn">
+                Cancel
+            </md-button>
+            <span flex></span>
+            <md-button ng-click="change(changeRequest)">
+                Change
+            </md-button>
+        </md-dialog-actions>
+        <md-dialog-actions layout="row" ng-if="hasBeenRedirected">
+            <md-button ng-click="done()">
+                Done
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

@@ -1,0 +1,55 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="membersStatus">{{ membersStatus.memberships.length }} users</span>
+            <span ng-show="membersStatus.invitations.length"> &amp; {{ membersStatus.invitations.length }} invitations</span>
+            <span ng-hide="membersStatus">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-icon-button icon-link icon-link--help" href="https://docs.continuouspipe.io/quick-start/configuring-users/" target="_blank">
+            <md-icon>help</md-icon>
+        </md-button>
+        <md-button  ng-show="isAdmin" class="md-raised" aria-label="Add a user" ui-sref="users.add">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <remote-resource resource-name="membersStatus">
+        <table class="table hover">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Permissions</th>
+                <th ng-show="isAdmin">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="membership in membersStatus.memberships">
+                <td>{{ membership.user.username }}</td>
+                <td>{{ membership.permissions | join:', ' }}</td>
+                <td ng-show="isAdmin">
+                    <md-button ng-click="removeMembership(membership)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table class="table hover" ng-show="membersStatus.invitations.length">
+            <thead>
+            <tr>
+                <th>Invited email</th>
+                <th>Inviation date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="invitation in membersStatus.invitations">
+                <td>{{ invitation.user_email }}</td>
+                <td>{{ invitation.creation_date | timeAgo }}</td>
+                <td>
+                    <md-button ng-click="removeInvitation(invitation)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

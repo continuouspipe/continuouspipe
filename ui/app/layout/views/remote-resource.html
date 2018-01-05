@@ -1,0 +1,13 @@
+<div class="remote-resource error" ng-show="has('status', 'error')">
+    <p><i class="md md-warning"></i></p>
+    <p>{{ resource.error }}</p>
+</div>
+<div ng-transclude ng-show="!has('status', 'error')"></div>
+<div ng-show="has('status', 'loaded') && has('more')" class="remote-resource has-more">
+    <span ng-click="do('loadMore')">This list contains more elements. Click here to load more.</span>
+</div>
+<div class="remote-resource loading" ng-show="has('status', 'loading')">
+    <div class="loader loader-inner ball-clip-rotate">
+        <div></div>
+    </div>
+</div>

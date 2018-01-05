@@ -1,0 +1,1259 @@
+@import "vars";
+@import "mixins";
+
+@import "fonts";
+@import "atoms/typography";
+@import "components/components";
+@import "components/environments";
+@import "components/items";
+@import "components/tabs";
+@import "components/check_list";
+@import "components/block";
+@import "components/forms";
+@import "components/flow_wizard";
+@import "kube_status";
+
+.pipeline-content-container {
+    display: flex;
+    overflow: scroll;
+    margin-right: 1em;
+    margin-left: 1em;
+}
+
+.pipeline-content {
+    min-width: 85%;
+    padding: 1em 0;
+    display: flex;
+    flex-grow: 1;
+    flex-basis: 0;
+    align-items: stretch;
+
+    &:focus,
+    &:active {
+        border: 0;
+        outline: 0;
+    }
+
+    &.pipelineSelected .pipeline-card {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    @include smallScreen {
+        margin-left: 1.5em;
+        margin-left: 1.5em;
+    }
+
+    @include mediumScreen {
+        min-width: 46%;
+        margin-left: .5em;
+        margin-left: .5em;
+    }
+
+    @include largeScreen {
+        min-width: 23%;
+    }
+}
+
+.fullscreen-tabs {
+    [id^=tab-content] {
+        transform: none;
+    }
+}
+
+.pipeline-card {
+    width: 100%;
+    transition: all 0.1s ease-in-out;
+    opacity: 0.5;
+    transform: scale(0.975);
+
+    &:focus,
+    &:active {
+        outline: 0;
+    }
+    
+    & .card-content {
+        justify-content: space-between;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    & .cp-span-git-branch {
+        margin-left: 2em;
+        text-indent: -2em;
+    }
+
+    & .cp-icon-git-branch {
+        font-size: 1.4em;
+        margin: 0 7px;
+        color: rgba(0,0,0,0.58);
+
+        &:before {
+            vertical-align: bottom;
+        }
+    }
+}
+
+.pipeline-details-row {
+    & .md-headline {
+        font-size: 18px;
+        margin-bottom: 0.25rem;
+    }
+
+    &__details {
+        margin-bottom: 0.5rem;
+
+        & span {
+            margin: 0.25rem 0;
+        }
+    }
+}
+
+.md-subheader {
+    &--large {
+        font-size: 16px;
+        font-weight: bold;
+    }
+}
+
+.mobile-only {
+    @include largeScreen {
+        display: none;
+    }
+}
+
+.title-text {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #80868D;
+    font-size: 14px;
+}
+
+.md-button.md-success.md-raised {
+    color: rgba(255, 255, 255, 0.87);
+    background-color: rgb(63, 181, 68);
+
+    &:hover {
+        background-color: #248e28;
+    }
+}
+
+.md-toolbar-tools {
+    .md-button {
+        align-items: center;
+        display: flex;
+
+        > * {
+            flex: 1;
+        }
+
+        code {
+            margin-left: 5px;
+        }
+    }
+}
+
+table.table {
+    border-top: 1px solid #F3F4F8;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+
+    td, th {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead {
+        background: $content-background;
+        border-bottom: 1px solid #ccc;
+
+        th {
+            @extend .title-text;
+
+            padding: 25px;
+        }
+    }
+
+    tbody {
+        td {
+            padding: 25px;
+        }
+
+        tr {
+            border-bottom: 1px solid #efefef;
+        }
+
+        tr:nth-child(2n+1) {
+            background: #fff;
+        }
+        tr:nth-child(2n) {
+            background: #fcfcfc;
+        }
+    }
+
+    &.hover {
+        tbody tr:hover {
+            background: #fcfcfc;
+        }
+    }
+
+    &.actionable {
+        tbody tr {
+            cursor: pointer;
+        }
+    }
+}
+
+@include smallScreen {
+    table.responsive-table{
+        thead {
+            th {
+              display: none;
+            }
+        }
+
+        tbody {
+            margin: 1em 0;
+            min-width: 300px;
+            overflow: hidden;
+
+            tr {
+                border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd;
+            }
+
+            td {
+                display: block;
+                padding: 15px;
+
+                &:before {
+                    content: attr(data-th) ": ";
+                    font-weight: bold;
+                    display: block;
+                    color: #80868D;
+                }
+            }
+        }
+    }
+
+    md-toolbar .logo {
+        display: none;
+    }
+}
+
+
+
+body {
+    .md-open-menu-container {
+        z-index: 500;
+    }
+
+    md-sidenav {
+        @include mediumScreen {
+            position: static;
+            top: initial;
+        }
+
+        @include largeScreen {
+            position: static;
+            top: initial;
+        }
+    }
+
+    md-sidenav.md-locked-open + md-content {
+        @include smallScreen {
+            background: #F2F4F6;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            transition: 0s all;
+        }
+    }
+
+    > md-toolbar {
+        background: $header-background !important;
+        height: 40px;
+
+        .md-button.logo {
+            width: $header-height;
+            height: $header-height;
+
+            md-icon {
+                padding-top: 5px;
+                font-size: $logo-size;
+                width: $logo-size;
+                height: $logo-size + 10;
+
+                @include smallScreen {
+                    margin-left: 0;
+                }
+
+                @include largeScreen {
+                    padding-top: 10px;
+                }
+            }
+        }
+
+        button.md-button.account-button {
+            padding: 0;
+            position: relative;
+            top: 2px;
+
+            img {
+                border-radius: 50%;
+                max-width: 100%;
+            }
+        }
+
+        .sidebar-toggle {
+            outline: none;
+
+            @include largeScreen {
+                display: none;
+            }
+
+            md-icon {
+                outline: none;
+            }
+        }
+
+        h2 {
+            font-size: 19px;
+            padding: 5px;
+
+            &.title {
+                display: none;
+
+                @include largeScreen {
+                    display: initial;
+                }
+
+                a {
+                    color: #fff;
+                    text-decoration: none;
+                }
+
+                span.branch {
+                    background: rgba(255, 255, 255, 0.4);
+                    padding: 4px 10px 6px 5px;
+                    margin-left: 10px;
+                    color: #fff;
+
+                    > md-icon {
+                        text-align: center;
+                    }
+                }
+            }
+        }
+    }
+
+    md-sidenav.sidebar {
+        background: $sidebar-background;
+        max-width: 100%;
+
+        @include largeScreen {
+            max-width: 250px;
+        }
+
+        md-menu-content {
+            background: none;
+            color: $sidebar-color;
+            padding-top: 0;
+
+            md-menu-item {
+                .selected {
+                    background: $sidebar-selected-background;
+                }
+
+                md-icon {
+                    color: $sidebar-color;
+                }
+            }
+        }
+
+        .md-subheader {
+            background: none;
+            color: #fff;
+        }
+    }
+
+    md-content {
+        .error-content {
+            padding: 40px;
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .help-sidebar {
+            padding: 10px;
+            background: #ACB1B4;
+        }
+
+        &.content {
+            font-size: 14px;
+            background: $content-background;
+            flex: 1;
+            flex-direction: column;
+            display: flex;
+
+            md-content {
+                background: $content-background;
+
+                md-content {
+                    z-index: 45;
+
+                    md-toolbar {
+                        z-index: 50;
+                    }
+                }
+            }
+
+            md-toolbar {
+                z-index: 75;
+                background: $inner-toolbar-background !important;
+                color: $inner-toolbar-color;
+
+                /* from AMD: .md-whiteframe-1dp */
+                box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+
+                .md-button:not(.md-warn) {
+                    background: $inner-toolbar-button-background;
+                    color: $inner-toolbar-button-color;
+                    border-radius: 20px;
+                    padding: 0 15px;
+
+                    @include smallScreen {
+                        font-size: 11px;
+                    }
+
+                    &:hover {
+                        background: $inner-toolbar-button-hovered-background !important;
+                    }
+
+                    md-icon {
+                        color: $inner-toolbar-button-color !important;
+                    }
+                }
+
+                .md-toolbar-tools {
+                    .md-icon-button {
+                        padding: 0;
+                    }
+
+                    md-progress-circular {
+                        margin: 0 10px;
+                    }
+
+                    @include smallScreen {
+                        h2 {
+                            font-size: 15px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .zero-content-help {
+        background: #fff;
+        border-radius: 10px;
+        margin: 30px;
+        padding: 50px;
+        position: relative;
+        text-align: center;
+
+        @include smallScreen {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        i.top-right-arrow {
+            position: absolute;
+            font-size: 200px;
+            right: 40px;
+            top: -35px;
+        }
+
+        h3 {
+            color: #696969;
+        }
+
+        p {
+            color: #676767;
+
+            a {
+                color: #676767;
+            }
+        }
+
+        &--remote {
+            form {
+                padding: 2em 0 0;
+            }
+
+            h3 {
+                color: #666;
+            }
+
+            p {
+                color: #888;
+            }
+        }
+    }
+
+    button.md-button {
+        md-progress-circular {
+            float: left;
+        }
+    }
+
+    .card-grid {
+        padding: 20px 10px;
+
+        @include largeScreen {
+            padding: 20px;
+        }
+
+        &.half {
+            md-card {
+                @include largeScreen {
+                    width: 48%;
+                }
+            }
+        }
+    }
+
+    log-frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+
+        > iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+        }
+    }
+
+    .status-container {
+        .relations {
+            a.relation {
+                margin-left: 10px;
+
+                md-icon {
+                    color: #000;
+                }
+            }
+        }
+
+        .hidden-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        &.status-failure {
+            color: $failure-dark-color;
+        }
+
+        &.status-success {
+            color: $success-dark-color;
+        }
+
+        &.status-pending {
+            color: $pending-dark-color;
+        }
+
+        &.status-cancelled {
+            color: $cancelled-dark-color;
+        }
+
+        &.status-running {
+            color: $running-dark-color;
+
+            .relations {
+                margin-right: 10px;
+                border-right: 1px solid #ccc;
+                padding-right: 10px;
+            }
+        }
+    }
+
+    .status-text {
+        &.status-failure {
+            color: $failure-dark-color;
+        }
+        &.status-success {
+            color: $success-dark-color;
+        }
+        &.status-running {
+            color: $running-dark-color;
+        }
+        &.status-pending {
+            color: $pending-dark-color;
+        }
+        &.status-cancelled {
+            color: $cancelled-dark-color;
+        }
+        &.status-terminating {
+            color: $cancelled-dark-color;
+        }
+    }
+
+    .alerts-container {
+        background: #FF5722;
+        color: #fff;
+        padding: 0 20px;
+        width: 100%;
+
+        h2 {
+            font-size: 16px;
+            padding: 0 100px 0 0;
+            margin: 11px 0;
+        }
+
+        &__alerts {
+            &.md-button {
+                margin: 0;
+                padding: 0;
+                width: 30px;
+                height: 22px;
+                line-height: 1;
+                min-height: 22px;
+                position: relative;
+                top: -1px;
+                font-weight: bold;
+            }
+
+        }
+
+        &__configure {
+            height: 30px;
+            line-height: 30px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            margin: -18px 0 0;
+        }
+
+        @include smallScreen {
+            text-align: center;
+
+            h2 {
+                padding: 0;
+            }
+
+            &__configure {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin: 0 0 6px;
+            }
+        }
+    }
+
+    .configuration-content {
+        .form-variable-container {
+            padding-top: 0;
+            padding-bottom: 0;
+
+            form {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+
+                md-input-container {
+                    margin-bottom: 0;
+                }
+
+                .md-button.md-fab {
+                    z-index: 1;
+                }
+            }
+        }
+    }
+
+    .pipeline-card {
+        border: 1px solid $pending-dark-color;
+        border-left-width: 5px;
+
+        &:hover {
+            .delete-pipeline-btn {
+                visibility: visible;
+            }
+        }
+
+        .delete-pipeline-btn {
+
+            @include largeScreen {
+                visibility: hidden;
+            }
+        }
+    }
+
+    ul.tide-list li, .pipeline-card {
+        &.status-success {
+            border-color: $success-dark-color;
+        }
+        &.status-failure {
+            border-color: $failure-dark-color;
+        }
+        &.status-cancelled {
+            border-color: $cancelled-dark-color;
+        }
+        &.status-running {
+            border-color: $running-dark-color;
+        }
+    }
+
+    ul.tide-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+            border-left: 4px solid grey;
+            background: #fff;
+
+            &:nth-child(2n) {
+                background: #fcfcfc;
+            }
+
+            &.header {
+                color: #80868D;
+                text-transform: uppercase;
+                font-weight: bold;
+                background: #F2F4F6;
+                border-bottom: 1px solid #ccc;
+            }
+
+            a {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+                height: 40px;
+                text-decoration: none;
+                color: #333;
+                padding-left: 10px;
+                border-bottom: 1px solid #efefef;
+
+                &:hover {
+                    background: #efefef;
+                }
+
+                .tide-status {
+                    flex: 0 0 5em;
+                }
+                .tide-source {
+                    flex: 1 1 20%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+                .tide-tasks {
+                    flex: 1 1 20%;
+                }
+                .tide-creation-date {
+                    flex: 0 0 10em;
+                }
+            }
+
+            code {
+                font-size: 12px;
+            }
+        }
+    }
+
+    .flow-dashboard {
+        .more {
+            text-align: center;
+            padding: 20px;
+
+            > button {
+                display: inline-flex;
+
+                md-progress-circular {
+                    margin: 0 10px;
+                }
+            }
+        }
+    }
+
+    .task-list {
+        padding: 0px;
+
+        .task {
+            display: inline-block;
+            width: 30px;
+            height: 20px;
+            background: $pending-color;
+            border: 1px solid $pending-dark-color;
+            border-radius: 20px;
+            margin-right: 2px;
+            text-align: center;
+            cursor: pointer;
+
+            md-icon {
+                font-size: 14px;
+                line-height: 20px;
+                text-align: center;
+            }
+
+            &.status-successful {
+                background: $success-color;
+                border-color: $success-dark-color;
+
+                md-icon {
+                    color: $success-dark-color;
+                }
+            }
+            &.status-failed {
+                background: $failure-color;
+                border-color: $failure-dark-color;
+
+                md-icon {
+                    color: $failure-dark-color;
+                }
+            }
+            &.status-running {
+                background: $running-color;
+                border-color: $running-dark-color;
+
+                md-icon {
+                    color: $running-dark-color;
+                }
+            }
+            &.status-skipped {
+                background: $skipped-color;
+                border-color: $skipped-dark-color;
+
+                md-icon {
+                    color: $skipped-dark-color;
+                }
+            }
+            &.status-cancelled {
+                background: $cancelled-color;
+                border-color: $cancelled-dark-color;
+
+                md-icon {
+                    color: $cancelled-dark-color;
+                }
+            }
+            &.status-pending {
+                background: $pending-color;
+                border-color: $pending-dark-color;
+
+                md-icon {
+                    color: $pending-dark-color;
+                }
+            }
+        }
+    }
+
+    ul.branch-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        > li {
+            border-left: 4px solid grey;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            flex-flow: row nowrap;
+            align-items: center;
+            height: 60px;
+            text-decoration: none;
+            color: #333;
+            padding-left: 10px;
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 5px;
+
+            &.branch-placeholder {
+                border: none;
+                text-align: center;
+
+                > p {
+                    flex: 1;
+                }
+            }
+
+            &:first-child {
+                margin-top: 5px;
+            }
+
+            &:hover {
+                background: #efefef;
+            }
+
+            span {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+
+                &.ellispable {
+                    max-width: 100%;
+                    display: inline-block;
+                }
+            }
+
+            md-icon[class^="cp-icon-"] {
+                text-align: center;
+                font-size: 1.5em;
+            }
+
+            p {
+                margin: 0;
+                padding: 0;
+            }
+
+            .branch-details {
+                width: 40%;
+                padding-left: 1em;
+
+                a {
+                    text-decoration: none;
+                    color: #999;
+                }
+            }
+            .branch-code {
+                width: 15%;
+
+                a {
+                    text-decoration: none;
+                    color: #333;
+                }
+            }
+            .branch-last-tides {
+                width: 21%;
+            }
+            .environment-button {
+                 width: 40px;
+             }
+
+            ul.branch-last-tides {
+                width: 30%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: flex;
+                justify-content: space-between;
+                flex-flow: row nowrap;
+                align-items: center;
+
+                li {
+                    width: 20%;
+                    border-right: 1px solid #fff;
+                    height: 100%;
+                    margin: 0;
+                    padding: 0;
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+
+                    &.branch-last-tide {
+                        cursor: pointer;
+                    }
+
+                    > span {
+                        flex: 1;
+                        text-align: center;
+                    }
+
+                    > md-progress-circular {
+                        margin: 0 auto 0 auto;
+                    }
+
+                    &.placeholder-tide {
+                        background: #fcfcfc;
+                    }
+
+                    &.status-success {
+                        background: $success-color;
+
+                        &:hover {
+                            background: $success-dark-color;
+                        }
+                    }
+                    &.status-failure {
+                        background: $failure-color;
+
+                        &:hover {
+                            background: $failure-dark-color;
+                        }
+                    }
+                    &.status-running {
+                        background: $running-color;
+
+                        &:hover {
+                            background: $running-dark-color;
+                        }
+                    }
+                    &.status-skipped {
+                        background: $skipped-color;
+
+                        &:hover {
+                            background: $skipped-dark-color;
+                        }
+                    }
+                    &.status-cancelled {
+                        background: $cancelled-color;
+
+                        &:hover {
+                            background: $cancelled-dark-color;
+                        }
+                    }
+                    &.status-pending {
+                        background: $pending-color;
+
+                        &:hover {
+                            background: $pending-dark-color;
+                        }
+                    }
+                }
+            }
+
+            code {
+                font-size: 12px;
+            }
+
+            &.status-success {
+                border-left-color: $success-dark-color;
+
+                .status-colored {
+                    color: $success-dark-color;
+                }
+            }
+            &.status-failure {
+                border-left-color: $failure-dark-color;
+
+                .status-colored {
+                    color: $failure-dark-color;
+                }
+            }
+            &.status-running {
+                border-left-color: $running-dark-color;
+
+                .status-colored {
+                    color: $running-dark-color;
+                }
+            }
+            &.status-skipped {
+                border-left-color: $skipped-dark-color;
+
+                .status-colored {
+                    color: $skipped-dark-color;
+                }
+            }
+            &.status-cancelled {
+                border-left-color: $cancelled-dark-color;
+
+                .status-colored {
+                    color: $cancelled-dark-color;
+                }
+            }
+            &.status-pending {
+                border-left-color: $pending-dark-color;
+
+                .status-colored {
+                    color: $pending-dark-color;
+                }
+            }
+        }
+
+         @include smallScreen {
+            li {
+                display: block;
+                height: auto;
+
+                .branch-details,
+                .branch-code {
+                    display: block;
+                    width: 100%;
+                    padding: 10px 0;
+                }
+
+                ul.branch-last-tides {
+                    width: 100%;
+                    padding: 10px 0;
+                }
+            }
+        }
+
+    }
+}
+
+$loader-color: rgb(66, 133, 244);
+
+.remote-resource {
+    padding: 20px;
+    text-align: center;
+
+    &.error {
+        .md-warning {
+            color: orange;
+        }
+    }
+
+    &.loading {
+        .loader > div {
+            border-top-color: $loader-color;
+            border-left-color: $loader-color;
+            border-right-color: $loader-color;
+        }
+    }
+
+    &.has-more {
+        text-align: center;
+
+        > span {
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid #fff;
+            background: #e69335;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 20px 5px;
+        }
+    }
+}
+
+.pipeline-details-row {
+    @include smallScreen {
+        flex-flow: row wrap;
+    }
+
+    &__details {
+        @include smallScreen {
+            flex: 1 100%;
+        }
+    }
+}
+
+pre.deployment-logs {
+    border: 0;
+    background-color: #000;
+    color: #fff;
+    border-radius: 0;
+}
+
+pre.raw {
+    @include smallScreen {
+        @include textWrap();
+        box-sizing: border-box;
+        width: 100%;
+    }
+}
+
+code {
+    @include smallScreen {
+        @include textWrap();
+    }
+}
+
+.yaml-editor {
+    min-height: 400px;
+    z-index: 1;
+}
+
+.yaml-editor-buttons {
+    text-align: center;
+    padding: 10px;
+}
+
+#documentation {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+    margin: 0;
+}
+
+#contact-us-launcher {
+    margin: 0;
+}
+
+
+@include smallScreen {
+    md-dialog.logs-dialog {
+        display: block;
+        max-width: 95%;
+
+        .md-toolbar-tools {
+            font-size: 12px;
+            padding: 0 10px;
+        }
+    }
+
+    .md-toolbar-tools .md-button.expand-btn {
+        display: none;
+    }
+}
+
+.console-popup {
+    .md-button.md-icon-button {
+        margin: 0 0px 0 7px;
+        width: 26px;
+        padding: 0;
+
+        &:last-child {
+            margin: 0;
+        }
+    }
+}
+
+.modal-buttons {
+    display: flex;
+}
+
+.open-btns {
+    button {
+        float: left;
+    }
+
+    &.mobile {
+        display: none;
+        margin: 10px 0 -15px;
+        position: relative;
+        z-index: 10;
+        width: 100%;
+
+        @include smallScreen {
+            display: block;
+        }
+
+        .open-btns-scroll {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            white-space: nowrap;
+            height: 48px;
+            padding: 0 0 20px;
+        }
+
+        button.md-raised {
+            background-color: $inner-toolbar-button-background;
+            color: #fff;
+            border-radius: 20px;
+            font-size: 12px;
+            padding: 0 9px;
+            min-width: 80px;
+            margin: 6px 5px;
+            float: none;
+        }
+    }
+}
+
+.tools-bar {
+    .open-btns {
+        @include smallScreen {
+            display: none;
+        }
+    }
+}

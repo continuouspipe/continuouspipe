@@ -1,0 +1,55 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="credentials">{{ credentials.length }} credentials</span>
+            <span ng-hide="credentials">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-icon-button icon-link icon-link--help" href="https://docs.continuouspipe.io/quick-start/configuring-a-registry/" target="_blank">
+            <md-icon>help</md-icon>
+        </md-button>
+        <md-button class="md-raised" aria-label="Add" ui-sref="registry-credentials.create">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help" ng-if="credentials.length == 0">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>These Docker images need to be pushed somewhere!</h3>
+        <p>Enter the credentials of your prefered Docker Registries and ContinuousPipe will be able to push your built Docker images to them.</p>
+    </div>
+    <remote-resource resource-name="credentials">
+        <table class="table responsive-table hover" ng-show="credentials.length > 0">
+            <thead>
+            <tr>
+                <th>Server / Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th ng-show="isAdmin">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="credential in credentials">
+                <td data-th="Server">
+                    <span ng-if="!credential.full_address">{{ credential.serverAddress }}</span>
+                    <span ng-if="credential.full_address">{{ credential.full_address }}</span>
+                </td>
+                <td data-th="Username">{{ credential.username }}</td>
+                <td data-th="Email">{{ credential.email }}</td>
+                <td data-th="Actions" ng-show="isAdmin">
+                    <md-button ng-click="changeVisibility(credential, credential.attributes.visibility != 'private' ? 'private' : 'public')" ng-if="credential.attributes.managed" class="md-icon-button">
+                        <md-tooltip>
+                            <span ng-if="credential.attributes.visibility != 'private'">This repository is public. Click here to make this repository private.</span>
+                            <span ng-if="credential.attributes.visibility == 'private'">This repository is private. Click here to make this repository public.</span>
+                        </md-tooltip>
+                        <md-icon ng-if="credential.attributes.visibility != 'private'">lock_open</md-icon>
+                        <md-icon ng-if="credential.attributes.visibility == 'private'">lock</md-icon>
+                    </md-button>
+                    <md-button ng-click="deleteCredentials(credential)" class="md-icon-button">
+                        <md-icon>delete</md-icon>
+                    </md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

@@ -1,0 +1,26 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Create a development environment</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="environmentForm">
+        <div class="form-container">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Environment's name</label>
+                <input ng-model="environment.name" required />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="environmentForm.$invalid || isLoading" ng-click="create(environment)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+            <span>Create</span>
+        </md-button>
+    </div>
+</md-toolbar>

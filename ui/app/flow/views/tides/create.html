@@ -1,0 +1,38 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span>Manually start a tide</span>
+        </h2>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <form name="tideForm">
+        <div class="form-container">
+            <md-autocomplete class="md-block" flex-gt-xs required
+                ng-input="tide.branch"
+                md-search-text="searchText"
+                md-selected-item="tide.branch"
+                md-items="branch in branches | filter:searchText"
+                md-item-text="branch"
+                placeholder="Branch">
+                <md-item-template>
+                    <span md-highlight-text="searchText" md-highlight-flags="^i">{{branch}}</span>
+                </md-item-template>
+            </md-autocomplete>
+
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>SHA1 (optional)</label>
+                <input ng-model="tide.sha1" />
+            </md-input-container>
+        </div>
+    </form>
+</md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Create" ng-disabled="tideForm.$invalid || isLoading" ng-click="create(tide)">
+            <md-progress-circular md-mode="indeterminate" md-diameter="20px" ng-show="isLoading"></md-progress-circular>
+            Create
+        </md-button>
+    </div>
+</md-toolbar>

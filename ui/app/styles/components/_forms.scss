@@ -1,0 +1,85 @@
+form {
+    p.introduction {
+        padding-bottom: 20px;
+        margin: 0;
+    }
+
+    md-dialog-actions {
+        padding-left: 0;
+
+        > button.md-button {
+            display: flex;
+
+            > md-progress-circular {
+                margin: 0 10px;
+                vertical-align: middle;
+                display: inline-block;
+                float: none;
+            }
+            > span {
+                flex: 1;
+            }
+        }
+    }
+
+    md-input-container .hint {
+        position: absolute;
+        left: 2px;
+        right: auto;
+        bottom: 7px;
+        font-size: 12px;
+        line-height: 14px;
+        transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+        color: grey;
+
+        &.ng-hide, &.ng-enter, &.ng-leave.ng-leave-active {
+            bottom: 26px;
+            opacity: 0;
+        }
+
+        &.ng-leave, &.ng-enter.ng-enter-active {
+            bottom: 7px;
+            opacity: 1;
+        }
+    }
+
+    .create-project {
+        .plan {
+            text-align: center;
+            background: #fff;
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+
+            ul, li {
+                list-style: none;
+                margin: 0;
+            }
+
+            ul {
+                padding: 5px;
+            }
+
+            li {
+                padding: 2px;
+
+                &.warning {
+                    color: orange;
+                }
+            }
+
+            .name {
+                padding: 5px;
+                background: #efefef;
+                border-bottom: 1px solid #ccc;
+                font-weight: bold;
+            }
+
+            .price {
+                padding: 10px;
+            }
+        }
+    }
+}
+
+md-dialog.form-dialog {
+    min-width: 500px;
+}

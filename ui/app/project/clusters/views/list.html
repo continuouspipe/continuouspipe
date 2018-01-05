@@ -1,0 +1,54 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="clusters">{{ clusters.length }} clusters</span>
+            <span ng-hide="clusters">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-icon-button icon-link icon-link--help" href="https://docs.continuouspipe.io/quick-start/configuring-a-cluster/" target="_blank">
+            <md-icon>help</md-icon>
+        </md-button>
+        <md-button ng-show="isAdmin" class="md-raised" aria-label="Add" ui-sref="clusters.add">Add</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help" ng-if="clusters.length == 0">
+        <i class="cp-icon-arrow-right-up top-right-arrow"></i>
+        <h3>You need to deploy somewhere!</h3>
+        <p>Add your existing cluster or let us create one on your behalf on an partner hosting platform provider.</p>
+    </div>
+    <remote-resource resource-name="clusters">
+        <table class="table responsive-table hover" ng-show="clusters.length > 0">
+            <thead>
+            <tr>
+                <th>Identifier</th>
+                <th>Address</th>
+                <th>Credentials</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="cluster in clusters">
+                <td data-th="Identifier">{{ cluster.identifier }}</td>
+                <td data-th="Address">
+                    <span ng-if="!clusterIsManaged(cluster)">{{ cluster.address }} <small>{{ cluster.version }}</small></span>
+                    <span ng-if="clusterIsManaged(cluster)">
+                        <md-icon>cloud</md-icon>
+                        <em>Cluster managed by ContinuousPipe</em>
+                    </span>
+                </td>
+                <td data-th="Credentials">
+                    <span ng-if="cluster.credentials.username">User <small>{{ cluster.credentials.username }}</small></span>
+                    <span ng-if="!cluster.credentials.username && cluster.credentials.google_cloud_service_account">Service account</span>
+                </td>
+                <td data-th="Actions">
+                    <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
+                    <md-button ng-click="showPolicies(cluster)" class="md-icon-button"><i class="material-icons">security</i></md-button>
+                    <md-button ng-if="!clusterIsManaged(cluster)" ng-click="inspectCluster(cluster)" class="md-icon-button"><i class="material-icons">lightbulb_outline</i></md-button>
+                    <md-button ng-if="!clusterIsManaged(cluster)" ng-click="showDashboard(cluster)" class="md-icon-button"><i class="material-icons">dashboard</i></md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>

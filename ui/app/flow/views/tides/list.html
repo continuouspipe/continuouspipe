@@ -1,0 +1,37 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>
+            <span ng-show="tides">Last tides</span>
+            <span ng-hide="tides">Loading...</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Start manually" ui-sref="flow.create-tide"><md-icon>play_arrow</md-icon> Start manually</md-button>
+    </div>
+</md-toolbar>
+<md-content flex id="content">
+    <div class="zero-content-help" ng-if="tides.length == 0">
+        <i class="cp-icon-commit" style="font-size: 60px;"></i>
+        <h3>Push something to your repository! Or manually run a deployment.</h3>
+        <p>By default, a tide starts automatically when you push to your code repository. Learn how to <a href="https://continuouspipe.io/docs/configure/introduction/" target="_blank">configure your flow</a> to <a href="https://continuouspipe.io/docs/configure/images/" target="_blank">build your Docker images</a>, <a href="https://continuouspipe.io/docs/configure/deployments/" target="_blank">deploy your services</a> or manage the <a href="https://continuouspipe.io/docs/configure/notifications/">notifications</a>.</p>
+    </div>
+    <remote-resource resource-name="tides">
+        <table class="table responsive-table hover actionable" ng-show="tides.length">
+            <thead>
+            <tr>
+                <th>UUID</th>
+                <th>Code reference</th>
+                <th>Creation date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="tide in tides" ui-sref="tide.logs({tideUuid: tide.uuid})" class="status-container" ng-class="tide.status | tideStatusClass">
+                <td data-th="UUID"><a ui-sref="tide.logs({tideUuid: tide.uuid})" class="hidden-link">{{ tide.uuid }}</a></td>
+                <td data-th="Code reference">{{ tide.code_reference.branch }} <small>({{ tide.code_reference.sha1 }})</small></td>
+                <td data-th="Creation date">{{ tide.creation_date | timeAgo }}</td>
+                <td data-th="Status">{{ tide.status }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </remote-resource>
+</md-content>
