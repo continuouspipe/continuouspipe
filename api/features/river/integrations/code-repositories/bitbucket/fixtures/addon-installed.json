@@ -1,0 +1,63 @@
+{
+  "productType": "bitbucket",
+  "principal": {
+    "username": "sroze",
+    "website": null,
+    "display_name": "Samuel ROZE",
+    "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/sroze"
+      },
+      "html": {
+        "href": "https://bitbucket.org/sroze/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/sroze/avatar/32/"
+      }
+    },
+    "created_on": "2014-01-14T17:57:28.198094+00:00",
+    "location": null,
+    "type": "user"
+  },
+  "eventType": "installed",
+  "baseUrl": "https://bitbucket.org",
+  "publicKey": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBFq+6Iq5J9AZzTZQfZEba9udHTIJToJnoDvWVHk8jKZIrMrVT1oJoAec84+nBhiO/8neqvbTlD7MeIb5aTDZo8YVhBKmQuEJ5RY56EakoR4x5oILsz/Ki5O4nGWSeTCCG1hj4heVsUi77umkYG5sZyHKNO+P+SwctTH1GEBDwswIDAQAB",
+  "user": {
+    "username": "sroze",
+    "website": null,
+    "display_name": "Samuel ROZE",
+    "uuid": "{555f5ea4-c626-40eb-bdb3-bad6b42fe8a8}",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/2.0/users/sroze"
+      },
+      "html": {
+        "href": "https://bitbucket.org/sroze/"
+      },
+      "avatar": {
+        "href": "https://bitbucket.org/account/sroze/avatar/32/"
+      }
+    },
+    "created_on": "2014-01-14T17:57:28.198094+00:00",
+    "location": null,
+    "type": "user"
+  },
+  "key": "continuous-pipe",
+  "baseApiUrl": "https://api.bitbucket.org",
+  "clientKey": "connection:659577",
+  "consumer": {
+    "description": "",
+    "links": {
+      "self": {
+        "href": "https://api.bitbucket.org/1.0/users/sroze/consumers/496521"
+      }
+    },
+    "url": "https://continuouspipe.io",
+    "secret": "zNYt7hbLCTkNYhwwVKcRUZK46QHSE6py",
+    "key": "CssUvjttsWEqskL9n7",
+    "id": 496521,
+    "name": "ContinuousPipe"
+  },
+  "sharedSecret": "eR9oW53teKfq8Vcdd/GtTrawTK4ThmSbxExRAR6bMss"
+}

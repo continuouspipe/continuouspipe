@@ -1,0 +1,8 @@
+ContinuousPipe\Builder\Repository:
+    properties:
+        address:
+            type: string
+        branch:
+            type: string
+        token:
+            type: string

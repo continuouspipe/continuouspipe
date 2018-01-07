@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.task.build_factory" class="ContinuousPipe\River\Task\Build\BuildTaskFactory">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="builder.build_request_creator" />
+
+            <tag name="river.task_factory" task="build" />
+        </service>
+
+        <service id="river.task.build.saga" class="ContinuousPipe\River\Task\Build\BuildSaga">
+            <argument type="service" id="river.tide.transaction_manager" />
+            <argument type="service" id="river.builder_client"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsStarted" />
+        </service>
+
+        <!-- Event subscribers -->
+        <service id="river.logging.listener.build_are_finished" class="ContinuousPipe\River\Task\Build\Listener\Logging\BuildsAreFinished">
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Task\Build\Event\ImageBuildsSuccessful"/>
+        </service>
+    </services>
+</container>

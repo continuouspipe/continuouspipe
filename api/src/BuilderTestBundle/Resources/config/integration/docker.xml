@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.docker.client.callback" class="ContinuousPipe\Builder\Tests\Docker\CallbackDockerClient" />
+        <service id="builder.docker.client" alias="builder.docker.client.callback" />
+        <service id="builder.docker_image_reader" alias="builder.docker.client.callback" />
+    </services>
+</container>

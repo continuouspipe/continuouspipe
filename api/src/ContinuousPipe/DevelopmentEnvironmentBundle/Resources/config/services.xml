@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Time resolver -->
+        <service id="app.time_resolver" class="ContinuousPipe\Events\TimeResolver\NativeTimeResolver" />
+
+        <!-- Events storage -->
+        <service id="app.event_store.doctrine" class="ContinuousPipe\Events\EventStore\Doctrine\DoctrineEventStore">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="jms_serializer.serializer" />
+            <argument type="service" id="app.time_resolver"/>
+        </service>
+        <service id="app.event_store" alias="app.event_store.doctrine" />
+        <service id="app.development_environment.event_stream_resolver" class="ContinuousPipe\DevelopmentEnvironment\Aggregate\FromEvents\DevelopmentEnvironmentEventStreamResolver" />
+
+        <!-- Event bus -->
+        <service id="app.event_bus.middleware.development_environment_event_store" class="ContinuousPipe\Events\SimpleBus\StoreEventsMiddleware">
+            <argument type="service" id="app.event_store" />
+            <argument type="service" id="app.development_environment.event_stream_resolver" />
+
+            <tag name="event_bus_middleware" priority="10" />
+        </service>
+
+        <!-- Read model -->
+        <service id="development_environment.read_model.create_projection" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\CreateProjectionWhenAnEventIsDispatched">
+            <argument type="service" id="development_environment.aggregate.repository" />
+            <argument type="service" id="development_environment.read_model.repository"/>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\DevelopmentEnvironment\Aggregate\Events\DevelopmentEnvironmentCreated" />
+        </service>
+
+        <!-- Repositories -->
+        <service id="development_environment.aggregate.repository" class="ContinuousPipe\DevelopmentEnvironment\Aggregate\FromEvents\FromEventsDevelopmentEnvironmentRepository">
+            <argument type="service" id="app.event_store" />
+        </service>
+        <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\Infrastructure\Doctrine\ReadModel\DoctrineDevelopmentEnvironmentRepository">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+        </service>
+
+        <!-- Initialization token -->
+        <service id="development_environment.initialization_token_factory" class="ContinuousPipe\DevelopmentEnvironment\InitializationToken\InitializationTokenFactory">
+            <argument type="service" id="development_environment.aggregate.repository" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="security.user_api_key_factory" />
+        </service>
+
+        <!-- Controller -->
+        <service id="development_environment.controller.environment" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\EnvironmentController">
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="development_environment.read_model.repository" />
+            <argument type="service" id="app.time_resolver" />
+        </service>
+
+        <service id="development_environment.controller.initialization_token" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\InitializationTokenController">
+            <argument type="service" id="development_environment.initialization_token_factory" />
+        </service>
+
+        <service id="development_environment.controller.status" class="ContinuousPipe\DevelopmentEnvironmentBundle\Controller\StatusController">
+            <argument type="service" id="development_environment.status_fetcher" />
+        </service>
+
+        <!-- Status -->
+        <service id="development_environment.status_fetcher" class="ContinuousPipe\DevelopmentEnvironment\Status\StatusFetcher">
+            <argument type="service" id="development_environment.aggregate.repository" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.tide" />
+        </service>
+    </services>
+</container>

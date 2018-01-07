@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.security.voter.flow" class="AppBundle\Security\Voter\FlowSecurityVoter" public="false">
+            <argument type="service" id="app.repository.team_membership"/>
+
+            <tag name="security.voter" />
+        </service>
+
+        <!-- Encryption Vault -->
+        <service id="river.flow.encrypted_variable_vault" class="ContinuousPipe\River\Flow\EncryptedVariable\SecurityVaultEncryptedVariableVault">
+            <argument type="service" id="security.vaults.user_secrets" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.jms_serializer.object_serializer" class="ContinuousPipe\River\Serializer\JMSSerializerObjectSerializer">
+            <argument type="service" id="jms_serializer" />
+            <argument>json</argument>
+        </service>
+
+        <!-- Command handlers -->
+        <service id="river.handler.start_tide" class="ContinuousPipe\River\Handler\StartTideHandler">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.tide.concurrency_manager" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.tide.transaction_manager" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="command_bus" />
+            <argument>%retry_interval%</argument>
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\StartTideCommand" />
+        </service>
+
+        <service id="river.handler.delete_environments" class="ContinuousPipe\River\Handler\DeleteEnvironmentsHandler">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+            <argument type="service" id="river.pipe.cluster_identifier_resolver" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="command_bus"/>
+            <argument>%retry_interval%</argument>
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Command\DeleteEnvironments" />
+        </service>
+
+         <service id="river.handler.pin_branch" class="ContinuousPipe\River\Handler\PinBranchHandler">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\PinBranch" />
+        </service>
+
+        <service id="river.handler.unpin_branch" class="ContinuousPipe\River\Handler\UnpinBranchHandler">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Command\UnpinBranch" />
+        </service>
+
+        <!-- Event subscribers -->
+        <service id="river.listener.start_tide_when_validated" class="ContinuousPipe\River\EventListener\StartTideWhenValidatedListener">
+            <argument type="service" id="simple_bus.command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideValidated"/>
+        </service>
+    </services>
+</container>

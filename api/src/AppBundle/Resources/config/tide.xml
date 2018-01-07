@@ -1,0 +1,404 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.time_resolver" class="ContinuousPipe\River\Infrastructure\InMemory\NativeTimeResolver" />
+        <service id="river.repository.tide.from_bus" class="ContinuousPipe\River\Repository\EventBusTideRepository">
+            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="river.tide_factory" />
+        </service>
+        <service id="river.repository.tide" alias="river.repository.tide.from_bus" />
+
+        <service id="river.tide_summary_creator" class="ContinuousPipe\River\Tide\TideSummaryCreator">
+            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="logger"/>
+        </service>
+
+        <service id="river.tide.configuration_enhancer.unnamed_tasks" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\TaskListAsUnnamedArrayEnhancer" />
+        <service id="river.tide.configuration_enhancer.add_default_build_tag" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultBuildTag" />
+        <service id="river.tide.configuration_enhancer.deploy_built_images" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DeployBuiltImagesByDefault" />
+        <service id="river.tide.configuration_enhancer.add_default_values" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddDefaultValues" />
+        <service id="river.tide.configuration_enhancer.add_github_notifications" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\AddGitHubNotificationsByDefault" />
+        <service id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\GetImageNameFromBuiltServices">
+            <argument type="collection">
+                <argument type="string" key="selector">[tasks][*][run]</argument>
+                <argument type="string" key="servicePath">[image][from_service]</argument>
+                <argument type="string" key="namePath">[image][name]</argument>
+            </argument>
+        </service>
+        <service id="river.tide.configuration_enhancer.deploy.get_images_name_from_built_services" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\GetImageNameFromBuiltServices">
+            <argument type="collection">
+                <argument type="string" key="selector">[tasks][*][deploy][services][*]</argument>
+                <argument type="string" key="servicePath">[specification][source][from_service]</argument>
+                <argument type="string" key="namePath">[specification][source][image]</argument>
+                <argument type="string" key="tagPath">[specification][source][tag]</argument>
+            </argument>
+        </service>
+
+        <service id="river.tide_configuration_factory" class="ContinuousPipe\River\Flow\ConfigurationFactory">
+            <argument type="service" id="river.file_system_resolver" />
+            <argument type="service" id="river.task_factory_registry" />
+            <argument type="collection">
+                <argument type="service" id="river.tide.configuration_enhancer.unnamed_tasks" />
+                <argument type="service" id="river.docker_compose.configuration_enhancer" />
+                <argument type="service" id="river.tide.configuration_enhancer.add_github_notifications" />
+                <argument type="service" id="river.tide.configuration_enhancer.add_default_build_tag" />
+                <argument type="service" id="river.tide.configuration_enhancer.deploy_built_images" />
+                <argument type="service" id="river.tide.configuration_enhancer.add_default_values" />
+                <argument type="service" id="river.tide.configuration_enhancer.run.get_images_name_from_built_services" />
+                <argument type="service" id="river.tide.configuration_enhancer.deploy.get_images_name_from_built_services" />
+            </argument>
+            <argument type="collection">
+                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables_of_tasks" />
+                <argument type="service" id="river.pipeline.tide_configuration_finalizer.create_default_pipeline" />
+                <argument type="service" id="river.pipeline.tide_configuration_finalizer.import_pipeline_configuration" />
+                <argument type="service" id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines" />
+                <argument type="service" id="river.tide.configuration_finalizer.replace_environ_values" />
+                <argument type="service" id="river.tide.configuration_finalizer.order_tasks_by_key" />
+            </argument>
+        </service>
+
+        <service id="river.tide.configuration_finalizer.merge_environment_variables_of_tasks"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
+            <argument type="collection">
+                <argument>[variables]</argument>
+                <argument>[tasks][*][deploy][services][*][specification][environment_variables]</argument>
+            </argument>
+        </service>
+
+        <service id="river.tide.configuration_finalizer.order_tasks_by_key"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\OrderTasksByKey" />
+
+        <service id="river.tide.configuration_finalizer.merge_environment_variables_of_pipelines"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\MergeEnvironmentVariables">
+            <argument type="collection">
+                <argument>[pipelines][*][variables]</argument>
+                <argument>[pipelines][*][tasks][*][deploy][services][*][specification][environment_variables]</argument>
+            </argument>
+        </service>
+
+        <service id="river.flow.variable.flow_variable_resolver" class="ContinuousPipe\River\Flow\Variable\FlowVariableResolver" />
+        <service id="river.tide.configuration_finalizer.replace_environ_values"
+                 class="ContinuousPipe\River\Flow\ConfigurationFinalizer\ReplaceEnvironmentVariableValues">
+            <argument type="service" id="river.flow.variable.flow_variable_resolver" />
+            <argument type="service" id="river.flow.encrypted_variable_vault" />
+        </service>
+
+        <service id="river.task_filter.context_factory" class="ContinuousPipe\River\Filter\CachableContextFactory">
+            <argument type="service" id="river.github.client_factory" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.pull_request_resolver" />
+        </service>
+
+        <!--
+        <service id="river.task_filter.context_factory.cached"
+                 class="ContinuousPipe\River\Filter\CachedContextFactory"
+                 decorates="river.task_filter.context_factory"
+                 decoration-priority="10">
+            <argument type="service" id="river.task_filter.context_factory.cached.inner" />
+            <argument type="service" id="river.cache" />
+        </service>
+        -->
+        <service id="river.task_filter.context_factory.noncached"
+                 class="ContinuousPipe\River\Filter\NonCachableContextFactory"
+                 decorates="river.task_filter.context_factory"
+                 decoration-priority="5">
+            <argument type="service" id="river.task_filter.context_factory.noncached.inner" />
+        </service>
+
+        <service id="river.tide.task_runner.start_method" class="ContinuousPipe\River\Task\StartTaskRunner" />
+        <service id="river.tide.task_runner" class="ContinuousPipe\River\Task\DelegatesToSupportingTaskRunner">
+            <argument type="collection">
+                <argument type="service" id="river.task.manual_approval.runner" />
+                <argument type="service" id="river.task.delete.runner" />
+                <argument type="service" id="river.task.build_factory" />
+                <argument type="service" id="river.tide.task_runner.start_method" />
+                <argument type="service" id="river.task.deploy_runner" />
+                <argument type="service" id="river.task.run_runner" />
+                <argument type="service" id="river.task.web_hook_factory" />
+            </argument>
+        </service>
+        <service id="river.tide.task_runner.logging"
+                 class="ContinuousPipe\River\Recover\FailedTask\ErrorTheTaskRunnerExceptions"
+                 decorates="river.tide.task_runner">
+            <argument type="service" id="river.tide.task_runner.logging.inner" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.filter.code_changes_resolver" class="ContinuousPipe\River\Filter\CodeChanges\CompareWithLastTideCodeChangesResolver">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.changes_comparator" />
+        </service>
+
+        <service id="river.task_filter.expression_language_filter_evaluator" class="ContinuousPipe\River\Filter\ExpressionLanguageFilterEvaluator">
+            <argument type="service" id="river.task_filter.context_factory" />
+            <argument type="service" id="river.filter.code_changes_resolver" />
+        </service>
+        <service id="river.tide.task_runner.filter_tasks"
+                 class="ContinuousPipe\River\Filter\TaskRunner\FilterDecorator"
+                 decorates="river.tide.task_runner">
+            <argument type="service" id="river.tide.task_runner.filter_tasks.inner" />
+            <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="log_stream.logger_factory" />
+        </service>
+        <service id="river.tide_factory" class="ContinuousPipe\River\TideFactory">
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.task_factory_registry" />
+            <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="river.commit_resolver" />
+            <argument type="service" id="river.tide.task_runner" />
+            <argument type="service" id="app.repository.team"/>
+            <argument type="service" id="app.repository.user"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="jms_serializer"/>
+        </service>
+
+        <service id="river.view.tide_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\View\DoctrineTideRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+        </service>
+
+        <service id="river.view.tide_view_factory" class="ContinuousPipe\River\View\Factory\TideViewFactory">
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="river.time_resolver" />
+            <argument type="service" id="river.tide_event_store" />
+        </service>
+
+        <!-- Firebase projections -->
+        <service id="river.view.storage.firebase.credentials.service_account_fetcher_factory" class="ContinuousPipe\River\Infrastructure\Firebase\Credentials\ServiceAccountAuthTokenFetcherFactory">
+            <argument>%firebase_service_account_path%</argument>
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher" class="Google\Auth\FetchAuthTokenCache">
+            <factory service="river.view.storage.firebase.credentials.service_account_fetcher_factory" method="create" />
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedAuthTokenFetcher"
+                 decorates="river.view.storage.firebase.database_factory.auth_token_fetcher"
+                 decoration-priority="5">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
+            <argument type="service" id="river.cache" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.view.storage.firebase.database_factory" class="ContinuousPipe\River\Infrastructure\Firebase\ServiceAccountedFirebaseDatabaseFactory">
+            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher" />
+            <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
+        </service>
+
+        <service id="river.view.storage.firebase_client" alias="river.view.storage.firebase_client.predis_cached"/>
+        <service id="river.view.storage.firebase_client.main" class="ContinuousPipe\River\Infrastructure\Firebase\DatabaseFirebaseClient">
+            <argument type="service" id="river.view.storage.firebase.database_factory" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.predis_cached"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Cache\CachedFirebaseClient">
+            <argument type="service" id="river.view.storage.firebase_client.main" />
+            <argument type="service" id="river.cache" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.view.storage.firebase" class="ContinuousPipe\River\Infrastructure\Firebase\Tide\View\Storage\FirebaseTideViewStorage">
+            <argument type="service" id="river.view.storage.firebase_client" />
+            <argument type="service" id="jms_serializer" />
+            <argument type="service" id="logger" />
+            <argument>%firebase_database_uri%</argument>
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="save"
+                 runner="tolerance.operation_runners.firebase" />
+        </service>
+
+        <!-- Firebase as asynchronous -->
+        <service id="river.view.storage.firebase_client.asychronous.calls_to_commands"
+                 class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\TransformCallsToCommandsClient"
+                 decorates="river.view.storage.firebase_client.main">
+            <argument type="service" id="command_bus" />
+        </service>
+
+        <service id="river.view.storage.firebase_client.asychronous.handle_commands" class="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Handler\DoFirebaseUpdates">
+            <argument type="service" id="river.view.storage.firebase_client.asychronous.calls_to_commands.inner" />
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Infrastructure\Firebase\Asynchronous\Command\UpdateFirebaseCommand" />
+        </service>
+
+        <!-- View storage -->
+        <service id="river.view.storage" class="ContinuousPipe\River\View\Storage\DuplicateViewToManyStorages">
+            <argument type="collection">
+                <argument type="service" id="river.view.tide_repository" />
+                <argument type="service" id="river.view.storage.firebase" />
+            </argument>
+        </service>
+
+        <service id="river.view.message_bus_middleware.update_tide_when_event" class="ContinuousPipe\River\View\EventBusMiddleware\UpdateTideViewWhenTideEventPublished">
+            <argument type="service" id="service_container" />
+
+            <tag name="event_bus_middleware" />
+        </service>
+
+        <!-- Transactions -->
+        <service id="river.tide.transaction_manager.pop_and_dispatch_events" class="ContinuousPipe\River\Tide\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="river.repository.tide" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="river.tide.transaction_manager" alias="river.tide.transaction_manager.pop_and_dispatch_events" />
+
+        <!-- Concurrency -->
+        <service id="river.tide.concurrency_manager" class="ContinuousPipe\River\Tide\Concurrency\ViewRepositoryBasedConcurrencyManager">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument>%retry_interval%</argument>
+        </service>
+
+        <service id="continuous_pipe.river.tide.usage_limiter.hourly_limited_concurrency_manager"
+                 class="ContinuousPipe\River\Tide\Concurrency\HourlyLimitedConcurrencyManager"
+                 decorates="river.tide.concurrency_manager">
+            <argument type="service" id="continuous_pipe.river.tide.usage_limiter.hourly_limited_concurrency_manager.inner" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.time_resolver" />
+            <argument type="service" id="security.team_usage_limits" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.tide.transaction_manager" />
+            <argument>%retry_interval%</argument>
+        </service>
+
+        <service id="river.tide.concurrency.run_pending_tides_handler" class="ContinuousPipe\River\Tide\Concurrency\Handler\RunPendingTidesHandler">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.tide.concurrency_manager" />
+            <argument type="service" id="command_bus" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Tide\Concurrency\Command\RunPendingTidesCommand" />
+        </service>
+
+        <service id="river.tide.concurrency.run_pending_when_tide_is_finished" class="ContinuousPipe\River\Tide\Concurrency\EventListener\RunPendingTidesWhenATideIsFinished">
+            <argument type="service" id="river.view.tide_repository"/>
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled" />
+        </service>
+
+        <service id="predis_client" class="Predis\Client">
+            <factory class="ContinuousPipe\River\Cache\Redis\RedisClientFactory" method="create"/>
+            <argument>%redis_host%</argument>
+        </service>
+
+        <service id="river.memory_cache" class="Doctrine\Common\Cache\ApcuCache">
+            <argument>river</argument>
+        </service>
+
+        <service id="river.predis_cache" class="Doctrine\Common\Cache\PredisCache">
+            <argument type="service" id="predis_client" />
+        </service>
+
+        <service id="river.cache" class="Doctrine\Common\Cache\ChainCache">
+            <argument type="collection">
+                <argument type="service" id="river.memory_cache" />
+                <argument type="service" id="river.predis_cache" />
+            </argument>
+        </service>
+
+        <service id="river.tide.concurrency.locker.predis_locker" class="ContinuousPipe\River\Tide\Concurrency\Lock\PredisMutexLocker">
+            <argument type="service" id="predis_client" />
+            <argument>%locker_timeout%</argument>
+        </service>
+        <service id="river.tide.concurrency.locker" alias="river.tide.concurrency.locker.predis_locker" />
+        <service id="river.tide.concurrency.locker.prevent_deep_locking"
+                 class="ContinuousPipe\River\Tide\Concurrency\Lock\PreventDeepLocking"
+                 decorates="river.tide.concurrency.locker">
+            <argument type="service" id="river.tide.concurrency.locker.prevent_deep_locking.inner" />
+        </service>
+
+        <service id="river.tide.transaction_manager.pessimistic_locking"
+                 class="ContinuousPipe\River\Tide\Concurrency\PessimisticTransactionManager"
+                 decorates="river.tide.transaction_manager">
+            <argument type="service" id="river.tide.transaction_manager.pessimistic_locking.inner" />
+            <argument type="service" id="river.tide.concurrency.locker" />
+        </service>
+
+        <!-- Filters -->
+        <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\FilterHash\DoctrineFilterHashRepository">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="river.tide.filter.filter_hash_evaluator" class="ContinuousPipe\River\Filter\FilterHash\FilterHashEvaluator">
+            <argument type="service" id="river.task_filter.expression_language_filter_evaluator" />
+        </service>
+        <service id="river.tide.filter.filter_hash.tide_created.store_filter_hash" class="ContinuousPipe\River\Filter\FilterHash\EventListener\TideCreated\StoreFilterHash">
+            <argument type="service" id="river.repository.tide"/>
+            <argument type="service" id="river.tide.filter.filter_hash_repository"/>
+            <argument type="service" id="river.tide.filter.filter_hash_evaluator"/>
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+        </service>
+
+        <!-- Tide start voters -->
+        <service id="river.tide.start_voter.filter_configuration" class="ContinuousPipe\River\Tide\StartVoter\FilterConfigurationVoter" />
+        <service id="river.tide.start_voter.filter_configuration.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.filter_configuration">
+            <argument type="service" id="river.tide.start_voter.filter_configuration.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.tide.start_voter.filter_hash_changed" class="ContinuousPipe\River\Tide\StartVoter\FilterHashChangedVoter">
+            <argument type="service" id="river.tide.filter.filter_hash_evaluator"/>
+            <argument type="service" id="river.view.tide_repository"/>
+            <argument type="service" id="river.tide.filter.filter_hash_repository"/>
+        </service>
+        <service id="river.tide.start_voter.filter_hash_changed.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.filter_hash_changed">
+            <argument type="service" id="river.tide.start_voter.filter_hash_changed.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.tide.start_voter.tide_already_created" class="ContinuousPipe\River\Tide\StartVoter\TideAlreadyCreatedVoter">
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
+        <service id="river.tide.start_voter.tide_already_created.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.tide_already_created">
+            <argument type="service" id="river.tide.start_voter.tide_already_created.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.tide.start_voter.context" class="ContinuousPipe\River\Tide\StartVoter\AffirmativeVoter">
+            <argument type="collection">
+                <argument type="service" id="river.tide.start_voter.tide_already_created" />
+                <argument type="service" id="river.tide.start_voter.filter_hash_changed" />
+            </argument>
+        </service>
+        <service id="river.tide.start_voter.context.logger"
+                 class="ContinuousPipe\River\Tide\StartVoter\DebugLoggingWhenVoterVotesNo"
+                 decorates="river.tide.start_voter.context">
+            <argument type="service" id="river.tide.start_voter.context.logger.inner" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.tide.start_voter" class="ContinuousPipe\River\Tide\StartVoter\UnanimousVoter">
+            <argument type="collection">
+                <argument type="service" id="river.tide.start_voter.filter_configuration" />
+                <argument type="service" id="river.tide.start_voter.context" />
+            </argument>
+        </service>
+
+        <!-- External relations -->
+        <service id="river.tide.external_relations.resolver" class="ContinuousPipe\River\Tide\ExternalRelation\GitHub\PullRequestResolver">
+            <argument type="service" id="river.pull_request_resolver" />
+            <argument type="service" id="river.view.tide_repository" />
+        </service>
+
+        <service id="river.tide.view.list_pagination" class="ContinuousPipe\River\View\Pagination\TideListPaginatorSubscriber">
+            <tag name="knp_paginator.subscriber" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,5 @@
+ContinuousPipe\Builder\LogStreamLogging:
+    properties:
+        parentLogIdentifier:
+            serialized_name: parentLogIdentifier
+            type: string

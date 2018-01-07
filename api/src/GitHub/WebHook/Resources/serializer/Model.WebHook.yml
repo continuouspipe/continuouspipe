@@ -1,0 +1,11 @@
+GitHub\WebHook\Model\WebHook:
+    properties:
+        name:
+            type: string
+        configuration:
+            type: GitHub\WebHook\Model\WebHookConfiguration
+            serialized_name: config
+        events:
+            type: array<string>
+        active:
+            type: boolean

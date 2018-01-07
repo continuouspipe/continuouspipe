@@ -1,0 +1,8 @@
+ContinuousPipe\Model\Component\VolumeMount:
+    properties:
+        name:
+            type: string
+        mountPath:
+            type: string
+        readOnly:
+            type: boolean

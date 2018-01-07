@@ -1,0 +1,89 @@
+{
+  "action": "added",
+  "installation": {
+    "id": 32424,
+    "account": {
+      "login": "continuouspipe",
+      "id": 14802577,
+      "avatar_url": "https://avatars3.githubusercontent.com/u/14802577?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/continuouspipe",
+      "html_url": "https://github.com/continuouspipe",
+      "followers_url": "https://api.github.com/users/continuouspipe/followers",
+      "following_url": "https://api.github.com/users/continuouspipe/following{/other_user}",
+      "gists_url": "https://api.github.com/users/continuouspipe/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/continuouspipe/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/continuouspipe/subscriptions",
+      "organizations_url": "https://api.github.com/users/continuouspipe/orgs",
+      "repos_url": "https://api.github.com/users/continuouspipe/repos",
+      "events_url": "https://api.github.com/users/continuouspipe/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/continuouspipe/received_events",
+      "type": "Organization",
+      "site_admin": false
+    },
+    "repository_selection": "selected",
+    "access_tokens_url": "https://api.github.com/installations/32424/access_tokens",
+    "repositories_url": "https://api.github.com/installation/repositories",
+    "html_url": "https://github.com/organizations/continuouspipe/settings/installations/32424",
+    "app_id": 2984,
+    "target_id": 14802577,
+    "target_type": "Organization",
+    "permissions": {
+      "statuses": "write",
+      "pull_requests": "write",
+      "deployments": "write",
+      "contents": "write",
+      "members": "read",
+      "administration": "read",
+      "issues": "read",
+      "repository_projects": "read",
+      "metadata": "read"
+    },
+    "events": [
+      "commit_comment",
+      "create",
+      "delete",
+      "deployment",
+      "deployment_status",
+      "membership",
+      "pull_request",
+      "pull_request_review_comment",
+      "push",
+      "release",
+      "status"
+    ],
+    "created_at": 1497286016,
+    "updated_at": 1500562105,
+    "single_file_name": null
+  },
+  "repository_selection": "selected",
+  "repositories_added": [
+    {
+      "id": 97728517,
+      "name": "flex-skeleton",
+      "full_name": "continuouspipe/flex-skeleton"
+    }
+  ],
+  "repositories_removed": [
+
+  ],
+  "sender": {
+    "login": "sroze",
+    "id": 804625,
+    "avatar_url": "https://avatars0.githubusercontent.com/u/804625?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/sroze",
+    "html_url": "https://github.com/sroze",
+    "followers_url": "https://api.github.com/users/sroze/followers",
+    "following_url": "https://api.github.com/users/sroze/following{/other_user}",
+    "gists_url": "https://api.github.com/users/sroze/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/sroze/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/sroze/subscriptions",
+    "organizations_url": "https://api.github.com/users/sroze/orgs",
+    "repos_url": "https://api.github.com/users/sroze/repos",
+    "events_url": "https://api.github.com/users/sroze/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/sroze/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}

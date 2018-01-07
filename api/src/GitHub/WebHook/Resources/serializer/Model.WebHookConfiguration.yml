@@ -1,0 +1,12 @@
+GitHub\WebHook\Model\WebHookConfiguration:
+    properties:
+        url:
+            type: string
+        contentType:
+            type: string
+            serialized_name: content_type
+        secret:
+            type: string
+        insecureSsl:
+            type: boolean
+            serialized_name: insecure_ssl

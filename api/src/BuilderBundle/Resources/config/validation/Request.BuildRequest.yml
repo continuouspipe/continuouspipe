@@ -1,0 +1,8 @@
+ContinuousPipe\Builder\Request\BuildRequest:
+    properties:
+        credentialsBucket:
+            - NotBlank: ~
+        steps:
+            - Valid: ~
+        engine:
+            - Valid: ~

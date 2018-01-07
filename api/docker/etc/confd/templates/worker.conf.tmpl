@@ -1,0 +1,11 @@
+[program:worker]
+command = /usr/local/share/worker/run.sh
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+user = root
+autostart = {{ getenv "START_WORKER" }}
+autorestart = true
+priority = 10
+stopwaitsecs = 1800

@@ -1,0 +1,16 @@
+ContinuousPipe\Model\Component\DeploymentStrategy:
+    properties:
+        attached:
+            type: boolean
+        locked:
+            type: boolean
+        reset:
+            type: boolean
+        livenessProbe:
+            type: ContinuousPipe\Model\Component\Probe
+        readinessProbe:
+            type: ContinuousPipe\Model\Component\Probe
+        maxUnavailable:
+            type: string
+        maxSurge:
+            type: string

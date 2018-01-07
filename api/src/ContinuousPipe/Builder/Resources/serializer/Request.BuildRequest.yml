@@ -1,0 +1,23 @@
+ContinuousPipe\Builder\Request\BuildRequest:
+    properties:
+        steps:
+            type: array<ContinuousPipe\Builder\BuildStepConfiguration>
+        logging:
+            type: ContinuousPipe\Builder\Logging
+        credentialsBucket:
+            type: uuid
+            serialized_name: credentialsBucket
+        repository:
+            type: ContinuousPipe\Builder\Repository
+        archive:
+            type: ContinuousPipe\Builder\Request\ArchiveSource
+        image:
+            type: ContinuousPipe\Builder\Image
+        context:
+            type: ContinuousPipe\Builder\Context
+        environment:
+            type: array<string, string>
+        engine:
+            type: ContinuousPipe\Builder\Engine
+        attributes:
+            type: array<string, string>

@@ -1,0 +1,17 @@
+ContinuousPipe\Security\ApiKey\UserApiKey:
+    properties:
+        uuid:
+            type: uuid
+            groups: ['Default']
+        apiKey:
+            type: string
+            groups: ['Default']
+        creationDate:
+            type: DateTime
+            groups: ['Default']
+        description:
+            type: string
+            groups: ['Default']
+        user:
+            type: ContinuousPipe\Security\User\User
+            groups: ['User']

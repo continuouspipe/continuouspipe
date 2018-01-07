@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="admin.controller.team" class="AdminBundle\Controller\TeamController">
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+
+        <service id="admin.controller.flow" class="AdminBundle\Controller\FlowController">
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="router" />
+            <argument type="service" id="session" />
+        </service>
+
+        <service id="admin.controller.migrations" class="AdminBundle\Controller\MigrationsController">
+            <argument type="service" id="session" />
+            <argument type="service" id="router" />
+            <argument type="service" id="event_bus" />
+        </service>
+
+        <service id="admin.controller.tide" class="AdminBundle\Controller\TideController">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="knp_paginator" />
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="router"/>
+            <argument>%river_ui_url%</argument>
+        </service>
+
+        <service id="admin.controller.last_tides" class="AdminBundle\Controller\LastTidesController">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="knp_paginator" />
+        </service>
+
+        <service id="admin.controller.cluster" class="AdminBundle\Controller\ClusterController">
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+
+        <service id="admin.controller.billing" class="AdminBundle\Controller\BillingController">
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="app.repository.billing_profile"/>
+            <argument type="service" id="river.managed.resources.usage_projection.summary_projector"/>
+        </service>
+
+        <service id="admin.twig_extension" class="AdminBundle\Twig\AdminExtension" public="false">
+            <tag name="twig.extension" />
+        </service>
+
+    </services>
+</container>

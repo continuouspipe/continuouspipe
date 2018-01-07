@@ -1,0 +1,62 @@
+imports:
+    - { resource: config_dev.yml }
+
+parameters:
+    pipe.wait_component_interval: 0.01
+    pipe.wait_component_timeout: 1
+
+    endpoint.wait.timeout: 1
+    endpoint.wait.interval: 0.01
+
+    pod.wait.timeout: 1
+    pod.wait.interval: 0.01
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+    router:
+        resource: "%kernel.root_dir%/config/routing_test.yml"
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false
+
+beberlei_metrics:
+    collectors:
+        statsd:
+            type: 'null'
+
+parameters:
+    github_secret: '3216994be6ee462571feb2e0bfeedc5ab82152b4'
+
+message:
+    connections:
+        default:
+            debug: true
+
+        main:
+            driver:
+                direct: ~
+        operations:
+            driver:
+                direct: ~
+        delayed:
+            driver:
+                direct: ~
+        long_running_deployments:
+            driver:
+                direct: ~
+
+tolerance:
+    operation_runners:
+        logstream:
+            retry:
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    'null': ~

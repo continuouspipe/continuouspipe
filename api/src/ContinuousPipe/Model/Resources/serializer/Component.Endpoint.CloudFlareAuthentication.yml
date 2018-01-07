@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Endpoint\CloudFlareAuthentication:
+    properties:
+        email:
+            type: string
+        apiKey:
+            type: string

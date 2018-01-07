@@ -1,0 +1,8 @@
+ContinuousPipe\Security\Account\GoogleAccount:
+    properties:
+        refreshToken:
+            type: string
+            groups: ['Default', 'Account']
+        serviceAccount:
+            type: string
+            groups: ['Default', 'Account']

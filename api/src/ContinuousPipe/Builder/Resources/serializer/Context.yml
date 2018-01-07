@@ -1,0 +1,6 @@
+ContinuousPipe\Builder\Context:
+    properties:
+        dockerFilePath:
+            type: string
+        repositorySubDirectory:
+            type: string

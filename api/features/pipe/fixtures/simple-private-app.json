@@ -1,0 +1,32 @@
+[
+  {
+    "name": "app",
+    "identifier": "app",
+    "specification": {
+      "source": {
+        "image": "docker.io/foo/bar",
+        "tag": "master"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": [
+    ]
+  }
+]

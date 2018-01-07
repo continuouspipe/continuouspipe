@@ -1,0 +1,10 @@
+ContinuousPipe\Model\Component\Probe\Http:
+    properties:
+        path:
+            type: string
+        port:
+            type: integer
+        host:
+            type: string
+        scheme:
+            type: string

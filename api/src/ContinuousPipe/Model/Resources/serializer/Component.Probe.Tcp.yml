@@ -1,0 +1,4 @@
+ContinuousPipe\Model\Component\Probe\Tcp:
+    properties:
+        port:
+            type: integer

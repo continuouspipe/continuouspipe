@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.cluster_policies.policy_resolver" class="ContinuousPipe\River\ClusterPolicies\ClusterResolution\GetFromClusterInTeamBucket">
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+        <service id="river.cluster_policies.endpoint.enforce_policy_while_creating_deployment_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Endpoint\EnforceEndpointPolicyWhileCreatingDeploymentRequest"
+                 decorates="river.task.deploy.deployment_request_factory"
+                 decoration-priority="5">
+            <argument type="service" id="river.cluster_policies.endpoint.enforce_policy_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
+            <argument type="service" id="river.task.deploy.configuration.hostname_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.cluster_policies.environment.enforce_policy_while_creating_deployment_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Environment\EnforceEnvironmentPolicyWhenDeploying"
+                 decorates="river.task.deploy.deployment_request_factory"
+                 decoration-priority="5">
+            <argument type="service" id="river.cluster_policies.environment.enforce_policy_while_creating_deployment_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.cluster_policies.default.cluster_from_bucket_if_no_configuration"
+                 class="ContinuousPipe\River\ClusterPolicies\DefaultCluster\ClusterFromDefaultBucketIfNoConfiguration"
+                 decorates="river.pipe.deployment_request.target_cluster_resolver">
+            <argument type="service" id="river.cluster_policies.default.cluster_from_bucket_if_no_configuration.inner" />
+            <argument type="service" id="river.pipe.deployment_request.cluster_resolver" />
+        </service>
+
+        <service id="river.cluster_policies.resources.add_resources_when_building_request"
+                 class="ContinuousPipe\River\ClusterPolicies\Resources\AddDefaultComponentResources"
+                 decorates="river.pipe.deployment_request_enhancer">
+            <argument type="service" id="river.cluster_policies.resources.add_resources_when_building_request.inner" />
+            <argument type="service" id="river.cluster_policies.policy_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>

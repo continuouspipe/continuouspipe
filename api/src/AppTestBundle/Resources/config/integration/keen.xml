@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.keen.client" class="ContinuousPipe\River\Analytics\Keen\Client\VoidClient" />
+        <service id="river.keen.client.traceable"
+                 class="ContinuousPipe\River\Tests\Analytics\Keen\TraceableKeenClient"
+                 decorates="river.keen.client">
+            <argument type="service" id="river.keen.client.traceable.inner" />
+        </service>
+    </services>
+</container>

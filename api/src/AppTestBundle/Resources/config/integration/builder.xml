@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.builder_client" class="ContinuousPipe\River\Tests\Builder\EmptyBuilderClient" />
+        <service id="builder.client.traceable"
+                 class="ContinuousPipe\Builder\Client\TraceableBuilderClient"
+                 decorates="river.builder_client">
+            <argument type="service" id="builder.client.traceable.inner" />
+        </service>
+        <service id="builder.client.hookable"
+                 class="ContinuousPipe\Builder\Client\HookableBuilderClient"
+                 decorates="river.builder_client">
+            <argument type="service" id="builder.client.hookable.inner" />
+        </service>
+
+        <service id="builder.metrics.traced_publisher"
+                 class="ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher"
+                 decorates="tolerance.metrics.publisher.statsd"
+                 public="false">
+            <argument type="service" id="builder.metrics.traced_publisher.inner" />
+        </service>
+
+        <service id="river.builder_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\EmptyListener" />
+    </services>
+</container>

@@ -1,0 +1,4 @@
+ContinuousPipe\Model\Component\Probe\Exec:
+    properties:
+        command:
+            type: array<string>

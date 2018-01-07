@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.user_activity.dispatcher" class="ContinuousPipe\UserActivity\RabbitMqUserActivityDispatcher">
+            <argument type="service" id="old_sound_rabbit_mq.stack_user_activity_producer" />
+            <argument type="service" id="jms_serializer" />
+        </service>
+        <service id="river.user_activity.dispatch_on_repository_event" class="ContinuousPipe\UserActivity\DispatchFromCodeRepositoryEvents">
+            <argument type="service" id="river.user_activity.dispatcher"/>
+            <argument type="service" id="river.repository.flow" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="notify"
+                 runner="tolerance.operation_runners.null_placeholdered" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\CodeRepository\Event\CodePushed" />
+        </service>
+    </services>
+</container>

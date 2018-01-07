@@ -1,0 +1,112 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_team_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="{{ path('admin_teams') }}">Teams</a></li>
+    <li class="active"><a href="{{ path('admin_team', {'team': team.slug}) }}">{{ team.slug }}</a></li>
+    <li>Flows</li>
+    <li class="active">{{ flow.uuid }}</li>
+    <li><a href="{{ path('admin_tides', {'team': team.slug, 'flow': flow.uuid}) }}">Tides</a></li>
+    <li class="active">{{ tide.uuid }}</li>
+</ol>
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tide overview</div>
+            <table class="table">
+                <tr>
+                    <th>Status</th>
+                    <td>
+                        {{ tide.status }}
+                        {% if tide.failureReason is not null %}
+                            ({{ tide.failureReason }})
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Code Repository</th>
+                    <td>{{ tide.codeReference.repository.address }}</td>
+                </tr>
+                <tr>
+                    <th>Code Reference</th>
+                    <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
+                </tr>
+                <tr>
+                    <th>Creation date</th>
+                    <td>{{ tide.creationDate | date }}</td>
+                </tr>
+                <tr>
+                    <th>Start date</th>
+                    <td>{% if tide.startDate is not null %}{{ tide.startDate | date }}{% else %}<em>Unknown</em>{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Finish date</th>
+                    <td>{% if tide.finishDate is not null %}{{ tide.finishDate | date }}{% else %}<em>Unknown</em>{% endif %}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">Tide configuration</div>
+            <div class="panel-body">
+                <pre>{{ tide.configuration | serialize }}</pre>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Operations</div>
+            <table class="table">
+                <tr>
+                    <th>Force start</th>
+                    <td>
+                        <form action="{{ path('admin_tide_force_start', {'team': team.slug, 'flow': flow.uuid, 'uuid': tide.uuid}) }}" method="POST">
+                            <button class="btn btn-primary">Start</button>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Logs</div>
+            <div class="panel-body">
+                <iframe src="{{ tideLogsUrl }}" class="log-frame"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Events</div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Body</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.dateTime | date('d/m/Y H:i:s.u') }}</td>
+                    <td>{{ event.tideEvent | class }}</td>
+                    <td><pre>{{ event.tideEvent | serialize }}</pre></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+<style type="text/css">
+iframe.log-frame {
+    width: 100%;
+    min-height: 400px;
+    overflow: auto;
+}
+</style>
+{% endblock %}

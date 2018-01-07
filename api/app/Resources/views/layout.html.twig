@@ -1,0 +1,31 @@
+{% extends "::base.html.twig" %}
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet" type="text/css">
+    {% stylesheets
+    filter="scssphp"
+    filter="cssrewrite"
+
+    "bundles/authenticator/scss/layout.scss"
+    "bundles/authenticator/scss/login.scss"
+    "bundles/authenticator/scss/account.scss"
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{% endblock %}
+{% block body %}
+    <header class="header">
+        <div class="account-links">
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            <a href="https://ui.continuouspipe.io">Console</a>
+            <a href="{{ path('logout') }}">Logout</a>
+            {% endif %}
+        </div>
+        <i class="icon cp-icon-logo"></i>
+        <h1>ContinuousPipe</h1>
+    </header>
+    {% block content %}
+        {% block hwi_oauth_content %}
+        {% endblock %}
+    {% endblock %}
+{% endblock %}

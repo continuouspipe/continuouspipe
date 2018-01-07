@@ -1,0 +1,13 @@
+ContinuousPipe\Pipe\DeploymentRequest:
+    properties:
+        target:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Target
+        specification:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Specification
+        notification:
+            type: ContinuousPipe\Pipe\DeploymentRequest\Notification
+        credentialsBucket:
+            type: string
+            serialized_name: credentialsBucket
+        attributes:
+            type: array<string,string>

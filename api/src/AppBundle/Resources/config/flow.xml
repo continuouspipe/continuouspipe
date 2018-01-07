@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.flow.environment_client" class="ContinuousPipe\River\Flow\EnvironmentClient">
+            <argument type="service" id="river.pipe_client" />
+            <argument type="service" id="river.pipe.cluster_identifier_resolver" />
+            <argument type="service" id="security.user_context" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.repository.flow.deprecated.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Repository\DoctrineFlowRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="app.repository.user" />
+        </service>
+
+        <service id="river.event_store.events_adapter" class="ContinuousPipe\River\EventStore\ContinuousPipeEventsAdapter">
+            <argument type="service" id="app.event_store"/>
+        </service>
+
+        <service id="river.event_store" alias="river.event_store.events_adapter" />
+
+        <service id="river.repository.flow.event_based" class="ContinuousPipe\River\Flow\EventBasedFlowRepository">
+            <argument type="service" id="river.event_store" />
+        </service>
+
+        <service id="river.repository.flow" alias="river.repository.flow.event_based" />
+
+        <service id="river.flow.projections.flat_flow_repository.doctrine" class="ContinuousPipe\River\Infrastructure\Doctrine\Flow\Projections\DoctrineFlatFlowProjectionRepository">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="river.flow.projections.flat_flow_repository" alias="river.flow.projections.flat_flow_repository.doctrine" />
+
+        <service id="river.flow_factory" class="ContinuousPipe\River\FlowFactory">
+            <argument type="service" id="security.user_context" />
+            <argument type="service" id="event_bus"/>
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="river.flow.transaction_manager"/>
+        </service>
+
+        <service id="river.flow.projections.flat_flow.save_on_event" class="ContinuousPipe\River\Flow\Projections\Generation\SaveFlatFlowOnFlowEvent">
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.repository.flow" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowRecovered" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowConfigurationUpdated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineCreated" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\PipelineDeleted" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchPinned" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\BranchUnpinned" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowFlexed" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowUnflexed" />
+        </service>
+
+        <service id="river.event_bus.middleware.flow_event_store" class="ContinuousPipe\River\Flow\Event\Storage\StoreFlowEventsMiddleware">
+            <argument type="service" id="river.event_store" />
+
+            <tag name="event_bus_middleware" priority="500" />
+        </service>
+
+        <service id="river.flow.configuration.missing_variables.configuration_resolver" class="ContinuousPipe\River\Flow\MissingVariables\ConfigurationMissingVariableResolver">
+            <argument type="service" id="river.tide_configuration_factory" />
+            <argument type="service" id="logger" />
+        </service>
+
+        <service id="river.flow.aggregate_repository" class="ContinuousPipe\River\Flow\Aggregate\FlowAggregateRepository">
+            <argument type="service" id="river.repository.flow" />
+        </service>
+        <service id="river.flow.transaction_manager" class="ContinuousPipe\Events\Transaction\PopAndDispatchEventsTransactionManager">
+            <argument type="service" id="river.flow.aggregate_repository" />
+            <argument type="service" id="event_bus" />
+        </service>
+    </services>
+</container>

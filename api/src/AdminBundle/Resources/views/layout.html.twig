@@ -1,0 +1,28 @@
+{% extends "@Admin/base.html.twig" %}
+{% block body %}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">CP</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li{% block header_navbar_team_class %}{% endblock %}><a href="{{ path('admin_teams') }}">Teams</a></li>
+                <li{% block header_navbar_tides_class %}{% endblock %}><a href="{{ path('admin_last_tides') }}">Tides</a></li>
+                <li{% block header_navbar_migrations_class %}{% endblock %}><a href="{{ path('admin_migrations') }}">Migrations</a></li>
+                <li{% block header_navbar_billing_class %}{% endblock %}><a href="{{ path('admin_billing') }}">Billing</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    {% for type, messages in app.session.flashBag.all() %}
+        {% for message in messages %}
+        <div class="alert alert-{{ type }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+</div>
+{% endblock %}

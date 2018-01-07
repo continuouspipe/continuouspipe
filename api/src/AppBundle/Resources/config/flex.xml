@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Flex activation -->
+        <service id="river.flex.availability_detector" class="ContinuousPipe\River\Flex\FlexAvailabilityDetector">
+            <argument type="service" id="river.file_system_resolver" />
+            <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="river.flex.resources.docker_registry_managed" class="ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager">
+            <argument type="service" id="quay.client"/>
+            <argument type="service" id="app.repository.credentials_bucket"/>
+        </service>
+        <service id="river.flex.activation.do_activate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DoActivateFlex">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\ActivateFlex" />
+        </service>
+        <service id="river.flex.activation.deactivate_handler" class="ContinuousPipe\River\Flex\AsFeature\CommandHandler\DeactivateFlexHandler">
+            <argument type="service" id="river.flow.transaction_manager" />
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Flex\AsFeature\Command\DeactivateFlex" />
+        </service>
+
+        <!-- Automatic flex activation -->
+        <service id="river.flex.activate_by_default_for_new_flows" class="ContinuousPipe\River\Flex\AsFeature\ActivateFlexWhenFlowIsCreated">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Flow\Event\FlowCreated" />
+        </service>
+
+        <!-- Configuration generation -->
+        <service id="river.flex.configuration_generation.generator_for_flow" class="ContinuousPipe\River\Flex\ConfigurationGeneration\GeneratorForFlow">
+            <argument type="service" id="river.flow.encrypted_variable_vault"/>
+            <argument type="service" id="river.resources.reference_docker_registry_resolver"/>
+            <argument type="collection" />
+        </service>
+        <service id="river.flex.configuration_generator" class="ContinuousPipe\River\Flex\GenerateConfigurationFromFlexGenerator">
+            <argument type="service" id="river.flex.configuration_generation.generator_for_flow" />
+        </service>
+        <service id="river.flex.generates_configuration_per_flow"
+                 class="ContinuousPipe\River\Flex\CodeRepositoryFileSystem\GeneratesConfigurationForFlexFlows"
+                 decorates="river.file_system_resolver">
+            <argument type="service" id="river.flex.generates_configuration_per_flow.inner" />
+            <argument type="service" id="river.flex.configuration_generator" />
+        </service>
+
+        <!-- Archive injection -->
+        <service id="river.flex.code_archive_enhancement.inject_generated_files"
+                 class="ContinuousPipe\River\Flex\CodeArchiveEnhancement\InjectGeneratedFilesInCodeArchiveStreamer"
+                 decorates="river.code_repository.code_archive_streamer">
+            <argument type="service" id="river.flex.code_archive_enhancement.inject_generated_files.inner" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository"/>
+            <argument type="service" id="river.flex.configuration_generator" />
+        </service>
+
+        <!-- Display generated configuration -->
+        <service id="river.flex.configuration_generator.recorded"
+                 class="ContinuousPipe\River\Flex\DisplayGeneratedConfiguration\RecordedConfigurationGeneration"
+                 decorates="river.flex.configuration_generator">
+            <argument type="service" id="river.flex.configuration_generator.recorded.inner" />
+        </service>
+
+        <service id="river.flex.configuration_generator.add_generated_configuration_to_logs" class="ContinuousPipe\River\Flex\DisplayGeneratedConfiguration\DisplayedGeneratedConfigurationWhenTideIsCreated">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="river.flex.configuration_generator.recorded" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated" />
+         </service>
+    </services>
+</container>

@@ -1,0 +1,46 @@
+{
+    "action": "deleted",
+    "installation": {
+        "id": 2,
+        "account": {
+            "login": "sroze",
+            "id": 1,
+            "avatar_url": "https://github.com/images/error/sroze_happy.gif",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/sroze",
+            "html_url": "https://github.com/sroze",
+            "followers_url": "https://api.github.com/users/sroze/followers",
+            "following_url": "https://api.github.com/users/sroze/following{/other_user}",
+            "gists_url": "https://api.github.com/users/sroze/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/sroze/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/sroze/subscriptions",
+            "organizations_url": "https://api.github.com/users/sroze/orgs",
+            "repos_url": "https://api.github.com/users/sroze/repos",
+            "events_url": "https://api.github.com/users/sroze/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/sroze/received_events",
+            "type": "User",
+            "site_admin": false
+        },
+        "access_tokens_url": "https://api.github.com/installations/2/access_tokens",
+        "repositories_url": "https://api.github.com/installation/repositories"
+    },
+    "sender": {
+        "login": "sroze",
+        "id": 1,
+        "avatar_url": "https://github.com/images/error/sroze_happy.gif",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/sroze",
+        "html_url": "https://github.com/sroze",
+        "followers_url": "https://api.github.com/users/sroze/followers",
+        "following_url": "https://api.github.com/users/sroze/following{/other_user}",
+        "gists_url": "https://api.github.com/users/sroze/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/sroze/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/sroze/subscriptions",
+        "organizations_url": "https://api.github.com/users/sroze/orgs",
+        "repos_url": "https://api.github.com/users/sroze/repos",
+        "events_url": "https://api.github.com/users/sroze/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/sroze/received_events",
+        "type": "User",
+        "site_admin": false
+    }
+}

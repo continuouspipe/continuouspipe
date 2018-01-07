@@ -1,0 +1,29 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_migrations_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Migrations</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <p><strong>Re-create a flow</strong></p>
+                <p>Re-create a flow from its events.</p>
+            </td>
+            <td>
+                <form action="{{ path('admin_migrate', {'migration': 'recover-flow'}) }}" method="POST">
+                    <input type="text" name="_uuid" placeholder="Flow UUID" />
+                    <button class="btn btn-danger">Recover</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}

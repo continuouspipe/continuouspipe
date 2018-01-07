@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.docker_compose.parser.yaml" class="ContinuousPipe\DockerCompose\Parser\YamlParser" />
+        <service id="river.docker_compose.parser.file" class="ContinuousPipe\DockerCompose\Parser\FileParser">
+            <argument type="service" id="river.docker_compose.parser.yaml" />
+        </service>
+
+        <service id="river.docker_compose.parser.project" class="ContinuousPipe\DockerCompose\Parser\MergedProjectParser">
+            <argument type="service" id="river.docker_compose.parser.file" />
+        </service>
+
+        <service id="river.docker_compose.parser.project.v2_compatibility"
+                 class="ContinuousPipe\DockerCompose\Parser\V2CompatibilityParser"
+                 decorates="river.docker_compose.parser.project">
+            <argument type="service" id="river.docker_compose.parser.project.v2_compatibility.inner" />
+        </service>
+
+        <service id="pipe.docker_compose.component_transformer" class="ContinuousPipe\DockerCompose\Transformer\ComponentTransformer" />
+        <service id="pipe.docker_compose.environment_transformer" class="ContinuousPipe\DockerCompose\Transformer\EnvironmentTransformer">
+            <argument type="service" id="pipe.docker_compose.component_transformer" />
+        </service>
+
+        <service id="pipe.docker_compose.yaml_loader" class="ContinuousPipe\DockerCompose\Loader\YamlLoader">
+            <argument type="service" id="pipe.docker_compose.environment_transformer" />
+            <argument type="service" id="river.docker_compose.parser.yaml" />
+        </service>
+
+        <service id="river.docker_compose.repository_components_resolver" class="ContinuousPipe\River\CodeRepository\DockerCompose\RepositoryComponentsResolver">
+            <argument type="service" id="river.file_system_resolver" />
+            <argument type="service" id="river.docker_compose.parser.project" />
+        </service>
+
+        <service id="river.docker_compose.configuration_enhancer" class="ContinuousPipe\River\Flow\ConfigurationEnhancer\DockerComposeConfigurationAsDefault">
+            <argument type="service" id="river.docker_compose.repository_components_resolver" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "app",
+    "identifier": "app",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "root"
+        }
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+    ],
+    "labels": [
+    ]
+  },
+  {
+    "name": "mysql",
+    "identifier": "mysql",
+    "specification": {
+      "source": {
+        "image": "mysql"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": false
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "root"
+        }
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "labels": {
+      "com.continuouspipe.update": "lock"
+    },
+    "deployment_strategy": {
+      "locked": true
+    }
+  }
+]

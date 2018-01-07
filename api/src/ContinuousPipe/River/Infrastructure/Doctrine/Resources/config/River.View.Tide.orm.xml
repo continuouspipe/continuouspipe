@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <embeddable name="ContinuousPipe\River\View\Tide">
+        <field name="status" type="string" nullable="false" />
+        <field name="logId" type="string" nullable="false" />
+        <field name="creationDate" type="datetime" nullable="true" />
+        <field name="startDate" type="datetime" nullable="true" />
+        <field name="finishDate" type="datetime" nullable="true" />
+        <field name="configuration" type="b64Object" nullable="true" />
+        <field name="user" column="serialized_user" type="b64Object" nullable="true" />
+        <field name="team" column="serialized_team" type="b64Object" nullable="true" />
+        <field name="generationUuid" type="uuid" nullable="true" />
+        <field name="failureReason" type="string" nullable="true" />
+
+        <embedded name="codeReference" class="ContinuousPipe\River\CodeReference" />
+    </embeddable>
+</doctrine-mapping>

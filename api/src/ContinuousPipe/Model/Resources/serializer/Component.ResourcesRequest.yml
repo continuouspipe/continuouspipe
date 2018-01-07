@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\ResourcesRequest:
+    properties:
+        cpu:
+            type: string
+        memory:
+            type: string

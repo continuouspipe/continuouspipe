@@ -1,0 +1,36 @@
+build:
+    image: docker.io/sroze/php-stack:7.1
+    environment:
+        - DATABASE_HOST=127.0.0.1
+        - REDIS_HOST=127.0.0.1
+        - COMPOSER_HOME=/drone/composer-cache
+
+    commands:
+        - echo "memory_limit=1G" >> /usr/local/etc/php/php.ini
+        - composer config -g github-oauth.github.com d5e0f6092daa83a33bcb439bfa88ecb87dc4c691
+        - composer install
+
+        # Domain tests
+        - vendor/bin/phpspec run
+        - vendor/bin/phpunit
+        - vendor/bin/behat --profile=domain -fprogress
+
+        # Smoke tests
+        - bin/console doctrine:migrations:migrate --no-interaction
+        - vendor/bin/behat --profile=smoke -fprogress
+
+cache:
+    mount:
+        - /drone/composer-cache
+
+compose:
+    database:
+        image: mariadb
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=river
+            - MYSQL_USER=river
+            - MYSQL_PASSWORD=river
+
+    redis:
+        image: redis:alpine

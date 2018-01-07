@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="river.analytics.logitio.listener.tide_report" class="ContinuousPipe\River\Analytics\Logitio\TideReportListener">
+            <argument type="service" id="river.logitio.client" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.repository.tide.from_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled"/>
+        </service>
+
+         <service id="river.logitio.client" class="ContinuousPipe\River\Analytics\Logitio\Client\HttpClient">
+            <argument type="service" id="river.analytics.logitio.guzzle_client" />
+            <argument type="service" id="logger" />
+            <argument>%logitio_url%</argument>
+            <argument>%logitio_api_key%</argument>
+        </service>
+        <service id="river.analytics.logitio.asynchronous.client.calls_to_command"
+                 class="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Client\TransformCallsToCommand"
+                 decorates="river.logitio.client">
+            <argument type="service" id="command_bus" />
+        </service>
+        <service id="river.analytics.logitio.asynchronous.handler.add_event_handler"
+                 class="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Handler\AddEventHandler">
+            <argument type="service" id="river.analytics.logitio.asynchronous.client.calls_to_command.inner" />
+
+            <tag name="asynchronous_command_handler"
+                 handles="ContinuousPipe\River\Analytics\Logitio\Asynchronous\Command\AddEventCommand" />
+        </service>
+
+        <service id="river.analytics.logitio.guzzle_client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument key="timeout">%logitio_timeout%</argument>
+            </argument>
+            <tag name="csa_guzzle.client" />
+        </service>
+
+    </services>
+</container>

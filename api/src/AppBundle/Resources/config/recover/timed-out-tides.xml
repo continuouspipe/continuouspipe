@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.recover.timed_out_tides.filtered_timed_out_tide_repository" class="ContinuousPipe\River\Recover\TimedOutTides\FilteredTimedOutTideRepository">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument>%tide_timeout%</argument>
+        </service>
+
+        <!-- Command Handler -->
+        <service id="river.recover.timed_out_tides.handler.spot_timed_out_tides" class="ContinuousPipe\River\Recover\TimedOutTides\Handler\SpotTimedOutTidesHandler">
+            <argument type="service" id="river.recover.timed_out_tides.filtered_timed_out_tide_repository" />
+            <argument type="service" id="event_bus" />
+
+            <tag name="asynchronous_command_handler" handles="ContinuousPipe\River\Recover\TimedOutTides\Command\SpotTimedOutTidesCommand" />
+        </service>
+
+        <!-- Event listeners -->
+        <service id="river.recover.timed_out_tides.listener.spot_timed_out_tides_when_created" class="ContinuousPipe\River\Recover\TimedOutTides\EventListener\SpotTimedOutTidesWhenTideCreatedListener">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+        </service>
+
+        <service id="river.recover.timed_out_tides.listener.queue_spot_timed_out_tides_when_started" class="ContinuousPipe\River\Recover\TimedOutTides\EventListener\QueueSpotTimedOutWhenTideStartedListener">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument>%tide_timeout%</argument>
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
+        </service>
+
+        <service id="river.recover.timed_out_tides.listener.log_time_out" class="ContinuousPipe\River\Recover\TimedOutTides\EventListener\LogTimeOutListener">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Recover\TimedOutTides\Event\TideTimedOut"/>
+        </service>
+
+        <service id="river.recover.timed_out_tides.listener" class="ContinuousPipe\River\Recover\TimedOutTides\EventListener\FailTimedOutTidesListener">
+            <argument type="service" id="event_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Recover\TimedOutTides\Event\TideTimedOut"/>
+        </service>
+    </services>
+</container>

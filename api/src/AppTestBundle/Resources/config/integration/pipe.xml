@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.pipe_client.fake" class="ContinuousPipe\River\Tests\Pipe\FakeClient" />
+
+        <service id="river.pipe_client" alias="river.traceable_pipe_client" />
+        <service id="river.traceable_pipe_client" class="ContinuousPipe\River\Tests\Pipe\TraceableClient">
+            <argument type="service" id="river.hookable_pipe_client" />
+        </service>
+        <service id="river.hookable_pipe_client" class="ContinuousPipe\River\Tests\Pipe\HookableClient">
+            <argument type="service" id="river.pipe_client.fake" />
+        </service>
+
+        <service id="river.flow.environment_client.callback"
+                 class="ContinuousPipe\River\Environment\CallbackEnvironmentRepository"
+                 decorates="river.flow.environment_client">
+            <argument type="service" id="river.flow.environment_client.callback.inner" />
+        </service>
+
+        <service id="river.pipe.deployment_request.cluster_resolver.fake_clusters"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\FakeClusterResolver"
+                 decorates="river.pipe.deployment_request.cluster_resolver">
+            <argument type="service" id="river.pipe.deployment_request.cluster_resolver.fake_clusters.inner" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,596 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: en
+    firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
+    api_keys:
+        - rcZUz8zcBEh1w4YUtWEf4Sp12kzborOXPaoDFv3h # River, Builder, Pipe
+        - eed1304N3du2jbdaD72h3khdugqjndh82nm4972n # Feature-Timeline
+    managed_cloud_flare_credentials:
+        'domain-name': "%managed_cloudflare_domain_name%"
+        'zone-identifier': "%managed_cloudflare_zone_identifier%"
+        'email': "%managed_cloudflare_email%"
+        'api-key': "%managed_cloudflare_api_key%"
+
+    billing_plans:
+        - identifier: toolkit
+          name: Toolkit
+          price: 25
+          metrics: { tides: 100, memory: 0, docker_image: 0, storage: 0}
+        - identifier: starter
+          name: Starter
+          price: 150
+          metrics: { tides: 100, memory: 4.5, docker_image: 1, storage: 5 }
+        - identifier: lean
+          name: Lean
+          price: 320
+          metrics: { tides: 250, memory: 9, docker_image: 1, storage: 10 }
+        - identifier: medium
+          name: Medium
+          price: 575
+          metrics: { tides: 500, memory: 15, docker_image: 1, storage: 20 }
+        - identifier: large
+          name: Large
+          price: 950
+          metrics: { tides: 750, memory: 23, docker_image: 5, storage: 100 }
+
+    billing_addons:
+        - identifier: 50tides
+          name: 50 extra deployments
+          price: 25
+          metrics: { tides: 50, memory: 0, docker_image: 0, storage: 0 }
+        - identifier: memory
+          name: Extra GB of memory
+          price: 20
+          metrics: { tides: 0, memory: 1, docker_image: 0, storage: 0 }
+        - identifier: dockerimage
+          name: Private Docker image
+          price: 5
+          metrics: { tides: 0, memory: 0, docker_image: 1, storage: 0 }
+        - identifier: 5gbstorage
+          name: 5 GB of persistent storage
+          price: 5
+          metrics: { tides: 0, memory: 0, docker_image: 0, storage: 5 }
+
+services:
+    twig.extension.date:
+       class: \Twig_Extensions_Extension_Date
+       tags:
+            - { name: twig.extension }
+
+framework:
+    #esi:             ~
+    #translator:      { fallbacks: ["%locale%"] }
+    secret:          "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    #serializer:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        #assets_version: SomeVersionScheme
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        # handler_id set to null will use default session handler from php.ini
+        handler_id:  ~
+    fragments:       ~
+    http_method_override: true
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+    paths:
+        "%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Intercom/Resources/views": intercom
+
+# Assetic Configuration
+assetic:
+    debug:          "%kernel.debug%"
+    use_controller: false
+    bundles:        [ AuthenticatorBundle, HWIOAuthBundle ]
+    filters:
+        cssrewrite: ~
+        scssphp:
+            formatter: 'Leafo\ScssPhp\Formatter\Compressed'
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password: "%database_password%"
+        charset:  UTF8
+        
+        # see https://github.com/doctrine/DoctrineBundle/issues/351
+        server_version: 5.6
+
+        # Automatically reconnect
+        wrapper_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Connection'
+        driver_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Driver\PDOMySql\Driver'
+        options:
+            x_reconnect_attempts: 3
+
+        types:
+            b64Object: ContinuousPipe\River\Infrastructure\Doctrine\Type\Base64Object
+            datetime: ContinuousPipe\River\Infrastructure\Doctrine\Type\UTCDateTimeType
+            uuid:  Ramsey\Uuid\Doctrine\UuidType
+            json_policies: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Type\JsonPoliciesType
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        mappings:
+            ContinuousPipeRiverDto:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\River\Infrastructure\Doctrine\Entity
+            ContinuousPipeAtlassianAddon:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/AtlassianAddon/Infrastructure/Doctrine/Resources/config'
+                prefix: ContinuousPipe\AtlassianAddon
+            ContinuousPipeDevelopmentEnvironment:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/DevelopmentEnvironment/Infrastructure/Doctrine/Resources/config'
+                prefix: ContinuousPipe\DevelopmentEnvironment
+            ContinuousPipe:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Pipe/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\Pipe\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticatorEntity:
+                type: annotation
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/Entity'
+                prefix: ContinuousPipe\Authenticator\Infrastructure\Doctrine\Entity
+            ContinuousPipeAuthenticator:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Authenticator'
+                prefix: ContinuousPipe\Authenticator
+            ContinuousPipeSecurity:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Authenticator/Infrastructure/Doctrine/config/Security'
+                prefix: ContinuousPipe\Security
+            ContinuousPipeBilling:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/Billing/Infrastructure/Doctrine/config'
+                prefix: ContinuousPipe\Billing
+            ContinuousPipeRiver:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.root_dir%/../src/ContinuousPipe/River/Infrastructure/Doctrine/Resources/config'
+                prefix: ContinuousPipe
+
+jms_serializer:
+    metadata:
+        directories:
+            GitHubWebHook:
+                namespace_prefix: "GitHub\\WebHook"
+                path: "%kernel.root_dir%/../src/GitHub/WebHook/Resources/serializer"
+            ContinuousPipeBuilder:
+                namespace_prefix: "ContinuousPipe\\Builder"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Builder/Resources/serializer"
+            ContinuousPipeModel:
+                namespace_prefix: "ContinuousPipe\\Model"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Model/Resources/serializer"
+            KubernetesClient:
+                namespace_prefix: "Kubernetes\\Client"
+                path: "%kernel.root_dir%/../vendor/sroze/kubernetes-client/src/Resources/serializer"
+            Kubernetes:
+                namespace_prefix: "ContinuousPipe\\Pipe\\Kubernetes"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Pipe/Kubernetes/Resources/serializer"
+            ContinuousPipePipe:
+                namespace_prefix: "ContinuousPipe\\Pipe"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Pipe/Resources/serializer"
+            ContinuousPipeSecurity:
+                namespace_prefix: "ContinuousPipe\\Security"
+                path: "%kernel.root_dir%/../src/ContinuousPipe/Security/Resources/serializer"
+
+lexik_jwt_authentication:
+    private_key_path: %jwt_private_key_path%
+    public_key_path:  %jwt_public_key_path%
+    pass_phrase:      %jwt_key_pass_phrase%
+    token_ttl:        %jwt_token_ttl%
+
+continuous_pipe_security:
+    vaults:
+        user_secrets:
+            google_kms:
+                project_id: "%google_kms_project_id%"
+                location: "%google_kms_location%"
+                service_account_path: "%google_kms_service_account_path%"
+                key_ring: "%google_kms_key_ring%"
+                key_cache_service: river.cache
+            cache_service: river.memory_cache
+
+        within_clusters:
+            php_encryption:
+                key: %security_php_encryption_key%
+
+fos_rest:
+    body_converter:
+        enabled: true
+
+    view:
+        view_response_listener: true
+
+    format_listener:
+        rules:
+            - { path: '^/(_profiler|admin)', priorities: ['html'] }
+            - { path: '^/auth/', priorities: ['html', 'text/css'] }
+            - { path: '^/$', priorities: ['html'], fallback_format: html, prefer_extension: false }
+            - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
+
+    exception:
+        codes:
+            'ContinuousPipe\Builder\Request\BuildRequestException': 400
+            'ContinuousPipe\Authenticator\CredentialsNotFound': 404
+            'ContinuousPipe\Authenticator\Security\User\UserNotFound': 404
+            'Symfony\Component\Security\Core\Exception\AccessDeniedException': 403
+            'ContinuousPipe\Billing\BillingProfile\UserBillingProfileNotFound': 404
+        messages:
+            'ContinuousPipe\River\CodeRepository\CodeRepositoryException': true
+            'ContinuousPipe\River\Flex\Resources\FlexResourcesException': true
+            'Symfony\Component\HttpKernel\Exception\BadRequestHttpException': true
+            'ContinuousPipe\Builder\Request\BuildRequestException': true
+
+sensio_framework_extra:
+    view:    { annotations: false }
+    request: { converters: true }
+
+nelmio_cors:
+    defaults:
+        allow_credentials: true
+        allow_origin: '*'
+        allow_headers: ['accept', 'content-type', 'authorization', 'x-http-method-override']
+        allow_methods: ['POST', 'PUT', 'PATCH', 'GET', 'DELETE']
+        max_age: 3600
+    paths:
+        '^/': ~
+
+event_bus:
+    logging: ~
+
+command_bus:
+    logging: ~
+
+log_stream:
+    url: %logstream_url%
+    strict_ssl: false
+    tolerance:
+        operation_runner: tolerance.operation_runners.logstream
+
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     %rabbitmq_host%
+            port:     5672
+            user:     %rabbitmq_user%
+            password: %rabbitmq_password%
+            vhost:    %rabbitmq_vhost%
+            lazy:     true
+            connection_timeout: 3
+            read_write_timeout: 3
+            keepalive: false
+            heartbeat: 0
+
+        stack:
+            host:     %stack_rabbitmq_host%
+            port:     5672
+            user:     %stack_rabbitmq_user%
+            password: %stack_rabbitmq_password%
+            vhost:    %stack_rabbitmq_vhost%
+            lazy:     true
+            connection_timeout: 3
+            read_write_timeout: 3
+            keepalive: false
+            heartbeat: 0
+
+    producers:
+        asynchronous_commands:
+            connection:       default
+            exchange_options: { name: %rabbitmq_queue_name%, type: direct }
+
+        stack_user_activity:
+            connection:       stack
+            exchange_options: { name: user_activities, type: fanout }
+
+simple_bus_asynchronous:
+    object_serializer_service_id: river.jms_serializer.object_serializer
+    commands:
+        logging: ~
+        publisher_service_id: continuouspipe.message.simple_bus.producer
+
+csa_guzzle:
+    profiler: %kernel.debug%
+
+knp_paginator:
+    # page_range: 5
+    default_options:
+        page_name: page
+        sort_field_name: sort
+        sort_direction_name: direction
+        distinct: true
+    template:
+        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
+
+beberlei_metrics:
+    collectors:
+        statsd:
+            type: statsd
+            host: %statsd_host%
+            port: %statsd_port%
+            prefix: %statsd_prefix%.
+
+tolerance:
+    aop:
+        enabled: true
+
+        wrappers:
+            - class: ContinuousPipe\Security\Authenticator\HttpAuthenticatorClient
+              methods:
+                  - getUserByUsername
+                  - findBucketByUuid
+                  - findTeamBySlug
+                  - findAllTeams
+              runner: tolerance.operation_runners.authenticator
+
+    operation_runners:
+        default:
+            callback: ~
+
+        null_placeholdered:
+            placeholder:
+                value: ~
+                logger: logger
+
+        array_placeholdered:
+            placeholder:
+                value: []
+                logger: logger
+
+        buffered:
+            buffered:
+                runner: tolerance.operation_runners.null_placeholdered
+
+        builder:
+            retry:
+                runner:
+                    success_failure_metrics:
+                        publisher: tolerance.metrics.publisher.statsd
+                        namespace: river.outgoing.builder
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    sleep: ~
+                                exponent: 1
+                        count: %api_retry_count%
+
+        pipe:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.pipe
+
+        authenticator:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.authenticator
+
+        github:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.github
+
+        slack:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.slack
+                runner: tolerance.operation_runners.null_placeholdered
+
+        firebase:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.firebase
+                runner: tolerance.operation_runners.null_placeholdered
+
+        keen:
+            success_failure_metrics:
+                publisher: tolerance.metrics.publisher.statsd
+                namespace: river.outgoing.keen
+                runner: tolerance.operation_runners.buffered
+
+        logstream:
+            retry:
+                runner:
+                    callback: ~
+
+                waiter:
+                    count_limited:
+                        waiter:
+                            exponential_back_off:
+                                waiter:
+                                    sleep: ~
+
+                                initial_exponent: 0
+                                step: 0.5
+
+                        count: 2
+
+    metrics:
+        collectors:
+            -
+                type: rabbitmq
+                namespace: river.queue
+                options:
+                    host: %rabbitmq_host%
+                    port: %rabbitmq_management_port%
+                    username: %rabbitmq_user%
+                    password: %rabbitmq_password%
+                    vhost: %rabbitmq_vhost%
+                    queue: %rabbitmq_queue_name%
+
+        publishers:
+            hosted_graphite:
+                type: hosted_graphite
+                operation_runner: tolerance.operation_runners.buffered
+                options:
+                    server: %hosted_graphite_server%
+                    port: %hosted_graphite_port%
+                    api_key: %hosted_graphite_api_key%
+
+            statsd:
+                type: beberlei
+                operation_runner: tolerance.operation_runners.buffered
+                options:
+                    service: beberlei_metrics.collector.statsd
+                    auto_flush: true
+
+        command:
+            publisher: tolerance.metrics.publisher.hosted_graphite
+
+        request:
+            namespace: river.api.http.request
+            publisher: tolerance.metrics.publisher.statsd
+
+message:
+    simple_bus:
+        connection: default
+
+    command:
+        message_deadline_expiration_manager: continuouspipe.message.delayed.message_puller
+        allow_multiple_extenders: false
+
+        retry_exceptions:
+            - 'Doctrine\DBAL\Exception\DriverException'
+            - 'ContinuousPipe\River\Tide\Concurrency\Lock\LockerException'
+            - '\PDOException'
+            - 'Predis\Connection\ConnectionException'
+            - 'GuzzleHttp\Exception\ConnectException'
+            - '\EngineException'
+            - 'LogStream\Client\ClientException'
+            - 'malkusch\lock\exception\TimeoutException'
+
+    connections:
+        default:
+            driver:
+                router:
+                    message_to_connection_mapping:
+                        'ContinuousPipe\River\Message\OperationalMessage': operations
+                        'ContinuousPipe\Message\Delay\DelayedMessage': delayed
+                        'ContinuousPipe\Pipe\Command\StartDeploymentCommand': long_running_deployments
+                        '*': main
+
+        main:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_main_topic%
+                    subscription: %google_pub_sub_main_subscription_name%
+
+        operations:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_operations_topic%
+                    subscription: %google_pub_sub_operations_subscription_name%
+
+        delayed:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_delayed_topic%
+                    subscription: %google_pub_sub_delayed_subscription_name%
+
+        long_running_deployments:
+            driver:
+                google_pub_sub:
+                    project_id: %google_pub_sub_project_id%
+                    service_account_path: %google_pub_sub_service_account_path%
+                    topic: %google_pub_sub_long_running_deployments_topic%
+                    subscription: %google_pub_sub_long_running_deployments_subscription_name%
+                    options:
+                        requestTimeout: 60
+
+    tideways:
+        api_key: %tideways_api_key%
+
+
+hwi_oauth:
+    firewall_names: [auth]
+    resource_owners:
+        github:
+            type:                github
+            client_id:           "%github_client_id%"
+            client_secret:       "%github_client_secret%"
+            scope: user:email,repo
+            options:
+                auth_with_one_url: true
+
+        google:
+            type:                google
+            client_id:           "%google_client_id%"
+            client_secret:       "%google_client_secret%"
+            scope:               "email profile https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/compute.readonly"
+            options:
+                access_type:     offline
+                prompt:          consent
+
+        bitbucket:
+            type:                bitbucket2
+            client_id:           "%bitbucket_oauth_key%"
+            client_secret:       "%bitbucket_oauth_secret%"
+            scope:               "account team repository email webhook"
+
+    connect:
+        account_connector: app.security.account_connector
+
+    target_path_parameter: redirectUrl
+
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+
+sonata_admin:
+    title: ContinuousPipe
+
+snc_redis:
+    clients:
+        session:
+            type: predis
+            alias: session
+            dsn: "%redis_dsn%"
+
+        default:
+            type: predis
+            alias: default
+            dsn: "%redis_dsn%"
+
+    session:
+        client: session
+        prefix: authenticator
+        ttl: 43200 # 12h

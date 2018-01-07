@@ -1,0 +1,43 @@
+[
+  {
+    "name": "app",
+    "identifier": "app",
+    "specification": {
+      "source": {
+        "image": "sroze\/php-example"
+      },
+      "accessibility": {
+        "from_cluster": true,
+        "from_external": true
+      },
+      "scalability": {
+        "enabled": true,
+        "number_of_replicas": 1
+      },
+      "port_mappings": [
+      ],
+      "environment_variables": [
+        {
+          "name": "MYSQL_PASSWORD",
+          "value": "root"
+        }
+      ],
+      "volumes": [
+      ],
+      "volume_mounts": [
+      ]
+    },
+    "extensions": [
+      {
+        "name": "reverse_proxy",
+        "domain_names": ["example.com"]
+      }
+    ],
+    "labels": {
+      "com.continuouspipe.visibility": "public"
+    },
+    "deployment_strategy": {
+      "locked": false
+    }
+  }
+]

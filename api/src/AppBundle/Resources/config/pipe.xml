@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.pipe_client.guzzle_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+
+        <service id="river.pipe_client" alias="pipe.client" />
+        <service id="river.pipe.cluster_identifier_resolver" class="ContinuousPipe\River\Pipe\ClusterIdentifierResolver" />
+
+        <service id="river.pipe.deployment_request.cluster_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\FromTeamBucketClusterResolver">
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+        <service id="river.pipe.deployment_request.target_cluster_resolver" class="ContinuousPipe\River\Pipe\DeploymentRequest\Cluster\ClusterFromConfiguration">
+            <argument type="service" id="river.pipe.deployment_request.cluster_resolver"/>
+        </service>
+        <service id="river.pipe.target_environment_factory" class="ContinuousPipe\River\Pipe\DeploymentRequest\DefaultTargetEnvironmentFactory">
+            <argument type="service" id="river.task.deploy.naming.environment_strategy" />
+            <argument type="service" id="river.pipe.deployment_request.target_cluster_resolver"/>
+        </service>
+
+        <service id="river.pipe.deployment_request_enhancer.replace_deployed_endpoints"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\ReplaceDeployedEndpointsVariables">
+            <argument type="service" id="river.tide_event_store" />
+        </service>
+
+        <service id="river.pipe.deployment_request_enhancer" alias="river.pipe.deployment_request_enhancer.replace_deployed_endpoints" />
+        <service id="river.pipe.deployment_request_enhancer.add_variables_as_environment_variables"
+                 class="ContinuousPipe\River\Pipe\DeploymentRequestEnhancer\AddVariablesAsEnvironmentVariables"
+                 decorates="river.pipe.deployment_request_enhancer">
+            <argument type="service" id="river.pipe.deployment_request_enhancer.add_variables_as_environment_variables.inner" />
+            <argument type="service" id="river.flow.variable.flow_variable_resolver"/>
+        </service>
+
+        <service id="river.pipe.public_endpoint_writer" class="ContinuousPipe\River\Pipe\PublicEndpoint\PublicEndpointWriter" />
+
+        <service id="river.pipe_bridge.listen_for_status" class="ContinuousPipe\River\Bridge\Pipe\ListenForDeploymentStatus">
+            <argument type="service" id="command_bus" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentSuccessful" />
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\Pipe\Event\DeploymentFailed" />
+        </service>
+
+        <service id="river.pipe_bridge.pipe_deployment_finished_handler" class="ContinuousPipe\River\Bridge\Pipe\Handler\PipeDeploymentFinishedHandler">
+            <argument type="service" id="river.tide.transaction_manager"/>
+            <argument type="service" id="pipe.view.deployment_repository"/>
+            <argument type="service" id="logger"/>
+
+            <tag name="command_handler" handles="ContinuousPipe\River\Bridge\Pipe\Command\PipeDeploymentFinishedCommand" />
+        </service>
+    </services>
+</container>

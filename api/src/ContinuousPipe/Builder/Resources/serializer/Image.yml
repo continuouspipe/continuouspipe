@@ -1,0 +1,8 @@
+ContinuousPipe\Builder\Image:
+    properties:
+        name:
+            type: string
+        tag:
+            type: string
+        reuse:
+            type: boolean

@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.notifications.status_factory" class="ContinuousPipe\River\Notifications\StatusFactory">
+            <argument type="service" id="river.time_resolver" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="river.repository.tide" />
+            <argument>%river_ui_url%</argument>
+        </service>
+
+        <service id="river.notifications.chain_notifier" class="ContinuousPipe\River\Notifications\ChainNotifier">
+            <argument type="collection">
+                <argument type="service" id="river.notifications.notifier.slack" />
+                <argument type="service" id="river.notifications.notifier.github.commit_status" />
+                <argument type="service" id="river.notifications.notifier.pull_request" />
+                <argument type="service" id="river.notifications.notifier.bitbucket.build_status" />
+            </argument>
+        </service>
+
+        <service id="river.notifications.notifier" class="ContinuousPipe\River\Notifications\FilterNotificationBasedOnWhen">
+            <argument type="service" id="river.notifications.chain_notifier" />
+        </service>
+
+        <service id="river.notifications.notifier.asynchronous.notifier.calls_to_commands"
+                 class="ContinuousPipe\River\Notifications\Asynchronous\Notifier\TransformCallsToCommand"
+                 decorates="river.notifications.notifier">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.notifications.notifier.asynchronous.notifier.calls_to_commands.inner" />
+        </service>
+
+        <service id="river.notifications.notifier.asynchronous.handler.do_notify"
+                 class="ContinuousPipe\River\Notifications\Asynchronous\Handler\DoNotify">
+            <argument type="service" id="river.notifications.notifier.asynchronous.notifier.calls_to_commands.inner" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="logger" />
+
+            <tag name="asynchronous_command_handler"
+                 handles="ContinuousPipe\River\Notifications\Asynchronous\Command\NotifyCommand" />
+        </service>
+
+        <service id="river.notifications.tide_listener" class="ContinuousPipe\River\Notifications\TideStatusListener">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.notifications.status_factory"/>
+            <argument type="service" id="log_stream.logger_factory"/>
+            <argument type="service" id="river.notifications.notifier"/>
+            <argument type="service" id="logger" />
+
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideStarted"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideSuccessful"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideFailed"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCreated"/>
+            <tag name="event_subscriber" subscribes_to="ContinuousPipe\River\Event\TideCancelled"/>
+        </service>
+
+        <!-- Slack -->
+        <service id="slack.http_client" class="GuzzleHttp\Client">
+            <tag name="csa_guzzle.client" />
+        </service>
+        <service id="river.notifications.notifier.slack.http_notifier" class="ContinuousPipe\River\Notifications\Slack\HttpSlackNotifier">
+            <argument type="service" id="slack.http_client" />
+            <argument type="service" id="river.pipe.public_endpoint_writer" />
+
+            <tag name="tolerance.operation_wrapper"
+                 methods="notify"
+                 runner="tolerance.operation_runners.slack" />
+        </service>
+        <service id="river.notifications.notifier.slack" alias="river.notifications.notifier.slack.http_notifier" />
+
+        <!-- GitHub Commit Status -->
+        <service id="river.notifications.notifier.github.commit_status.http" class="ContinuousPipe\River\Notifications\GitHub\CommitStatus\GitHubCommitStatusNotifier">
+            <argument type="service" id="river.github.client_factory" />
+        </service>
+        <service id="river.notifications.notifier.github.commit_status" alias="river.notifications.notifier.github.commit_status.http" />
+        <service id="river.notifications.notifier.github.commit_status.truncate_status_description"
+                 class="ContinuousPipe\River\CodeRepository\GitHub\CommitStatuses\TruncateStatusDescription"
+                 decorates="river.notifications.notifier.github.commit_status">
+            <argument type="service" id="river.notifications.notifier.github.commit_status.truncate_status_description.inner" />
+        </service>
+
+        <!-- Pull Requests -->
+        <service id="river.notifications.notifier.pull_request" class="ContinuousPipe\River\Notifications\CodeRepository\PullRequestCommentNotifier">
+            <argument type="service" id="river.pull_request_resolver" />
+            <argument type="service" id="river.pull_request_comment_manipulator" />
+            <argument type="service" id="river.tide_event_store" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="river.pipe.public_endpoint_writer" />
+            <argument type="service" id="logger" />
+        </service>
+    </services>
+</container>

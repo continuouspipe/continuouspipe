@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="builder.reporting.publisher.traced"
+                 class="ContinuousPipe\Builder\Reporting\TracedPublisher"
+                 decorates="builder.reporting.publisher">
+            <argument type="service" id="builder.reporting.publisher.traced.inner" />
+        </service>
+
+        <service id="builder.time_resolver.predictable"
+                 class="ContinuousPipe\Events\TimeResolver\PredictableTimeResolver"
+                 decorates="builder.time_resolver">
+            <argument type="service" id="builder.time_resolver.predictable.inner" />
+        </service>
+
+        <service id="builder.metrics.traced_publisher"
+                 class="ContinuousPipe\Tolerance\Metrics\Publisher\TracedPublisher"
+                 decorates="tolerance.metrics.publisher.statsd"
+                 public="false">
+            <argument type="service" id="builder.metrics.traced_publisher.inner" />
+        </service>
+    </services>
+</container>

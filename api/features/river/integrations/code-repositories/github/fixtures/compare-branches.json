@@ -1,0 +1,213 @@
+{
+  "url": "https://api.github.com/repos/graze/graze-magento2/compare/develop...misc/MISC-update-cp-remote-ignore",
+  "html_url": "https://github.com/graze/graze-magento2/compare/develop...misc/MISC-update-cp-remote-ignore",
+  "permalink_url": "https://github.com/graze/graze-magento2/compare/graze:b1f9fcc...graze:4d7cbb2",
+  "diff_url": "https://github.com/graze/graze-magento2/compare/develop...misc/MISC-update-cp-remote-ignore.diff",
+  "patch_url": "https://github.com/graze/graze-magento2/compare/develop...misc/MISC-update-cp-remote-ignore.patch",
+  "base_commit": {
+    "sha": "b1f9fcc675ea97e6d14b07e4728fb27ab16c2415",
+    "commit": {
+      "author": {
+        "name": "Stuart Rayson",
+        "email": "stuart.a.rayson@gmail.com",
+        "date": "2017-03-31T15:34:11Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2017-03-31T15:34:11Z"
+      },
+      "message": "ONL-241: Prioritise registration over login on checkout (#1745)",
+      "tree": {
+        "sha": "3a4c524ddcd91b044876a3a6e5842b05502fabac",
+        "url": "https://api.github.com/repos/graze/graze-magento2/git/trees/3a4c524ddcd91b044876a3a6e5842b05502fabac"
+      },
+      "url": "https://api.github.com/repos/graze/graze-magento2/git/commits/b1f9fcc675ea97e6d14b07e4728fb27ab16c2415",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/graze/graze-magento2/commits/b1f9fcc675ea97e6d14b07e4728fb27ab16c2415",
+    "html_url": "https://github.com/graze/graze-magento2/commit/b1f9fcc675ea97e6d14b07e4728fb27ab16c2415",
+    "comments_url": "https://api.github.com/repos/graze/graze-magento2/commits/b1f9fcc675ea97e6d14b07e4728fb27ab16c2415/comments",
+    "author": {
+      "login": "StuartRayson",
+      "id": 3910181,
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3910181?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/StuartRayson",
+      "html_url": "https://github.com/StuartRayson",
+      "followers_url": "https://api.github.com/users/StuartRayson/followers",
+      "following_url": "https://api.github.com/users/StuartRayson/following{/other_user}",
+      "gists_url": "https://api.github.com/users/StuartRayson/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/StuartRayson/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/StuartRayson/subscriptions",
+      "organizations_url": "https://api.github.com/users/StuartRayson/orgs",
+      "repos_url": "https://api.github.com/users/StuartRayson/repos",
+      "events_url": "https://api.github.com/users/StuartRayson/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/StuartRayson/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/19864447?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "dd5ac0fdd98c3af6795c1e611577cb4ce1c56911",
+        "url": "https://api.github.com/repos/graze/graze-magento2/commits/dd5ac0fdd98c3af6795c1e611577cb4ce1c56911",
+        "html_url": "https://github.com/graze/graze-magento2/commit/dd5ac0fdd98c3af6795c1e611577cb4ce1c56911"
+      }
+    ]
+  },
+  "merge_base_commit": {
+    "sha": "a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+    "commit": {
+      "author": {
+        "name": "Tibor Kotosz",
+        "email": "tkotosz@inviqa.com",
+        "date": "2017-03-31T08:17:55Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2017-03-31T08:17:55Z"
+      },
+      "message": "ONL-278: Import the number of received boxes to magento customer (#1753)",
+      "tree": {
+        "sha": "87a49a87d67535e2cbcf5b7ed130f3880bf64bff",
+        "url": "https://api.github.com/repos/graze/graze-magento2/git/trees/87a49a87d67535e2cbcf5b7ed130f3880bf64bff"
+      },
+      "url": "https://api.github.com/repos/graze/graze-magento2/git/commits/a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/graze/graze-magento2/commits/a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+    "html_url": "https://github.com/graze/graze-magento2/commit/a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+    "comments_url": "https://api.github.com/repos/graze/graze-magento2/commits/a5d8ec8ae46771ea5b8583a4556c3458703e7c47/comments",
+    "author": {
+      "login": "tkotosz",
+      "id": 4903365,
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4903365?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/tkotosz",
+      "html_url": "https://github.com/tkotosz",
+      "followers_url": "https://api.github.com/users/tkotosz/followers",
+      "following_url": "https://api.github.com/users/tkotosz/following{/other_user}",
+      "gists_url": "https://api.github.com/users/tkotosz/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/tkotosz/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/tkotosz/subscriptions",
+      "organizations_url": "https://api.github.com/users/tkotosz/orgs",
+      "repos_url": "https://api.github.com/users/tkotosz/repos",
+      "events_url": "https://api.github.com/users/tkotosz/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/tkotosz/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/19864447?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "2f83a332f821bff284eb2250621b82d6172fcee7",
+        "url": "https://api.github.com/repos/graze/graze-magento2/commits/2f83a332f821bff284eb2250621b82d6172fcee7",
+        "html_url": "https://github.com/graze/graze-magento2/commit/2f83a332f821bff284eb2250621b82d6172fcee7"
+      }
+    ]
+  },
+  "status": "diverged",
+  "ahead_by": 1,
+  "behind_by": 8,
+  "total_commits": 1,
+  "commits": [
+    {
+      "sha": "4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+      "commit": {
+        "author": {
+          "name": "BrianDGLS",
+          "email": "briandgls92@gmail.com",
+          "date": "2017-03-31T14:30:05Z"
+        },
+        "committer": {
+          "name": "BrianDGLS",
+          "email": "briandgls92@gmail.com",
+          "date": "2017-03-31T14:30:05Z"
+        },
+        "message": "MISC: update .cp-remote-ignore for cp-remote dev",
+        "tree": {
+          "sha": "6dd6030135414bde42051fed2e624fb314d7e8ee",
+          "url": "https://api.github.com/repos/graze/graze-magento2/git/trees/6dd6030135414bde42051fed2e624fb314d7e8ee"
+        },
+        "url": "https://api.github.com/repos/graze/graze-magento2/git/commits/4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+        "comment_count": 0
+      },
+      "url": "https://api.github.com/repos/graze/graze-magento2/commits/4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+      "html_url": "https://github.com/graze/graze-magento2/commit/4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+      "comments_url": "https://api.github.com/repos/graze/graze-magento2/commits/4d7cbb26594268f4f6ca66a4727d21b599669dc1/comments",
+      "author": null,
+      "committer": null,
+      "parents": [
+        {
+          "sha": "a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+          "url": "https://api.github.com/repos/graze/graze-magento2/commits/a5d8ec8ae46771ea5b8583a4556c3458703e7c47",
+          "html_url": "https://github.com/graze/graze-magento2/commit/a5d8ec8ae46771ea5b8583a4556c3458703e7c47"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "sha": "e87152b6c20bb998ad8698d03cad66ef74ceaf59",
+      "filename": ".cp-remote-ignore",
+      "status": "added",
+      "additions": 36,
+      "deletions": 0,
+      "changes": 36,
+      "blob_url": "https://github.com/graze/graze-magento2/blob/4d7cbb26594268f4f6ca66a4727d21b599669dc1/.cp-remote-ignore",
+      "raw_url": "https://github.com/graze/graze-magento2/raw/4d7cbb26594268f4f6ca66a4727d21b599669dc1/.cp-remote-ignore",
+      "contents_url": "https://api.github.com/repos/graze/graze-magento2/contents/.cp-remote-ignore?ref=4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+      "patch": "@@ -0,0 +1,36 @@\n+.*\n+.idea\n+.git\n+___jb_old___\n+___jb_tmp___\n+cp-remote-logs\n+.cp-remote-settings.yml\n+.cp-remote-env-settings.yml\n+\n+/tools/\n+/.grunt\n+.bundle\n+build/*\n+/configure-cache-storage.php\n+/configure-session-storage.php\n+/install-magento2.sh\n+/pub/homepage-content/\n+secret.key\n+*.vagrant\n+**/node_modules/\n+npm-debug.log\n+graze_code_*\n+app/design/frontend/Graze/default/web/js/lib/pistachio\n+app/design/frontend/Graze/default/web/css/*.css\n+app/design/frontend/Graze/default/web/css/*.map\n+\n+/dev\n+/bin\n+/lib\n+/node_modules\n+/phpserver\n+/pub\n+/setup\n+/update\n+/var\n+/vendor"
+    },
+    {
+      "sha": "6fa4be2821efc259b00559206de78cc4e52be31a",
+      "filename": ".gitignore",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0,
+      "changes": 1,
+      "blob_url": "https://github.com/graze/graze-magento2/blob/4d7cbb26594268f4f6ca66a4727d21b599669dc1/.gitignore",
+      "raw_url": "https://github.com/graze/graze-magento2/raw/4d7cbb26594268f4f6ca66a4727d21b599669dc1/.gitignore",
+      "contents_url": "https://api.github.com/repos/graze/graze-magento2/contents/.gitignore?ref=4d7cbb26594268f4f6ca66a4727d21b599669dc1",
+      "patch": "@@ -76,6 +76,7 @@ atlassian*\n !/composer.json\n !/composer.lock\n !/.scrutinizer.yml\n+!/.cp-remote-ignore\n \n \n #project specific"
+    }
+  ]
+}

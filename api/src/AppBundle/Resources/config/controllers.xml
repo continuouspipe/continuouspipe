@@ -1,0 +1,147 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="app.controller.flow.alerts" class="AppBundle\Controller\FlowAlertsController">
+            <argument type="service" id="river.alerts.repository" />
+        </service>
+
+        <service id="app.controller.cluster" class="AppBundle\Controller\ClusterController">
+            <argument type="service" id="river.k8s_health_checker" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+
+        <service id="app.controller.flow" class="AppBundle\Controller\FlowController">
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.flow_factory" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
+            <argument type="service" id="river.flow.encrypted_variable_vault" />
+            <argument type="service" id="river.code_repository.branch_query" />
+        </service>
+        <service id="app.controller.pipeline_deletion" class="AppBundle\Controller\PipelineDeletionController">
+            <argument type="service" id="event_bus"/>
+        </service>
+        <service id="app.controller.github" class="AppBundle\Controller\GitHubController">
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="logger" />
+            <argument type="service" id="event_bus" />
+        </service>
+        <service id="app.controller.code_archive" class="AppBundle\Controller\CodeArchiveController">
+            <argument type="service" id="river.code_repository.code_archive_streamer" />
+            <argument type="service" id="logger" />
+        </service>
+        <service id="app.controller.github_installation_token" class="AppBundle\Controller\GitHubInstallationTokenController">
+            <argument type="service" id="github.integration.installation_token_resolver" />
+            <argument type="service" id="github.integration.installation_repository" />
+        </service>
+        <service id="app.controller.firebase" class="AppBundle\Controller\FirebaseController">
+            <argument>%firebase_service_account_path%</argument>
+            <argument>%firebase_database_uri%</argument>
+        </service>
+        <service id="app.controller.manual_approval" class="AppBundle\Controller\ManualApprovalController">
+            <argument type="service" id="command_bus" />
+        </service>
+        <service id="app.controller.builder_notification" class="AppBundle\Controller\BuilderNotificationController">
+            <argument type="service" id="river.tide.transaction_manager" />
+
+            <deprecated>The "%service_id%" service has been merged with river. This HTTP adapter should not be used anymore.</deprecated>
+        </service>
+        <service id="app.controller.pipe_notification" class="AppBundle\Controller\PipeNotificationController">
+            <argument type="service" id="river.tide.transaction_manager" />
+        </service>
+        <service id="app.controller.runner_notification" class="AppBundle\Controller\RunnerNotificationController">
+            <argument type="service" id="river.tide.transaction_manager" />
+        </service>
+        <service id="app.controller.tide" class="AppBundle\Controller\TideController">
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="validator" />
+            <argument type="service" id="river.tide_factory" />
+            <argument type="service" id="event_bus" />
+            <argument type="service" id="river.tide_summary_creator" />
+            <argument type="service" id="knp_paginator" />
+            <argument type="service" id="command_bus" />
+            <argument type="service" id="river.tide.external_relations.resolver" />
+            <argument type="service" id="river.commit_resolver" />
+        </service>
+        <service id="app.controller.flow_environment" class="AppBundle\Controller\FlowEnvironmentController">
+            <argument type="service" id="river.flow.environment_client" />
+            <argument type="service" id="app.repository.credentials_bucket" />
+            <argument type="service" id="river.k8s_watcher" />
+        </service>
+        <service id="app.controller.account" class="AppBundle\Controller\AccountController">
+            <argument type="service" id="river.code_repository.explorer" />
+            <argument type="service" id="app.repository.account"/>
+        </service>
+        <service id="app.controller.features" class="AppBundle\Controller\FlowFeaturesController">
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="river.flex.availability_detector"/>
+        </service>
+        <service id="app.controller.resources" class="AppBundle\Controller\FlowResourcesController">
+            <argument type="service" id="river.flex.resources.docker_registry_managed"/>
+            <argument type="service" id="app.repository.credentials_bucket"/>
+        </service>
+        <service id="app.controller.usage" class="AppBundle\Controller\UsageController">
+            <argument type="service" id="river.managed.resources.history_repository" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.view.tide_repository" />
+            <argument type="service" id="app.repository.team" />
+            <argument type="service" id="logger"/>
+            <argument type="service" id="continuouspipe.message.time_resolver" />
+            <argument type="service" id="river.managed.resources.usage_projection.flow_projector"/>
+            <argument type="service" id="river.managed.resources.usage_projection.projector"/>
+        </service>
+
+        <!-- Param converters -->
+        <service id="app.request.param_converter.code_repository" class="AppBundle\Request\ParamConverter\CodeRepositoryParamConverter">
+            <argument type="service" id="repository_river.code_repository_repository" />
+
+            <tag name="request.param_converter" converter="code-repository" />
+        </service>
+
+        <service id="app.request.param_converter.flow" class="AppBundle\Request\ParamConverter\FlowParamConverter">
+            <argument type="service" id="river.repository.flow" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+
+            <tag name="request.param_converter" converter="flow" />
+        </service>
+
+        <service id="app.request.param_converter.tide" class="AppBundle\Request\ParamConverter\TideParamConverter">
+            <argument type="service" id="river.view.tide_repository"/>
+
+            <tag name="request.param_converter" converter="tide" />
+        </service>
+
+        <service id="app.request.param_converter.team" class="ContinuousPipe\Security\Request\ParamConverter\TeamParamConverter">
+            <argument type="service" id="app.repository.team" />
+
+            <tag name="request.param_converter" converter="team" />
+        </service>
+        <service id="app.request.param_converter.team_deletion_request" class="ContinuousPipe\River\Team\Request\TeamDeletionRequestConverter">
+            <argument type="service" id="app.request.param_converter.team" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository.doctrine" />
+
+            <tag name="request.param_converter" converter="teamDeletionRequest" />
+        </service>
+
+        <service id="app.request.param_converter.account" class="ContinuousPipe\Security\Request\ParamConverter\AccountParamConverter">
+            <argument type="service" id="app.repository.account" />
+
+            <tag name="request.param_converter" converter="account" />
+        </service>
+
+        <service id="serializer.uuid_handler" class="ContinuousPipe\River\Serializer\UuidHandler">
+            <tag name="jms_serializer.subscribing_handler" />
+        </service>
+        <service id="app.controller.branch" class="AppBundle\Controller\BranchController">
+            <argument type="service" id="command_bus"/>
+            <argument type="service" id="river.branch.view.storage"/>
+            <argument type="service" id="river.branch.pull_request.view.storage"/>
+        </service>
+    </services>
+</container>

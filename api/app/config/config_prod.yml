@@ -1,0 +1,42 @@
+imports:
+    - { resource: config.yml }
+
+services:
+    apcu_cache:
+        class: Doctrine\Common\Cache\ApcuCache
+        calls:
+            - [setNamespace, ['authenticator']]
+
+    validator_cache:
+        class: Symfony\Component\Validator\Mapping\Cache\DoctrineCache
+        arguments:
+            - "@apcu_cache"
+
+framework:
+    validation:
+        cache: validator_cache
+
+doctrine:
+    orm:
+        metadata_cache_driver: apcu
+        result_cache_driver: apcu
+        query_cache_driver: apcu
+
+monolog:
+    handlers:
+        main:
+            type:         fingers_crossed
+            action_level: info
+            handler:      grouped_main
+        sentry:
+            type:  raven
+            dsn:   %sentry_dsn%
+            level: notice
+        grouped_main:
+            type:    group
+            members: [sentry, error_log]
+        error_log:
+            type:  error_log
+            level: debug
+        console:
+            type:  console

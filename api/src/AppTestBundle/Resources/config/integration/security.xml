@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="security.vaults.user_secrets" class="ContinuousPipe\Security\Encryption\Base64UnSecureVault" />
+        <service id="security.vaults.user_secrets.previously_known"
+                 class="ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault"
+                 decorates="security.vaults.user_secrets">
+            <argument type="service" id="security.vaults.user_secrets.previously_known.inner" />
+        </service>
+
+        <service id="security.vaults.within_clusters.previously_known"
+                 class="ContinuousPipe\Security\Encryption\InMemory\PreviouslyKnownValuesVault"
+                 decorates="security.vaults.within_clusters">
+            <argument type="service" id="security.vaults.within_clusters.previously_known.inner" />
+        </service>
+    </services>
+</container>

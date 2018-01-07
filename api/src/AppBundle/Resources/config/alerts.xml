@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.alerts.on_runtime.github.flow_installation_not_found" class="ContinuousPipe\River\CodeRepository\GitHub\Alerts\FlowInstallationNotFound">
+            <argument type="service" id="github.integration.installation_repository" />
+        </service>
+
+        <service id="river.alerts.on_runtime.bitbucket.addon_installation_not_found" class="ContinuousPipe\River\CodeRepository\BitBucket\Alerts\BitBucketAddonNotFound">
+            <argument type="service" id="atlassian_addon.installation_repository" />
+        </service>
+
+        <service id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" class="ContinuousPipe\River\Alerts\OnRuntime\TeamConfiguration\TeamDoNotHaveAnyClusterOrRegistry">
+            <argument type="service" id="app.repository.credentials_bucket" />
+        </service>
+
+        <service id="river.alerts.on_runtime.missing_variables" class="ContinuousPipe\River\Alerts\OnRuntime\MissingVariablesOnDefaultBranch">
+            <argument type="service" id="river.flow.configuration.missing_variables.configuration_resolver" />
+        </service>
+
+        <service id="river.alerts.chain" class="ContinuousPipe\River\Alerts\ChainAlertsRepository">
+            <argument type="collection">
+                <argument type="service" id="river.alerts.on_runtime.github.flow_installation_not_found" />
+                <argument type="service" id="river.alerts.on_runtime.bitbucket.addon_installation_not_found" />
+                <argument type="service" id="river.alerts.on_runtime.team_do_not_have_any_cluster_or_registry" />
+                <argument type="service" id="river.alerts.on_runtime.missing_variables" />
+            </argument>
+        </service>
+
+        <service id="river.alerts.repository" alias="river.alerts.chain" />
+    </services>
+</container>

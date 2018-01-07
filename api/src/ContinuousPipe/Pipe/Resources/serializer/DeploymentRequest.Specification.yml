@@ -1,0 +1,4 @@
+ContinuousPipe\Pipe\DeploymentRequest\Specification:
+    properties:
+        components:
+            type: array<ContinuousPipe\Model\Component>

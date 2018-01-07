@@ -1,0 +1,18 @@
+ContinuousPipe\Model\Component\Probe:
+    discriminator:
+        field_name: type
+        map:
+            http: ContinuousPipe\Model\Component\Probe\Http
+            tcp: ContinuousPipe\Model\Component\Probe\Tcp
+            exec: ContinuousPipe\Model\Component\Probe\Exec
+    properties:
+        initialDelaySeconds:
+            type: integer
+        timeoutSeconds:
+            type: integer
+        periodSeconds:
+            type: integer
+        successThreshold:
+            type: integer
+        failureThreshold:
+            type: integer

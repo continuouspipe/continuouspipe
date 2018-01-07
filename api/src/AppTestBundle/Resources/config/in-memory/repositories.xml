@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="river.repository.flow.deprecated.doctrine" class="ContinuousPipe\River\Tests\Repository\InMemoryFlowRepository" />
+
+        <service id="river.view.tide_repository" class="ContinuousPipe\River\Tests\View\InMemoryTideRepository" />
+        <service id="river.tide.filter.filter_hash_repository" class="ContinuousPipe\River\Tests\Repository\InMemoryFilterHashRepository" />
+        <service id="river.flow.projections.flat_flow_repository.doctrine" class="ContinuousPipe\River\Flow\Projections\InMemoryFlatFlowRepository" />
+        <service id="development_environment.read_model.repository" class="ContinuousPipe\DevelopmentEnvironment\ReadModel\InMemoryEnvironmentRepository" />
+        <service id="river.code_repository.local_filesystem_resolver" class="ContinuousPipe\River\CodeRepository\FileSystem\LocalFilesystemResolver" />
+        <service id="river.ssl_certificates.repository" class="ContinuousPipe\River\SslCertificate\InMemorySslCertificateRepository" />
+
+        <service id="river.file_system_resolver" class="ContinuousPipe\River\CodeRepository\ImplementationDelegation\FileSystemResolverDelegator">
+            <argument type="collection">
+                <argument type="service" id="river.code_repository.local_filesystem_resolver" />
+                <argument type="service" id="river.bitbucket.file_system_resolver" />
+                <argument type="service" id="river.github.file_system_resolver" />
+            </argument>
+        </service>
+
+        <service id="river.managed.resources.history_repository" class="ContinuousPipe\River\Managed\Resources\InMemoryUsageHistoryRepository" />
+    </services>
+</container>

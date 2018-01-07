@@ -1,0 +1,57 @@
+{% extends "@Admin/layout.html.twig" %}
+{% block header_navbar_tides_class %} class="active"{% endblock %}
+{% block content %}
+<ol class="breadcrumb">
+    <li class="active">Last tides</li>
+</ol>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Repository</th>
+            <th>Code Reference</th>
+            <th>Creation date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for tide in pagination %}
+        {% if tide.status == 'success' %}
+            {% set tr_class = 'success' %}
+        {% elseif tide.status == 'running' %}
+            {% set tr_class = 'info' %}
+        {% elseif tide.status == 'pending' %}
+            {% set tr_class = '' %}
+        {% elseif tide.status == 'cancelled' %}
+            {% set tr_class = 'warning' %}
+        {% else %}
+            {% set tr_class = 'danger' %}
+        {% endif %}
+
+        <tr class="{{ tr_class }}">
+            <td>{% if tide.codeReference.repository.organisation is defined %}
+                {{ tide.codeReference.repository.organisation }}
+                {% elseif tide.codeReference.repository.owner is defined %}
+                {{ tide.codeReference.repository.owner.username }}
+                {% else %}
+                    ??
+                {% endif %}
+                / {{ tide.codeReference.repository.name }}</td>
+            <td>{{ tide.codeReference.branch }} ({{ tide.codeReference.commitSha }})</td>
+            <td>{{ tide.creationDate | date }}</td>
+            <td>
+                {{ tide.status }}
+                {% if tide.failureReason is not null %}
+                ({{ tide.failureReason }})
+                {% endif %}
+            </td>
+            <td><a href="{{ path('admin_tide', {'team': tide.team.slug, 'flow': tide.flowUuid, 'uuid': tide.uuid}) }}" class="btn btn-default">View</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
+{% endblock %}

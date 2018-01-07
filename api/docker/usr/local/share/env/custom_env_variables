@@ -1,0 +1,10 @@
+#!/bin/sh
+
+export START_NGINX=${START_NGINX:-true}
+export START_PHP_FPM=${START_PHP_FPM:-true}
+export START_CRON=${START_CRON:-false}
+export START_WORKER=${START_WORKER:-false}
+
+export PHP_MEMORY_LIMIT=1G
+export TIDEWAYS_ENABLED="true"
+export TIDEWAYS_FRAMEWORK="symfony2"

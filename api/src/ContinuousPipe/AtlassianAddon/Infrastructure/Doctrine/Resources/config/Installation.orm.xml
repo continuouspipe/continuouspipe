@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="ContinuousPipe\AtlassianAddon\Installation" table="bitbucket_installation">
+        <id name="clientKey" type="string" />
+        <field name="sharedSecret" type="string" />
+        <field name="key" column="installation_key" type="string" />
+        <field name="publicKey" type="string" />
+        <field name="baseUrl" type="string" />
+        <field name="baseApiUrl" type="string" />
+
+        <embedded name="consumer" class="ContinuousPipe\AtlassianAddon\OAuthConsumer" />
+        <embedded name="principal" class="ContinuousPipe\AtlassianAddon\Account" />
+        <embedded name="user" class="ContinuousPipe\AtlassianAddon\Account" />
+    </entity>
+</doctrine-mapping>

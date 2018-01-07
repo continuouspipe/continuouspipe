@@ -1,0 +1,26 @@
+ContinuousPipe\Security\Account\Account:
+    discriminator:
+        field_name: type
+        map:
+            google: ContinuousPipe\Security\Account\GoogleAccount
+            github: ContinuousPipe\Security\Account\GitHubAccount
+            bitbucket: ContinuousPipe\Security\Account\BitBucketAccount
+    properties:
+        uuid:
+            type: string
+            groups: ['Default', 'Account']
+        username:
+            type: string
+            groups: ['Default', 'Account']
+        identifier:
+            type: string
+            groups: ['Default', 'Account']
+        email:
+            type: string
+            groups: ['Default', 'Account']
+        name:
+            type: string
+            groups: ['Default', 'Account']
+        pictureUrl:
+            type: string
+            groups: ['Default', 'Account']

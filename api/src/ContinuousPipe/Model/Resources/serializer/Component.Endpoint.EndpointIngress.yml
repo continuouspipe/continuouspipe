@@ -1,0 +1,6 @@
+ContinuousPipe\Model\Component\Endpoint\EndpointIngress:
+    properties:
+        class:
+            type: string
+        rules:
+            type: array<Kubernetes\Client\Model\IngressRule>

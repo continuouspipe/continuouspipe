@@ -1,0 +1,6 @@
+ContinuousPipe\Builder\Artifact:
+    properties:
+        identifier:
+            - NotBlank: ~
+        path:
+            - NotBlank: ~
