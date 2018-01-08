@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('UserRepository', function($resource, $injector, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/user/:username');
-        this.apiKeyResource = $resource(AUTHENTICATOR_API_URL+'/api/user/:username/api-keys/:key');
+    .service('UserRepository', function($resource, $injector, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/user/:username');
+        this.apiKeyResource = $resource(RIVER_API_URL+'/user/:username/api-keys/:key');
 
         this.findByUsername = function(username) {
             return this.resource.get({username: username}).$promise.then(function(user) {
@@ -17,7 +17,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.findBillingProfilesForCurrentUser = function() {
-            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;
+            return $resource(RIVER_API_URL+'/me/billing-profiles').query().$promise;
         };
 
         this.findApiKeysByUsername = function(username) {

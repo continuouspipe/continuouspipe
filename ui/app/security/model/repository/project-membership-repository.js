@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ProjectMembershipRepository', function($resource, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:project/users/:username', {}, {
+    .service('ProjectMembershipRepository', function($resource, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/teams/:project/users/:username', {}, {
             add: {
                 method: 'PUT'
             },

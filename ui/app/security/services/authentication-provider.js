@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('$authenticationProvider', function ($window, $tokenStorage, jwtHelper, AUTHENTICATOR_API_URL) {
+    .service('$authenticationProvider', function ($window, $tokenStorage, jwtHelper, RIVER_API_URL) {
         this.isAuthenticated = function() {
             if (!$tokenStorage.has()) {
                 return false;
@@ -24,6 +24,6 @@ angular.module('continuousPipeRiver')
         };
 
         this.redirectToAuthentication = function() {
-            $window.location.href = AUTHENTICATOR_API_URL+'/authenticate?callback='+encodeURIComponent($window.location);
+            $window.location.href = RIVER_API_URL+'/auth/authenticate?callback='+encodeURIComponent($window.location);
         };
     });

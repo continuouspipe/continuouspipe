@@ -2,7 +2,7 @@
 
 angular.module('continuousPipeRiver')
     .service('ProjectAlertsRepository', function($resource, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/alerts');
+        this.resource = $resource(RIVER_API_URL+'/teams/:slug/alerts');
 
         this.findByProject = function(project) {
             return this.resource.query({

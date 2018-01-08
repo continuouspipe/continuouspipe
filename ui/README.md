@@ -39,5 +39,5 @@ gem install compass
 
 Finally you can start the application. It requires 2 environment vairables, the API to authenticate against and the River API url.
 ```
-AUTHENTICATOR_API_URL=https://authenticator-staging.continuouspipe.io RIVER_API_URL=https://river-staging.continuouspipe.io grunt serve
+RIVER_API_URL=https://river-staging.continuouspipe.io grunt serve
 ```

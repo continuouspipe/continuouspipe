@@ -10,9 +10,6 @@ pipelines:
       tasks: [ images, deployment ]
 
 variables:
-    - name: AUTHENTICATOR_API_URL
-      condition: code_reference.branch == 'production'
-      value: https://authenticator.continuouspipe.io
     - name: RIVER_API_URL
       condition: code_reference.branch == 'production'
       value: https://river.continuouspipe.io
@@ -23,9 +20,6 @@ variables:
       value: ui.continuouspipe.io
       condition: code_reference.branch == 'production'
 
-    - name: AUTHENTICATOR_API_URL
-      condition: code_reference.branch != 'production'
-      value: https://authenticator-staging.continuouspipe.io
     - name: RIVER_API_URL
       condition: code_reference.branch != 'production'
       value: https://river-staging.continuouspipe.io
@@ -67,8 +61,6 @@ tasks:
 
                     specification:
                         environment_variables:
-                            - name: AUTHENTICATOR_API_URL
-                              value: ${AUTHENTICATOR_API_URL}
                             - name: LOG_STREAM_URL
                               value: https://logstream.continuouspipe.io
                             - name: PIPE_API_URL
@@ -80,4 +72,4 @@ tasks:
                             - name: KUBE_PROXY_HOSTNAME
                               value: ${KUBE_PROXY_HOSTNAME}
                             - name: KUBE_STATUS_API_URL
-                              value: ${AUTHENTICATOR_API_URL}/api/kube-status
+                              value: ${RIVER_API_URL}/kube-status

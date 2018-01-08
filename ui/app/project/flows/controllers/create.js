@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, AUTHENTICATOR_API_URL, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {        
-        $scope.linkAccountUrl = AUTHENTICATOR_API_URL + '/account/';
+    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {
         $scope.user = user;
 
         $remoteResource.load('accounts', AccountRepository.findMine()).then(function(accounts) {

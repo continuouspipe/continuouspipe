@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('RegistryCredentialsRepository', function($resource, $projectContext, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/docker-registries/:serverAddress');
+    .service('RegistryCredentialsRepository', function($resource, $projectContext, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/bucket/:bucket/docker-registries/:serverAddress');
 
         var getBucketUuid = function(project) {
             return (project || $projectContext.getCurrentProject()).bucket_uuid;

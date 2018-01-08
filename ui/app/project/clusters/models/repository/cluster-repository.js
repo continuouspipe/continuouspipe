@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ClusterRepository', function($resource, $projectContext, $q, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/bucket/:bucket/clusters/:identifier', null, {
+    .service('ClusterRepository', function($resource, $projectContext, $q, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/bucket/:bucket/clusters/:identifier', null, {
             update: { method: 'PATCH' }
         });
 
@@ -45,7 +45,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.createManaged = function(project) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/managed/create-cluster', {
+            return $resource(RIVER_API_URL+'/teams/:slug/managed/create-cluster', {
                 slug: (project || $projectContext.getCurrentProject()).slug
             }).save().$promise;  
         };

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('InvitationRepository', function($resource, AUTHENTICATOR_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:project/invitations/:uuid', {}, {
+    .service('InvitationRepository', function($resource, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/teams/:project/invitations/:uuid', {}, {
             remove: {
                 method: 'DELETE'
             }

@@ -1,20 +1,20 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('BillingProfileRepository', function($resource, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid');
-        this.adminsResource = $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid/admins/:username', {}, {
+    .service('BillingProfileRepository', function($resource, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/billing-profile/:uuid');
+        this.adminsResource = $resource(RIVER_API_URL+'/billing-profile/:uuid/admins/:username', {}, {
             delete: {
                 method: 'DELETE'
             }
         });
 
         this.findMine = function() {
-            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').query().$promise;
+            return $resource(RIVER_API_URL+'/me/billing-profiles').query().$promise;
         };
 
         this.create = function(profile) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/me/billing-profiles').save(profile).$promise;
+            return $resource(RIVER_API_URL+'/me/billing-profiles').save(profile).$promise;
         };
 
         this.find = function(uuid) {
@@ -49,10 +49,10 @@ angular.module('continuousPipeRiver')
         };
 
         this.findPlans = function() {
-            return $resource(AUTHENTICATOR_API_URL+'/api/billing/plans').query().$promise;
+            return $resource(RIVER_API_URL+'/billing/plans').query().$promise;
         };
 
         this.changePlan = function(billingProfile, changeRequest) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/billing-profile/:uuid/change-plan').save({uuid: billingProfile.uuid}, changeRequest).$promise;
+            return $resource(RIVER_API_URL+'/billing-profile/:uuid/change-plan').save({uuid: billingProfile.uuid}, changeRequest).$promise;
         };
     });

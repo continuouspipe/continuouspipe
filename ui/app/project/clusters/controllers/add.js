@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectAddClusterController', function($scope, $state, $http, ClusterRepository, AccountRepository, AUTHENTICATOR_API_URL) {
+    .controller('ProjectAddClusterController', function($scope, $state, $http, ClusterRepository, AccountRepository) {
         var clusterFromGkeCluster = function(gkeCluster) {
             return {
                 type: 'kubernetes',

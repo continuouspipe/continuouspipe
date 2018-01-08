@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .service('ProjectRepository', function($resource, AUTHENTICATOR_API_URL, RIVER_API_URL) {
-        this.resource = $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug', {}, {
+    .service('ProjectRepository', function($resource, RIVER_API_URL) {
+        this.resource = $resource(RIVER_API_URL+'/teams/:slug', {}, {
             patch: {
                 method: 'PATCH'
             }
@@ -40,11 +40,11 @@ angular.module('continuousPipeRiver')
         }
 
         this.getMembersStatus = function(slug) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/members-status').get({slug: slug}).$promise;
+            return $resource(RIVER_API_URL+'/teams/:slug/members-status').get({slug: slug}).$promise;
         };
 
         this.getBillingProfile = function(project) {
-            return $resource(AUTHENTICATOR_API_URL+'/api/teams/:slug/billing-profile').get({slug: project.slug}).$promise.then(function(billingProfile) {
+            return $resource(RIVER_API_URL+'/teams/:slug/billing-profile').get({slug: project.slug}).$promise.then(function(billingProfile) {
                 return billingProfile;
             }, function(e) {
                 Raven.captureException(e);

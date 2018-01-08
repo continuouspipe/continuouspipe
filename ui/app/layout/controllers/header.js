@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('HeaderController', function ($rootScope, $scope, $state, AUTHENTICATOR_API_URL, user, $tokenStorage) {
+    .controller('HeaderController', function ($rootScope, $scope, $state, RIVER_API_URL, user, $tokenStorage) {
         $rootScope.user = $scope.user = user;
 
         $scope.redirectToLogout = function () {
@@ -9,7 +9,7 @@ angular.module('continuousPipeRiver')
 
             $tokenStorage.remove();
 
-            window.location.href = AUTHENTICATOR_API_URL + '/logout';
+            window.location.href = RIVER_API_URL + '/auth/logout';
         };
 
         $scope.redirectToAccount = function () {
