@@ -1,0 +1,17 @@
+version: '2'
+services:
+    api:
+        ports:
+            - 81:80
+        environment:
+            WEB_HTTP: "true"
+
+            # Uses the `dev` Symfony environment
+            SYMFONY_ENV: dev
+
+            # Uses the `app_dev.php` endpoint
+            SYMFONY_WEB_APP_ENV_REWRITE: "true"
+
+    ui:
+        ports:
+            - 80:80

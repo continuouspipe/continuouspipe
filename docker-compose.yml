@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+    api:
+        build:
+            context: ./api
+        volumes:
+            - ./api:/app
+        environment:
+            - DATABASE_HOST=database
+            - DATABASE_USER=continuouspipe
+            - DATABASE_PASSWORD=continuouspipe
+            - DATABASE_NAME=continuouspipe
+        env_file:
+            - .env
+        depends_on:
+            - database
+
+    ui:
+        build:
+            context: ./ui
+        volumes:
+            - ./ui/app:/app/app
+        env_file:
+            - .env
+
+    database:
+        image: mariadb
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=continuouspipe
+            - MYSQL_USER=continuouspipe
+            - MYSQL_PASSWORD=continuouspipe
+        expose:
+            - 3306

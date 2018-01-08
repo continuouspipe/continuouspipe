@@ -1,9 +1,11 @@
-api:
-    ports:
-        - 81:80
-        - 444:443
-    environment:
-        APPLICATION_ENV: development
-        DEVELOPMENT_MODE: "false"
-        WEB_HTTP: "true"
-        SYMFONY_ENV: dev
+version: '2'
+services:
+    api:
+        ports:
+            - 81:80
+            - 444:443
+        environment:
+            APPLICATION_ENV: development
+            DEVELOPMENT_MODE: "false"
+            WEB_HTTP: "true"
+            SYMFONY_ENV: dev
