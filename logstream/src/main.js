@@ -17,7 +17,7 @@ if (!firebase_application) {
 var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/'),
     storage = gcloud.storage({
         projectId: 'continuous-pipe-1042',
-        keyFilename: 'keys/continuous-pipe-6e52d1420d38.json'
+        keyFilename: 'api/keys/continuous-pipe-6e52d1420d38.json'
     });
 
 // Configure the Sentry exception collection
@@ -27,8 +27,8 @@ Raven.config(process.env.SENTRY_DSN).install();
 var port = process.env.PORT || 443;
 console.log('Start HTTP server at port '+port);
 var options = {
-    key: fs.readFileSync('keys/server.key'),
-    cert: fs.readFileSync('keys/server.crt')
+    key: fs.readFileSync('api/keys/server.key'),
+    cert: fs.readFileSync('api/keys/server.crt')
 };
 
 var handler = HandlerFactory(

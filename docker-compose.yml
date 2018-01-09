@@ -12,17 +12,27 @@ services:
             - DATABASE_PASSWORD=continuouspipe
             - DATABASE_NAME=continuouspipe
             - REDIS_HOST=redis
+            - LOGSTREAM_URL=https://logstream
         env_file:
             - .env
         depends_on:
             - database
             - redis
+            - logstream
 
     ui:
         build:
             context: ./ui
         volumes:
             - ./ui/app:/app/app
+        env_file:
+            - .env
+
+    logstream:
+        build:
+            context: ./logstream
+        volumes:
+            - ./logstream/src:/app/src
         env_file:
             - .env
 

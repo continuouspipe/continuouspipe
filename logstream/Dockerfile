@@ -1,7 +1,7 @@
 FROM node:6.9.1
 
-COPY package.json /app/package.json
 WORKDIR /app
+COPY package.json /app/package.json
 
 # Install app dependencies
 RUN npm install
@@ -11,4 +11,4 @@ COPY . /app
 
 EXPOSE 443
 
-CMD ["node", "/app/main.js"]
+CMD ["node", "src/main.js"]
