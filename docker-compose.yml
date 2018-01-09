@@ -11,10 +11,12 @@ services:
             - DATABASE_USER=continuouspipe
             - DATABASE_PASSWORD=continuouspipe
             - DATABASE_NAME=continuouspipe
+            - REDIS_HOST=redis
         env_file:
             - .env
         depends_on:
             - database
+            - redis
 
     ui:
         build:
@@ -33,3 +35,8 @@ services:
             - MYSQL_PASSWORD=continuouspipe
         expose:
             - 3306
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
