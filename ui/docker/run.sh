@@ -10,6 +10,10 @@ angular.module('config', [])
 .constant('SENTRY_DSN', '"$SENTRY_DSN"')
 .constant('KUBE_PROXY_HOSTNAME', '"$KUBE_PROXY_HOSTNAME"')
 .constant('KUBE_STATUS_API_URL', '"$KUBE_STATUS_API_URL"')
+.constant('INTERCOM_ENABLED', '"$INTERCOM_ENABLED"')
+.constant('INTERCOM_APPLICATION_ID', '"$INTERCOM_APPLICATION_ID"')
+.constant('STATIS_METER_ENABLED', '"$STATIS_METER_ENABLED"')
+.constant('STATIS_METER_WRITE_KEY', '"$STATIS_METER_WRITE_KEY"')
 ;" > /app/dist/scripts/config.js
 
 # Start nginx

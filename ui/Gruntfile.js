@@ -67,7 +67,7 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: grunt.option('port') || 9000,
+        port: grunt.option('port') || 80,
         hostname: '0.0.0.0',
         livereload: 35729
       },
@@ -441,7 +441,11 @@ module.exports = function (grunt) {
           PIPE_API_URL: process.env.PIPE_API_URL,
           KUBE_PROXY_HOSTNAME: process.env.KUBE_PROXY_HOSTNAME,
           SENTRY_DSN: process.env.SENTRY_DSN,
-          KUBE_STATUS_API_URL: process.env.KUBE_STATUS_API_URL
+          KUBE_STATUS_API_URL: process.env.KUBE_STATUS_API_URL,
+          INTERCOM_ENABLED: process.env.INTERCOM_ENABLED,
+          INTERCOM_APPLICATION_ID: process.env.INTERCOM_APPLICATION_ID,
+          STATIS_METER_ENABLED: process.env.STATIS_METER_ENABLED,
+          STATIS_METER_WRITE_KEY: process.env.STATIS_METER_WRITE_KEY
         }
       }
     },

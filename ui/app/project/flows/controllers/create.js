@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {
+    .controller('CreateFlowController', function($scope, $state, $remoteResource, $http, $intercom, WizardRepository, AccountRepository, RegistryCredentialsRepository, ClusterRepository, FlowRepository, project, user) {
         $scope.user = user;
 
         $remoteResource.load('accounts', AccountRepository.findMine()).then(function(accounts) {
@@ -70,7 +70,7 @@ angular.module('continuousPipeRiver')
             FlowRepository.createFromRepositoryAndProject(project, $scope.wizard.repository).then(function(flow) {
                 $state.go('flow.configuration.checklist', {uuid: flow.uuid});
 
-                Intercom('trackEvent', 'created-flow', {
+                $intercom.trackEvent('created-flow', {
                     flow: flow
                 });
             }, function(error) {

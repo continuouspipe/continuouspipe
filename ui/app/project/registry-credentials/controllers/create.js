@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectCreateRegistryCredentialsController', function($scope, $http, $state, RegistryCredentialsRepository) {
+    .controller('ProjectCreateRegistryCredentialsController', function($scope, $http, $state, $intercom, RegistryCredentialsRepository) {
         $scope.credentials = {
             serverAddress: 'docker.io'
         };
@@ -11,7 +11,7 @@ angular.module('continuousPipeRiver')
             RegistryCredentialsRepository.create(credentials).then(function() {
                 $state.go('registry-credentials');
 
-                Intercom('trackEvent', 'added-registry-credentials', {
+                $intercom.trackEvent('added-registry-credentials', {
                     registry: credentials.serverAddress,
                     username: credentials.username
                 });

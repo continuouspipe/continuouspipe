@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $mdDialog, $state, $http, TideRepository, EnvironmentRepository, FlowRepository, flow) {
+    .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $mdDialog, $state, $http, $intercom, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.flow = flow;
         $scope.variables = [];
 
@@ -33,7 +33,7 @@ angular.module('continuousPipeRiver')
                     .parent($('md-content.configuration-content'))
                 );
 
-                Intercom('trackEvent', 'updated-configuration', {
+                $intercom.trackEvent('updated-configuration', {
                     flow: flow.uuid
                 });
 
@@ -205,7 +205,7 @@ angular.module('continuousPipeRiver')
 
                     $state.go('flows');
 
-                    Intercom('trackEvent', 'deleted-flow', {
+                    $intercom.trackEvent('deleted-flow', {
                         flow: flow.uuid
                     });
                 }, function(error) {

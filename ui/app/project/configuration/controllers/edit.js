@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectConfigurationController', function($rootScope, $scope, $remoteResource, $http, $mdToast, $state, ProjectRepository, UserRepository, project) {
+    .controller('ProjectConfigurationController', function($rootScope, $scope, $remoteResource, $http, $mdToast, $state, $intercom, ProjectRepository, UserRepository, project) {
         $scope.project = project;
         $scope.patch = {
             project: {
@@ -45,7 +45,7 @@ angular.module('continuousPipeRiver')
                     .parent($('md-content.configuration-content'))
                 );
 
-                Intercom('trackEvent', 'updated-project', {
+                $intercom.trackEvent('updated-project', {
                     project: project
                 });
             }, function(error) {

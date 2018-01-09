@@ -1,13 +1,5 @@
 'use strict';
 
-/**
- * @ngdoc overview
- * @name kubernetesManagerUiApp
- * @description
- * # kubernetesManagerUiApp
- *
- * Main module of the application.
- */
 angular
     .module('continuousPipeRiver', [
         'config',
@@ -66,7 +58,7 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', function ($rootScope, $state, $http, $firebaseApplicationResolver) {
+    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', '$intercom', function ($rootScope, $state, $http, $firebaseApplicationResolver, $intercom) {
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -94,13 +86,7 @@ angular
         });
 
         $rootScope.$on('user_context.user_updated', function (event, user) {
-            window.Intercom("boot", {
-                app_id: "i0yqsxbt",
-                user_id: user.username,
-                email: user.email,
-                custom_launcher_selector: '#contact-us-launcher',
-                hide_default_launcher: true
-            });
+            $intercom.configure(user);
 
             window.satismeter({
                 writeKey: "MAY39UHqizidGBSa",

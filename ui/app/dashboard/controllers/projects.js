@@ -65,7 +65,7 @@ angular.module('continuousPipeRiver')
             }.bind(this));
         };
     })
-    .controller('CreateProjectController', function ($scope, $state, $http, $remoteResource, Slug, ProjectCreationManager, ProjectRepository, BillingProfileRepository) {
+    .controller('CreateProjectController', function ($scope, $state, $http, $remoteResource, $intercom, Slug, ProjectCreationManager, ProjectRepository, BillingProfileRepository) {
         $scope.project = {};
 
         $scope.$watch('project.name', function (name, previous) {
@@ -77,7 +77,7 @@ angular.module('continuousPipeRiver')
         $scope.create = function (project) {
             $scope.isLoading = true;
             ProjectCreationManager.create(project).then(function () {
-                Intercom('trackEvent', 'created-project', {
+                $intercom.trackEvent('created-project', {
                     project: project
                 });
 

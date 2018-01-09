@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, $state, ClusterRepository, project, user) {
+    .controller('ProjectClustersController', function($scope, $remoteResource, $http, $mdDialog, $state, $intercom, ClusterRepository, project, user) {
         var controller = this;
 
         this.loadClusters = function() {
@@ -54,7 +54,7 @@ angular.module('continuousPipeRiver')
                 scope: dialogScope
             });
 
-            Intercom('trackEvent', 'opened-cluster-health', {
+            $intercom.trackEvent('opened-cluster-health', {
                 project: project,
                 cluster: cluster
             });

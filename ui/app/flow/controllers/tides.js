@@ -20,7 +20,7 @@ angular.module('continuousPipeRiver')
             $scope.tides = tides;
         });
     })
-    .controller('FlowCreateTideController', function($scope, $state, $http, TideRepository, flow) {
+    .controller('FlowCreateTideController', function($scope, $state, $http, $intercom, TideRepository, flow) {
         $scope.flow = flow;
 
         $scope.branches = [];
@@ -45,7 +45,7 @@ angular.module('continuousPipeRiver')
                     uuid: flow.uuid
                 });
 
-                Intercom('trackEvent', 'created-tide', {
+                $intercom.trackEvent('created-tide', {
                     flow: flow.uuid,
                     tide: tide
                 });

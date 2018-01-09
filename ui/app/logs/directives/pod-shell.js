@@ -11,7 +11,7 @@ angular.module('continuousPipeRiver')
             }
         };
     })
-    .directive('podShell', function($tokenStorage, $window, KUBE_PROXY_HOSTNAME) {
+    .directive('podShell', function($tokenStorage, $window, $intercom, KUBE_PROXY_HOSTNAME) {
         return {
             templateUrl: 'logs/views/pod/shell.html',
             scope: {
@@ -82,7 +82,7 @@ angular.module('continuousPipeRiver')
                         socket.close();
                     });
 
-                    Intercom('trackEvent', 'web-shelled-in-pod', {
+                    $intercom.trackEvent('web-shelled-in-pod', {
                         flow: $scope.environment.flow.uuid,
                         namespace: $scope.environment.identifier,
                         pod: $scope.pod.identifier,

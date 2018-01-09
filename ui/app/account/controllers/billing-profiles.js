@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('BillingProfilesController', function ($scope, $remoteResource, BillingProfileRepository, $mdDialog, $state, $http) {
+    .controller('BillingProfilesController', function ($scope, $remoteResource, BillingProfileRepository, $mdDialog, $intercom, $state, $http) {
         $remoteResource.load('billingProfiles', BillingProfileRepository.findMine()).then(function(billingProfiles) {
             $scope.billingProfiles = billingProfiles;
         });
@@ -22,7 +22,7 @@ angular.module('continuousPipeRiver')
                 }).then(function (billingProfile) {
                     $state.go('billing-profile', {uuid: billingProfile.uuid});
 
-                    Intercom('trackEvent', 'created-billing-profile', {
+                    $intercom.trackEvent('created-billing-profile', {
                         billingProfile: billingProfile
                     });
                 }, function (error) {

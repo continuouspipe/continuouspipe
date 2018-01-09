@@ -15,3 +15,6 @@ services:
     ui:
         ports:
             - 80:80
+            - 35729:35729
+        build:
+            dockerfile: ./Dockerfile.dev

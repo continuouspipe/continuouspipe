@@ -163,7 +163,7 @@ angular.module('continuousPipeRiver')
             templateUrl: 'flow/views/environments/inline/component.html'
         }
     })
-    .service('$componentLogDialog', function($mdDialog) {
+    .service('$componentLogDialog', function($mdDialog, $intercom) {
         this.open = function($scope, flow, environment, component) {
             var dialogScope = $scope.$new();
             dialogScope.environment = environment;
@@ -176,7 +176,7 @@ angular.module('continuousPipeRiver')
                 scope: dialogScope
             });
 
-            Intercom('trackEvent', 'streamed-component-log', {
+            $intercom.trackEvent('streamed-component-log', {
                 environment: environment,
                 component: component,
                 flow: flow.uuid,

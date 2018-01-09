@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('LogsPodsController', function($scope, $mdDialog, $flowContext) {
+    .controller('LogsPodsController', function($scope, $mdDialog, $flowContext, $intercom) {
         $scope.isNewGeneration = function(deployment, pod) {
             return deployment.containers[0].image == pod.containers[0].image;
         };
@@ -46,7 +46,7 @@ angular.module('continuousPipeRiver')
                 scope: dialogScope
             });
 
-            Intercom('trackEvent', 'streamed-pod-log', {
+            $intercom.trackEvent('streamed-pod-log', {
                 environment: deployment.environment,
                 pod: pod,
                 flow: $flowContext.getCurrentFlow().uuid,

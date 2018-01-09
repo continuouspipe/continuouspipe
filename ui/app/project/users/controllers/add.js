@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectAddUserController', function($scope, $state, $http, ProjectMembershipRepository, InvitationRepository, project) {
+    .controller('ProjectAddUserController', function($scope, $state, $http, $intercom, ProjectMembershipRepository, InvitationRepository, project) {
         $scope.project = project;
 
         var handleError = function(error) {
@@ -15,7 +15,7 @@ angular.module('continuousPipeRiver')
 
                 $state.go('users', {project: project.slug});
 
-                Intercom('trackEvent', 'added-user-to-project', {
+                $intercom.trackEvent('added-user-to-project', {
                     user: membership.user.username,
                     project: project.slug
                 });
@@ -36,7 +36,7 @@ angular.module('continuousPipeRiver')
 
                         $state.go('users', {project: project.slug});
 
-                        Intercom('trackEvent', 'invited-user-to-project', {
+                        $intercom.trackEvent('invited-user-to-project', {
                             email: membership.user.username,
                             project: project.slug
                         });

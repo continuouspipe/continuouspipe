@@ -17,9 +17,8 @@ command -v melody >/dev/null 2>&1 || {
 # Generates the .env file if not complete
 melody run $DIR/helpers/dot-env-generator.php
 
+echo "Preparing the environment..."
+docker-compose exec api bash -c 'bin/console assetic:dump'
+
 echo "Starting the Docker containers"
 docker-compose up
-
-# TODO: Wait until containers are ready...
-
-docker-compose exec api bash -c 'bin/console assetic:dump'

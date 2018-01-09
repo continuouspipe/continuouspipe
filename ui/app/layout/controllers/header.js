@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('HeaderController', function ($rootScope, $scope, $state, RIVER_API_URL, user, $tokenStorage) {
+    .controller('HeaderController', function ($rootScope, $scope, $state, $intercom, RIVER_API_URL, user, $tokenStorage) {
         $rootScope.user = $scope.user = user;
+        $scope.intercomIsEnabled = $intercom.isEnabled();
 
         $scope.redirectToLogout = function () {
-            Intercom('trackEvent', 'logged-out', {});
+            $intercom.trackEvent('logged-out', {});
 
             $tokenStorage.remove();
 
@@ -13,7 +14,7 @@ angular.module('continuousPipeRiver')
         };
 
         $scope.redirectToAccount = function () {
-            Intercom('trackEvent', 'opened-account', {});
+            $intercom.trackEvent('opened-account', {});
 
             $state.go('connected-accounts');
         };

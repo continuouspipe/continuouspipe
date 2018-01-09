@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectAddClusterController', function($scope, $state, $http, ClusterRepository, AccountRepository) {
+    .controller('ProjectAddClusterController', function($scope, $state, $http, $intercom, ClusterRepository, AccountRepository) {
         var clusterFromGkeCluster = function(gkeCluster) {
             return {
                 type: 'kubernetes',
@@ -30,7 +30,7 @@ angular.module('continuousPipeRiver')
             createCluster(cluster).then(function() {
                 $state.go('clusters');
 
-                Intercom('trackEvent', 'added-cluster', {
+                $intercom.trackEvent('added-cluster', {
                     type: cluster.type
                 });
             }, function(error) {

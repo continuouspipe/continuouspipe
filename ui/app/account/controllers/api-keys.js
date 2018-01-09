@@ -29,13 +29,13 @@ angular.module('continuousPipeRiver')
 
         load();
     })
-    .controller('CreateApiKeyController', function ($scope, $state, $remoteResource, $http, user, UserRepository) {
+    .controller('CreateApiKeyController', function ($scope, $state, $remoteResource, $http, $intercom, user, UserRepository) {
         $scope.apiKey = {};
 
         $scope.create = function (apiKey) {
             $scope.isLoading = true;
             UserRepository.createApiKey(user.username, apiKey).then(function () {
-                Intercom('trackEvent', 'created-api-key', {
+                $intercom.trackEvent('created-api-key', {
                     apiKey: apiKey
                 });
 

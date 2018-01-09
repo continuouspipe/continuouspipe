@@ -13,7 +13,7 @@
 <h2 class="title"><span ui-view="title"></span></h2>
 <span flex></span>
 <md-button id="documentation" href="https://docs.continuouspipe.io/" target="_blank">Documentation</md-button>
-<md-button id="contact-us-launcher">Support</md-button>
+<md-button id="contact-us-launcher" ng-if="intercomIsEnabled">Support</md-button>
 <md-menu md-position-mode="target-right target">
     <md-button aria-label="Account" class="md-icon-button account-button" ng-click="$mdOpenMenu($event)">
         <img ng-src="//www.gravatar.com/avatar/{{ user.email | gravatar }}" />
