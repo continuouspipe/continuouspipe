@@ -1,5 +1,5 @@
 api:
-    build: api
+    build: .
     expose:
         - 443
         - 80
