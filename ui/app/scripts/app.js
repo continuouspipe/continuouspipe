@@ -58,7 +58,7 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', '$intercom', function ($rootScope, $state, $http, $firebaseApplicationResolver, $intercom) {
+    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', '$intercom', function ($rootScope, $state, $http, $firebaseApplicationResolver, $intercom, STATIS_METER_ENABLED, STATIS_METER_WRITE_KEY) {
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -88,13 +88,15 @@ angular
         $rootScope.$on('user_context.user_updated', function (event, user) {
             $intercom.configure(user);
 
-            window.satismeter({
-                writeKey: "MAY39UHqizidGBSa",
-                userId: user.username,
-                traits: {
-                    email: user.email
-                }
-            });
+            if (STATIS_METER_ENABLED === 'true') {
+                window.satismeter({
+                    writeKey: STATIS_METER_WRITE_KEY,
+                    userId: user.username,
+                    traits: {
+                        email: user.email
+                    }
+                });
+            }
         });
 
         $http.getError = function (error) {
