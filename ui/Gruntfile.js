@@ -445,7 +445,8 @@ module.exports = function (grunt) {
           INTERCOM_ENABLED: process.env.INTERCOM_ENABLED,
           INTERCOM_APPLICATION_ID: process.env.INTERCOM_APPLICATION_ID,
           STATIS_METER_ENABLED: process.env.STATIS_METER_ENABLED,
-          STATIS_METER_WRITE_KEY: process.env.STATIS_METER_WRITE_KEY
+          STATIS_METER_WRITE_KEY: process.env.STATIS_METER_WRITE_KEY,
+          BILLING_ENABLED: process.env.BILLING_ENABLED
         }
       }
     },

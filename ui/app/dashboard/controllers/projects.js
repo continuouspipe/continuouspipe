@@ -6,8 +6,12 @@ angular.module('continuousPipeRiver')
             $scope.projects = projects;
         });
     })
-    .service('ProjectCreationManager', function($q, $mdDialog, $state, BillingProfileRepository, ProjectRepository) {
+    .service('ProjectCreationManager', function($q, $mdDialog, $state, $flag, BillingProfileRepository, ProjectRepository) {
         this.resolveBillingProfile = function(projectRequest) {
+            if (!$flag.isEnabled('billing')) {
+                return $q.resolve(null);
+            }
+
             if (projectRequest.$billing.type == 'new') {
                 return BillingProfileRepository.create({
                     name: projectRequest.name
@@ -24,7 +28,7 @@ angular.module('continuousPipeRiver')
         };
 
         this.changeBillingProfilePlanIfNeeded = function(projectRequest, billingProfile) {
-            if (projectRequest.$billing.type != 'new') {
+            if (!$flag.isEnabled('billing') || projectRequest.$billing.type != 'new') {
                 return $q.resolve(projectRequest);
             }
 
@@ -65,7 +69,7 @@ angular.module('continuousPipeRiver')
             }.bind(this));
         };
     })
-    .controller('CreateProjectController', function ($scope, $state, $http, $remoteResource, $intercom, Slug, ProjectCreationManager, ProjectRepository, BillingProfileRepository) {
+    .controller('CreateProjectController', function ($scope, $state, $http, $remoteResource, $intercom, $flag, Slug, ProjectCreationManager, ProjectRepository, BillingProfileRepository) {
         $scope.project = {};
 
         $scope.$watch('project.name', function (name, previous) {
@@ -90,21 +94,23 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        $remoteResource.load('plans', BillingProfileRepository.findPlans()).then(function(plans) {
-            $scope.plans = plans;
-        });
+        if ($flag.isEnabled('billing')) {
+            $remoteResource.load('plans', BillingProfileRepository.findPlans()).then(function (plans) {
+                $scope.plans = plans;
+            });
 
-        var billingProfilesPromise = BillingProfileRepository.findMine();
-        $remoteResource.load('billingProfiles', billingProfilesPromise.then(function(billingProfiles) {
-            $scope.billingProfiles = billingProfiles;
+            var billingProfilesPromise = BillingProfileRepository.findMine();
+            $remoteResource.load('billingProfiles', billingProfilesPromise.then(function (billingProfiles) {
+                $scope.billingProfiles = billingProfiles;
 
-            // Pre-load the existing vs new billing profile switch
-            $scope.project.$billing = {
-                type: billingProfiles.length == 0 ? 'new' : 'existing'
+                // Pre-load the existing vs new billing profile switch
+                $scope.project.$billing = {
+                    type: billingProfiles.length == 0 ? 'new' : 'existing'
+                };
+            }));
+
+            $scope.loadBillingProfiles = function () {
+                return billingProfilesPromise;
             };
-        }));
-
-        $scope.loadBillingProfiles = function() {
-            return billingProfilesPromise;
-        };
+        }
     });

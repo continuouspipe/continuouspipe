@@ -14,6 +14,7 @@ angular.module('config', [])
 .constant('INTERCOM_APPLICATION_ID', '"$INTERCOM_APPLICATION_ID"')
 .constant('STATIS_METER_ENABLED', '"$STATIS_METER_ENABLED"')
 .constant('STATIS_METER_WRITE_KEY', '"$STATIS_METER_WRITE_KEY"')
+.constant('BILLING_ENABLED', '"$BILLING_ENABLED"')
 ;" > /app/dist/scripts/config.js
 
 # Start nginx

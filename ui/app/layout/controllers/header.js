@@ -3,7 +3,6 @@
 angular.module('continuousPipeRiver')
     .controller('HeaderController', function ($rootScope, $scope, $state, $intercom, RIVER_API_URL, user, $tokenStorage) {
         $rootScope.user = $scope.user = user;
-        $scope.intercomIsEnabled = $intercom.isEnabled();
 
         $scope.redirectToLogout = function () {
             $intercom.trackEvent('logged-out', {});

@@ -10,8 +10,8 @@
         <input ng-model="project.slug" required />
     </md-input-container>
 </md-content>
-<md-subheader class="md-primary">Billing</md-subheader>
-<remote-resource resource-name="billingProfiles">
+<md-subheader class="md-primary" feature-flag="billing">Billing</md-subheader>
+<remote-resource resource-name="billingProfiles" feature-flag="billing">
     <md-content class="form-container md-padding create-project" ng-show="billingProfiles">
             <md-content class="md-padding">
                 <md-radio-group layout="row" layout-align="start center" ng-model="project.$billing.type" required>
