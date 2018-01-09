@@ -12,6 +12,8 @@ use ContinuousPipe\Billing\BillingProfile\UserBillingProfileRepository;
 use ContinuousPipe\Billing\Subscription\Subscription;
 use ContinuousPipe\Billing\Subscription\SubscriptionClient;
 use ContinuousPipe\Billing\Usage\UsageTracker;
+use ContinuousPipe\Platform\FeatureFlag\FlagResolver;
+use ContinuousPipe\Platform\FeatureFlag\Flags;
 use ContinuousPipe\Security\Team\Team;
 
 class TeamBillingProfileAlertFinder implements AlertFinder
@@ -20,11 +22,17 @@ class TeamBillingProfileAlertFinder implements AlertFinder
      * @var UserBillingProfileRepository
      */
     private $userBillingProfileRepository;
+    /**
+     * @var FlagResolver
+     */
+    private $flagResolver;
 
     public function __construct(
-        UserBillingProfileRepository $userBillingProfileRepository
+        UserBillingProfileRepository $userBillingProfileRepository,
+        FlagResolver $flagResolver
     ) {
         $this->userBillingProfileRepository = $userBillingProfileRepository;
+        $this->flagResolver = $flagResolver;
     }
 
     /**
@@ -32,6 +40,10 @@ class TeamBillingProfileAlertFinder implements AlertFinder
      */
     public function findByTeam(Team $team): array
     {
+        if (!$this->flagResolver->isEnabled(Flags::BILLING)) {
+            return [];
+        }
+
         try {
             $billingProfile = $this->userBillingProfileRepository->findByTeam($team);
         } catch (UserBillingProfileNotFound $e) {

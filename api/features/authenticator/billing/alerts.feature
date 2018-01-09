@@ -30,3 +30,8 @@ Feature:
     And the team "foo" is linked to the billing profile "00000000-0000-0000-0000-000000000000"
     When I request the alerts of the team "foo"
     Then I should see the "billing-profile-invalid" alert
+
+  Scenario: It do not alerts if the billing is turned off
+    Given the feature flag "billing" is disabled
+    When I request the alerts of the team "foo"
+    Then I should not see the "billing-profile-not-found" alert

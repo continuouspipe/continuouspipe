@@ -574,6 +574,8 @@ domain:
                 - Authenticator\AuditLogContext:
                     - "@authenticator.audit_log.storage.traced_log_repository"
                     - "@test.http_client"
+                - Common\FeatureFlag:
+                    - "@platform.flag_resolver"
 
     extensions:
         Behat\Symfony2Extension:
