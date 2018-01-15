@@ -18,3 +18,8 @@ services:
             - 35729:35729
         build:
             dockerfile: ./Dockerfile.dev
+
+    rabbitmq:
+        ports:
+            - 15672:15672
+            - 5672:5672

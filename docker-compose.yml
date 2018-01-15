@@ -19,6 +19,7 @@ services:
             - database
             - redis
             - logstream
+            - rabbitmq
 
     ui:
         build:
@@ -50,3 +51,9 @@ services:
         image: redis:alpine
         expose:
             - 6379
+
+    rabbitmq:
+        image: rabbitmq:3-management
+        expose:
+            - 5672
+            - 15672

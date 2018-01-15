@@ -501,38 +501,16 @@ message:
                         '*': main
 
         main:
-            driver:
-                google_pub_sub:
-                    project_id: %google_pub_sub_project_id%
-                    service_account_path: %google_pub_sub_service_account_path%
-                    topic: %google_pub_sub_main_topic%
-                    subscription: %google_pub_sub_main_subscription_name%
+            driver: "%message_connection_main_dsn%"
 
         operations:
-            driver:
-                google_pub_sub:
-                    project_id: %google_pub_sub_project_id%
-                    service_account_path: %google_pub_sub_service_account_path%
-                    topic: %google_pub_sub_operations_topic%
-                    subscription: %google_pub_sub_operations_subscription_name%
+            driver: "%message_connection_operations_dsn%"
 
         delayed:
-            driver:
-                google_pub_sub:
-                    project_id: %google_pub_sub_project_id%
-                    service_account_path: %google_pub_sub_service_account_path%
-                    topic: %google_pub_sub_delayed_topic%
-                    subscription: %google_pub_sub_delayed_subscription_name%
+            driver: "%message_connection_delayed_dsn%"
 
         long_running_deployments:
-            driver:
-                google_pub_sub:
-                    project_id: %google_pub_sub_project_id%
-                    service_account_path: %google_pub_sub_service_account_path%
-                    topic: %google_pub_sub_long_running_deployments_topic%
-                    subscription: %google_pub_sub_long_running_deployments_subscription_name%
-                    options:
-                        requestTimeout: 60
+            driver: "%message_connection_long_running_deployments_dsn%"
 
     tideways:
         api_key: %tideways_api_key%
