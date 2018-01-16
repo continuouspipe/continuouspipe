@@ -31,7 +31,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.main"
+                    - "@continuouspipe.message.delay.delayed_messages_buffer"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -187,7 +187,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.main"
+                    - "@continuouspipe.message.delay.delayed_messages_buffer"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -308,7 +308,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.main"
+                    - "@continuouspipe.message.delay.delayed_messages_buffer"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -621,7 +621,7 @@ smoke:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.main"
+                    - "@continuouspipe.message.delay.delayed_messages_buffer"
                 - River\GitHubContext:
                     - "@kernel"
                     - "@river.notifications.notifier.github.commit_status.traceable"

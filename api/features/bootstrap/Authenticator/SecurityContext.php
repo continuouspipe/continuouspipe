@@ -255,7 +255,11 @@ class SecurityContext implements Context, SnippetAcceptingContext
         $token = new JWTUserToken($roles);
         $token->setUser(new SecurityUser($user));
 
-        $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse($username, new OAuthToken('1234567890'), $email));
+        $this->userProvider->loadUserByOAuthUserResponse(new GitHubOAuthResponse(
+            $username,
+            new OAuthToken('1234567890'),
+            $email
+        ));
 
         $this->eventDispatcher->dispatch('security.interactive_login', new InteractiveLoginEvent(
             Request::create('/'),

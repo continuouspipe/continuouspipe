@@ -52,7 +52,7 @@ class AccountConnector implements AccountConnectorInterface
             $account = $this->getAccountFromBitBucket($response);
         } else {
             return $this->logger->error('Connecting accounts from resource owner of type {type} is not supported', [
-                'type' => get_class($resourceOwner),
+                'type' => is_object($resourceOwner) ? get_class($resourceOwner) : (string) $resourceOwner,
                 'user' => $user,
                 'response' => $response->getResponse(),
             ]);

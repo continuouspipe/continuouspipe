@@ -8,7 +8,7 @@ use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use ContinuousPipe\Message\Connection\Connection;
 use ContinuousPipe\Message\Debug\TracedMessageProducer;
-use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
+use ContinuousPipe\Message\Delay\DelayedMessagesBuffer;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
 use ContinuousPipe\River\Command\DeleteEnvironments;
 use ContinuousPipe\River\Flow;
@@ -131,7 +131,7 @@ class TideContext implements Context
         TracedMessageProducer $tracedMessageProducer,
         PredictableTimeResolver $predictableTimeResolver,
         \ContinuousPipe\River\Repository\TideRepository $tideRepository,
-        Connection $messageConnection
+        DelayedMessagesBuffer $delayedMessagesBuffer
     ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -142,12 +142,7 @@ class TideContext implements Context
         $this->predictableTimeResolver = $predictableTimeResolver;
         $this->tideRepository = $tideRepository;
         $this->tracedMessageProducer = $tracedMessageProducer;
-
-        if (($messageProducer = $messageConnection->getProducer()) instanceof DelayedMessagesBuffer) {
-            $this->delayedMessagesBuffer = $messageProducer;
-        } else {
-            throw new \InvalidArgumentException('Cannot get the delayed messages buffer');
-        }
+        $this->delayedMessagesBuffer = $delayedMessagesBuffer;
     }
 
     /**
@@ -172,7 +167,7 @@ class TideContext implements Context
      */
     public function theDelayedMessagesAreReceived()
     {
-        $this->delayedMessagesBuffer->flushDelayedMessages();
+        $this->delayedMessagesBuffer->flush();
     }
 
     /**

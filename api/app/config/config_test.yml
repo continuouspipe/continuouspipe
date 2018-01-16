@@ -11,6 +11,9 @@ parameters:
     pod.wait.timeout: 1
     pod.wait.interval: 0.01
 
+    flags:
+        billing: true
+
 framework:
     test: ~
     session:

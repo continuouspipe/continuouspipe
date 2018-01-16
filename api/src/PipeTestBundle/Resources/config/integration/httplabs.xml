@@ -8,9 +8,8 @@
         <service id="pipe.httplabs.http_client.handler.matching" class="ContinuousPipe\Guzzle\MatchingHandler">
             <argument type="service" id="logger" />
         </service>
-        <service id="pipe.httplabs.http_client.history" class="Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History" />
-        <service id="pipe.httplabs.http_client.handler.history_middleware" class="Closure">
-            <factory class="Csa\Bundle\GuzzleBundle\GuzzleHttp\Middleware" method="history" />
+        <service id="pipe.httplabs.http_client.history" class="Csa\GuzzleHttp\Middleware\History\History" />
+        <service id="pipe.httplabs.http_client.handler.history_middleware" class="Csa\GuzzleHttp\Middleware\History\HistoryMiddleware">
             <argument type="service" id="pipe.httplabs.http_client.history" />
         </service>
         <service id="pipe.httplabs.http_client.handler" class="GuzzleHttp\HandlerStack">
