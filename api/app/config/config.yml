@@ -278,41 +278,6 @@ log_stream:
     tolerance:
         operation_runner: tolerance.operation_runners.logstream
 
-old_sound_rabbit_mq:
-    connections:
-        default:
-            host:     %rabbitmq_host%
-            port:     5672
-            user:     %rabbitmq_user%
-            password: %rabbitmq_password%
-            vhost:    %rabbitmq_vhost%
-            lazy:     true
-            connection_timeout: 3
-            read_write_timeout: 3
-            keepalive: false
-            heartbeat: 0
-
-        stack:
-            host:     %stack_rabbitmq_host%
-            port:     5672
-            user:     %stack_rabbitmq_user%
-            password: %stack_rabbitmq_password%
-            vhost:    %stack_rabbitmq_vhost%
-            lazy:     true
-            connection_timeout: 3
-            read_write_timeout: 3
-            keepalive: false
-            heartbeat: 0
-
-    producers:
-        asynchronous_commands:
-            connection:       default
-            exchange_options: { name: %rabbitmq_queue_name%, type: direct }
-
-        stack_user_activity:
-            connection:       stack
-            exchange_options: { name: user_activities, type: fanout }
-
 simple_bus_asynchronous:
     object_serializer_service_id: river.jms_serializer.object_serializer
     commands:
@@ -437,18 +402,6 @@ tolerance:
                         count: 2
 
     metrics:
-        collectors:
-            -
-                type: rabbitmq
-                namespace: river.queue
-                options:
-                    host: %rabbitmq_host%
-                    port: %rabbitmq_management_port%
-                    username: %rabbitmq_user%
-                    password: %rabbitmq_password%
-                    vhost: %rabbitmq_vhost%
-                    queue: %rabbitmq_queue_name%
-
         publishers:
             hosted_graphite:
                 type: hosted_graphite

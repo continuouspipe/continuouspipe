@@ -31,7 +31,6 @@
         "sroze/log-stream": "~0.4.5",
         "tolerance/tolerance": "^0.4.0",
         "simple-bus/symfony-bridge": "~5.0",
-        "simple-bus/rabbitmq-bundle-bridge": "~4.0.0",
         "simple-bus/jms-serializer-bundle-bridge": "~3.0.0",
         "jms/serializer-bundle": "~2.1.0",
         "mhujer/jms-serializer-uuid-bundle": "~2.0.0",
