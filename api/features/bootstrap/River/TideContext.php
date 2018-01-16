@@ -6,6 +6,7 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use ContinuousPipe\Message\Connection\Connection;
 use ContinuousPipe\Message\Debug\TracedMessageProducer;
 use ContinuousPipe\Message\Direct\DelayedMessagesBuffer;
 use ContinuousPipe\River\CodeRepository\GitHub\GitHubCodeRepository;
@@ -130,7 +131,7 @@ class TideContext implements Context
         TracedMessageProducer $tracedMessageProducer,
         PredictableTimeResolver $predictableTimeResolver,
         \ContinuousPipe\River\Repository\TideRepository $tideRepository,
-        DelayedMessagesBuffer $delayedMessagesBuffer
+        Connection $messageConnection
     ) {
         $this->commandBus = $commandBus;
         $this->eventStore = $eventStore;
@@ -141,7 +142,12 @@ class TideContext implements Context
         $this->predictableTimeResolver = $predictableTimeResolver;
         $this->tideRepository = $tideRepository;
         $this->tracedMessageProducer = $tracedMessageProducer;
-        $this->delayedMessagesBuffer = $delayedMessagesBuffer;
+
+        if (($messageProducer = $messageConnection->getProducer()) instanceof DelayedMessagesBuffer) {
+            $this->delayedMessagesBuffer = $messageProducer;
+        } else {
+            throw new \InvalidArgumentException('Cannot get the delayed messages buffer');
+        }
     }
 
     /**

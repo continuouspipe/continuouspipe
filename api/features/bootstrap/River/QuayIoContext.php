@@ -3,7 +3,7 @@
 namespace River;
 
 use Behat\Behat\Context\Context;
-use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
+use Csa\GuzzleHttp\Middleware\History\History;
 use GuzzleHttp\Psr7\Request;
 
 class QuayIoContext implements Context

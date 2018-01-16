@@ -11,18 +11,6 @@
             <argument type="service" id="river.time_resolver.predictable.inner" />
         </service>
 
-        <service id="river.user_activity.in_memory_dispatcher" class="ContinuousPipe\UserActivity\InMemoryDispatcher" />
-        <service id="river.user_activity.dispatcher" alias="river.user_activity.in_memory_dispatcher" />
-        <service id="river.user_activity.traceable_dispatcher"
-                 class="ContinuousPipe\UserActivity\TraceableUserActivityDispatcher"
-                 decorates="river.user_activity.dispatcher">
-            <argument type="service" id="river.user_activity.traceable_dispatcher.inner" />
-        </service>
-        <service id="river.user_activity.middleware_supporting_dispatcher"
-                 class="ContinuousPipe\UserActivity\MiddlewareSupportingUserActivityDispatcher"
-                 decorates="river.user_activity.dispatcher">
-            <argument type="service" id="river.user_activity.middleware_supporting_dispatcher.inner" />
-        </service>
         <service id="river.managed.resources.history_repository.traced"
                  class="ContinuousPipe\River\Managed\Resources\TracedUsageHistoryRepository"
                  decorates="river.managed.resources.history_repository">

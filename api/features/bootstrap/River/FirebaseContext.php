@@ -5,7 +5,7 @@ namespace River;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
-use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
+use Csa\GuzzleHttp\Middleware\History\History;
 use GuzzleHttp\Psr7\Request;
 
 class FirebaseContext implements Context

@@ -31,7 +31,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
+                    - "@continuouspipe.message.main"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -102,9 +102,6 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - River\UserActivityContext:
-                    - "@river.user_activity.traceable_dispatcher"
-                    - "@river.user_activity.middleware_supporting_dispatcher"
                 - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
@@ -190,7 +187,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
+                    - "@continuouspipe.message.main"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -314,7 +311,7 @@ domain:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
+                    - "@continuouspipe.message.main"
                 - River\Tide\TasksContext:
                     - "@event_bus"
                     - "@river.repository.tide"
@@ -630,7 +627,7 @@ smoke:
                     - "@continuouspipe.message.default.message_producer.traced"
                     - "@river.time_resolver.predictable"
                     - "@river.repository.tide"
-                    - "@continuouspipe.message.delayed.message_producer.delayed_messages_buffer"
+                    - "@continuouspipe.message.main"
                 - River\GitHubContext:
                     - "@kernel"
                     - "@river.notifications.notifier.github.commit_status.traceable"

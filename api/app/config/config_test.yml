@@ -38,13 +38,13 @@ message:
             debug: true
 
         main:
-            driver: direct://
+            driver: direct:
         operations:
-            driver: direct://
+            driver: direct:
         delayed:
-            driver: direct://
+            driver: direct:
         long_running_deployments:
-            driver: direct://
+            driver: direct:
 
 tolerance:
     operation_runners:

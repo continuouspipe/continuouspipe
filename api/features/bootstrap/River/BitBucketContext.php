@@ -18,7 +18,7 @@ use ContinuousPipe\River\CodeRepository\Branch;
 use ContinuousPipe\River\Guzzle\MatchingHandler;
 use ContinuousPipe\River\Tests\CodeRepository\GitHub\FakePullRequestResolver;
 use ContinuousPipe\River\Tests\CodeRepository\InMemoryCodeRepositoryRepository;
-use Csa\Bundle\GuzzleBundle\GuzzleHttp\History\History;
+use Csa\GuzzleHttp\Middleware\History\History;
 use Helpers\FixturesHelper;
 use Lcobucci\JWT\Builder;
 use GuzzleHttp\Psr7\Response;
