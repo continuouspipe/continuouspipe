@@ -1,4 +1,4 @@
-FROM docker.io/inviqasession/cp-river-base:v14
+FROM docker.io/inviqasession/cp-river-base:v15
 
 COPY ./docker/etc/ /etc/
 COPY ./docker/usr/ /usr/

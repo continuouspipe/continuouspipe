@@ -9,7 +9,11 @@ RUN apt-get update && \
     cron \
     rsyslog \
     mysql-client \
-    wget && \
+    wget \
+
+    php-amqp \
+
+    && \
     composer global require hirak/prestissimo \
 
     && \
