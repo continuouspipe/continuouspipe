@@ -255,9 +255,6 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - River\UserActivityContext:
-                    - "@river.user_activity.traceable_dispatcher"
-                    - "@river.user_activity.middleware_supporting_dispatcher"
                 - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
@@ -379,9 +376,6 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
-                - River\UserActivityContext:
-                    - "@river.user_activity.traceable_dispatcher"
-                    - "@river.user_activity.middleware_supporting_dispatcher"
                 - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
