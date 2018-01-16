@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "116857b1982da7351edee1b9bc7b0b62",
+    "content-hash": "ac1e5e43870ae50c3aa107a62085fa29",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -662,7 +662,7 @@
                 "source": "https://github.com/continuouspipe/events/tree/master",
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
-            "time": "2018-01-04 14:47:49"
+            "time": "2018-01-04T14:47:49+00:00"
         },
         {
             "name": "continuous-pipe/flex",
@@ -701,7 +701,7 @@
                 "source": "https://github.com/continuouspipe/flex/tree/master",
                 "issues": "https://github.com/continuouspipe/flex/issues"
             },
-            "time": "2017-09-13 09:00:36"
+            "time": "2017-09-13T09:00:36+00:00"
         },
         {
             "name": "continuous-pipe/message",
@@ -743,7 +743,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2018-01-10 10:56:40"
+            "time": "2018-01-10T10:56:40+00:00"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -807,7 +807,7 @@
                 }
             ],
             "description": "A bundle integrating GuzzleHttp >= 4.0",
-            "time": "2018-01-09 09:52:58"
+            "time": "2018-01-09T09:52:58+00:00"
         },
         {
             "name": "csa/guzzle-cache-middleware",
@@ -2168,6 +2168,117 @@
                 "search"
             ],
             "time": "2017-11-08T17:04:47+00:00"
+        },
+        {
+            "name": "enqueue/amqp-ext",
+            "version": "0.8.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-enqueue/amqp-ext.git",
+                "reference": "a73c0d695f9874e2681355146a7720a29e0d76b9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-enqueue/amqp-ext/zipball/a73c0d695f9874e2681355146a7720a29e0d76b9",
+                "reference": "a73c0d695f9874e2681355146a7720a29e0d76b9",
+                "shasum": ""
+            },
+            "require": {
+                "enqueue/amqp-tools": "^0.8.4@dev",
+                "ext-amqp": "^1.9.3",
+                "php": ">=5.6",
+                "queue-interop/amqp-interop": "^0.7@dev"
+            },
+            "require-dev": {
+                "empi89/php-amqp-stubs": "*@dev",
+                "enqueue/enqueue": "^0.8@dev",
+                "enqueue/null": "^0.8@dev",
+                "enqueue/test": "^0.8@dev",
+                "phpunit/phpunit": "~5.4.0",
+                "queue-interop/queue-spec": "^0.5.3@dev",
+                "symfony/config": "^2.8|^3|^4",
+                "symfony/dependency-injection": "^2.8|^3|^4"
+            },
+            "suggest": {
+                "enqueue/enqueue": "If you'd like to use advanced features like Client abstract layer or Symfony integration features"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Enqueue\\AmqpExt\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Message Queue Amqp Transport",
+            "homepage": "https://enqueue.forma-pro.com/",
+            "keywords": [
+                "AMQP",
+                "messaging",
+                "queue"
+            ],
+            "time": "2018-01-04T09:46:31+00:00"
+        },
+        {
+            "name": "enqueue/amqp-tools",
+            "version": "0.8.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-enqueue/amqp-tools.git",
+                "reference": "f375dee4d8609fca565a80df1c0f238bf0fe774f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-enqueue/amqp-tools/zipball/f375dee4d8609fca565a80df1c0f238bf0fe774f",
+                "reference": "f375dee4d8609fca565a80df1c0f238bf0fe774f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6",
+                "queue-interop/amqp-interop": "^0.7@dev",
+                "queue-interop/queue-interop": "^0.6@dev"
+            },
+            "require-dev": {
+                "enqueue/null": "^0.8@dev",
+                "enqueue/test": "^0.8@dev",
+                "phpunit/phpunit": "~5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.8.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Enqueue\\AmqpTools\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Message Queue Amqp Tools",
+            "homepage": "https://enqueue.forma-pro.com/",
+            "keywords": [
+                "AMQP",
+                "messaging",
+                "queue"
+            ],
+            "time": "2018-01-10T12:00:35+00:00"
         },
         {
             "name": "facile-it/doctrine-mysql-come-back",
@@ -7050,6 +7161,87 @@
             "time": "2017-01-02T13:31:39+00:00"
         },
         {
+            "name": "queue-interop/amqp-interop",
+            "version": "0.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/queue-interop/amqp-interop.git",
+                "reference": "03cfac42483d07ab45d1896a6a2e1d873a216bba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/queue-interop/amqp-interop/zipball/03cfac42483d07ab45d1896a6a2e1d873a216bba",
+                "reference": "03cfac42483d07ab45d1896a6a2e1d873a216bba",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5",
+                "queue-interop/queue-interop": "^0.6@dev"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.7.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Interop\\Amqp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "time": "2018-01-04T09:52:06+00:00"
+        },
+        {
+            "name": "queue-interop/queue-interop",
+            "version": "0.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/queue-interop/queue-interop.git",
+                "reference": "38579005c0492c0275bbae31170edf30a7e740fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/queue-interop/queue-interop/zipball/38579005c0492c0275bbae31170edf30a7e740fa",
+                "reference": "38579005c0492c0275bbae31170edf30a7e740fa",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Interop\\Queue\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Promoting the interoperability of MQs objects. Based on Java JMS",
+            "homepage": "https://github.com/queue-interop/queue-interop",
+            "keywords": [
+                "MQ",
+                "jms",
+                "message queue",
+                "messaging",
+                "queue"
+            ],
+            "time": "2017-08-10T11:24:15+00:00"
+        },
+        {
             "name": "ramsey/uuid",
             "version": "3.7.1",
             "source": {
@@ -8832,7 +9024,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-11-20 15:38:49"
+            "time": "2017-11-20T15:38:49+00:00"
         },
         {
             "name": "sroze/log-stream",
