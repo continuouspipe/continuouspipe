@@ -58,7 +58,6 @@ class AppKernel extends Kernel
 
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusCommandBusBundle();
         $bundles[] = new SimpleBus\SymfonyBridge\SimpleBusEventBusBundle();
-        $bundles[] = new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle();
         $bundles[] = new SimpleBus\AsynchronousBundle\SimpleBusAsynchronousBundle();
         $bundles[] = new SimpleBus\JMSSerializerBundleBridge\SimpleBusJMSSerializerBundleBridgeBundle();
         $bundles[] = new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle();

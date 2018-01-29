@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac1e5e43870ae50c3aa107a62085fa29",
+    "content-hash": "9881133df452b33e69f37f62d383dd54",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -69,16 +69,16 @@
         },
         {
             "name": "beberlei/assert",
-            "version": "v2.8.1",
+            "version": "v2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "fd8dc8f6de4645ccf4d1a0b38a6b8fdaf2e8b337"
+                "reference": "2d555f72f3f4ff9e72a7bc17cb8a53c86737c8a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/fd8dc8f6de4645ccf4d1a0b38a6b8fdaf2e8b337",
-                "reference": "fd8dc8f6de4645ccf4d1a0b38a6b8fdaf2e8b337",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/2d555f72f3f4ff9e72a7bc17cb8a53c86737c8a0",
+                "reference": "2d555f72f3f4ff9e72a7bc17cb8a53c86737c8a0",
                 "shasum": ""
             },
             "require": {
@@ -120,20 +120,20 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2017-11-30T13:25:15+00:00"
+            "time": "2018-01-25T13:33:16+00:00"
         },
         {
             "name": "beberlei/metrics",
-            "version": "v2.5.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/metrics.git",
-                "reference": "aedfdd3fa8cd4e1441c8b8f17fdb96e84bc7e0e2"
+                "reference": "8e2ab790b5815ae0e49277649954ed18f166cb39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/metrics/zipball/aedfdd3fa8cd4e1441c8b8f17fdb96e84bc7e0e2",
-                "reference": "aedfdd3fa8cd4e1441c8b8f17fdb96e84bc7e0e2",
+                "url": "https://api.github.com/repos/beberlei/metrics/zipball/8e2ab790b5815ae0e49277649954ed18f166cb39",
+                "reference": "8e2ab790b5815ae0e49277649954ed18f166cb39",
                 "shasum": ""
             },
             "require": {
@@ -145,9 +145,9 @@
                 "jimdo/prometheus_client_php": "^0.5",
                 "kriswallsmith/buzz": "*",
                 "okitsu/zabbix-sender": "*@dev",
-                "symfony/config": "~2.3",
-                "symfony/dependency-injection": "~2.3",
-                "symfony/http-kernel": "~2.3"
+                "symfony/config": "~3.3 || ~4.0",
+                "symfony/dependency-injection": "~3.3 || ~4.0",
+                "symfony/http-kernel": "~3.3 || ~4.0"
             },
             "suggest": {
                 "corley/influxdb-sdk": "For InfluxDB integration",
@@ -188,7 +188,7 @@
                 "Metrics",
                 "logging"
             ],
-            "time": "2017-03-06T13:19:23+00:00"
+            "time": "2018-01-23T11:01:01+00:00"
         },
         {
             "name": "behat/behat",
@@ -662,7 +662,7 @@
                 "source": "https://github.com/continuouspipe/events/tree/master",
                 "issues": "https://github.com/continuouspipe/events/issues"
             },
-            "time": "2018-01-04T14:47:49+00:00"
+            "time": "2018-01-04 14:47:49"
         },
         {
             "name": "continuous-pipe/flex",
@@ -701,7 +701,7 @@
                 "source": "https://github.com/continuouspipe/flex/tree/master",
                 "issues": "https://github.com/continuouspipe/flex/issues"
             },
-            "time": "2017-09-13T09:00:36+00:00"
+            "time": "2017-09-13 09:00:36"
         },
         {
             "name": "continuous-pipe/message",
@@ -709,12 +709,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "33fdd6e6b8825b756b56edf715728944e479f444"
+                "reference": "a83cd0c7c87bb1a48e41114d2b06d95d7998efe5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/33fdd6e6b8825b756b56edf715728944e479f444",
-                "reference": "33fdd6e6b8825b756b56edf715728944e479f444",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/a83cd0c7c87bb1a48e41114d2b06d95d7998efe5",
+                "reference": "a83cd0c7c87bb1a48e41114d2b06d95d7998efe5",
                 "shasum": ""
             },
             "require": {
@@ -743,7 +743,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2018-01-10T10:56:40+00:00"
+            "time": "2018-01-16 20:43:28"
         },
         {
             "name": "csa/guzzle-bundle",
@@ -807,7 +807,7 @@
                 }
             ],
             "description": "A bundle integrating GuzzleHttp >= 4.0",
-            "time": "2018-01-09T09:52:58+00:00"
+            "time": "2018-01-09 09:52:58"
         },
         {
             "name": "csa/guzzle-cache-middleware",
@@ -4082,25 +4082,26 @@
         },
         {
             "name": "jms/aop-bundle",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSAopBundle.git",
-                "reference": "78000d007e74283cc564a58e184d7f62548ad394"
+                "reference": "4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSAopBundle/zipball/78000d007e74283cc564a58e184d7f62548ad394",
-                "reference": "78000d007e74283cc564a58e184d7f62548ad394",
+                "url": "https://api.github.com/repos/schmittjoh/JMSAopBundle/zipball/4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0",
+                "reference": "4ee2089a81b54ce94a8c94e95b48d5bb353dd8d0",
                 "shasum": ""
             },
             "require": {
                 "jms/cg": "^1.1",
                 "php": ">=5.3.9",
-                "symfony/framework-bundle": "^2.3|^3.0"
+                "symfony/framework-bundle": "^2.3 || ^3.0 || ^4.0"
             },
             "require-dev": {
-                "symfony/phpunit-bridge": "^2.7"
+                "phpunit/phpunit": "^4.8.36 | ^5.0",
+                "symfony/phpunit-bridge": "^2.7 || ^4.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -4128,7 +4129,7 @@
                 "annotations",
                 "aop"
             ],
-            "time": "2015-12-09T16:30:46+00:00"
+            "time": "2018-01-16T10:22:28+00:00"
         },
         {
             "name": "jms/cg",
@@ -5158,16 +5159,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.41",
+            "version": "1.0.42",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "f400aa98912c561ba625ea4065031b7a41e5a155"
+                "reference": "09eabc54e199950041aef258a85847676496fe8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/f400aa98912c561ba625ea4065031b7a41e5a155",
-                "reference": "f400aa98912c561ba625ea4065031b7a41e5a155",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/09eabc54e199950041aef258a85847676496fe8e",
+                "reference": "09eabc54e199950041aef258a85847676496fe8e",
                 "shasum": ""
             },
             "require": {
@@ -5178,12 +5179,13 @@
             },
             "require-dev": {
                 "ext-fileinfo": "*",
-                "mockery/mockery": "~0.9",
-                "phpspec/phpspec": "^2.2",
-                "phpunit/phpunit": "~4.8"
+                "phpspec/phpspec": "^3.4",
+                "phpunit/phpunit": "^5.7"
             },
             "suggest": {
                 "ext-fileinfo": "Required for MimeType",
+                "ext-ftp": "Allows you to use FTP server storage",
+                "ext-openssl": "Allows you to use FTPS server storage",
                 "league/flysystem-aws-s3-v2": "Allows you to use S3 storage with AWS SDK v2",
                 "league/flysystem-aws-s3-v3": "Allows you to use S3 storage with AWS SDK v3",
                 "league/flysystem-azure": "Allows you to use Windows Azure Blob storage",
@@ -5237,7 +5239,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2017-08-06T17:41:04+00:00"
+            "time": "2018-01-27T16:03:56+00:00"
         },
         {
             "name": "lexik/jwt-authentication-bundle",
@@ -6018,144 +6020,6 @@
                 "random"
             ],
             "time": "2017-09-27T21:40:39+00:00"
-        },
-        {
-            "name": "php-amqplib/php-amqplib",
-            "version": "v2.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "f48748546e398d846134c594dfca9070c4c3b356"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/f48748546e398d846134c594dfca9070c4c3b356",
-                "reference": "f48748546e398d846134c594dfca9070c4c3b356",
-                "shasum": ""
-            },
-            "require": {
-                "ext-bcmath": "*",
-                "ext-mbstring": "*",
-                "php": ">=5.3.0"
-            },
-            "replace": {
-                "videlalvaro/php-amqplib": "self.version"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8",
-                "scrutinizer/ocular": "^1.1",
-                "squizlabs/php_codesniffer": "^2.5"
-            },
-            "suggest": {
-                "ext-sockets": "Use AMQPSocketConnection"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PhpAmqpLib\\": "PhpAmqpLib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-2.1"
-            ],
-            "authors": [
-                {
-                    "name": "Alvaro Videla",
-                    "role": "Original Maintainer"
-                },
-                {
-                    "name": "John Kelly",
-                    "email": "johnmkelly86@gmail.com",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Raúl Araya",
-                    "email": "nubeiro@gmail.com",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Formerly videlalvaro/php-amqplib.  This library is a pure PHP implementation of the AMQP protocol. It's been tested against RabbitMQ.",
-            "homepage": "https://github.com/php-amqplib/php-amqplib/",
-            "keywords": [
-                "message",
-                "queue",
-                "rabbitmq"
-            ],
-            "time": "2017-08-03T22:06:21+00:00"
-        },
-        {
-            "name": "php-amqplib/rabbitmq-bundle",
-            "version": "v1.14.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-amqplib/RabbitMqBundle.git",
-                "reference": "6c0407c69b3ddb05294c67cd5acd14b73670554b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/6c0407c69b3ddb05294c67cd5acd14b73670554b",
-                "reference": "6c0407c69b3ddb05294c67cd5acd14b73670554b",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^5.3.9|^7.0",
-                "php-amqplib/php-amqplib": "^2.6",
-                "psr/log": "^1.0",
-                "symfony/config": "^2.7|^3.0|^4.0",
-                "symfony/console": "^2.7|^3.0|^4.0",
-                "symfony/dependency-injection": "^2.7|^3.0|^4.0",
-                "symfony/event-dispatcher": "^2.7|^3.0|^4.0",
-                "symfony/yaml": "^2.7|^3.0|^4.0"
-            },
-            "replace": {
-                "oldsound/rabbitmq-bundle": "self.version"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.35|^5.4.3",
-                "symfony/debug": "^2.7|^3.0|^4.0",
-                "symfony/serializer": "^2.7|^3.0|^4.0"
-            },
-            "suggest": {
-                "symfony/framework-bundle": "To use this lib as a full Symfony Bundle and to use the profiler data collector"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "OldSound\\RabbitMqBundle\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alvaro Videla"
-                }
-            ],
-            "description": "Integrates php-amqplib with Symfony & RabbitMq. Formerly oldsound/rabbitmq-bundle.",
-            "keywords": [
-                "AMQP",
-                "Symfony2",
-                "message",
-                "queue",
-                "rabbitmq"
-            ],
-            "time": "2017-12-08T12:54:50+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -7243,16 +7107,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.7.1",
+            "version": "3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
+                "reference": "44abcdad877d9a46685a3a4d221e3b2c4b87cb76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/45cffe822057a09e05f7bd09ec5fb88eeecd2334",
-                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/44abcdad877d9a46685a3a4d221e3b2c4b87cb76",
+                "reference": "44abcdad877d9a46685a3a4d221e3b2c4b87cb76",
                 "shasum": ""
             },
             "require": {
@@ -7263,17 +7127,15 @@
                 "rhumsaa/uuid": "self.version"
             },
             "require-dev": {
-                "apigen/apigen": "^4.1",
-                "codeception/aspect-mock": "^1.0 | ^2.0",
+                "codeception/aspect-mock": "^1.0 | ~2.0.0",
                 "doctrine/annotations": "~1.2.0",
                 "goaop/framework": "1.0.0-alpha.2 | ^1.0 | ^2.1",
                 "ircmaxell/random-lib": "^1.1",
                 "jakub-onderka/php-parallel-lint": "^0.9.0",
-                "mockery/mockery": "^0.9.4",
+                "mockery/mockery": "^0.9.9",
                 "moontoast/math": "^1.1",
                 "php-mock/php-mock-phpunit": "^0.3|^1.1",
-                "phpunit/phpunit": "^4.7|>=5.0 <5.4",
-                "satooshi/php-coveralls": "^0.6.1",
+                "phpunit/phpunit": "^4.7|^5.0",
                 "squizlabs/php_codesniffer": "^2.3"
             },
             "suggest": {
@@ -7321,7 +7183,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2017-09-22T20:46:04+00:00"
+            "time": "2018-01-20T00:28:24+00:00"
         },
         {
             "name": "ramsey/uuid-doctrine",
@@ -7903,16 +7765,16 @@
         },
         {
             "name": "sensiolabs/security-checker",
-            "version": "v4.1.6",
+            "version": "v4.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/security-checker.git",
-                "reference": "387b6a3b723ba35588b33d5f8d14e28ed608bd30"
+                "reference": "d539ccba2b4dce515de04f16b7ed7ae5b9eeb434"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/387b6a3b723ba35588b33d5f8d14e28ed608bd30",
-                "reference": "387b6a3b723ba35588b33d5f8d14e28ed608bd30",
+                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/d539ccba2b4dce515de04f16b7ed7ae5b9eeb434",
+                "reference": "d539ccba2b4dce515de04f16b7ed7ae5b9eeb434",
                 "shasum": ""
             },
             "require": {
@@ -7944,7 +7806,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
-            "time": "2017-10-29T18:48:08+00:00"
+            "time": "2018-01-11T05:54:03+00:00"
         },
         {
             "name": "simple-bus/asynchronous",
@@ -8223,70 +8085,6 @@
             "time": "2017-09-29T15:36:01+00:00"
         },
         {
-            "name": "simple-bus/rabbitmq-bundle-bridge",
-            "version": "v4.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/SimpleBus/RabbitMQBundleBridge.git",
-                "reference": "4f3d154f2d82a7bfe649147d04f85f5b1e755ed0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/SimpleBus/RabbitMQBundleBridge/zipball/4f3d154f2d82a7bfe649147d04f85f5b1e755ed0",
-                "reference": "4f3d154f2d82a7bfe649147d04f85f5b1e755ed0",
-                "shasum": ""
-            },
-            "require": {
-                "beberlei/assert": "~2.0",
-                "php": "^5.6 || ^7.0",
-                "php-amqplib/rabbitmq-bundle": "~1.10",
-                "simple-bus/asynchronous": "~3.0",
-                "simple-bus/asynchronous-bundle": "~3.0",
-                "simple-bus/message-bus": "~3.0",
-                "symfony/monolog-bundle": "~2.3 || ~3.0"
-            },
-            "require-dev": {
-                "matthiasnoback/phpunit-asynchronicity": "~1.0",
-                "phpunit/phpunit": "^5.7 || ^6.0",
-                "simple-bus/jms-serializer-bundle-bridge": "~3.0",
-                "symfony/console": "~2.7 || ~3.3 || ~4.0",
-                "symfony/finder": "~2.7 || ~3.3 || ~4.0",
-                "symfony/process": "~2.7 || ~3.3 || ~4.0",
-                "symfony/translation": "~2.7 || ~3.3 || ~4.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "SimpleBus\\RabbitMQBundleBridge\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Matthias Noback",
-                    "email": "matthiasnoback@gmail.com",
-                    "homepage": "http://php-and-symfony.matthiasnoback.nl"
-                },
-                {
-                    "name": "Cliff Odijk",
-                    "email": "cliff@jcid.nl"
-                }
-            ],
-            "description": "Use OldSoundRabbitMQBundle with SimpleBus/AsynchronousBundle",
-            "homepage": "http://github.com/SimpleBus/RabbitMQBundleBridge",
-            "keywords": [
-                "command bus",
-                "event bus",
-                "message bus",
-                "messages",
-                "rabbitmq"
-            ],
-            "time": "2017-12-11T12:42:42+00:00"
-        },
-        {
             "name": "simple-bus/serialization",
             "version": "v3.0.0",
             "source": {
@@ -8472,16 +8270,16 @@
         },
         {
             "name": "sonata-project/admin-bundle",
-            "version": "3.30.1",
+            "version": "3.31.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sonata-project/SonataAdminBundle.git",
-                "reference": "dd9675e053255c1e5c0a56e7f6ddb8752d0e7510"
+                "reference": "499d7d20bdca9a1571ad323fec7b330ad5140aee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sonata-project/SonataAdminBundle/zipball/dd9675e053255c1e5c0a56e7f6ddb8752d0e7510",
-                "reference": "dd9675e053255c1e5c0a56e7f6ddb8752d0e7510",
+                "url": "https://api.github.com/repos/sonata-project/SonataAdminBundle/zipball/499d7d20bdca9a1571ad323fec7b330ad5140aee",
+                "reference": "499d7d20bdca9a1571ad323fec7b330ad5140aee",
                 "shasum": ""
             },
             "require": {
@@ -8567,20 +8365,20 @@
                 "bootstrap",
                 "sonata"
             ],
-            "time": "2018-01-02T08:27:49+00:00"
+            "time": "2018-01-23T09:49:45+00:00"
         },
         {
             "name": "sonata-project/block-bundle",
-            "version": "3.9.2",
+            "version": "3.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sonata-project/SonataBlockBundle.git",
-                "reference": "904d35f99c05ee3eda3b1dec1f169fe4220eb5b8"
+                "reference": "c58b58fb3c784200eaf9e08be6a22fabf4f17f80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sonata-project/SonataBlockBundle/zipball/904d35f99c05ee3eda3b1dec1f169fe4220eb5b8",
-                "reference": "904d35f99c05ee3eda3b1dec1f169fe4220eb5b8",
+                "url": "https://api.github.com/repos/sonata-project/SonataBlockBundle/zipball/c58b58fb3c784200eaf9e08be6a22fabf4f17f80",
+                "reference": "c58b58fb3c784200eaf9e08be6a22fabf4f17f80",
                 "shasum": ""
             },
             "require": {
@@ -8588,8 +8386,10 @@
                 "php": "^5.6 || ^7.0",
                 "sonata-project/cache": "^1.0 || ^2.0",
                 "sonata-project/core-bundle": "^3.4",
+                "symfony/asset": "^2.8 || ^3.2 || ^4.0",
                 "symfony/form": "^2.8 || ^3.2 || ^4.0",
                 "symfony/http-kernel": "^2.8 || ^3.2 || ^4.0",
+                "symfony/templating": "^2.8 || ^3.2 || ^4.0",
                 "symfony/twig-bundle": "^2.8 || ^3.2 || ^4.0",
                 "twig/twig": "^1.34 || ^2.0"
             },
@@ -8642,7 +8442,7 @@
                 "block",
                 "sonata"
             ],
-            "time": "2018-01-08T09:34:31+00:00"
+            "time": "2018-01-23T15:18:58+00:00"
         },
         {
             "name": "sonata-project/cache",
@@ -8847,23 +8647,23 @@
         },
         {
             "name": "sonata-project/doctrine-orm-admin-bundle",
-            "version": "3.3.0",
+            "version": "3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sonata-project/SonataDoctrineORMAdminBundle.git",
-                "reference": "10bde03cba06ea46d20f711303a4fc030775ce7f"
+                "reference": "bdc0d5cff50b8d2fb429b2a2340294a7eb1bf372"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sonata-project/SonataDoctrineORMAdminBundle/zipball/10bde03cba06ea46d20f711303a4fc030775ce7f",
-                "reference": "10bde03cba06ea46d20f711303a4fc030775ce7f",
+                "url": "https://api.github.com/repos/sonata-project/SonataDoctrineORMAdminBundle/zipball/bdc0d5cff50b8d2fb429b2a2340294a7eb1bf372",
+                "reference": "bdc0d5cff50b8d2fb429b2a2340294a7eb1bf372",
                 "shasum": ""
             },
             "require": {
                 "doctrine/orm": "^2.4.5",
                 "php": "^5.6 || ^7.0",
-                "sonata-project/admin-bundle": "^3.26.0",
-                "sonata-project/core-bundle": "^3.0",
+                "sonata-project/admin-bundle": "^3.29",
+                "sonata-project/core-bundle": "^3.8",
                 "sonata-project/exporter": "^1.3.1",
                 "symfony/console": "^2.8 || ^3.2 || ^4.0",
                 "symfony/doctrine-bridge": "^2.8 || ^3.2 || ^4.0",
@@ -8921,7 +8721,7 @@
                 "generator",
                 "sonata"
             ],
-            "time": "2017-12-16T18:32:28+00:00"
+            "time": "2018-01-20T17:47:56+00:00"
         },
         {
             "name": "sonata-project/exporter",
@@ -9024,7 +8824,7 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-11-20T15:38:49+00:00"
+            "time": "2017-11-20 15:38:49"
         },
         {
             "name": "sroze/log-stream",
@@ -9718,16 +9518,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.3",
+            "version": "v3.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "21abeae69baf64d689b04ca33663b4354be1a226"
+                "reference": "5220b6f9fcdee261c6fdd3e096f3b204fba5d906"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/21abeae69baf64d689b04ca33663b4354be1a226",
-                "reference": "21abeae69baf64d689b04ca33663b4354be1a226",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/5220b6f9fcdee261c6fdd3e096f3b204fba5d906",
+                "reference": "5220b6f9fcdee261c6fdd3e096f3b204fba5d906",
                 "shasum": ""
             },
             "require": {
@@ -9745,7 +9545,6 @@
                 "symfony/polyfill-mbstring": "~1.0",
                 "symfony/polyfill-php56": "~1.0",
                 "symfony/polyfill-php70": "~1.6",
-                "symfony/polyfill-util": "~1.0",
                 "twig/twig": "^1.35|^2.4.4"
             },
             "conflict": {
@@ -9869,7 +9668,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-01-05T08:33:31+00:00"
+            "time": "2018-01-29T12:30:04+00:00"
         },
         {
             "name": "tolerance/tolerance",
@@ -10395,16 +10194,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "4.2.0",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da"
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/66465776cfc249844bde6d117abff1d22e06c2da",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/94fd0001232e47129dd3504189fa1c7225010d08",
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08",
                 "shasum": ""
             },
             "require": {
@@ -10442,7 +10241,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2017-11-27T17:38:31+00:00"
+            "time": "2017-11-30T07:14:17+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -11633,21 +11432,21 @@
         },
         {
             "name": "symfony/thanks",
-            "version": "v1.0.1",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/thanks.git",
-                "reference": "b637913a92664571afd1067fc645ecb30c9cf5b2"
+                "reference": "c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/thanks/zipball/b637913a92664571afd1067fc645ecb30c9cf5b2",
-                "reference": "b637913a92664571afd1067fc645ecb30c9cf5b2",
+                "url": "https://api.github.com/repos/symfony/thanks/zipball/c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4",
+                "reference": "c757ee0c9dcfcc0e9e30fbbbdcadeb9dcc9aaaf4",
                 "shasum": ""
             },
             "require": {
-                "composer-plugin-api": "^1.1",
-                "php": "^5.5.9|^7.0.8"
+                "composer-plugin-api": "^1.0",
+                "php": "^5.5.9|^7.0.0"
             },
             "type": "composer-plugin",
             "extra": {
@@ -11672,20 +11471,20 @@
                 }
             ],
             "description": "Give thanks (in the form of a GitHub ⭐) to your fellow PHP package maintainers (not limited to Symfony components)!",
-            "time": "2018-01-03T09:30:52+00:00"
+            "time": "2018-01-26T10:44:34+00:00"
         },
         {
             "name": "webmozart/assert",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "2db61e59ff05fe5126d152bd0655c9ea113e550f"
+                "reference": "0df1908962e7a3071564e857d86874dad1ef204a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/2db61e59ff05fe5126d152bd0655c9ea113e550f",
-                "reference": "2db61e59ff05fe5126d152bd0655c9ea113e550f",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/0df1908962e7a3071564e857d86874dad1ef204a",
+                "reference": "0df1908962e7a3071564e857d86874dad1ef204a",
                 "shasum": ""
             },
             "require": {
@@ -11722,7 +11521,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2016-11-23T20:04:58+00:00"
+            "time": "2018-01-29T19:49:41+00:00"
         }
     ],
     "aliases": [],
