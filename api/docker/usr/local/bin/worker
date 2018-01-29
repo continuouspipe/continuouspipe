@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export START_MODE=worker
+if [ -z "$WORKER_CONNECTION_NAME" ]; then
+    export WORKER_CONNECTION_NAME=main
+fi
+
+exec container start_supervisord

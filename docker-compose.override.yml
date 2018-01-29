@@ -23,3 +23,9 @@ services:
         ports:
             - 15672:15672
             - 5672:5672
+
+    tunnel:
+        image: wernight/ngrok
+        command: ngrok http api:80
+        ports:
+            - 4040:4040

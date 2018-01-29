@@ -24,7 +24,7 @@ angular
         'kubeStatusDashboard'
     ])
     .constant('KUBE_STATUS_TEMPLATE_URI_ROOT', 'bower_components/kube-status/ui/app/')
-    .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider) {
+    .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider, GOOGLE_ANALYTICS_TRACKER, FIREBASE_WEB_API_KEY, FIREBASE_APP) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
@@ -32,16 +32,14 @@ angular
         });
 
         AnalyticsProvider
-            .setAccount('UA-71216332-2')
+            .setAccount(GOOGLE_ANALYTICS_TRACKER)
             .setPageEvent('$stateChangeSuccess')
-            ;
-
-        //$mdThemingProvider.theme('blue');
+        ;
 
         firebase.initializeApp({
-            apiKey: "AIzaSyDIK_08syPHkRxcf2n8zJ48XAVPHWpTsp0",
-            authDomain: "continuous-pipe.firebaseapp.com",
-            databaseURL: "https://continuous-pipe.firebaseio.com",
+            apiKey: FIREBASE_WEB_API_KEY,
+            authDomain: FIREBASE_APP+".firebaseapp.com",
+            databaseURL: "https://"+FIREBASE_APP+".firebaseio.com"
         });
     })
     .factory('$exceptionHandler', function ($window, $log, SENTRY_DSN) {
@@ -122,4 +120,4 @@ angular
             databaseURL: "https://continuouspipe-watch-logs.firebaseio.com"
         });
     }])
-    ;
+;

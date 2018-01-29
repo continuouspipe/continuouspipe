@@ -3,8 +3,7 @@ var http2 = require('http2'),
     fs = require('fs'),
     LogsCollection = require('./collections/logs.js'),
     HandlerFactory = require('./handler'),
-    Firebase = require('firebase'),
-    gcloud = require('google-cloud'),
+    Firebase = require('firebase-admin'),
     Raven = require('raven');
 
 // Create the firebase connection
@@ -14,11 +13,11 @@ if (!firebase_application) {
     process.exit(1);
 }
 
-var firebase = new Firebase('https://'+firebase_application+'.firebaseio.com/'),
-    storage = gcloud.storage({
-        projectId: 'continuous-pipe-1042',
-        keyFilename: 'api/keys/continuous-pipe-6e52d1420d38.json'
-    });
+Firebase.initializeApp({
+    credential: Firebase.credential.cert(require('../var/keys/firebase.json')),
+    databaseURL: 'https://'+firebase_application+'.firebaseio.com',
+    storageBucket: firebase_application+'.appspot.com'
+});
 
 // Configure the Sentry exception collection
 Raven.config(process.env.SENTRY_DSN).install();
@@ -33,14 +32,10 @@ var options = {
 
 var handler = HandlerFactory(
     new LogsCollection(
-        firebase.child('logs'),
-        storage.bucket('logstream-archives')
+        Firebase.database().ref('logs'),
+        Firebase.storage().bucket()
     )
 );
 
 http2.createServer(options, handler).listen(port);
-http.createServer(function(request, response) {
-    response.writeHead(200, {"Content-Type": "text/html"});
-    response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
-    response.end();
-}).listen(process.env.HTTP_PORT || 80);
+http.createServer(handler).listen(process.env.HTTP_PORT || 80);

@@ -1,9 +1,23 @@
 #!/bin/sh
 
-export START_NGINX=${START_NGINX:-true}
-export START_PHP_FPM=${START_PHP_FPM:-true}
+export START_MODE=${START_MODE:-web}
+export START_NGINX=${START_NGINX:-false}
+export START_PHP_FPM=${START_PHP_FPM:-false}
 export START_CRON=${START_CRON:-false}
 export START_WORKER=${START_WORKER:-false}
+
+if [ "$START_MODE" = "web" ]; then
+    export START_NGINX="true"
+    export START_PHP_FPM="true"
+fi
+
+if [ "$START_MODE" = "cron" ]; then
+    export START_CRON="true"
+fi
+
+if [ "$START_MODE" = "worker" ]; then
+    export START_WORKER="true"
+fi
 
 export PHP_MEMORY_LIMIT=1G
 export TIDEWAYS_ENABLED="true"

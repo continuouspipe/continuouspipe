@@ -12,17 +12,13 @@ use GitHub\Integration\InstallationRepository;
 
 class FlowInstallationNotFound implements AlertsRepository
 {
-    /**
-     * @var InstallationRepository
-     */
     private $installationRepository;
+    private $gitHubIntegrationSlug;
 
-    /**
-     * @param InstallationRepository $installationRepository
-     */
-    public function __construct(InstallationRepository $installationRepository)
+    public function __construct(InstallationRepository $installationRepository, string $gitHubIntegrationSlug)
     {
         $this->installationRepository = $installationRepository;
+        $this->gitHubIntegrationSlug = $gitHubIntegrationSlug;
     }
 
     /**
@@ -43,7 +39,7 @@ class FlowInstallationNotFound implements AlertsRepository
                 'github-integration',
                 $e->getMessage(),
                 new \DateTime(),
-                new AlertAction('link', 'Install', 'https://github.com/integration/continuouspipe')
+                new AlertAction('link', 'Install', 'https://github.com/integration/'.$this->gitHubIntegrationSlug)
             );
         }
 

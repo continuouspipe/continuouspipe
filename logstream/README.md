@@ -12,6 +12,11 @@ This API allows control over the stored logs.
 
 ## Development
 
+1. Add your `firebase.json` service account key in `var/keys/firebase.json`.
+2. Run the `main.js` file with supervisor:
 ```
-HTTP_PORT=8000 PORT=8001 FIREBASE_APP=continuous-pipe supervisor main.js
+HTTP_PORT=8000 \
+PORT=8001 \
+FIREBASE_APP=continuous-pipe \
+supervisor main.js
 ```

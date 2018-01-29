@@ -65,8 +65,10 @@ class CachedInstallationRepository implements InstallationRepository, Installati
         } else {
             $installation = $this->decoratedRepository->findByRepository($codeRepository);
             $metaKey = $this->generateMetaKey($installation);
-            $keys = $this->cache->fetch($metaKey) ?: [];
-            $keys = array_merge($keys, [$key]);
+            $cachedKeys = $this->cache->fetch($metaKey);
+            $keys = is_array($cachedKeys) ? $cachedKeys : [];
+            $keys[] = $key;
+            
             $serializedInstallation = $this->serializer->serialize($installation, 'json');
 
             $this->cache->save($key, $serializedInstallation, $this->expirationInSeconds);

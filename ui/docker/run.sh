@@ -15,6 +15,10 @@ angular.module('config', [])
 .constant('STATIS_METER_ENABLED', '"$STATIS_METER_ENABLED"')
 .constant('STATIS_METER_WRITE_KEY', '"$STATIS_METER_WRITE_KEY"')
 .constant('BILLING_ENABLED', '"$BILLING_ENABLED"')
+.constant('GOOGLE_ANALYTICS_TRACKER', '"$GOOGLE_ANALYTICS_TRACKER"')
+.constant('FIREBASE_APP', '"$FIREBASE_APP"')
+.constant('FIREBASE_WEB_API_KEY', '"$FIREBASE_WEB_API_KEY"')
+
 ;" > /app/dist/scripts/config.js
 
 # Start nginx

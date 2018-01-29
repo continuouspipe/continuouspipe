@@ -1,0 +1,74 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+set -e
+
+function wait_for_remote_ports() (
+  set +x
+
+  local -r TIMEOUT=$1
+  local -r INTERVAL=0.5
+  local -r CHECK_TOTAL=$((TIMEOUT*2))
+  local COUNT
+  shift
+
+  COUNT=0
+  until (test_remote_ports "$@")
+  do
+    ((COUNT++)) || true
+    if [ "${COUNT}" -gt "${CHECK_TOTAL}" ]
+    then
+      echo "One of the services [$*] didn't become ready in time"
+      exit 1
+    fi
+    sleep "${INTERVAL}"
+  done
+)
+
+function test_remote_ports() {
+  local SERVICE
+  local SERVICE_PARAMS
+
+  for SERVICE in "$@"; do
+    IFS=':'
+    # shellcheck disable=SC2206
+    SERVICE_PARAMS=($SERVICE)
+    unset IFS
+
+    timeout 1 bash -c "cat < /dev/null > /dev/tcp/${SERVICE_PARAMS[0]}/${SERVICE_PARAMS[1]}" 2>/dev/null || return 1
+  done
+}
+
+
+# Generates the .env file if not complete
+command -v melody >/dev/null 2>&1 || {
+    echo "This script requires Melody (melody.sensiolabs.org) to be installed."
+
+    read -p "Do you want us to install it for you? " -n 1 -r
+    echo    # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo sh -c "curl http://get.sensiolabs.org/melody.phar -o /usr/local/bin/melody && chmod a+x /usr/local/bin/melody"
+    else
+        exit 1
+    fi
+}
+
+echo "Creating the ngrok tunnel"
+docker-compose up -d tunnel
+php $DIR/wait-for.php tunnel
+
+echo "Configuring the environment..."
+melody run $DIR/config.php
+
+echo "Preparing the environment..."
+docker-compose run --rm api bash -c 'container symfony_console assetic:dump'
+
+echo "Starting the remaining Docker containers"
+docker-compose up -d
+
+echo
+echo "   Waiting for the API to be ready... it can take up to 15 minutes."
+echo "   (in the meantime, you can run 'docker-compose logs -f' in another terminal to follow the logs)"
+echo
+
+php $DIR/wait-for.php api 900

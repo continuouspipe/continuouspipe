@@ -41,7 +41,7 @@ module.exports = function(firebase, bucket) {
     this.archive = function(identifier) {
         var self = this;
 
-        return firebase.read(identifier).then(function(value) {
+        return firebase.read(identifier).then(function(value, err) {
             if (!value) {
                 return Promise.reject(new Error('Log "'+identifier+'" was not found'));
             }

@@ -34,7 +34,7 @@ var LogsCollection = function(root, bucket) {
 
         try {
             child.set(log, function (error) {
-                log._id = path !== null ? path + '/' + child.key() : child.key();
+                log._id = path !== null ? path + '/' + child.key : child.key;
 
                 callback(error, log);
             });

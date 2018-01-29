@@ -1,11 +1,12 @@
 version: '2'
 
 services:
-    api:
+    api: &API_DEFINITION
         build:
             context: ./api
         volumes:
             - ./api:/app
+            - ./runtime/keys:/app/var/keys
         environment:
             - DATABASE_HOST=database
             - DATABASE_USER=continuouspipe
@@ -21,6 +22,10 @@ services:
             - logstream
             - rabbitmq
 
+    worker:
+        <<: *API_DEFINITION
+        command: /usr/local/bin/worker
+
     ui:
         build:
             context: ./ui
@@ -34,6 +39,7 @@ services:
             context: ./logstream
         volumes:
             - ./logstream/src:/app/src
+            - ./runtime/keys:/app/var/keys
         env_file:
             - .env
 

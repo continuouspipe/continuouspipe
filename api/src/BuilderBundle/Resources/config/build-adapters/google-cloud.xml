@@ -63,7 +63,7 @@
             <argument type="service" id="router" />
             <argument>%google_storage_bucket%</argument>
             <argument>%google_storage_key_file_path%</argument>
-            <argument>%firebase_database_url%</argument>
+            <argument>%firebase_database_uri%</argument>
             <argument>%firebase_service_account_path%</argument>
             <argument>%river_host%</argument>
         </service>

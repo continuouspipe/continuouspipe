@@ -6,7 +6,6 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
-    firebase_service_account_path: '%kernel.root_dir%/var/firebase/continuous-pipe-firebase-adminsdk-57uln-abf9ce37fe.json'
     api_keys:
         - rcZUz8zcBEh1w4YUtWEf4Sp12kzborOXPaoDFv3h # River, Builder, Pipe
         - eed1304N3du2jbdaD72h3khdugqjndh82nm4972n # Feature-Timeline
