@@ -3,43 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 set -e
 
-function wait_for_remote_ports() (
-  set +x
-
-  local -r TIMEOUT=$1
-  local -r INTERVAL=0.5
-  local -r CHECK_TOTAL=$((TIMEOUT*2))
-  local COUNT
-  shift
-
-  COUNT=0
-  until (test_remote_ports "$@")
-  do
-    ((COUNT++)) || true
-    if [ "${COUNT}" -gt "${CHECK_TOTAL}" ]
-    then
-      echo "One of the services [$*] didn't become ready in time"
-      exit 1
-    fi
-    sleep "${INTERVAL}"
-  done
-)
-
-function test_remote_ports() {
-  local SERVICE
-  local SERVICE_PARAMS
-
-  for SERVICE in "$@"; do
-    IFS=':'
-    # shellcheck disable=SC2206
-    SERVICE_PARAMS=($SERVICE)
-    unset IFS
-
-    timeout 1 bash -c "cat < /dev/null > /dev/tcp/${SERVICE_PARAMS[0]}/${SERVICE_PARAMS[1]}" 2>/dev/null || return 1
-  done
-}
-
-
 # Generates the .env file if not complete
 command -v melody >/dev/null 2>&1 || {
     echo "This script requires Melody (melody.sensiolabs.org) to be installed."
@@ -52,6 +15,12 @@ command -v melody >/dev/null 2>&1 || {
         exit 1
     fi
 }
+
+# If `.env` do not exists, create it
+ENV_FILE_PATH=$DIR/../../.env
+if [ ! -f $ENV_FILE_PATH ]; then
+    echo > $ENV_FILE_PATH
+fi
 
 echo "Creating the ngrok tunnel"
 docker-compose up -d tunnel
