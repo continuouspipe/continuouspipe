@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 services:
     api: &API_DEFINITION
@@ -21,10 +21,18 @@ services:
             - redis
             - logstream
             - rabbitmq
+        healthcheck:
+            test: curl -f http://localhost
+            interval: 30s
+            timeout: 30s
+            retries: 30
 
     worker:
         <<: *API_DEFINITION
         command: /usr/local/bin/worker
+        depends_on:
+            api:
+                condition: service_healthy
 
     ui:
         build:

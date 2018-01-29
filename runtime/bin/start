@@ -32,12 +32,11 @@ melody run $DIR/config.php
 echo "Preparing the environment..."
 docker-compose run --rm api bash -c 'container symfony_console assetic:dump'
 
-echo "Starting the remaining Docker containers"
-docker-compose up -d
-
 echo
-echo "   Waiting for the API to be ready... it can take up to 15 minutes."
+echo "   Starting the remaining Docker containers."
+echo "   ...and waiting for the API to be ready... it can take up to 15 minutes!"
 echo "   (in the meantime, you can run 'docker-compose logs -f' in another terminal to follow the logs)"
 echo
 
-php $DIR/wait-for.php api 900
+docker-compose up -d
+php $DIR/wait-for.php api 60

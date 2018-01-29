@@ -1,16 +1,18 @@
-version: '2'
+version: '2.1'
+
 services:
     api:
         ports:
             - 81:80
         environment:
             WEB_HTTP: "true"
+            SYMFONY_ENV: dev # Uses the `dev` Symfony environment
+            SYMFONY_WEB_APP_ENV_REWRITE: "true" # Uses the `app_dev.php` endpoint
 
-            # Uses the `dev` Symfony environment
+    worker:
+        environment:
             SYMFONY_ENV: dev
-
-            # Uses the `app_dev.php` endpoint
-            SYMFONY_WEB_APP_ENV_REWRITE: "true"
+            SKIP_COMPOSER: "true"
 
     ui:
         ports:
