@@ -86,6 +86,7 @@ security:
         - { path: ^/auth/(login|connect), roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/auth/billing-redirection, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/auth/account/invitation/[\d-]+/accept$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/auth/authenticate$, roles: IS_AUTHENTICATED_REMEMBERED }
 
         # TODO: Secure with GitHub IPs
         - { path: ^/web-hook/github/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
