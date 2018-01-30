@@ -1,12 +1,9 @@
 version: '2.1'
 
 services:
-    api: &API_DEFINITION
+    api:
         build:
             context: ./api
-        volumes:
-            - ./api:/app
-            - ./runtime/keys:/app/var/keys
         environment:
             - DATABASE_HOST=database
             - DATABASE_USER=continuouspipe
@@ -14,8 +11,6 @@ services:
             - DATABASE_NAME=continuouspipe
             - REDIS_HOST=redis
             - LOGSTREAM_URL=https://logstream
-        env_file:
-            - .env
         depends_on:
             - database
             - redis
@@ -28,28 +23,27 @@ services:
             retries: 30
 
     worker:
-        <<: *API_DEFINITION
+        build:
+            context: ./api
         command: /usr/local/bin/worker
         depends_on:
             api:
                 condition: service_healthy
+        environment:
+            - DATABASE_HOST=database
+            - DATABASE_USER=continuouspipe
+            - DATABASE_PASSWORD=continuouspipe
+            - DATABASE_NAME=continuouspipe
+            - REDIS_HOST=redis
+            - LOGSTREAM_URL=https://logstream
 
     ui:
         build:
             context: ./ui
-        volumes:
-            - ./ui/app:/app/app
-        env_file:
-            - .env
 
     logstream:
         build:
             context: ./logstream
-        volumes:
-            - ./logstream/src:/app/src
-            - ./runtime/keys:/app/var/keys
-        env_file:
-            - .env
 
     database:
         image: mariadb

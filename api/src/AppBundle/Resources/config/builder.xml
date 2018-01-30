@@ -42,5 +42,14 @@
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFailed" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\Event\BuildFinished" />
         </service>
+
+        <service id="river.builder_bridge.archive.do_not_download_if_source_is_local"
+                 class="ContinuousPipe\River\Bridge\Builder\Archive\DoNotDownloadIfSourceIsLocal"
+                 decorates="builder.archive.downloader">
+            <argument type="service" id="river.builder_bridge.archive.do_not_download_if_source_is_local.inner" />
+            <argument type="service" id="river.flow.projections.flat_flow_repository" />
+            <argument type="service" id="river.code_repository.code_archive_streamer" />
+            <argument>%river_host%</argument>
+        </service>
     </services>
 </container>

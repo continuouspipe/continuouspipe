@@ -50,6 +50,9 @@ class CodeArchiveController
      * @Route("/flows/{flowUuid}/source-code/archive/{reference}", methods={"GET"}, name="flow_source_code_archive")
      * @ParamConverter("flow", converter="flow", options={"identifier"="flowUuid", "flat"=true})
      * @View
+     *
+     * @see \ContinuousPipe\River\Bridge\Builder\Archive\DoNotDownloadIfSourceIsLocal if you change the way the
+     *      URL is generated.
      */
     public function flowArchiveProxyAction(FlatFlow $flow, string $reference)
     {

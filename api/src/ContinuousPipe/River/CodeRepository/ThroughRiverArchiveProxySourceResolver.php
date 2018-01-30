@@ -42,6 +42,9 @@ class ThroughRiverArchiveProxySourceResolver implements BuildRequestSourceResolv
     }
 
     /**
+     * @see \ContinuousPipe\River\Bridge\Builder\Archive\DoNotDownloadIfSourceIsLocal if you change the way the archive
+     *      URL is generated.
+     *
      * {@inheritdoc}
      */
     public function getSource(UuidInterface $flowUuid, CodeReference $codeReference)

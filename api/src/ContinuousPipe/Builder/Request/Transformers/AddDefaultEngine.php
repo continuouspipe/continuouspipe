@@ -13,7 +13,7 @@ class AddDefaultEngine implements BuildRequestTransformer
      */
     private $defaultEngine;
 
-    public function __construct(string $defaultEngine = 'gcb')
+    public function __construct(string $defaultEngine)
     {
         $this->defaultEngine = $defaultEngine;
     }

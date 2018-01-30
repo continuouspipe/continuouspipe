@@ -8,11 +8,23 @@ services:
             WEB_HTTP: "true"
             SYMFONY_ENV: dev # Uses the `dev` Symfony environment
             SYMFONY_WEB_APP_ENV_REWRITE: "true" # Uses the `app_dev.php` endpoint
+        volumes:
+            - ./api:/app
+            - ./runtime/keys:/app/var/keys
+        env_file:
+            - .env
 
     worker:
         environment:
             SYMFONY_ENV: dev
             SKIP_COMPOSER: "true"
+            GRANT_DOCKER_DAEMON: "true"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./api:/app
+            - ./runtime/keys:/app/var/keys
+        env_file:
+            - .env
 
     ui:
         ports:
@@ -20,6 +32,17 @@ services:
             - 35729:35729
         build:
             dockerfile: ./Dockerfile.dev
+        volumes:
+            - ./ui/app:/app/app
+        env_file:
+            - .env
+
+    logstream:
+        volumes:
+            - ./logstream/src:/app/src
+            - ./runtime/keys:/app/var/keys
+        env_file:
+            - .env
 
     rabbitmq:
         ports:

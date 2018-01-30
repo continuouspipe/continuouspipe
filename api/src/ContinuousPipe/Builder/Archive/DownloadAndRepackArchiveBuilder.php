@@ -2,75 +2,39 @@
 
 namespace ContinuousPipe\Builder\Archive;
 
+use ContinuousPipe\Builder\Archive;
+use ContinuousPipe\Builder\ArchiveBuilder;
+use ContinuousPipe\Builder\BuildStepConfiguration;
 use ContinuousPipe\Builder\Context;
-use ContinuousPipe\Builder\Request\ArchiveSource;
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
-class HttpArchivePacker implements ArchivePacker
+class DownloadAndRepackArchiveBuilder implements ArchiveBuilder
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private $archiveDownloader;
 
-    /**
-     * @param Client $client
-     */
-    public function __construct(Client $client)
+    public function __construct(ArchiveDownloader $archiveDownloader)
     {
-        $this->client = $client;
+        $this->archiveDownloader = $archiveDownloader;
     }
 
     /**
-     * Create an archive from the given archive.
-     *
-     * @param Context $context
-     * @param ArchiveSource $archive
-     *
-     * @return FileSystemArchive
-     *
-     * @throws ArchiveCreationException
+     * {@inheritdoc}
      */
-    public function createFromArchiveRequest(Context $context, ArchiveSource $archive)
+    public function createArchive(BuildStepConfiguration $buildStepConfiguration) : Archive
     {
         $archiveFile = $this->getTemporaryFilePath('archive');
 
         try {
-            $this->client->get($archive->getUrl(), [
-                'save_to' => $archiveFile,
-                'headers' => $archive->getHeaders(),
-            ]);
-        } catch (RequestException $e) {
-            if (null !== ($response = $e->getResponse())) {
-                try {
-                    $contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
-
-                    if (isset($contents['error']['message'])) {
-                        $message = $contents['error']['message'];
-                    }
-                    if (isset($contents['error']['code'])) {
-                        $code = $contents['error']['code'];
-                    }
-                } catch (\InvalidArgumentException $errorException) {
-                    // Handle the exception as if it wasn't supported
-                }
-            }
-
-            if (!isset($message)) {
-                $message = $e->getMessage();
-            }
-            if (!isset($code)) {
-                $code = $e->getCode();
-            }
-
-            throw new ArchiveCreationException('Unable to download the code archive: '.$message, $code, $e);
+            $this->archiveDownloader->download($buildStepConfiguration->getArchive(), $archiveFile);
+        } catch (ArchiveException $e) {
+            throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getMessage(), $e);
         }
 
         // Extract the archive in a directory
-        $archiveDirectory = $this->getArchiveDirectory($context, $archiveFile);
+        $archiveDirectory = $this->getArchiveDirectory($buildStepConfiguration->getContext(), $archiveFile);
 
         // Delete the downloaded archive
         if (!unlink($archiveFile)) {
@@ -78,6 +42,14 @@ class HttpArchivePacker implements ArchivePacker
         }
 
         return new FileSystemArchive($archiveDirectory);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supports(BuildStepConfiguration $buildStepConfiguration) : bool
+    {
+        return $buildStepConfiguration->getArchive() !== null;
     }
 
     /**
@@ -139,16 +111,14 @@ class HttpArchivePacker implements ArchivePacker
 
     /**
      * @param Context $context
-     * @param string  $rootProjectDirectory
+     * @param string  $buildDirectory
      *
      * @return string
      *
      * @throws ArchiveCreationException
      */
-    private function getRootBuildDirectory(Context $context, $rootProjectDirectory)
+    private function getRootBuildDirectory(Context $context, $buildDirectory)
     {
-        $buildDirectory = $rootProjectDirectory;
-
         $subDirectory = $context->getRepositorySubDirectory();
         if (!empty($subDirectory)) {
             $buildDirectory .= DIRECTORY_SEPARATOR.$subDirectory;
@@ -164,33 +134,27 @@ class HttpArchivePacker implements ArchivePacker
         return $realPath;
     }
 
-    /**
-     * @param string $extractedArchivePath
-     *
-     * @return string
-     *
-     * @throws ArchiveCreationException
-     */
-    private function getRootProjectDirectory($extractedArchivePath)
+    private function getRootProjectDirectory($extractedArchivePath) : string
     {
         $finder = new Finder();
-        $finder->directories()->depth(0);
+        $finder->depth(0);
         $finder->in($extractedArchivePath);
 
         $directories = [];
-        foreach ($finder as $directory) {
-            $directories[] = $directory;
+        $files = [];
+        foreach ($finder as $directoryOrFile) {
+            if (is_dir($directoryOrFile)) {
+                $directories[] = $directoryOrFile;
+            } else {
+                $files[] = $directoryOrFile;
+            }
         }
 
-        if (1 !== count($directories)) {
-            throw new ArchiveCreationException(sprintf(
-                'Expected 1 directory at the root of the archive, found %d: %s',
-                count($directories),
-                implode(', ', $directories)
-            ));
+        if (1 === count($directories) && 0 === count($files)) {
+            return current($directories);
         }
 
-        return current($directories);
+        return $extractedArchivePath;
     }
 
     /**

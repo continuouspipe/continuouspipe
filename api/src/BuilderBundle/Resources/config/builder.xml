@@ -14,7 +14,9 @@
         </service>
 
         <!-- Build requests -->
-        <service id="builder.request_transformer.add_default_engine" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultEngine" />
+        <service id="builder.request_transformer.add_default_engine" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultEngine">
+            <argument>%builder_default_engine%</argument>
+        </service>
         <service id="builder.request_transformer.non_steps_bc_layer" class="ContinuousPipe\Builder\Request\Transformers\PreviousStepsBackwardCompatibilityTransformer" />
         <service id="builder.request_transformer.engine_into_steps" class="ContinuousPipe\Builder\Request\Transformers\EngineIntoStepsTransformer" />
         <service id="builder.request_transformer.add_default_context" class="ContinuousPipe\Builder\Request\Transformers\AddDefaultContext" />
@@ -58,12 +60,13 @@
             <tag name="csa_guzzle.client" />
         </service>
 
-        <service id="builder.archive.http_archive_packer" class="ContinuousPipe\Builder\Archive\HttpArchivePacker">
+        <service id="builder.archive.http_downloader" class="ContinuousPipe\Builder\Archive\HttpArchiveDownloader">
             <argument type="service" id="builder.archive.http_archive_builder.http_client" />
         </service>
+        <service id="builder.archive.downloader" alias="builder.archive.http_downloader" public="true" />
 
-        <service id="builder.archive.http_archive_builder" class="ContinuousPipe\Builder\Archive\HttpArchiveBuilder">
-            <argument type="service" id="builder.archive.http_archive_packer" />
+        <service id="builder.archive.http_archive_builder" class="ContinuousPipe\Builder\Archive\DownloadAndRepackArchiveBuilder">
+            <argument type="service" id="builder.archive.downloader" />
         </service>
 
         <service id="builder.archive_builder" class="ContinuousPipe\Builder\Archive\Builder\AdaptativeArchiveBuilder">
