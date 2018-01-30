@@ -34,6 +34,10 @@ class GenerateConfigurationFromFlexGenerator implements FlowConfigurationGenerat
             throw new \InvalidArgumentException('The flow must be flexed in order to generate the configuration');
         }
 
-        return $this->generatorForFlow->get($flow)->generate(new FlySystemAdapter($fileSystem));
+        try {
+            return $this->generatorForFlow->get($flow)->generate(new FlySystemAdapter($fileSystem));
+        } catch (\InvalidArgumentException $e) {
+            throw new GenerationException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

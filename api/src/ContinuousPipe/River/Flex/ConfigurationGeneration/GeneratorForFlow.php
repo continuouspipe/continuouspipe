@@ -13,6 +13,7 @@ use ContinuousPipe\River\Flex\FlexConfiguration;
 use ContinuousPipe\River\Flow\EncryptedVariable\EncryptedVariableVault;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\River\Managed\Resources\DockerRegistry\ReferenceRegistryResolver;
+use ContinuousPipe\River\Repository\FlowNotFound;
 
 final class GeneratorForFlow
 {
@@ -69,12 +70,20 @@ final class GeneratorForFlow
 
     private function getImageName(FlatFlow $flow) : string
     {
-        if (null !== ($registry = $this->referenceRegistryResolver->getReferenceRegistry($flow->getUuid()))) {
-            if (null !== ($imageName = $registry->getFullAddress())) {
-                return $imageName;
-            }
+        try {
+            $registry = $this->referenceRegistryResolver->getReferenceRegistry($flow->getUuid());
+        } catch (FlowNotFound $e) {
+            throw new \InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return 'quay.io/continuouspipe-flex/flow-'.$flow->getUuid()->toString();
+        if (null === $registry) {
+            return 'docker.io/could-not-guess-image-name/please-add-registry-in-team';
+        }
+
+        if (null !== ($imageName = $registry->getFullAddress())) {
+            return $imageName;
+        }
+
+        return $registry->getServerAddress().'/'.$registry->getUsername().'/flow-'.$flow->getUuid()->toString();
     }
 }

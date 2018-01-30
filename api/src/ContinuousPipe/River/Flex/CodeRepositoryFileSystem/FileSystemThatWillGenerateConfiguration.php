@@ -2,6 +2,7 @@
 
 namespace ContinuousPipe\River\Flex\CodeRepositoryFileSystem;
 
+use ContinuousPipe\Flex\ConfigurationGeneration\GenerationException;
 use ContinuousPipe\River\CodeRepository\FileSystem\FileNotFound;
 use ContinuousPipe\River\CodeRepository\FileSystem\RelativeFileSystem;
 use ContinuousPipe\River\Flex\FlowConfigurationGenerator;
@@ -69,6 +70,9 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
      * @param string $filePath
      *
      * @return null|string
+     *
+     * @throws FileNotFound
+     * @throws \ContinuousPipe\River\CodeRepository\FileSystem\FileException
      */
     private function generateFileIfNeeded(string $filePath)
     {
@@ -81,9 +85,20 @@ class FileSystemThatWillGenerateConfiguration implements RelativeFileSystem
         return null;
     }
 
+    /**
+     * @param string $filePath
+     *
+     * @return string|null
+     *
+     * @throws FileNotFound
+     */
     private function generateFile(string $filePath)
     {
-        $generatedConfiguration = $this->configurationGenerator->generate($this->decoratedFileSystem, $this->flow);
+        try {
+            $generatedConfiguration = $this->configurationGenerator->generate($this->decoratedFileSystem, $this->flow);
+        } catch (GenerationException $e) {
+            throw new FileNotFound('Generation of file '.$filePath.' failed: '.$e->getMessage(), $e->getCode(), $e);
+        }
 
         foreach ($generatedConfiguration->getGeneratedFiles() as $generatedFile) {
             if ($generatedFile->getPath() == $filePath) {

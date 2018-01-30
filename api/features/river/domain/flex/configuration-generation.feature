@@ -4,7 +4,11 @@ Feature:
   I want CP to generate my configuration for me
 
   Scenario: It generates a basic configuration for Symfony
-    Given I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    Given the team "samuel" exists
+    And the team "samuel" have the credentials of the following Docker registry:
+      | full_address                                                          | attributes                                       |
+      | quay.io/continuouspipe-flex/flow-00000000-0000-0000-0000-000000000000 | {"flow": "00000000-0000-0000-0000-000000000000"} |
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000"
     And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
     And the code repository contains the fixtures folder "flex-skeleton"
     When the configuration of the tide is generated
@@ -197,3 +201,38 @@ Feature:
     And the flow "00000000-0000-0000-0000-000000000000" has flex activated
     When a tide is started for the branch "master"
     And the tide should be failed
+
+  Scenario: It uses the registry I have if any
+    Given the team "samuel" exists
+    And the team "samuel" have the credentials of the following Docker registry:
+      | serverAddress | username |
+      | docker.io     | sroze    |
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        00_images:
+            build:
+                services:
+                    app:
+                        image: docker.io/sroze/flow-00000000-0000-0000-0000-000000000000
+    """
+
+  Scenario: It fails the generation if no registry
+    Given the team "samuel" exists
+    And I have a flow with UUID "00000000-0000-0000-0000-000000000000"
+    And the flow "00000000-0000-0000-0000-000000000000" has been flex activated with the same identifier "abc123"
+    And the code repository contains the fixtures folder "flex-skeleton"
+    When the configuration of the tide is generated
+    Then the generated configuration should contain at least:
+    """
+    tasks:
+        00_images:
+            build:
+                services:
+                    app:
+                        image: docker.io/could-not-guess-image-name/please-add-registry-in-team
+    """
