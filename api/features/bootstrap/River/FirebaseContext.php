@@ -19,10 +19,16 @@ class FirebaseContext implements Context
      * @var \TideContext
      */
     private $tideContext;
+    
+    /**
+     * @var string
+     */
+    private $firebaseApplication;
 
-    public function __construct(History $httpHistory)
+    public function __construct(History $httpHistory, string $firebaseApplication)
     {
         $this->httpHistory = $httpHistory;
+        $this->firebaseApplication = $firebaseApplication;
     }
 
     /**
@@ -62,7 +68,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/tides/by-pipelines/%s/',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/tides/by-pipelines/%s/',
                 (string) $tides[0]->getFlowUuid(),
                 (string) $pipeline->getUuid()
             );
@@ -84,7 +90,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches',
                 $flow
             );
             if (0 === strpos($uri, $requestBase)) {
@@ -164,7 +170,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches',
                 $flow
             );
 
@@ -214,7 +220,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches/%s',
                 $flow,
                 hash('sha256', $branch)
             );
@@ -249,7 +255,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches/%s',
                 $flow,
                 hash('sha256', $branch)
             );
@@ -264,10 +270,12 @@ class FirebaseContext implements Context
         foreach ($this->httpHistory as $request) {
             $uri = (string) $request->getUri();
 
+
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches',
                 $flow
             );
+
             if (0 === strpos($uri, $requestBase)) {
                 $body = json_decode($request->getBody()->getContents(), true);
 
@@ -290,7 +298,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches/%s',
                 $flow,
                 hash('sha256', $branch)
             );
@@ -322,7 +330,7 @@ class FirebaseContext implements Context
             $body = json_decode($request->getBody()->getContents(), true);
 
             $fullRequestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/pull-requests/by-branch',
                 $flow,
                 hash('sha256', $branch)
             );
@@ -345,7 +353,7 @@ class FirebaseContext implements Context
             }
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s/%s',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/pull-requests/by-branch/%s/%s',
                 $flow,
                 hash('sha256', $branch),
                 $number
@@ -375,7 +383,7 @@ class FirebaseContext implements Context
             $uri = (string) $request->getUri();
 
             $requestBase = sprintf(
-                'https://continuous-pipe.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
+                'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/pull-requests/by-branch/%s',
                 $flow,
                 hash('sha256', $branch)
             );
@@ -389,7 +397,7 @@ class FirebaseContext implements Context
     private function findUpdateRequest($branch, $flow, $tideUuid)
     {
         $updateRequestBase = sprintf(
-            'https://continuous-pipe.firebaseio.com/flows/%s/branches/%s/latest-tides/%',
+            'https://'.$this->firebaseApplication.'.firebaseio.com/flows/%s/branches/%s/latest-tides/%',
             $flow,
             hash('sha256', $branch),
             $tideUuid

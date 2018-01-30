@@ -102,6 +102,7 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
+                    - "%%env(FIREBASE_APP)%%"
                 - River\DevelopmentEnvironmentContext:
                     - "@kernel"
                     - "@event_bus"
@@ -255,6 +256,7 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
+                    - "%%env(FIREBASE_APP)%%"
                 - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
@@ -376,6 +378,7 @@ domain:
                     - "@kernel"
                 - River\FirebaseContext:
                     - "@csa_guzzle.data_collector.history_bag"
+                    - "%%env(FIREBASE_APP)%%"
                 - River\QuayIoContext:
                     - "@csa_guzzle.data_collector.history_bag"
 
