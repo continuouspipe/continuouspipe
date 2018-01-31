@@ -109,6 +109,37 @@ Feature:
     Then the tide should be failed
     And a log containing 'Endpoint "app" has a type "NodePort" while type "ingress" is enforced by the cluster policy' should be created
 
+  Scenario: It creates NodePort endpoints by default
+    Given the cluster "flex" of the team "my-team" have the following policies:
+    """
+    [
+      {
+        "name": "endpoint",
+        "configuration": {
+          "type": "NodePort"
+        }
+      }
+    ]
+    """
+    Given the team "my-team" have the credentials of a cluster "foo"
+    And I have a "continuous-pipe.yml" file in my repository that contains:
+    """
+    tasks:
+        my_deployment:
+            deploy:
+                cluster: flex
+                services:
+                    app:
+                        specification:
+                            source:
+                                image: foo/bar
+
+                        endpoints:
+                            - name: app
+    """
+    When a tide is started for the branch "master"
+    Then the endpoint "app" of the component "app" should be deployed with the type "NodePort"
+
   Scenario: The deployment fails if the ingress class is different
     Given the cluster "flex" of the team "my-team" have the following policies:
     """
