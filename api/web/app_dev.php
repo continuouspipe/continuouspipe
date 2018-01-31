@@ -9,9 +9,8 @@ Debug::enable();
 
 // This check prevents access to debug front controllers that are deployed by accident to production servers.
 // Feel free to remove this, extend it, or make something more sophisticated.
-$allowedIpRanges = ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '172.18.0.0/12', '192.168.0.0/16'];
+$allowedIpRanges = ['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'];
 if (isset($_SERVER['HTTP_CLIENT_IP'])
-    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])
     || !(IpUtils::checkIp(@$_SERVER['REMOTE_ADDR'], $allowedIpRanges) || php_sapi_name() === 'cli-server')
 ) {
     header('HTTP/1.0 403 Forbidden');
