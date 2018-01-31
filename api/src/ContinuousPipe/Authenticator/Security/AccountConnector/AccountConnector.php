@@ -58,7 +58,7 @@ class AccountConnector implements AccountConnectorInterface
             ]);
         }
 
-        return $this->accountRepository->link($user->getUsername(), $account);
+        $this->accountRepository->link($user->getUsername(), $account);
     }
 
     /**

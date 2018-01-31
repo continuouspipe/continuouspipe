@@ -154,9 +154,9 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         } catch (UserNotFound $e) {
             $loggedInUser = $securityUser;
         }
-        if (!$this->userHasAlreadyLinkedGitHubAccount($user, $loggedInUser->getUsername())) {
-            $this->accountConnector->connect($loggedInUser, $response);
-        }
+
+        // Make sure the account is connected
+        $this->accountConnector->connect($loggedInUser, $response);
 
         // Dispatch an event is the user was just created
         if ($created) {
@@ -259,28 +259,5 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
         }
 
         return $user;
-    }
-
-    /**
-     * @param User   $user
-     * @param string $username
-     *
-     * @return bool
-     */
-    private function userHasAlreadyLinkedGitHubAccount(User $user, string $username)
-    {
-        $accounts = $this->accountRepository->findByUsername($user->getUsername());
-
-        foreach ($accounts as $account) {
-            if (!$account instanceof GitHubAccount) {
-                continue;
-            }
-
-            if ($account->getUsername() == $username) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

@@ -6,6 +6,7 @@ use ContinuousPipe\Authenticator\Infrastructure\Doctrine\Entity\AccountLink;
 use ContinuousPipe\Security\Account\Account;
 use ContinuousPipe\Security\Account\AccountNotFound;
 use ContinuousPipe\Security\Account\AccountRepository;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 
 class DoctrineAccountRepository implements AccountRepository
@@ -28,7 +29,7 @@ class DoctrineAccountRepository implements AccountRepository
      */
     public function find(string $uuid)
     {
-        if (null === ($account = $this->entityManager->getRepository(Account::class)->find($uuid))) {
+        if (null === ($account = $this->getAccountRepository()->find($uuid))) {
             throw new AccountNotFound(sprintf('Account "%s" is not found', $uuid));
         }
 
@@ -60,12 +61,33 @@ class DoctrineAccountRepository implements AccountRepository
      */
     public function link(string $username, Account $account)
     {
+        $similarAccounts = $this->getAccountRepository()->findBy([
+            'username' => $account->getUsername(),
+            'identifier' => $account->getIdentifier(),
+        ]);
+
+        foreach ($similarAccounts as $similarAccount) {
+            if (ClassUtils::getClass($similarAccount) != ClassUtils::getClass($account)) {
+                // Actually, they might not be the same type.
+                continue;
+            }
+
+            $similarLink = $this->getLinkRepository()->findOneBy([
+                'username' => $username,
+                'account' => $similarAccount,
+            ]);
+
+            if ($similarLink !== null) {
+                $this->entityManager->remove($similarLink);
+            }
+        }
+
         $link = new AccountLink();
         $link->username = $username;
         $link->account = $account;
 
         $this->entityManager->persist($link);
-        $this->entityManager->flush($link);
+        $this->entityManager->flush();
     }
 
     /**
@@ -91,5 +113,13 @@ class DoctrineAccountRepository implements AccountRepository
     private function getLinkRepository()
     {
         return $this->entityManager->getRepository(AccountLink::class);
+    }
+
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository
+     */
+    private function getAccountRepository()
+    {
+        return $this->entityManager->getRepository(Account::class);
     }
 }
