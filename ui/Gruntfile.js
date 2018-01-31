@@ -440,7 +440,7 @@ module.exports = function (grunt) {
           LOG_STREAM_API_URL: process.env.LOG_STREAM_API_URL,
           PIPE_API_URL: process.env.PIPE_API_URL,
           KUBE_PROXY_HOSTNAME: process.env.KUBE_PROXY_HOSTNAME,
-          SENTRY_DSN: process.env.SENTRY_DSN,
+          SENTRY_DSN: process.env.UI_SENTRY_DSN,
           KUBE_STATUS_API_URL: process.env.KUBE_STATUS_API_URL,
           INTERCOM_ENABLED: process.env.INTERCOM_ENABLED,
           INTERCOM_APPLICATION_ID: process.env.INTERCOM_APPLICATION_ID,
