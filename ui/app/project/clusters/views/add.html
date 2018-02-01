@@ -49,13 +49,29 @@
         </div>
         <md-subheader class="md-primary" ng-if="cluster.type == 'kubernetes'">Cluster credentials</md-subheader>
         <div class="form-container" ng-if="cluster.type == 'kubernetes'">
+            <md-radio-group layout="row" ng-model="cluster.credentials.type" required>
+                <md-radio-button value="username_password">Username/Password</md-radio-button>
+                <md-radio-button value="client_certificate">Client certificate</md-radio-button>
+            </md-radio-group>
+        </div>
+        <div class="form-container" ng-if="cluster.type == 'kubernetes' && cluster.credentials.type == 'username_password'">
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Username</label>
-                <input ng-model="cluster.username" type="text" required />
+                <input ng-model="cluster.credentials.username" type="text" required />
             </md-input-container>
             <md-input-container class="md-block" flex-gt-xs>
                 <label>Password</label>
-                <input ng-model="cluster.password" type="password" required />
+                <input ng-model="cluster.credentials.password" type="password" required />
+            </md-input-container>
+        </div>
+        <div class="form-container" ng-if="cluster.type == 'kubernetes' && cluster.credentials.type == 'client_certificate'">
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Certificate (should have the PKCS12 format and base64 encoded)</label>
+                <textarea ng-model="cluster.credentials.client_certificate" required></textarea>
+            </md-input-container>
+            <md-input-container class="md-block" flex-gt-xs>
+                <label>Certificate password (optional)</label>
+                <input ng-model="cluster.credentials.client_certificate_password" type="password" />
             </md-input-container>
         </div>
 

@@ -41,6 +41,15 @@ angular.module('continuousPipeRiver')
         };
 
         this.create = function(cluster) {
+            // Normalize the cluster credentials
+            if (cluster && cluster.credentials) {
+                if (cluster.credentials.type == 'username_password') {
+                    cluster.credentials = {type: cluster.credentials.type, username: cluster.credentials.username, password: cluster.credentials.password};
+                } else if (cluster.credentials.type == 'client_certificate') {
+                    cluster.credentials = {type: cluster.credentials.type, client_certificate: cluster.credentials.client_certificate, client_certificate_password: cluster.credentials.client_certificate_password};
+                }
+            }
+
             return this.resource.save({bucket: getBucketUuid()}, cluster).$promise;
         };
 

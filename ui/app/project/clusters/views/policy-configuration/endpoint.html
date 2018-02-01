@@ -8,6 +8,11 @@
         </md-select>
     </md-input-container>
 
+    <md-input-container class="md-block" ng-show="policy.configuration.type == 'NodePort'">
+        <label>Base URL used for NodePort endpoints (Example: localhost)</label>
+        <input ng-model="policy.configuration['node-port-address']" ng-disabled="!isAdmin" required>
+    </md-input-container>
+
     <md-input-container class="md-block" ng-show="policy.configuration.type == 'ingress'">
         <label>Ingress class</label>
         <input ng-model="policy.configuration['ingress-class']" ng-disabled="!isAdmin" required>

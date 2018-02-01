@@ -18,9 +18,21 @@ class ClusterCredentials
     /**
      * Base64-encoded client certificate.
      *
+     * The certificate most be in the PKCS 12 format. In order to transform a certificate + private key, you can use
+     * openssl this way:
+     *
+     * $ openssl pkcs12 -export -in [CERT-PATH] -inkey [KEY-PATH] -passout pass:[PASSWORD]
+     *
      * @var string|null
      */
     private $clientCertificate;
+
+    /**
+     * Password for the client certificate, if needed.
+     *
+     * @var string|null
+     */
+    private $clientCertificatePassword;
 
     /**
      * Base64-encoding JSON Google Cloud Service account.
@@ -33,11 +45,13 @@ class ClusterCredentials
         string $username = null,
         string $password = null,
         string $clientCertificate = null,
+        string $clientCertificatePassword = null,
         string $googleCloudServiceAccount = null
     ) {
         $this->username = $username;
         $this->password = $password;
         $this->clientCertificate = $clientCertificate;
+        $this->clientCertificatePassword = $clientCertificatePassword;
         $this->googleCloudServiceAccount = $googleCloudServiceAccount;
     }
 
@@ -63,6 +77,14 @@ class ClusterCredentials
     public function getClientCertificate()
     {
         return $this->clientCertificate;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getClientCertificatePassword()
+    {
+        return $this->clientCertificatePassword;
     }
 
     /**

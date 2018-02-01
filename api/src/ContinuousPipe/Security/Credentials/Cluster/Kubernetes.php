@@ -18,6 +18,11 @@ class Kubernetes extends Cluster
     private $version;
 
     /**
+     * @var ClusterCredentials
+     */
+    private $credentials;
+
+    /**
      * @var string|null
      */
     private $caCertificate;
@@ -120,10 +125,11 @@ class Kubernetes extends Cluster
      */
     public function getCredentials()
     {
-        return new ClusterCredentials(
+        return $this->credentials ?: new ClusterCredentials(
             $this->username,
             $this->password,
             $this->clientCertificate,
+            null,
             $this->googleCloudServiceAccount
         );
     }
@@ -138,6 +144,14 @@ class Kubernetes extends Cluster
         }
 
         return $this->managementCredentials;
+    }
+
+    /**
+     * @param ClusterCredentials|null $credentials
+     */
+    public function setCredentials(ClusterCredentials $credentials = null)
+    {
+        $this->credentials = $credentials;
     }
 
     /**
@@ -190,13 +204,15 @@ class Kubernetes extends Cluster
 
     public function validate(ExecutionContextInterface $context)
     {
-        if (null !== $this->clientCertificate || null !== $this->googleCloudServiceAccount) {
+        $credentials = $this->getCredentials();
+
+        if (null !== $credentials->getClientCertificate() || null !== $credentials->getGoogleCloudServiceAccount()) {
             return;
-        } elseif (null === $this->username) {
+        } elseif (null === $credentials->getUsername()) {
             $context->buildViolation('Username should not be blank')
                 ->atPath('username')
                 ->addViolation();
-        } elseif (null === $this->password) {
+        } elseif (null === $credentials->getPassword()) {
             $context->buildViolation('Password should not be blank')
                 ->atPath('password')
                 ->addViolation();

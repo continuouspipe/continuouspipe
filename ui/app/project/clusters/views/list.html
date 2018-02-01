@@ -40,6 +40,7 @@
                 <td data-th="Credentials">
                     <span ng-if="cluster.credentials.username">User <small>{{ cluster.credentials.username }}</small></span>
                     <span ng-if="!cluster.credentials.username && cluster.credentials.google_cloud_service_account">Service account</span>
+                    <span ng-if="!cluster.credentials.username && cluster.credentials.client_certificate">Client certificate</span>
                 </td>
                 <td data-th="Actions">
                     <md-button ng-show="isAdmin" ng-click="deleteCluster(cluster)" class="md-icon-button"><i class="material-icons">delete</i></md-button>
