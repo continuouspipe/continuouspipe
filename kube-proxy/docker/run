@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Wire the environment variables.
+export KUBE_PROXY_MASTER_API_KEY=${KUBE_PROXY_MASTER_API_KEY:-$MASTER_API_KEY}
+export KUBE_PROXY_INSECURE_SKIP_VERIFY=${KUBE_PROXY_INSECURE_SKIP_VERIFY:-true}
+export KUBE_PROXY_LISTEN_ADDRESS=${KUBE_PROXY_LISTEN_ADDRESS:-https://0.0.0.0:443}
+
+exec /go/bin/kube-proxy -logtostderr -v 5

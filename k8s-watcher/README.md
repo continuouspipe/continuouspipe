@@ -8,6 +8,7 @@ Name | Required | Description
 `FIREBASE_DATABASE_NAME` | Yes | The name of the Firebase database to use for logging. Example: continuouspipe-watch-logs
 `FIREBASE_SERVICE_ACCOUNT` | Yes | The base64-encoded service account to authenticate to Firebase
 `KUBE_PROXY_HOSTNAME` | Yes | Hostname of the kube-proxy to use
+`KUBE_PROXY_SCHEME` | No. Default `wss` | Scheme used to connect to kube-proxy
 
 ## API
 

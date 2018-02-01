@@ -1,2 +1,3 @@
 /node_modules
 /var
+!var/keys/.gitkeep

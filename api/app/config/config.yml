@@ -7,8 +7,7 @@ imports:
 parameters:
     locale: en
     api_keys:
-        - rcZUz8zcBEh1w4YUtWEf4Sp12kzborOXPaoDFv3h # River, Builder, Pipe
-        - eed1304N3du2jbdaD72h3khdugqjndh82nm4972n # Feature-Timeline
+        - "%env(MASTER_API_KEY)%"
     managed_cloud_flare_credentials:
         'domain-name': "%managed_cloudflare_domain_name%"
         'zone-identifier': "%managed_cloudflare_zone_identifier%"

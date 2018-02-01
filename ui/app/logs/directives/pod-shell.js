@@ -11,7 +11,7 @@ angular.module('continuousPipeRiver')
             }
         };
     })
-    .directive('podShell', function($tokenStorage, $window, $intercom, KUBE_PROXY_HOSTNAME) {
+    .directive('podShell', function($tokenStorage, $window, $intercom, KUBE_PROXY_URL) {
         return {
             templateUrl: 'logs/views/pod/shell.html',
             scope: {
@@ -27,7 +27,7 @@ angular.module('continuousPipeRiver')
                     $scope.isConnected = true;
 
                     var proxyWebSocketUri =
-                        'wss://'+KUBE_PROXY_HOSTNAME+
+                        KUBE_PROXY_URL+
                         '/'+$scope.environment.flow.uuid+'/'+$scope.environment.cluster+
                         '/api/v1'+
                         '/namespaces/'+$scope.environment.identifier+

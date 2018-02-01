@@ -709,12 +709,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/message.git",
-                "reference": "a83cd0c7c87bb1a48e41114d2b06d95d7998efe5"
+                "reference": "5b847645ba8cbd4a5d23057705c22a88939809ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/message/zipball/a83cd0c7c87bb1a48e41114d2b06d95d7998efe5",
-                "reference": "a83cd0c7c87bb1a48e41114d2b06d95d7998efe5",
+                "url": "https://api.github.com/repos/continuouspipe/message/zipball/5b847645ba8cbd4a5d23057705c22a88939809ea",
+                "reference": "5b847645ba8cbd4a5d23057705c22a88939809ea",
                 "shasum": ""
             },
             "require": {
@@ -743,7 +743,7 @@
                 "source": "https://github.com/continuouspipe/message/tree/master",
                 "issues": "https://github.com/continuouspipe/message/issues"
             },
-            "time": "2018-01-16 20:43:28"
+            "time": "2018-02-01 16:02:13"
         },
         {
             "name": "csa/guzzle-bundle",

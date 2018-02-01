@@ -1,16 +1,7 @@
-var http = require('http'),
-    WebSocket = require('ws'),
-    url = require('url'),
-    handlerFactory = require('./src/http-handler'),
-    bootstrap = require('./src/bootstrap');
+var WebSocket = require('ws'),
+    url = require('url');
 
-bootstrap(function(queue, firebase, statsd) {
-    var handler = handlerFactory(queue, firebase, statsd);
-
-    // Start the HTTP server
-    var port = process.env.PORT || 80,
-        server = http.createServer(handler);
-    
+module.exports = function(server) {
     var webSocketServer = new WebSocket.Server({
         server: server
     });
@@ -36,8 +27,9 @@ bootstrap(function(queue, firebase, statsd) {
             };
 
             var proxyHostname = process.env.KUBE_PROXY_HOSTNAME;
-            var proxyWebSocketUri = 
-                'wss://x-token-auth:'+token+'@'+proxyHostname+
+            var proxyScheme = process.env.KUBE_PROXY_SCHEME || 'wss';
+            var proxyWebSocketUri =
+                proxyScheme+'://x-token-auth:'+token+'@'+proxyHostname+
                 '/'+matches.flowUuid+'/'+matches.cluster+
                 '/api/v1'+
                 '/namespaces/'+matches.namespace+
@@ -69,14 +61,11 @@ bootstrap(function(queue, firebase, statsd) {
                 socket.close();
             });
 
-            socket.on('message', function(message) {                
+            socket.on('message', function(message) {
                 containerSocket.send(
                     '0' + Buffer.from(message, 'ascii').toString('base64')
                 );
             });
         }
-    }); 
-
-    server.listen(port);
-    console.log('Started HTTP server at port '+port);
-});
+    });
+};

@@ -9,4 +9,5 @@ RUN npm install
 # Bundle app source
 COPY . /app
 
-CMD ["node", "/app/api.js"]
+COPY ./docker/run /usr/bin/k8s-watcher
+CMD ["/usr/bin/k8s-watcher"]

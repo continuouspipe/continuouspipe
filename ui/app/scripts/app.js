@@ -24,7 +24,7 @@ angular
         'kubeStatusDashboard'
     ])
     .constant('KUBE_STATUS_TEMPLATE_URI_ROOT', 'bower_components/kube-status/ui/app/')
-    .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider, GOOGLE_ANALYTICS_TRACKER, FIREBASE_WEB_API_KEY, FIREBASE_APP) {
+    .config(function ($urlRouterProvider, $breadcrumbProvider, $locationProvider, $mdThemingProvider, AnalyticsProvider, GOOGLE_ANALYTICS_TRACKER) {
         $urlRouterProvider.otherwise('/');
         $locationProvider.html5Mode(true);
         $breadcrumbProvider.setOptions({
@@ -35,12 +35,6 @@ angular
             .setAccount(GOOGLE_ANALYTICS_TRACKER)
             .setPageEvent('$stateChangeSuccess')
         ;
-
-        firebase.initializeApp({
-            apiKey: FIREBASE_WEB_API_KEY,
-            authDomain: FIREBASE_APP+".firebaseapp.com",
-            databaseURL: "https://"+FIREBASE_APP+".firebaseio.com"
-        });
     })
     .factory('$exceptionHandler', function ($window, $log, SENTRY_DSN) {
         if (SENTRY_DSN) {
@@ -56,7 +50,16 @@ angular
         };
     })
     // We need to inject it at least once to have automatic tracking
-    .run(['$rootScope', '$state', '$http', '$firebaseApplicationResolver', '$intercom', function ($rootScope, $state, $http, $firebaseApplicationResolver, $intercom, STATIS_METER_ENABLED, STATIS_METER_WRITE_KEY) {
+    .run(['$rootScope', '$state', '$http', '$intercom', '$firebaseApplicationResolver', 'FIREBASE_WEB_API_KEY', 'FIREBASE_APP', 'STATIS_METER_ENABLED', 'STATIS_METER_WRITE_KEY', function ($rootScope, $state, $http, $intercom, $firebaseApplicationResolver, FIREBASE_WEB_API_KEY, FIREBASE_APP, STATIS_METER_ENABLED, STATIS_METER_WRITE_KEY) {
+        var mainFirebaseApplicationConfiguration = {
+            apiKey: FIREBASE_WEB_API_KEY,
+            authDomain: FIREBASE_APP+".firebaseapp.com",
+            databaseURL: "https://"+FIREBASE_APP+".firebaseio.com"
+        };
+
+        firebase.initializeApp(mainFirebaseApplicationConfiguration);
+        $firebaseApplicationResolver.init(FIREBASE_APP, mainFirebaseApplicationConfiguration);
+
         function capitalizeFirstLetter(word) {
             return word.charAt(0).toUpperCase() + word.slice(1);
         }
@@ -113,11 +116,5 @@ angular
 
             return message;
         };
-
-        $firebaseApplicationResolver.init('continuouspipe-watch-logs', {
-            apiKey: "AIzaSyBRRw-vWdMbylnupsE8OVZNp3d6t5hl7tE",
-            authDomain: "continuouspipe-watch-logs.firebaseapp.com",
-            databaseURL: "https://continuouspipe-watch-logs.firebaseio.com"
-        });
     }])
 ;

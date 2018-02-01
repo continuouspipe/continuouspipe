@@ -9,8 +9,7 @@ package main
 // WILDCARD_SSL_KEY
 // KUBE_PROXY_LISTEN_ADDRESS			https://localhost:443
 // KUBE_PROXY_INSECURE_SKIP_VERIFY		true, unless we have valid certificates on the kubernetes side
-// KUBE_PROXY_AUTHENTICATOR_HOST		for testing authenticator-staging.continuouspipe.io, on live authenticator.continuouspipe.io
-// KUBE_PROXY_RIVER_HOST				for testing river-staging.continuouspipe.io, on live authenticator.continuouspipe.io
+// KUBE_PROXY_API_URL				    https://api...
 // KUBE_PROXY_MASTER_API_KEY			cp master api key
 // KEEN_IO_PROJECT_ID                   the keen.io project id
 // KEEN_IO_EVENT_COLLECTION             master
@@ -29,7 +28,7 @@ import (
 	"os"
 )
 
-var envListenAddress, _ = os.LookupEnv("KUBE_PROXY_LISTEN_ADDRESS") //e.g.: https://localhost:80
+var envListenAddress, _ = os.LookupEnv("KUBE_PROXY_LISTEN_ADDRESS") //e.g.: https://localhost:443 or http://localhost:80
 var envWildcardSSLCert, _ = os.LookupEnv("WILDCARD_SSL_CERT")
 var envWildcardSSLKey, _ = os.LookupEnv("WILDCARD_SSL_KEY")
 
@@ -51,10 +50,16 @@ func main() {
 		fmt.Printf("Cannot parse URL: %v\n", err.Error())
 		os.Exit(1)
 	}
-	h := kproxy.NewHttpHandler()
 
-	glog.V(5).Infof("Starting proxy on %s:%s", listenURL.Hostname(), listenURL.Port())
-	err = http.ListenAndServeTLS(listenURL.Host, sslCertFileName, sslKeyFileName, h)
+	h := kproxy.NewHttpHandler()
+	addr := fmt.Sprintf("%s:%s", listenURL.Hostname(), listenURL.Port())
+	glog.V(5).Infof("Starting proxy on %s://%s", listenURL.Scheme, addr)
+
+	if listenURL.Scheme == "http" {
+		err = http.ListenAndServe(addr, h)
+	} else {
+		err = http.ListenAndServeTLS(addr, sslCertFileName, sslKeyFileName, h)
+	}
 
 	if err != nil {
 		glog.V(5).Infof("Error when listening: %v\n", err.Error())

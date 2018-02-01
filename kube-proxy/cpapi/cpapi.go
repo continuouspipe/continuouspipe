@@ -10,8 +10,8 @@ import (
 	"github.com/golang/glog"
 )
 
-var envCpAuthenticatorHost, _ = os.LookupEnv("KUBE_PROXY_AUTHENTICATOR_HOST") //e.g.: authenticator-staging.continuouspipe.io
-var envCpRiverHost, _ = os.LookupEnv("KUBE_PROXY_RIVER_HOST")                 //e.g.: river-staging.continuouspipe.io
+var envCpApiUrl, _ = os.LookupEnv("KUBE_PROXY_API_URL") //e.g.: https://api
+//var envCpRiverHost, _ = os.LookupEnv("KUBE_PROXY_RIVER_HOST")                 //e.g.: river-staging.continuouspipe.io
 var envCpMasterApiKey, _ = os.LookupEnv("KUBE_PROXY_MASTER_API_KEY")          // master api key for cp api
 
 type ClusterInfoProvider interface {
@@ -81,7 +81,11 @@ func (c ClusterInfo) GetCluster(cpUsername string, apiKeyOrToken string, flowId 
 }
 
 func (c ClusterInfo) GetApiFlow(cpUsername string, apiKeyOrToken string, flowId string) (*ApiFlow, error) {
-	url := c.getRiverURL()
+	url, err := c.getApiUrl()
+	if err != nil {
+	    return nil, err
+	}
+
 	url.Path = "/flows/" + flowId
 
 	req, err := http.NewRequest("GET", url.String(), nil)
@@ -116,8 +120,12 @@ func (c ClusterInfo) GetApiFlow(cpUsername string, apiKeyOrToken string, flowId 
 
 //Use the master api key to get the details of the cluster, including the auth password for kubernetes in cleartext
 func (c ClusterInfo) GetApiBucketClusters(bucketUuid string) ([]ApiCluster, error) {
-	url := c.getAuthenticatorUrl()
-	url.Path = "/api/bucket/" + bucketUuid + "/clusters"
+	url, err := c.getApiUrl()
+	if err != nil {
+	    return nil, err
+	}
+
+	url.Path = "/bucket/" + bucketUuid + "/clusters"
 
 	req, err := http.NewRequest("GET", url.String(), nil)
 
@@ -164,16 +172,6 @@ func (c ClusterInfo) getResponseBody(client *http.Client, req *http.Request) ([]
 	return resBody, nil
 }
 
-func (c ClusterInfo) getAuthenticatorUrl() *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   envCpAuthenticatorHost,
-	}
-}
-
-func (c ClusterInfo) getRiverURL() *url.URL {
-	return &url.URL{
-		Scheme: "https",
-		Host:   envCpRiverHost,
-	}
+func (c ClusterInfo) getApiUrl() (*url.URL, error) {
+    return url.Parse(envCpApiUrl)
 }

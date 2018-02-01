@@ -54,7 +54,7 @@ class AccountConnector implements AccountConnectorInterface
             return $this->logger->error('Connecting accounts from resource owner of type {type} is not supported', [
                 'type' => is_object($resourceOwner) ? get_class($resourceOwner) : (string) $resourceOwner,
                 'user' => $user,
-                'response' => $response->getResponse(),
+                'response' => $response->getData(),
             ]);
         }
 

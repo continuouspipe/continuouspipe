@@ -35,7 +35,7 @@ class GitHubOAuthResponse extends AbstractUserResponse
     /**
      * {@inheritdoc}
      */
-    public function getResponse()
+    public function getData()
     {
         return [
             'login' => $this->username,

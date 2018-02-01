@@ -11,6 +11,7 @@ services:
         volumes:
             - ./api:/app
             - ./runtime/keys:/app/var/keys
+            - ~/.kube/config:/app/var/kube-config
         env_file:
             - .env
 
@@ -19,10 +20,12 @@ services:
             SYMFONY_ENV: dev
             SKIP_COMPOSER: "true"
             GRANT_DOCKER_DAEMON: "true"
+            NUM_OF_WORKERS: "2"
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./api:/app
             - ./runtime/keys:/app/var/keys
+            - ~/.kube/config:/app/var/kube-config
         env_file:
             - .env
 
@@ -36,6 +39,8 @@ services:
             - ./ui/app:/app/app
         env_file:
             - .env
+        environment:
+            - KUBE_PROXY_URL=ws://localhost:82
 
     logstream:
         volumes:
@@ -43,6 +48,24 @@ services:
             - ./runtime/keys:/app/var/keys
         env_file:
             - .env
+
+    kube-proxy:
+        environment:
+            - KUBE_PROXY_API_URL=http://api
+            - KUBE_PROXY_LISTEN_ADDRESS=http://0.0.0.0:80
+        env_file:
+            - .env
+        ports:
+            - 82:80
+
+    k8s-watcher:
+        env_file:
+            - .env
+        environment:
+            - KUBE_PROXY_SCHEME=ws
+        volumes:
+            - ./k8s-watcher/src:/app/src
+            - ./runtime/keys:/app/var/keys
 
     rabbitmq:
         ports:
