@@ -10,3 +10,4 @@ autorestart = true
 priority = 10
 stopwaitsecs = 1800
 numprocs = {{ getenv "NUM_OF_WORKERS" }}
+process_name=%(program_name)s_%(process_num)02d
