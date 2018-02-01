@@ -36,7 +36,7 @@ class DoctrineFilterHashRepository implements FilterHashRepository
     public function save(FilterHash $filterHash)
     {
         $this->entityManager->persist($filterHash);
-        $this->entityManager->flush($filterHash);
+        $this->entityManager->flush();
 
         return $filterHash;
     }

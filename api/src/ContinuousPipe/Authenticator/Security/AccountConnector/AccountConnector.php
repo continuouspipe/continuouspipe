@@ -68,7 +68,7 @@ class AccountConnector implements AccountConnectorInterface
      */
     private function getAccountFromGoogleResponse(UserResponseInterface $response)
     {
-        $rawResponse = $response->getResponse();
+        $rawResponse = $response->getData();
 
         return new GoogleAccount(
             (string) Uuid::uuid4(),
@@ -87,7 +87,7 @@ class AccountConnector implements AccountConnectorInterface
      */
     private function getAccountFromGitHubResponse(UserResponseInterface $response)
     {
-        $rawResponse = $response->getResponse();
+        $rawResponse = $response->getData();
 
         return new GitHubAccount(
             (string) Uuid::uuid4(),
@@ -107,7 +107,7 @@ class AccountConnector implements AccountConnectorInterface
      */
     private function getAccountFromBitBucket(UserResponseInterface $response)
     {
-        $rawResponse = $response->getResponse();
+        $rawResponse = $response->getData();
 
         return new BitBucketAccount(
             (string) Uuid::uuid4(),

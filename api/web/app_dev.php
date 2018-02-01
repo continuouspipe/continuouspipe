@@ -25,7 +25,7 @@ Debug::enable();
 $kernel = new AppKernel('dev', true);
 
 $request = Request::createFromGlobals();
-Request::setTrustedProxies(array('127.0.0.1', $request->server->get('REMOTE_ADDR')));
+Request::setTrustedProxies(array('127.0.0.1', $request->server->get('REMOTE_ADDR')), Request::HEADER_FORWARDED | Request::HEADER_X_FORWARDED_ALL);
 
 $response = $kernel->handle($request);
 $response->send();

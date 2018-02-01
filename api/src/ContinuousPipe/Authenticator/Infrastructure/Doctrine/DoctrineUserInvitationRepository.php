@@ -62,7 +62,7 @@ class DoctrineUserInvitationRepository implements UserInvitationRepository
     public function save(UserInvitation $userInvitation)
     {
         $this->entityManager->persist($userInvitation);
-        $this->entityManager->flush($userInvitation);
+        $this->entityManager->flush();
 
         return $userInvitation;
     }

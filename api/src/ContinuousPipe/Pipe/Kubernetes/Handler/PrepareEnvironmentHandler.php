@@ -135,7 +135,7 @@ class PrepareEnvironmentHandler implements DeploymentHandler
             }
         } catch (\Exception $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+            $logger->child(new Text('Could not prepare the environment: '.$e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
 

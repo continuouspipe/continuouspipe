@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Authenticator\Security\User;
 
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SystemUser implements UserInterface
+class SystemUser implements UserInterface, EquatableInterface
 {
     /**
      * @var string
@@ -56,5 +57,13 @@ class SystemUser implements UserInterface
      */
     public function eraseCredentials()
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(UserInterface $user)
+    {
+        return $this->getUsername() == $user->getUsername();
     }
 }

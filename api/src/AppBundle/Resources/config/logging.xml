@@ -8,7 +8,7 @@
         <service id="river.data_collector.user_activity_context_data_collector" class="AppBundle\Model\DataCollector\UserActivityContextDataCollector">
             <tag name="kernel.event_subscriber" />
         </service>
-        <service id="river.data_collector.user_activity_context_aggregated" class="AppBundle\Model\DataCollector\UserActivityContextAggregated">
+        <service id="river.data_collector.user_activity_context_aggregated" class="AppBundle\Model\DataCollector\UserActivityContextAggregated" public="true">
             <argument type="collection">
                 <argument type="service" id="river.data_collector.user_activity_context_data_collector" />
                 <argument type="service" id="river.event_bus.middleware.user_activity_context_data_collector" />

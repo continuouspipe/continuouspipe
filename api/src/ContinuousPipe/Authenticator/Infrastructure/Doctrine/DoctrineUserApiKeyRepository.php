@@ -46,7 +46,7 @@ class DoctrineUserApiKeyRepository implements UserApiKeyRepository
     public function save(UserApiKey $key)
     {
         $this->entityManager->persist($key);
-        $this->entityManager->flush($key);
+        $this->entityManager->flush();
     }
 
     /**
@@ -77,6 +77,6 @@ class DoctrineUserApiKeyRepository implements UserApiKeyRepository
         }
 
         $this->entityManager->remove($keys[0]);
-        $this->entityManager->flush($keys[0]);
+        $this->entityManager->flush();
     }
 }

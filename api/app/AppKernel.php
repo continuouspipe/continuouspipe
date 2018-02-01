@@ -46,6 +46,7 @@ class AppKernel extends Kernel
             new Snc\RedisBundle\SncRedisBundle(),
 
             // API dependencies
+            new Http\HttplugBundle\HttplugBundle(),
             new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
         );
 

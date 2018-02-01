@@ -91,7 +91,7 @@ class CreatePublicEndpointsHandler implements DeploymentHandler
 
             $this->eventBus->handle(new PublicServicesCreated($context, $status));
         } catch (\Exception $e) {
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+            $logger->child(new Text('Could not create endpoints: '.$e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }

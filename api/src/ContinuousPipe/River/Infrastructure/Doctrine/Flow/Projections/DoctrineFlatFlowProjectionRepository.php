@@ -76,7 +76,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
         $flow = $this->find($uuid);
 
         $this->entityManager->remove($flow);
-        $this->entityManager->flush($flow);
+        $this->entityManager->flush();
     }
 
     /**
@@ -100,6 +100,7 @@ class DoctrineFlatFlowProjectionRepository implements FlatFlowRepository
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     private function getRepository()

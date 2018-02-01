@@ -37,7 +37,7 @@ class DoctrineDevelopmentEnvironmentRepository implements DevelopmentEnvironment
         $developmentEnvironment = $this->entityManager->merge($developmentEnvironment);
 
         $this->entityManager->persist($developmentEnvironment);
-        $this->entityManager->flush($developmentEnvironment);
+        $this->entityManager->flush();
     }
 
     public function find(UuidInterface $uuid): DevelopmentEnvironment

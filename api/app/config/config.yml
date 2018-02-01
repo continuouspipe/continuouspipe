@@ -77,7 +77,6 @@ framework:
         #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_hosts:   ~
-    trusted_proxies: ~
     session:
         # handler_id set to null will use default session handler from php.ini
         handler_id:  ~
@@ -204,10 +203,10 @@ jms_serializer:
                 path: "%kernel.root_dir%/../src/ContinuousPipe/Security/Resources/serializer"
 
 lexik_jwt_authentication:
-    private_key_path: %jwt_private_key_path%
-    public_key_path:  %jwt_public_key_path%
-    pass_phrase:      %jwt_key_pass_phrase%
-    token_ttl:        %jwt_token_ttl%
+    private_key_path: "%jwt_private_key_path%"
+    public_key_path:  "%jwt_public_key_path%"
+    pass_phrase:      "%jwt_key_pass_phrase%"
+    token_ttl:        "%jwt_token_ttl%"
 
 continuous_pipe_security:
     vaults:
@@ -222,7 +221,7 @@ continuous_pipe_security:
 
         within_clusters:
             php_encryption:
-                key: %security_php_encryption_key%
+                key: "%security_php_encryption_key%"
 
 fos_rest:
     body_converter:
@@ -272,7 +271,7 @@ command_bus:
     logging: ~
 
 log_stream:
-    url: %logstream_url%
+    url: "%logstream_url%"
     strict_ssl: false
     tolerance:
         operation_runner: tolerance.operation_runners.logstream
@@ -284,7 +283,7 @@ simple_bus_asynchronous:
         publisher_service_id: continuouspipe.message.simple_bus.producer
 
 csa_guzzle:
-    profiler: %kernel.debug%
+    profiler: "%kernel.debug%"
 
 knp_paginator:
     # page_range: 5
@@ -300,9 +299,9 @@ beberlei_metrics:
     collectors:
         statsd:
             type: statsd
-            host: %statsd_host%
-            port: %statsd_port%
-            prefix: %statsd_prefix%.
+            host: "%statsd_host%"
+            port: "%statsd_port%"
+            prefix: "%statsd_prefix%."
 
 tolerance:
     aop:
@@ -348,7 +347,7 @@ tolerance:
                                 waiter:
                                     sleep: ~
                                 exponent: 1
-                        count: %api_retry_count%
+                        count: "%api_retry_count%"
 
         pipe:
             success_failure_metrics:
@@ -406,9 +405,9 @@ tolerance:
                 type: hosted_graphite
                 operation_runner: tolerance.operation_runners.buffered
                 options:
-                    server: %hosted_graphite_server%
-                    port: %hosted_graphite_port%
-                    api_key: %hosted_graphite_api_key%
+                    server: "%hosted_graphite_server%"
+                    port: "%hosted_graphite_port%"
+                    api_key: "%hosted_graphite_api_key%"
 
             statsd:
                 type: beberlei
@@ -465,7 +464,7 @@ message:
             driver: "%message_connection_long_running_deployments_dsn%"
 
     tideways:
-        api_key: %tideways_api_key%
+        api_key: "%tideways_api_key%"
 
 
 hwi_oauth:
@@ -498,6 +497,11 @@ hwi_oauth:
         account_connector: app.security.account_connector
 
     target_path_parameter: redirectUrl
+
+sonata_core:
+    form:
+        mapping:
+            enabled: false
 
 sonata_block:
     default_contexts: [cms]

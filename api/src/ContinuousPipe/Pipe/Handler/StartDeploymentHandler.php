@@ -80,7 +80,7 @@ class StartDeploymentHandler
         try {
             $cluster = $this->getCluster($request->getCredentialsBucket(), $target->getClusterIdentifier());
         } catch (ClusterNotFound $e) {
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+            $logger->child(new Text('Cluster was not found: '.$e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed(
                 new DeploymentContext($deployment, null, $logger->getLog(), $environment)

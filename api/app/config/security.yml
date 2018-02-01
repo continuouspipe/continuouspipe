@@ -13,7 +13,7 @@ security:
             memory:
                 users:
                     admin:
-                        password: %admin_password%
+                        password: "%admin_password%"
                         roles: 'ROLE_ADMIN'
                     '/C=UK/ST=London/O=ContinuousPipe/CN=FeatureTimeline':
                         roles: ['ROLE_SYSTEM_FEATURE_TIMELINE']

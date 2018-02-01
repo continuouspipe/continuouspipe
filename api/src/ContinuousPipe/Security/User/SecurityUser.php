@@ -2,9 +2,10 @@
 
 namespace ContinuousPipe\Security\User;
 
+use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SecurityUser implements UserInterface
+class SecurityUser implements UserInterface, EquatableInterface
 {
     /**
      * @var User
@@ -75,5 +76,13 @@ class SecurityUser implements UserInterface
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isEqualTo(UserInterface $user)
+    {
+        return $this->getUsername() == $user->getUsername() && $this->getPassword() == $user->getPassword() && $this->getSalt() == $user->getSalt();
     }
 }

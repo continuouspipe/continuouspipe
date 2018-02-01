@@ -99,7 +99,7 @@ class CreateComponentsHandler implements DeploymentHandler
             $this->eventBus->handle(new ComponentsCreated($context, $componentStatus));
         } catch (ComponentException $e) {
             $logger = $this->loggerFactory->from($context->getLog());
-            $logger->child(new Text($e->getMessage()))->updateStatus(Log::FAILURE);
+            $logger->child(new Text('Could not create the components: '.$e->getMessage()))->updateStatus(Log::FAILURE);
 
             $this->eventBus->handle(new DeploymentFailed($context));
         }

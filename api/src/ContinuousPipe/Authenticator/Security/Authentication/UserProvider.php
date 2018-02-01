@@ -118,7 +118,7 @@ class UserProvider implements UserProviderInterface, OAuthAwareUserProviderInter
      */
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
-        $gitHubResponse = $response->getResponse();
+        $gitHubResponse = $response->getData();
         $username = $gitHubResponse['login'] ?: $response->getNickname();
         if (empty($username)) {
             $this->logger->warning('Unable to get the user username from the response', array_merge($gitHubResponse, [
