@@ -13,10 +13,17 @@ web_profiler:
 
 monolog:
     handlers:
-        main:
+        grouped_main:
+            type:    group
+            members: [stream, sentry]
+        stream:
             type:   stream
             path:   "%kernel.logs_dir%/%kernel.environment%.log"
             level:  debug
+        sentry:
+            type:  raven
+            dsn:   %sentry_dsn%
+            level: notice
         console:
             type:   console
             bubble: false

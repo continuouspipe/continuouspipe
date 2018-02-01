@@ -2,7 +2,8 @@
 
 alias_function do_start do_project_start_inner
 function do_start() {
-    # Update the parameters
+    # Update the parameters. This is still required by things like the `SENTRY_DSN` configuration
+    # that cannot use `%env(...)%`
     composer run-script update-parameters
 
     # If there is the Docker unix socket, grant access to it

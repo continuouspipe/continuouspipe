@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9881133df452b33e69f37f62d383dd54",
+    "content-hash": "3e86bd5c105d2f1379125be17f1365dd",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -8794,16 +8794,16 @@
         },
         {
             "name": "sroze/kubernetes-client",
-            "version": "dev-add-network-policies",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sroze/kubernetes-client.git",
-                "reference": "28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46"
+                "reference": "76e446d26f127ab528aacd9e065975fb0b44eed8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46",
-                "reference": "28fe4e3b32fdd58c57ea3fdb5b31066ecd50ab46",
+                "url": "https://api.github.com/repos/sroze/kubernetes-client/zipball/76e446d26f127ab528aacd9e065975fb0b44eed8",
+                "reference": "76e446d26f127ab528aacd9e065975fb0b44eed8",
                 "shasum": ""
             },
             "require": {
@@ -8819,12 +8819,15 @@
             },
             "type": "library",
             "autoload": {
+                "files": [
+                    "src/functions_include.php"
+                ],
                 "psr-4": {
                     "Kubernetes\\Client\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "time": "2017-11-20 15:38:49"
+            "time": "2018-01-31 17:39:57"
         },
         {
             "name": "sroze/log-stream",
