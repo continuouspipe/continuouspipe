@@ -12,7 +12,7 @@ while (time() < ($startTime + $timeout)) {
         if ($address = get_tunnel_address()) {
             echo <<<CONTENTS
   
-  The ngrok tunnel is ready. It's URL is: {$address}
+  The ngrok tunnel is ready. Its URL is: {$address}
   
 
 CONTENTS;
