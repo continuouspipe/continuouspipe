@@ -13,7 +13,7 @@ web_profiler:
 
 monolog:
     handlers:
-        grouped_main:
+        main:
             type:    group
             members: [stream, sentry]
         stream:
