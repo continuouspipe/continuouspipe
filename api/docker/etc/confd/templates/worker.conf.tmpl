@@ -9,3 +9,4 @@ autostart = {{ getenv "START_WORKER" }}
 autorestart = true
 priority = 10
 stopwaitsecs = 1800
+numprocs = {{ getenv "NUM_OF_WORKERS" }}
