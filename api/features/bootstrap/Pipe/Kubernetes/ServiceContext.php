@@ -65,6 +65,43 @@ class ServiceContext implements Context
     }
 
     /**
+     * @Given the service :name will have the port :port mapped to the node port :nodePort
+     */
+    public function theServiceWillHaveThePortMappedToTheNodePort($name, $port, $nodePort)
+    {
+        $this->hookableServiceRepository->addFindOneByNameHooks(function(Service $service) use ($name, $port, $nodePort) {
+            if ($service->getMetadata()->getName() == $name && $service->getStatus() === null) {
+                $spec = $service->getSpecification();
+
+                $service = new Service(
+                    $service->getMetadata(),
+                    new ServiceSpecification(
+                        $spec->getSelector(),
+                        array_map(function(ServicePort $servicePort) use ($port, $nodePort) {
+                            if ($servicePort->getPort() == $port) {
+                                return new ServicePort(
+                                    $servicePort->getName(),
+                                    $servicePort->getPort(),
+                                    $servicePort->getProtocol(),
+                                    $servicePort->getTargetPort(),
+                                    $nodePort
+                                );
+                            }
+
+                            return $servicePort;
+                        }, $service->getSpecification()->getPorts()),
+                        $spec->getType(),
+                        $spec->getSessionAffinity(),
+                        $spec->getClusterIp()
+                    )
+                );
+            }
+
+            return $service;
+        });
+    }
+
+    /**
      * @Given the service :name will be created with the public DNS address :address
      */
     public function theServiceWillBeCreatedWithThePublicDnsAddress($name, $address)

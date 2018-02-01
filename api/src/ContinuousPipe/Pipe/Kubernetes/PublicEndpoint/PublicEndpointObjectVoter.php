@@ -20,20 +20,21 @@ class PublicEndpointObjectVoter
 
     public function isThePrimaryPublicEndpointToWait(KubernetesObject $object) : bool
     {
+
         if ($object instanceof Ingress) {
             return true;
         }
 
         if ($object instanceof Service) {
-            return $this->isLoadBalancer($object) || $this->isInternalEndpoint($object);
+            return $this->isInternalEndpoint($object)
+                || $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER
+                || (
+                    $object->getSpecification()->getType() == ServiceSpecification::TYPE_NODE_PORT
+                    && !$object->getMetadata()->getLabelList()->hasKey('source-of-ingress')
+                );
         }
 
         return false;
-    }
-
-    private function isLoadBalancer(Service $object): bool
-    {
-        return $object->getSpecification()->getType() == ServiceSpecification::TYPE_LOAD_BALANCER;
     }
 
     private function isInternalEndpoint(Service $object): bool

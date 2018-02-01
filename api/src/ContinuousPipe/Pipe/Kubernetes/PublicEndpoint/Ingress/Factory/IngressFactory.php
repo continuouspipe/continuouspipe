@@ -49,8 +49,10 @@ class IngressFactory implements EndpointFactory
 
         $service = $this->createService($component, $endpoint, $serviceType);
 
-        // The `LoadBalancer` service is enough.
-        if ($serviceType === ServiceSpecification::TYPE_LOAD_BALANCER) {
+        if (
+            $serviceType === ServiceSpecification::TYPE_LOAD_BALANCER ||
+            ($ingressType == ServiceSpecification::TYPE_NODE_PORT && null == $endpoint->getIngress())
+        ) {
             return [$service,];
         }
         if ($ingressType == 'internal') {

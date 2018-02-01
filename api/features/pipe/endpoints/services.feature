@@ -189,3 +189,45 @@ Feature:
     And the service "http" should have the following annotations:
       | name                                        | value     |
       | service.beta.kubernetes.io/external-traffic | OnlyLocal |
+
+  Scenario: NodePort services directly have endpoints
+    Given the service "http" will have the port 80 mapped to the node port 1234
+    And the cluster "my-cluster" of the bucket "00000000-0000-0000-0000-000000000000" has the "endpoint" policy with the following configuration:
+    """
+    {
+      "type": "NodePort",
+      "node-port-address": "localhost"
+    }
+    """
+    And the components specification are:
+    """
+    [
+      {
+        "name": "app",
+        "identifier": "app",
+        "specification": {
+          "source": {
+            "image": "sroze\/php-example"
+          },
+          "scalability": {
+            "enabled": true,
+            "number_of_replicas": 1
+          },
+          "ports": [
+            {"identifier": "http", "port": 80, "protocol": "TCP"}
+          ]
+        },
+        "endpoints": [
+          {
+            "name": "http",
+            "type": "NodePort"
+          }
+        ]
+      }
+    ]
+    """
+    When I send the built deployment request
+    Then the service "http" should be created
+    And the service "http" should have the type "NodePort"
+    And the ingress named "http" should not be created
+    And the deployment endpoint "localhost" should have the port "1234"

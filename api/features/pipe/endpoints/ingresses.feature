@@ -112,7 +112,8 @@ Feature:
         "endpoints": [
           {
             "name": "http",
-            "type": "NodePort"
+            "type": "NodePort",
+            "ingress": {}
           }
         ]
       }

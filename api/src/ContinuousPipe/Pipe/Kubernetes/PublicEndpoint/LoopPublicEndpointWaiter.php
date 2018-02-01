@@ -7,6 +7,7 @@ use ContinuousPipe\Pipe\DeploymentContext;
 use ContinuousPipe\Pipe\Environment\PublicEndpoint;
 use ContinuousPipe\Pipe\Environment\PublicEndpointPort;
 use ContinuousPipe\Pipe\Promise\PromiseBuilder;
+use ContinuousPipe\Security\Credentials\Cluster;
 use JMS\Serializer\SerializerInterface;
 use Kubernetes\Client\Model\Ingress;
 use Kubernetes\Client\Model\IngressHttpRulePath;
@@ -16,6 +17,7 @@ use Kubernetes\Client\Model\LoadBalancerIngress;
 use Kubernetes\Client\Model\LoadBalancerStatus;
 use Kubernetes\Client\Model\Service;
 use Kubernetes\Client\Model\ServicePort;
+use Kubernetes\Client\Model\ServiceSpecification;
 use Kubernetes\Client\NamespaceClient;
 use LogStream\Log;
 use LogStream\Logger;
@@ -87,11 +89,10 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         $logger = $this->loggerFactory->from($context->getLog())->child(
             new Text('Waiting public endpoint of service ' . $objectName)
         );
-        $client = $this->clientFactory->get($context);
 
         $logger->updateStatus(Log::RUNNING);
 
-        return $this->waitPublicEndpoint($loop, $client, $object, $logger)->then(
+        return $this->waitPublicEndpoint($loop, $context, $object, $logger)->then(
             function (PublicEndpoint $endpoint) use ($logger) {
                 $logger->updateStatus(Log::SUCCESS);
 
@@ -116,19 +117,20 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
      */
     private function waitPublicEndpoint(
         React\EventLoop\LoopInterface $loop,
-        NamespaceClient $namespaceClient,
+        DeploymentContext $context,
         KubernetesObject $object,
         Logger $logger
     ) {
+        $namespaceClient = $this->clientFactory->get($context);
         $statusLogger = $logger->child(new Text('No public endpoint found yet.'));
 
         // Get endpoint status
         $publicEndpointStatusPromise = (new PromiseBuilder($loop))
             ->retry(
                 $this->endpointInterval,
-                function (React\Promise\Deferred $deferred) use ($namespaceClient, $object, $statusLogger) {
+                function (React\Promise\Deferred $deferred) use ($context, $namespaceClient, $object, $statusLogger) {
                     try {
-                        $endpoint = $this->getPublicEndpoint($namespaceClient, $object);
+                        $endpoint = $this->getPublicEndpoint($context, $namespaceClient, $object);
 
                         $statusLogger->update(new Text('Found endpoint: ' . $endpoint->getAddress()));
 
@@ -182,18 +184,30 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
     /**
      * @param NamespaceClient $namespaceClient
      * @param KubernetesObject $object
+     * @param DeploymentContext $deploymentContext
      *
      * @return PublicEndpoint
      *
      * @throws EndpointNotFound
      */
-    private function getPublicEndpoint(NamespaceClient $namespaceClient, KubernetesObject $object)
+    private function getPublicEndpoint(DeploymentContext $deploymentContext, NamespaceClient $namespaceClient, KubernetesObject $object)
     {
         $name = $object->getMetadata()->getName();
         $ports = $this->getPorts($object);
 
         if ($this->isInternalEndpoint($object)) {
             return $this->createInternalPublicEndpoint($namespaceClient, $object, $name, $ports);
+        }
+
+        if (
+            $object instanceof Service &&
+            $object->getSpecification()->getType() == ServiceSpecification::TYPE_NODE_PORT
+        ) {
+            $upToDateService = $namespaceClient->getServiceRepository()->findOneByName($name);
+
+            return new PublicEndpoint($name, $this->nodePortAddressFromCluster($deploymentContext->getCluster()), array_map(function(ServicePort $port) {
+                return new PublicEndpointPort($port->getNodePort() ?: 12345, $port->getProtocol());
+            }, $upToDateService->getSpecification()->getPorts()));
         }
 
         return $this->getPublicEndpointFromIngresses($namespaceClient, $object, $name, $ports);
@@ -317,7 +331,8 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         KubernetesObject $object,
         string $name,
         array $ports
-    ): PublicEndpoint {
+    ): PublicEndpoint
+    {
         foreach ($this->getIngresses($namespaceClient, $object) as $ingress) {
             if ($hostname = $ingress->getHostname()) {
                 return new PublicEndpoint($name, $hostname, $ports);
@@ -329,5 +344,16 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         }
 
         throw new EndpointNotFound('No hostname or IP address found in ingresses');
+    }
+
+    private function nodePortAddressFromCluster(Cluster $cluster)
+    {
+        foreach ($cluster->getPolicies() as $policy) {
+            if ($policy->getName() == 'endpoint' && isset($policy->getConfiguration()['node-port-address'])) {
+                return $policy->getConfiguration()['node-port-address'];
+            }
+        }
+
+        return 'unknown-node-address';
     }
 }

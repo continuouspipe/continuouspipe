@@ -61,7 +61,7 @@ Feature:
         "endpoints": [
           {
             "name": "http",
-            "type": "NodePort"
+            "type": "ingress"
           }
         ]
       }
@@ -95,7 +95,7 @@ Feature:
         "endpoints": [
           {
             "name": "https-api",
-            "type": "NodePort"
+            "type": "ingress"
           }
         ]
       }

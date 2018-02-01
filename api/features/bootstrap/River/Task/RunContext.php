@@ -487,6 +487,21 @@ class RunContext implements Context
     }
 
     /**
+     * @Then the endpoint :endpointName of the component :name should be deployed with the type :type
+     */
+    public function theEndpointOfTheComponentShouldBeDeployedWithTheType($endpointName, $name, $type)
+    {
+        $endpoint = $this->getEndpointOfComponent($name, $endpointName);
+
+        if ($endpoint->getType() != $type) {
+            throw new \RuntimeException(sprintf(
+                'Found type "%s" instead',
+                $endpoint->getType()
+            ));
+        }
+    }
+
+    /**
      * @Then the endpoint :endpointName of the component :componentName should be an ingress without http rule
      */
     public function theEndpointOfTheComponentShouldBeAnIngressWithoutHttpRule($componentName, $endpointName)

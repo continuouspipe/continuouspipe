@@ -30,7 +30,7 @@ class DownloadAndRepackArchiveBuilder implements ArchiveBuilder
         try {
             $this->archiveDownloader->download($buildStepConfiguration->getArchive(), $archiveFile);
         } catch (ArchiveException $e) {
-            throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getMessage(), $e);
+            throw new ArchiveCreationException('Unable to download the code archive: '.$e->getMessage(), $e->getCode(), $e);
         }
 
         // Extract the archive in a directory
