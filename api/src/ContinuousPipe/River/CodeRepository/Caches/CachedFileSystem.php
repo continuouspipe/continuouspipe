@@ -41,11 +41,14 @@ class CachedFileSystem implements RelativeFileSystem
     public function exists($filePath)
     {
         $cacheKey = $this->fileKey($filePath, 'exists');
-        if (false === ($fileExists = $this->cache->fetch($cacheKey))) {
-            $fileExists = $this->decoratedFileSystem->exists($filePath);
+        $cachedExists = $this->cache->fetch($cacheKey);
 
-            $this->cache->save($cacheKey, $fileExists, $this->lifeTime);
+        if (is_array($cachedExists) && isset($cachedExists['exists'])) {
+            return $cachedExists['exists'];
         }
+
+        $fileExists = $this->decoratedFileSystem->exists($filePath);
+        $this->cache->save($cacheKey, ['exists' => $fileExists], $this->lifeTime);
 
         return $fileExists;
     }
