@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$DIR/../../
 set -e
 
 # Generates the .env file if not complete
@@ -17,20 +18,24 @@ command -v melody >/dev/null 2>&1 || {
 }
 
 # If `.env` do not exists, create it
-ENV_FILE_PATH=$DIR/../../.env
+ENV_FILE_PATH=$ROOT_DIR/.env
 if [ ! -f $ENV_FILE_PATH ]; then
     echo > $ENV_FILE_PATH
 fi
 
 echo "Creating the ngrok tunnel"
 docker-compose up -d tunnel
-php $DIR/wait-for.php tunnel
+NGROK_URL=$(php $DIR/wait-for.php tunnel)
 
-echo "Configuring the environment..."
+echo
+echo "   Ngrok tunnel is ready. Its URL is: "$NGROK_URL
+echo
+
+echo
+echo "   Configuring the environment..."
+echo
+
 melody run $DIR/config.php
-
-echo "Preparing the environment..."
-docker-compose run --rm api bash -c 'container symfony_console assetic:dump'
 
 echo
 echo "   Starting the remaining Docker containers."
@@ -40,3 +45,17 @@ echo
 
 docker-compose up -d
 php $DIR/wait-for.php api 60
+
+if [ ! -d $ROOT_DIR/api/web/css ]; then
+    echo
+    echo "   Generating the front-end assets as they are not found."
+    echo
+
+    docker-compose run --rm api bash -c 'container symfony_console assetic:dump'
+fi
+
+echo
+echo "   Everything seems to be ready."
+echo "   - User interface: http://localhost"
+echo "   - Admin: http://localhost:81/admin/"
+echo

@@ -10,24 +10,11 @@ $phase = 0;
 while (time() < ($startTime + $timeout)) {
     if ($for == 'tunnel') {
         if ($address = get_tunnel_address()) {
-            echo <<<CONTENTS
-  
-  The ngrok tunnel is ready. Its URL is: {$address}
-  
-
-CONTENTS;
-
+            echo $address;
             exit(0);
         }
     } elseif ($for == 'api') {
         if (false !== @file_get_contents('http://localhost:81')) {
-            echo <<<CONTENTS
-  
-  The API seems to be ready!
-  
-
-CONTENTS;
-
             exit(0);
         }
     } else {
