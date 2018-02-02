@@ -10,8 +10,8 @@ services:
             SYMFONY_WEB_APP_ENV_REWRITE: "true" # Uses the `app_dev.php` endpoint
         volumes:
             - ./api:/app
-            - ./runtime/keys:/app/var/keys
-            - ~/.kube/config:/app/var/kube-config
+            - ./runtime/keys:/runtime/keys
+            - ~/.kube/config:/runtime/kube-config
         env_file:
             - .env
 
@@ -24,8 +24,8 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./api:/app
-            - ./runtime/keys:/app/var/keys
-            - ~/.kube/config:/app/var/kube-config
+            - ./runtime/keys:/runtime/keys
+            - ~/.kube/config:/runtime/kube-config
         env_file:
             - .env
 
@@ -45,7 +45,7 @@ services:
     logstream:
         volumes:
             - ./logstream/src:/app/src
-            - ./runtime/keys:/app/var/keys
+            - ./runtime/keys:/runtime/keys
         env_file:
             - .env
 
@@ -65,7 +65,7 @@ services:
             - KUBE_PROXY_SCHEME=ws
         volumes:
             - ./k8s-watcher/src:/app/src
-            - ./runtime/keys:/app/var/keys
+            - ./runtime/keys:/runtime/keys
 
     rabbitmq:
         ports:

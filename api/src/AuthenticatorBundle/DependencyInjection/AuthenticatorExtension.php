@@ -18,9 +18,15 @@ class AuthenticatorExtension extends Extension
         $loader->load('services.xml');
         $loader->load('controllers.xml');
         $loader->load('admin.xml');
-        $loader->load('intercom.xml');
         $loader->load('billing.xml');
         $loader->load('alerts.xml');
-        $loader->load('audit-log.xml');
+
+        if ($container->getParameter('google_cloud_audit_enabled')) {
+            $loader->load('audit-log.xml');
+        }
+
+        if ($container->getParameter('intercom_enabled')) {
+            $loader->load('intercom.xml');
+        }
     }
 }

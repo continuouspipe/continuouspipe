@@ -210,12 +210,18 @@ lexik_jwt_authentication:
 continuous_pipe_security:
     vaults:
         user_secrets:
-            google_kms:
-                project_id: "%google_kms_project_id%"
-                location: "%google_kms_location%"
-                service_account_path: "%google_kms_service_account_path%"
-                key_ring: "%google_kms_key_ring%"
-                key_cache_service: river.cache
+            php_encryption:
+                key: "%security_php_encryption_key%"
+
+            # Un-comment to activate Google KMS encryption:
+            # (In the future, it would be much better to use a DSN to allow to switch between those using environment variables.)
+            #google_kms:
+            #    project_id: "%google_kms_project_id%"
+            #    location: "%google_kms_location%"
+            #    service_account_path: "%google_kms_service_account_path%"
+            #    key_ring: "%google_kms_key_ring%"
+            #    key_cache_service: river.cache
+
             cache_service: river.memory_cache
 
         within_clusters:

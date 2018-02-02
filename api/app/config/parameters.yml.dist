@@ -1,0 +1,234 @@
+parameters:
+    # Database environment variables
+    env(DATABASE_HOST): database
+    env(DATABASE_USER): river
+    env(DATABASE_PASSWORD): river
+    env(DATABASE_NAME): river
+
+    env(REDIS_HOST): redis
+
+    env(RIVER_HOST): localhost
+    env(RIVER_UI_URL): https://void
+    env(AUTHENTICATOR_URL): https://void
+    env(BUILDER_URL): https://void
+    env(PIPE_URL): https://void
+    env(LOGSTREAM_URL): https://void
+    env(K8S_WATCHER_URL): https://void
+    env(K8S_HEALTH_CHECKER_URL): https://void
+    env(AUTH_DEFAULT_REDIRECTION_URL): http://localhost # https://ui.continuouspipe.io
+
+    env(KEEN_PROJECT_ID): ~
+    env(KEEN_WRITE_KEY): ~
+    env(TIDEWAYS_API_KEY): ''
+    env(LOGITIO_API_KEY): ''
+
+    env(BITBUCKET_OAUTH_KEY): ~
+    env(BITBUCKET_OAUTH_SECRET): ~
+
+    env(GITHUB_CLIENT_ID): client_id
+    env(GITHUB_CLIENT_SECRET): client_secret
+    env(GITHUB_SECRET): such-secret
+    env(GITHUB_INTEGRATION_ID): 333
+    env(GITHUB_INTEGRATION_SLUG): integration-slug
+
+    env(AUTHENTICATOR_API_KEY): ~
+    env(ADMIN_PASSWORD): ~
+
+    env(HOSTED_GRAPHITE_API_KEY): ~
+
+    env(INTERCOM_APPLICATION_ID): ~
+    env(INTERCOM_API_KEY): ~
+    env(INTERCOM_DEFAULT_ADMIN_ID): ~
+
+    env(MESSAGE_QUEUES_MAIN_DSN): 'amqp://guest:guest@rabbitmq:5672/%2f?topic=messages&queue=messages'
+    env(MESSAGE_QUEUES_OPERATIONS_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
+    env(MESSAGE_QUEUES_DELAYED_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
+    env(MESSAGE_QUEUES_LONG_RUNNING_DEPLOYMENTS_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
+
+    env(FLEX_QUAY_IO_ACCESS_TOKEN): mytoken
+    env(FLEX_QUAY_IO_ORGANISATION): continuouspipe
+
+    env(SECURITY_ENCRYPTION_KEY): encryption-key
+
+    env(CLOUD_FLARE_MANAGED_EMAIL): email@example.com
+    env(CLOUD_FLARE_MANAGED_ZONE_API_KEY): 12345qwerty
+    env(CLOUD_FLARE_MANAGED_ZONE_IDENTIFIER): zone-id
+
+    env(BILLING_ENABLED): true
+    env(RECURLY_API_KEY): ~
+    env(RECURLY_SUBDOMAIN): ~
+
+    env(GOOGLE_CLIENT_ID): ~
+    env(GOOGLE_CLIENT_SECRET): ~
+
+    env(FIREBASE_APP): my-firebase-app
+    env(BUILDER_DEFAULT_ENGINE): gcb
+    env(MASTER_API_KEY): ~
+
+    env(GOOGLE_KMS_SERVICE_ACCOUNT_PATH): ~
+    env(JWT_PRIVATE_KEY_PATH): ~
+    env(JWT_PUBLIC_KEY_PATH): ~
+    env(GITHUB_INTEGRATION_PRIVATE_KEY_PATH): ~
+    env(GOOGLE_STORAGE_SERVICE_ACCOUNT_PATH): ~
+    env(GOOGLE_CONTAINER_BUILDER_SERVICE_ACCOUNT_PATH): ~
+    env(MANAGED_CLUSTER_GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH): ~
+
+    env(GOOGLE_CLOUD_AUDIT_LOG_PROJECT_ID): ~
+    env(GOOGLE_CLOUD_AUDIT_LOG_SERVICE_ACCOUNT_PATH): ~
+
+    # Parameters
+    database_host:     "%env(DATABASE_HOST)%"
+    database_port:     ~
+    database_name:     "%env(DATABASE_NAME)%"
+    database_user:     "%env(DATABASE_USER)%"
+    database_password: "%env(DATABASE_PASSWORD)%"
+
+    secret:            "%env(APP_SECRET)%"
+
+    github_secret: "%env(GITHUB_SECRET)%"
+    github_integration.id: "%env(GITHUB_INTEGRATION_ID)%"
+    github_integration.private_key_path: "%env(GITHUB_INTEGRATION_PRIVATE_KEY_PATH)"
+    github_integration.slug: "%env(GITHUB_INTEGRATION_SLUG)%"
+
+    authenticator_url:  "%env(AUTHENTICATOR_URL)%"
+    builder_base_url:  "%env(BUILDER_URL)%"
+    pipe_base_url:  "%env(PIPE_URL)%"
+    logstream_url:  "%env(LOGSTREAM_URL)%"
+    river_host: "%env(RIVER_HOST)%"
+    river_ui_url: "%env(RIVER_UI_URL)%"
+    k8s_watcher_url: "%env(K8S_WATCHER_URL)%"
+    k8s_health_checker_url: "%env(K8S_HEALTH_CHECKER_URL)%"
+
+    use_ssl: true
+
+    jwt_private_key_path: "%env(JWT_PRIVATE_KEY_PATH)%"
+    jwt_public_key_path: "%env(JWT_PUBLIC_KEY_PATH)%"
+    jwt_key_pass_phrase: "%env(JWT_PRIVATE_KEY_PASS_PHRASE)%"
+    jwt_token_ttl: 86400
+
+    sentry_dsn: ~
+
+    redis_host: "%env(REDIS_HOST)%"
+    redis_dsn: redis://%env(REDIS_HOST)%
+
+    router.request_context.host: %river_host%
+    authenticator_api_key: "%env(AUTHENTICATOR_API_KEY)%"
+    admin_password: "%env(ADMIN_PASSWORD)%"
+
+    keen_project_id: "%env(KEEN_PROJECT_ID)%"
+    keen_write_key: "%env(KEEN_WRITE_KEY)%"
+
+    tide_timeout: 7200 # 2h
+    locker_timeout: 120 # 2 minutes
+    retry_interval: 30 # In seconds, the interval used for various retry (tide start, environment deletion)
+    api_retry_count: 4    # Maximum number of failed API call retries.
+    tide_archive_delay: 3600 # In seconds, an hour.
+
+    hosted_graphite_server: ~
+    hosted_graphite_port: 2003
+    hosted_graphite_api_key: "%env(HOSTED_GRAPHITE_API_KEY)%"
+
+    statsd_host: statsd.hostedgraphite.com
+    statsd_port: 8125
+    statsd_prefix: %hosted_graphite_api_key%
+
+    bitbucket_oauth_key: "%env(BITBUCKET_OAUTH_KEY)%"
+    bitbucket_oauth_secret: "%env(BITBUCKET_OAUTH_SECRET)%"
+    tideways_api_key: "%env(TIDEWAYS_API_KEY)%"
+
+    google_kms_project_id: continuous-pipe-1042
+    google_kms_location: europe-west1
+    google_kms_service_account_path: "%env(GOOGLE_KMS_SERVICE_ACCOUNT_PATH)%"
+    google_kms_key_ring: flows-keys
+
+    message_connection_main_dsn: '%env(MESSAGE_QUEUES_MAIN_DSN)%'
+    message_connection_operations_dsn: '%env(MESSAGE_QUEUES_OPERATIONS_DSN)%'
+    message_connection_delayed_dsn: '%env(MESSAGE_QUEUES_DELAYED_DSN)%'
+    message_connection_long_running_deployments_dsn: '%env(MESSAGE_QUEUES_LONG_RUNNING_DEPLOYMENTS_DSN)%'
+
+    logitio_url: 'https://api.logit.io/v2'
+    logitio_api_key: "%env(LOGITIO_API_KEY)%"
+    logitio_timeout: 5
+
+    docker_entrypoint: 'unix:///var/run/docker.sock'
+    test_docker_credentials: [ { serverAddress: docker.io, username: username-for-integration-tests, password: its-password, email: its-email@example.com } ]
+
+    google_storage_project_id: continuous-pipe-1042
+    google_storage_key_file_path: "%env(GOOGLE_STORAGE_SERVICE_ACCOUNT_PATH)%"
+    google_storage_bucket: builder-bucket-testing
+
+    google_container_builder_source_bucket: storage-for-container-builder-production
+    google_container_builder_project: continuous-pipe-1042
+    google_container_builder_service_account_path: "%env(GOOGLE_CONTAINER_BUILDER_SERVICE_ACCOUNT_PATH)%"
+
+    firebase_database_uri: 'https://%env(FIREBASE_APP)%.firebaseio.com'
+    firebase_service_account_path: "%env(FIREBASE_SERVICE_ACCOUNT_PATH)%"
+
+    statsd_host: statsd.hostedgraphite.com
+    statsd_port: 8125
+    statsd_prefix: %hosted_graphite_api_key%
+
+    reports_elastic_search_host: ~
+    reports_elastic_search_use_ssl_verification: true
+    reports_elastic_search_api_key: ~
+    reports_elastic_search_index_name: testbuild
+
+    builder_fixtures_folder: %kernel.root_dir%/../features/builder/fixtures
+
+    pipe.wait_component_interval: 2.5
+    pipe.wait_component_timeout: 1800
+
+    endpoint.wait.timeout: 900
+    endpoint.wait.interval: 1
+
+    pod.wait.timeout: 1800
+    pod.wait.interval: 1
+
+    api_retry_count: 4    # Maximum number of failed API call retries.
+
+    security_php_encryption_key: "%env(SECURITY_ENCRYPTION_KEY)%"
+
+    # This service account needs the following permissions: "Container Engine Admin", "Container Engine Service Agent", "Project IAM Admin", "Service Account Admin", "Service Account Key Admin"
+    managed_google_service_account_file_path: "%env(MANAGED_CLUSTER_GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH)%"
+    managed_google_project_id: continuous-pipe-managed
+    managed_google_cluster_identifier: continuouspipe-production
+    managed_google_rbac_cluster_role: managed-user
+
+    managed_cloudflare_domain_name: continuouspipe.net
+    managed_cloudflare_zone_identifier: %env(CLOUD_FLARE_MANAGED_ZONE_IDENTIFIER)%
+    managed_cloudflare_email: %env(CLOUD_FLARE_MANAGED_EMAIL)%
+    managed_cloudflare_api_key: %env(CLOUD_FLARE_MANAGED_ZONE_API_KEY)%
+
+    flex_quay_io_access_token: "%env(FLEX_QUAY_IO_ACCESS_TOKEN)%"
+    flex_quay_io_organisation: "%env(FLEX_QUAY_IO_ORGANISATION)%"
+
+    # Go to https://console.developers.google.com/apis/credentials to create a Service Account Key.
+    google_cloud_audit_enabled: true
+    google_cloud_audit_log_project_id: "%env(GOOGLE_CLOUD_AUDIT_LOG_PROJECT_ID)%"
+    google_cloud_audit_log_service_account_key_file: "%env(GOOGLE_CLOUD_AUDIT_LOG_SERVICE_ACCOUNT_PATH)%"
+
+    bitbucket_oauth_key: %env(BITBUCKET_OAUTH_KEY)%
+    bitbucket_oauth_secret: %env(BITBUCKET_OAUTH_SECRET)%
+
+    billing_enabled: "%env(BILLING_ENABLED)%"
+    recurly_subdomain: "%env(RECURLY_SUBDOMAIN)%"
+    recurly_api_key: %env(RECURLY_API_KEY)%
+
+    default_redirection_url: "%env(AUTH_DEFAULT_REDIRECTION_URL)%"
+
+    intercom_enabled: true
+    intercom_application_id: "%env(INTERCOM_APPLICATION_ID)%"
+    intercom_api_key: "%env(INTERCOM_API_KEY)%"
+    intercom_default_admin_id: "%env(INTERCOM_DEFAULT_ADMIN_ID)%"
+
+    google_client_id: %env(GOOGLE_CLIENT_ID)%
+    google_client_secret: %env(GOOGLE_CLIENT_SECRET)%
+
+    github_client_id: %env(GITHUB_CLIENT_ID)%
+    github_client_secret: %env(GITHUB_CLIENT_SECRET)%
+
+    builder_default_engine: %env(BUILDER_DEFAULT_ENGINE)%
+
+    kube_status_base_uri: https://example.com
+    flags:
+        billing: "%billing_enabled%"

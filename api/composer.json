@@ -116,7 +116,9 @@
         "incenteev-parameters": [{
             "file": "app/config/parameters.yml",
             "env-map": {
-                "sentry_dsn": "API_SENTRY_DSN"
+                "sentry_dsn": "API_SENTRY_DSN",
+                "intercom_enabled": "INTERCOM_ENABLED",
+                "google_cloud_audit_enabled": "GOOGLE_CLOUD_AUDIT_ENABLED"
             }
         }]
     },

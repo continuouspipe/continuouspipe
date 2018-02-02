@@ -14,7 +14,7 @@ if (!firebase_application) {
 }
 
 Firebase.initializeApp({
-    credential: Firebase.credential.cert(require('../var/keys/firebase.json')),
+    credential: Firebase.credential.cert(require(process.env.FIREBASE_SERVICE_ACCOUNT_PATH)),
     databaseURL: 'https://'+firebase_application+'.firebaseio.com',
     storageBucket: firebase_application+'.appspot.com'
 });
@@ -26,8 +26,8 @@ Raven.config(process.env.SENTRY_DSN).install();
 var port = process.env.PORT || 443;
 console.log('Start HTTP server at port '+port);
 var options = {
-    key: fs.readFileSync('api/keys/server.key'),
-    cert: fs.readFileSync('api/keys/server.crt')
+    key: fs.readFileSync(process.env.SSL_CERTIFICATE_PRIVATE_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERTIFICATE_CERTIFICATE_PATH)
 };
 
 var handler = HandlerFactory(
