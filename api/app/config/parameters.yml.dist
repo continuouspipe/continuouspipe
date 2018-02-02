@@ -48,7 +48,7 @@ parameters:
     env(FLEX_QUAY_IO_ACCESS_TOKEN): mytoken
     env(FLEX_QUAY_IO_ORGANISATION): continuouspipe
 
-    env(SECURITY_ENCRYPTION_KEY): encryption-key
+    env(SECURITY_ENCRYPTION_KEY): def00000fc5829bd0007abaa3a3d6cc641e7b52e3fc0a1e111f6acb243b0ddc7a3a05e85f392af96be6649dbd6469bec95c07a14a751db93cd9bde94547225f751a2e23b
 
     env(CLOUD_FLARE_MANAGED_EMAIL): email@example.com
     env(CLOUD_FLARE_MANAGED_ZONE_API_KEY): 12345qwerty
@@ -87,7 +87,7 @@ parameters:
 
     github_secret: "%env(GITHUB_SECRET)%"
     github_integration.id: "%env(GITHUB_INTEGRATION_ID)%"
-    github_integration.private_key_path: "%env(GITHUB_INTEGRATION_PRIVATE_KEY_PATH)"
+    github_integration.private_key_path: "%env(GITHUB_INTEGRATION_PRIVATE_KEY_PATH)%"
     github_integration.slug: "%env(GITHUB_INTEGRATION_SLUG)%"
 
     authenticator_url:  "%env(AUTHENTICATOR_URL)%"
