@@ -194,7 +194,7 @@ class BuildStep
         ));
     }
 
-    public function readArtifacts(ArtifactReader $artifactReader, LoggerFactory $loggerFactory)
+    public function readArtifacts(LoggerFactory $loggerFactory, ArtifactReader $artifactReader = null)
     {
         $archives = [];
 
@@ -205,6 +205,10 @@ class BuildStep
             )))->updateStatus(Log::RUNNING);
 
             try {
+                if (null === $artifactReader) {
+                    throw new ArtifactException('No artifact storage was configured.');
+                }
+
                 $archive = $artifactReader->read($artifact);
             } catch (ArtifactException $e) {
                 if ($e instanceof ArtifactNotFound && $artifact->isPersistent()) {
@@ -234,7 +238,7 @@ class BuildStep
         ));
     }
 
-    public function writeArtifacts(DockerImageReader $dockerImageReader, ArtifactWriter $artifactWriter, LoggerFactory $loggerFactory)
+    public function writeArtifacts(DockerImageReader $dockerImageReader, LoggerFactory $loggerFactory, ArtifactWriter $artifactWriter = null)
     {
         $archives = [];
 
@@ -251,6 +255,10 @@ class BuildStep
             }
 
             try {
+                if (null === $artifactWriter) {
+                    throw new ArtifactException('No artifact storage was configured.');
+                }
+                
                 $artifactWriter->write($archive, $artifact);
             } catch (ArtifactException $e) {
                 return $this->failed($e, $line);

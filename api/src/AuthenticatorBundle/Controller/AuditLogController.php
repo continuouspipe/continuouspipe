@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\Request;
 class AuditLogController
 {
     /**
-     * @var LogRepository
+     * @var LogRepository|null
      */
     private $logRepository;
 
-    public function __construct(LogRepository $logRepository)
+    public function __construct(LogRepository $logRepository = null)
     {
         $this->logRepository = $logRepository;
     }
@@ -25,11 +25,13 @@ class AuditLogController
     /**
      * @Route("/view", name="view_audit_log")
      * @Template
-     *
-     * @return array
      */
     public function viewAction(Request $request)
     {
+        if (null === $this->logRepository) {
+            throw new \RuntimeException('Audit log is not activated');
+        }
+
         $eventTypes = $this->logRepository->listEventTypes();
         $eventType = $request->get('event_type', reset($eventTypes));
         $pageCursor = $request->get('cursor', '');

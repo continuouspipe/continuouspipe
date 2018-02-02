@@ -67,10 +67,10 @@ class BuildStepSaga
         MessageBus $eventBus,
         ArchiveBuilder $archiveBuilder,
         DockerFacade $dockerFacade,
-        ArtifactReader $artifactReader,
-        ArtifactWriter $artifactWriter,
         DockerImageReader $dockerImageReader,
-        LoggerFactory $loggerFactory
+        LoggerFactory $loggerFactory,
+        ArtifactReader $artifactReader = null,
+        ArtifactWriter $artifactWriter = null
     ) {
         $this->buildStepRepository = $buildStepRepository;
         $this->eventBus = $eventBus;
@@ -106,11 +106,11 @@ class BuildStepSaga
         if ($event instanceof StepStarted) {
             $step->downloadArchive($this->archiveBuilder);
         } elseif ($event instanceof CodeArchiveCreated) {
-            $step->readArtifacts($this->artifactReader, $this->loggerFactory);
+            $step->readArtifacts($this->loggerFactory, $this->artifactReader);
         } elseif ($event instanceof ReadArtifacts) {
             $step->buildImage($this->dockerFacade);
         } elseif ($event instanceof DockerImageBuilt) {
-            $step->writeArtifacts($this->dockerImageReader, $this->artifactWriter, $this->loggerFactory);
+            $step->writeArtifacts($this->dockerImageReader, $this->loggerFactory, $this->artifactWriter);
         } elseif ($event instanceof WroteArtifacts) {
             $step->pushImage($this->dockerFacade);
         } elseif ($event instanceof StepFinished || $event instanceof StepFailed) {

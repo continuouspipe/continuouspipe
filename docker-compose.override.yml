@@ -12,6 +12,7 @@ services:
             - ./api:/app
             - ./runtime/keys:/runtime/keys
             - ~/.kube/config:/runtime/kube-config
+            - /var/run/docker.sock:/var/run/docker.sock
         env_file:
             - .env
 
@@ -22,10 +23,10 @@ services:
             GRANT_DOCKER_DAEMON: "true"
             NUM_OF_WORKERS: "2"
         volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
             - ./api:/app
             - ./runtime/keys:/runtime/keys
             - ~/.kube/config:/runtime/kube-config
+            - /var/run/docker.sock:/var/run/docker.sock
         env_file:
             - .env
 

@@ -18,11 +18,14 @@ class BuilderExtension extends Extension
         $loader->load('aggregates/build.xml');
         $loader->load('aggregates/build-step.xml');
         $loader->load('build-adapters/docker.xml');
-        $loader->load('build-adapters/google-cloud.xml');
         $loader->load('builder.xml');
         $loader->load('credentials.xml');
         $loader->load('logging.xml');
         $loader->load('notification.xml');
         $loader->load('controllers.xml');
+
+        if ($container->getParameter('google_container_builder_enabled')) {
+            $loader->load('build-adapters/google-cloud.xml');
+        }
     }
 }

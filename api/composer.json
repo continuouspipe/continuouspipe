@@ -118,7 +118,8 @@
             "env-map": {
                 "sentry_dsn": "API_SENTRY_DSN",
                 "intercom_enabled": "INTERCOM_ENABLED",
-                "google_cloud_audit_enabled": "GOOGLE_CLOUD_AUDIT_ENABLED"
+                "google_cloud_audit_enabled": "GOOGLE_CLOUD_AUDIT_ENABLED",
+                "google_container_builder_enabled": "GOOGLE_CONTAINER_BUILDER_ENABLED"
             }
         }]
     },

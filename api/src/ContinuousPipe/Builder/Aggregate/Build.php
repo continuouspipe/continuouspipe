@@ -111,8 +111,13 @@ class Build implements Aggregate
         ));
     }
 
-    public function cleanUp(Artifact\ArtifactRemover $artifactRemover, LoggerInterface $logger)
+    public function cleanUp(LoggerInterface $logger, Artifact\ArtifactRemover $artifactRemover = null)
     {
+        if (null === $artifactRemover) {
+            $logger->debug('Did not remove any artifact as no artifact remover was given');
+
+            return;
+        }
         foreach ($this->writtenArtifacts as $artifact) {
             if ($artifact->isPersistent()) {
                 continue;

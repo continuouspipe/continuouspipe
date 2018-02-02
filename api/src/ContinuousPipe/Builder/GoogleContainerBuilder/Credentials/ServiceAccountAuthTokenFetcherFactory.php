@@ -12,7 +12,7 @@ final class ServiceAccountAuthTokenFetcherFactory
      */
     private $serviceAccountPath;
 
-    public function __construct(string $serviceAccountPath)
+    public function __construct(string $serviceAccountPath = null)
     {
         $this->serviceAccountPath = $serviceAccountPath;
     }

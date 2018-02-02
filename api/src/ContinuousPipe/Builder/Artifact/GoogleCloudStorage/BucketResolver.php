@@ -2,7 +2,7 @@
 
 namespace ContinuousPipe\Builder\Artifact\GoogleCloudStorage;
 
-use Google\Cloud\ServiceBuilder;
+use Google\Cloud\Core\ServiceBuilder;
 use Google\Cloud\Storage\Bucket;
 
 class BucketResolver
@@ -17,7 +17,7 @@ class BucketResolver
      */
     private $bucketName;
 
-    public function __construct(string $projectId, string $keyFilePath, string $bucketName)
+    public function __construct(string $projectId, string $keyFilePath = null, string $bucketName = null)
     {
         $this->bucketName = $bucketName;
         $this->serviceBuilder = new ServiceBuilder([

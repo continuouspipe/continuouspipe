@@ -30,10 +30,10 @@
             <argument type="service" id="event_bus" />
             <argument type="service" id="builder.archive_builder"/>
             <argument type="service" id="builder.docker.client"/>
-            <argument type="service" id="builder.artifact_reader" />
-            <argument type="service" id="builder.artifact_writer" />
             <argument type="service" id="builder.docker_image_reader" />
             <argument type="service" id="log_stream.logger_factory" />
+            <argument type="service" id="builder.artifact_reader" on-invalid="null" />
+            <argument type="service" id="builder.artifact_writer" on-invalid="null" />
 
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\StepStarted" />
             <tag name="event_subscriber" subscribes_to="ContinuousPipe\Builder\Aggregate\BuildStep\Event\CodeArchiveCreated" />

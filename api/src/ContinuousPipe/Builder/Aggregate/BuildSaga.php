@@ -42,10 +42,10 @@ class BuildSaga
 
     public function __construct(
         TransactionManager $transactionManager,
-        ArtifactRemover $artifactRemover,
-        GoogleContainerBuilderClient $googleContainerBuilderClient,
         ExistingImageChecker $existingImageChecker,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ArtifactRemover $artifactRemover = null,
+        GoogleContainerBuilderClient $googleContainerBuilderClient = null
     ) {
         $this->transactionManager = $transactionManager;
         $this->artifactRemover = $artifactRemover;
@@ -92,7 +92,7 @@ class BuildSaga
                 } elseif ($event instanceof StepFinished) {
                     $build->stepFinished($event);
                 } elseif ($event instanceof BuildFinished || $event instanceof BuildFailed) {
-                    $build->cleanUp($this->artifactRemover, $this->logger);
+                    $build->cleanUp($this->logger, $this->artifactRemover);
                 }
             }
         });

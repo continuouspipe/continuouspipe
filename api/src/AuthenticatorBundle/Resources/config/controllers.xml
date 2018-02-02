@@ -17,7 +17,7 @@
         </service>
 
         <service id="app.controller.audit_log" class="AuthenticatorBundle\Controller\AuditLogController">
-            <argument type="service" id="authenticator.audit_log.storage.log_repository" />
+            <argument type="service" id="authenticator.audit_log.storage.log_repository" on-invalid="null" />
         </service>
     </services>
 </container>

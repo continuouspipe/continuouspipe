@@ -26,7 +26,7 @@ class BitBucketRepositoryExplorer implements CodeRepositoryExplorer
      */
     private $clientSecret;
 
-    public function __construct(ClientInterface $client, string $clientId, string $clientSecret)
+    public function __construct(ClientInterface $client, string $clientId = null, string $clientSecret = null)
     {
         $this->client = $client;
         $this->clientId = $clientId;
