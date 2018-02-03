@@ -5,6 +5,7 @@ namespace AdminBundle\Controller;
 use ContinuousPipe\River\Command\StartTideCommand;
 use ContinuousPipe\River\EventBus\EventStore;
 use ContinuousPipe\River\Flow;
+use ContinuousPipe\River\Recover\CancelTides\Command\CancelTideCommand;
 use ContinuousPipe\River\View\TideRepository;
 use ContinuousPipe\Security\Team\Team;
 use Ramsey\Uuid\Uuid;
@@ -130,7 +131,27 @@ class TideController
     {
         $this->commandBus->handle(new StartTideCommand(Uuid::fromString($uuid)));
 
-        $request->getSession()->getFlashBag()->add('success', 'FlatFlow\'s tides\' logs successfully archived');
+        $request->getSession()->getFlashBag()->add('success', 'Tide has been forced to start');
+
+        return new RedirectResponse(
+            $this->urlGenerator->generate('admin_tide', [
+                'team' => $team->getSlug(),
+                'flow' => (string) $flow->getUuid(),
+                'uuid' => $uuid,
+            ])
+        );
+    }
+
+    /**
+     * @Route("/teams/{team}/flows/{flow}/tides/{uuid}/cancel", methods={"POST"}, name="admin_tide_cancel")
+     * @ParamConverter("team", converter="team", options={"slug"="team"})
+     * @ParamConverter("flow", converter="flow", options={"identifier"="flow", "flat"=true})
+     */
+    public function cancelAction(Team $team, Flow\Projections\FlatFlow $flow, Request $request, $uuid)
+    {
+        $this->commandBus->handle(new CancelTideCommand(Uuid::fromString($uuid)));
+
+        $request->getSession()->getFlashBag()->add('success', 'Tide has been cancelled');
 
         return new RedirectResponse(
             $this->urlGenerator->generate('admin_tide', [

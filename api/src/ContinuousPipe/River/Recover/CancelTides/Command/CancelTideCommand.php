@@ -28,7 +28,7 @@ class CancelTideCommand implements TideCommand
      * @param Uuid $tideUuid
      * @param string $username
      */
-    public function __construct(Uuid $tideUuid, $username)
+    public function __construct(Uuid $tideUuid, string $username = null)
     {
         $this->tideUuid = $tideUuid;
         $this->username = $username;

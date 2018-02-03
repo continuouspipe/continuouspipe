@@ -64,6 +64,14 @@
                         </form>
                     </td>
                 </tr>
+                <tr>
+                    <th>Cancel</th>
+                    <td>
+                        <form action="{{ path('admin_tide_cancel', {'team': team.slug, 'flow': flow.uuid, 'uuid': tide.uuid}) }}" method="POST">
+                            <button class="btn btn-danger">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
             </table>
         </div>
     </div>
