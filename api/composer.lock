@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0de7c779eb990e30c56f2ffc967b4a0b",
+    "content-hash": "7875f3eb929fe2f9f0099b5ca7ba4ef4",
     "packages": [
         {
             "name": "adlogix/guzzle-atlassian-connect-middleware",
@@ -670,18 +670,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/continuouspipe/flex.git",
-                "reference": "2a85b06c5225ade99163bfb11f01c60ad994ba0c"
+                "reference": "fa14b5b6be8c3aa1d895710231d5b2c62f16010a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/2a85b06c5225ade99163bfb11f01c60ad994ba0c",
-                "reference": "2a85b06c5225ade99163bfb11f01c60ad994ba0c",
+                "url": "https://api.github.com/repos/continuouspipe/flex/zipball/fa14b5b6be8c3aa1d895710231d5b2c62f16010a",
+                "reference": "fa14b5b6be8c3aa1d895710231d5b2c62f16010a",
                 "shasum": ""
             },
             "require": {
                 "league/flysystem": "^1.0",
-                "symfony/dotenv": "^3.3",
-                "symfony/finder": "^2.7 || ^3.0"
+                "symfony/dotenv": "^3.3 || ^4.0",
+                "symfony/finder": "^2.7 || ^3.0 || ^4.0"
             },
             "require-dev": {
                 "behat/behat": "^3.3"
@@ -701,7 +701,7 @@
                 "source": "https://github.com/continuouspipe/flex/tree/master",
                 "issues": "https://github.com/continuouspipe/flex/issues"
             },
-            "time": "2017-09-13 09:00:36"
+            "time": "2018-02-03 17:48:22"
         },
         {
             "name": "continuous-pipe/message",
