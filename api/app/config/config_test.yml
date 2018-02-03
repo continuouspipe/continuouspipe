@@ -11,6 +11,14 @@ parameters:
     pod.wait.timeout: 1
     pod.wait.interval: 0.01
 
+    google_cloud_audit_enabled: true
+    intercom_enabled: true
+    google_container_builder_enabled: true
+
+    jwt_private_key_path: "%kernel.root_dir%/var/tests/jwt-private.pem"
+    jwt_public_key_path: "%kernel.root_dir%/var/tests/jwt-public.pem"
+    jwt_key_pass_phrase: "test"
+
     flags:
         billing: true
 
