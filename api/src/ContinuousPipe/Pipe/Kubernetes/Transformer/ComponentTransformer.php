@@ -5,6 +5,8 @@ namespace ContinuousPipe\Pipe\Kubernetes\Transformer;
 use ContinuousPipe\Pipe\Kubernetes\PublicEndpoint\EndpointFactory;
 use ContinuousPipe\Model\Component;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
+use Kubernetes\Client\Model\KubernetesObject;
+use Kubernetes\Client\Model\Service;
 
 class ComponentTransformer
 {
@@ -56,12 +58,12 @@ class ComponentTransformer
         $objects = [];
         $pod = $this->podTransformer->getPodFromComponent($component);
 
-        if ($this->needsAService($component)) {
-            $objects[] = $this->serviceTransformer->getServiceFromComponent($component);
-        }
-
         foreach ($component->getEndpoints() as $endpoint) {
             $objects = array_merge($objects, $this->endpointFactory->createObjectsFromEndpoint($component, $endpoint));
+        }
+
+        if ($this->needsAService($component) && !$this->hasAService($objects)) {
+            $objects[] = $this->serviceTransformer->getServiceFromComponent($component);
         }
 
         if (!$this->isScalable($component)) {
@@ -122,5 +124,21 @@ class ComponentTransformer
         }
 
         return version_compare($version, '1.2') >= 0;
+    }
+
+    /**
+     * @param KubernetesObject[] $objects
+     *
+     * @return bool
+     */
+    private function hasAService(array $objects) : bool
+    {
+        foreach ($objects as $object) {
+            if ($object instanceof Service) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
