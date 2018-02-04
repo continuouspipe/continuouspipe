@@ -37,6 +37,10 @@ angular.module('continuousPipeRiver')
 
             var tidesPerPipelineCache = {};
             $scope.tidesForPipeline = function(pipeline) {
+                if (!pipeline) {
+                    return [];
+                }
+
                 if (!(pipeline.uuid in tidesPerPipelineCache)) {
                     tidesPerPipelineCache[pipeline.uuid] = loadPipelinesTide(pipeline, 10);
                 }
@@ -62,17 +66,25 @@ angular.module('continuousPipeRiver')
                 database.ref().child('flows/' + flow.uuid + '/pipelines')
             );
 
-            return $scope.pipelines.$loaded(function() {
+            var selectPreferredPipeline = function() {
                 var preferredPipeline = PreferedPipelineStorage.getForFlow(flow.uuid),
-                    pipelineIndex = 
+                    pipelineIndex =
                         preferredPipeline ? indexOfPipeline($scope.pipelines, preferredPipeline) :
-                        ($scope.pipelines.length ? 0 : -1)
-                    ;
+                            ($scope.pipelines.length ? 0 : -1)
+                ;
 
                 if (pipelineIndex !== -1) {
                     $scope.selectPipeline($scope.pipelines[pipelineIndex]);
                 }
-            });
+
+                if ($scope.pipelines.length === 0) {
+                    $scope.pipelines.$watch(function() {
+                        selectPreferredPipeline();
+                    });
+                }
+            };
+
+            return $scope.pipelines.$loaded(selectPreferredPipeline);
         }).then(function () {
             $scope.isLoading = false;
         }));
