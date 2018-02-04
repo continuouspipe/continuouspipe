@@ -30,4 +30,11 @@ interface SecurityUserRepository
      * @return SecurityUser
      */
     public function save(SecurityUser $user);
+
+    /**
+     * Return the number of users.
+     *
+     * @return int
+     */
+    public function count();
 }

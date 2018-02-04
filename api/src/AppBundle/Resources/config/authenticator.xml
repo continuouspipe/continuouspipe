@@ -170,6 +170,12 @@
 
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="app.listener.after_user_creation.admin_if_the_first_user"
+                 class="ContinuousPipe\Authenticator\EventListener\AfterUserCreation\UserIsAdminIfIsTheFirstUser">
+            <argument type="service" id="app.repository.security_user" />
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
         <service id="app.listener.jwt_token_created.add_user_email" class="ContinuousPipe\Authenticator\EventListener\JWTTokenCreated\AddUserEmailInToken">
             <tag name="kernel.event_listener" event="lexik_jwt_authentication.on_jwt_created" method="onJWTCreated" />
         </service>

@@ -10,6 +10,7 @@ use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\GitHubToken;
 use ContinuousPipe\Security\User\UserRepository;
+use function Google\Cloud\Dev\impl;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,6 +65,36 @@ class UserContext implements Context
         $user->setBucketUuid($bucketUuid);
 
         $this->securityUserRepository->save($securityUser);
+    }
+
+    /**
+     * @Then the user :username should have the role :role
+     */
+    public function theUserShouldHaveTheRole($username, $role)
+    {
+        $user = $this->securityUserRepository->findOneByUsername($username);
+
+        if (!in_array($role, $userRoles = $user->getUser()->getRoles())) {
+            throw new \RuntimeException(sprintf(
+                'Found the following roles instead: %s',
+                implode(', ', $userRoles)
+            ));
+        }
+    }
+
+    /**
+     * @Then the user :username should not have the role :role
+     */
+    public function theUserShouldNotHaveTheRole($username, $role)
+    {
+        $user = $this->securityUserRepository->findOneByUsername($username);
+
+        if (in_array($role, $userRoles = $user->getUser()->getRoles())) {
+            throw new \RuntimeException(sprintf(
+                'Found the following roles: %s',
+                implode(', ', $userRoles)
+            ));
+        }
     }
 
     /**
@@ -201,6 +232,20 @@ class UserContext implements Context
             echo $this->response->getContent();
 
             throw new \RuntimeException('Role not found');
+        }
+    }
+
+    /**
+     * @Then I should see that the user do not have the role :role
+     */
+    public function iShouldSeeThatTheUserDoNotHaveTheRole($role)
+    {
+        $json = \GuzzleHttp\json_decode($this->response->getContent(), true);
+
+        if (in_array($role, $json['roles'])) {
+            echo $this->response->getContent();
+
+            throw new \RuntimeException('Role found');
         }
     }
 

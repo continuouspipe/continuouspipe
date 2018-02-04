@@ -35,3 +35,13 @@ Feature:
     And the user "samuel" have the API key "123456"
     When I request the details of user "samuel" with the api key "0987654"
     Then I should be told that I am not identified
+
+  Scenario: The first user ever in the system is an administrator
+    When a login with GitHub as "sroze" with the token "1234"
+    Then the user "sroze" should have the role "ROLE_ADMIN"
+
+  Scenario: Any other user should be... user
+    Given there is a user "somebody-else"
+    When a login with GitHub as "sroze" with the token "1234"
+    Then the user "sroze" should have the role "ROLE_USER"
+    And the user "sroze" should not have the role "ROLE_ADMIN"

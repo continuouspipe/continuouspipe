@@ -70,4 +70,16 @@ class DoctrineSecurityUserRepository implements SecurityUserRepository
 
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('count(u.username)');
+        $queryBuilder->from(SecurityUser::class, 'u');
+
+        return (int) $queryBuilder->getQuery()->getSingleScalarResult();
+    }
 }

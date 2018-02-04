@@ -56,4 +56,12 @@ class InMemorySecurityUserRepository implements SecurityUserRepository
 
         return $user;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        return count($this->users);
+    }
 }

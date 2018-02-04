@@ -62,6 +62,8 @@ parameters:
     env(GOOGLE_CLIENT_SECRET): ~
 
     env(FIREBASE_APP): my-firebase-app
+    env(FIREBASE_SERVICE_ACCOUNT_PATH): ~
+
     env(BUILDER_DEFAULT_ENGINE): gcb
     env(MASTER_API_KEY): ~
 
