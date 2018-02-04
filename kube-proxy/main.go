@@ -32,8 +32,8 @@ var envListenAddress, _ = os.LookupEnv("KUBE_PROXY_LISTEN_ADDRESS") //e.g.: http
 var envWildcardSSLCert, _ = os.LookupEnv("WILDCARD_SSL_CERT")
 var envWildcardSSLKey, _ = os.LookupEnv("WILDCARD_SSL_KEY")
 
-var sslCertFileName = "server.crt"
-var sslKeyFileName = "server.key"
+var sslCertFileName, _ = os.LookupEnv("SSL_CERTIFICATE_CERTIFICATE_PATH")
+var sslKeyFileName, _ = os.LookupEnv("SSL_CERTIFICATE_PRIVATE_KEY_PATH")
 
 func main() {
 	//parse the flags before glog start using them
