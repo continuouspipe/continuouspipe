@@ -8,7 +8,7 @@
 ## Usage
 
 - [Install ContinuousPipe](INSTALL.md) on your machine or Kubernetes cluster to get started.
-- [Read the documentation](https://docs.continuouspipe.io) to know more.
+- [Check out the website](https://continuouspipe.io) or [read the documentation](https://docs.continuouspipe.io) to know more.
 
 ## Contributing
 
