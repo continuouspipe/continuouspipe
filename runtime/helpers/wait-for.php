@@ -26,7 +26,7 @@ while (time() < ($startTime + $timeout)) {
     sleep(1);
 }
 
-echo "Error: Timed-out waiting for the ngrok tunnel. Check the \"tunnel\" container.";
+echo "Error: Timed-out waiting for the ngrok tunnel. Check the \"$for\" container.";
 exit(1);
 
 

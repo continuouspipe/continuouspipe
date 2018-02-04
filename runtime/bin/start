@@ -34,7 +34,7 @@ echo "   (in the meantime, you can run 'docker-compose logs -f' in another termi
 echo
 
 docker-compose up -d
-wait_for api 60
+wait_for api 1800
 
 if [ ! -d $ROOT_DIR/api/web/css ]; then
     echo

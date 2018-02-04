@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 
 services:
     api:
@@ -35,6 +35,9 @@ services:
             - REDIS_HOST=redis
             - LOGSTREAM_URL=https://logstream
             - K8S_WATCHER_URL=http://k8s-watcher
+        depends_on:
+            api:
+                condition: service_healthy
 
     ui:
         build:
