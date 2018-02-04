@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: redis
+  name: redis
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: redis
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: redis:alpine
+        name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component-identifier: redis
+  name: redis
+spec:
+  ports:
+  - name: redis
+    port: 6379
+  selector:
+    component-identifier: redis

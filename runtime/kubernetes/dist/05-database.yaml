@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: database
+  name: database
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: database
+    spec:
+      restartPolicy: Always
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: continuouspipe
+        - name: MYSQL_PASSWORD
+          value: continuouspipe
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_USER
+          value: continuouspipe
+        image: mariadb
+        name: database
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: database-data-volume
+      volumes:
+      - name: database-data-volume
+        persistentVolumeClaim:
+          claimName: database-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component-identifier: database
+  name: database
+spec:
+  ports:
+  - name: database
+    port: 3306
+  selector:
+    component-identifier: database
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: database-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

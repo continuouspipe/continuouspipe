@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3'
 
 services:
     api:
@@ -27,9 +27,6 @@ services:
         build:
             context: ./api
         command: /usr/local/bin/worker
-        depends_on:
-            api:
-                condition: service_healthy
         environment:
             - DATABASE_HOST=database
             - DATABASE_USER=continuouspipe

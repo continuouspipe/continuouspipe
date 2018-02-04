@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: logstream
+  name: logstream
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: logstream
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: docker.io/continuouspipe/logstream:latest
+        imagePullPolicy: Always
+        name: logstream
+        envFrom:
+        - configMapRef:
+            name: main-config
+        volumeMounts:
+        - name: runtime-keys
+          mountPath: "/runtime/keys"
+          readOnly: true
+      volumes:
+      - name: runtime-keys
+        secret:
+          secretName: secret--runtime-keys
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component-identifier: logstream
+  name: logstream
+spec:
+  type: ClusterIP
+  ports:
+  - name: logstream
+    port: 443
+  selector:
+    component-identifier: logstream

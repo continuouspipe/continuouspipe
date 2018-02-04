@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: rabbitmq
+  name: rabbitmq
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: rabbitmq
+    spec:
+      restartPolicy: Always
+      containers:
+      - env:
+        - name: RABBITMQ_NODE_NAME
+          value: localhost
+        image: rabbitmq:3-management
+        name: rabbitmq
+        volumeMounts:
+        - mountPath: "/var/lib/rabbitmq"
+          name: rabbitmq-data-volume
+      volumes:
+      - name: rabbitmq-data-volume
+        persistentVolumeClaim:
+          claimName: rabbitmq-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component-identifier: rabbitmq
+  name: rabbitmq
+spec:
+  ports:
+  - name: rabbitmq
+    port: 5672
+  - name: management
+    port: 15672
+  selector:
+    component-identifier: rabbitmq
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rabbitmq-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

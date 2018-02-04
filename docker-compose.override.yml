@@ -1,7 +1,10 @@
-version: '2.1'
+version: '3'
 
 services:
     api:
+        build:
+            args:
+                - APP_ENV=dev
         ports:
             - 81:80
         environment:
@@ -17,6 +20,9 @@ services:
             - .env
 
     worker:
+        build:
+            args:
+                - APP_ENV=dev
         environment:
             SYMFONY_ENV: dev
             SKIP_COMPOSER: "true"

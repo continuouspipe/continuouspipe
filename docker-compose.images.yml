@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+    api:
+        image: docker.io/continuouspipe/api
+    worker:
+        image: docker.io/continuouspipe/worker
+    ui:
+        image: docker.io/continuouspipe/ui
+    logstream:
+        image: docker.io/continuouspipe/logstream
+    kube-proxy:
+        image: docker.io/continuouspipe/kube-proxy
+    k8s-watcher:
+        image: docker.io/continuouspipe/k8s-watcher

@@ -1,21 +1,11 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR=$DIR/../../
 set -e
 
-# Generates the .env file if not complete
-command -v melody >/dev/null 2>&1 || {
-    echo "This script requires Melody (melody.sensiolabs.org) to be installed."
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$DIR/../../
 
-    read -p "Do you want us to install it for you? " -n 1 -r
-    echo    # (optional) move to a new line
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        sudo sh -c "curl http://get.sensiolabs.org/melody.phar -o /usr/local/bin/melody && chmod a+x /usr/local/bin/melody"
-    else
-        exit 1
-    fi
-}
+source $DIR/../helpers/functions.sh
 
 # If `.env` do not exists, create it
 ENV_FILE_PATH=$ROOT_DIR/.env
@@ -25,7 +15,7 @@ fi
 
 echo "Creating the ngrok tunnel"
 docker-compose up -d tunnel
-NGROK_URL=$(php $DIR/wait-for.php tunnel)
+NGROK_URL=$(wait_for tunnel)
 
 echo
 echo "   Ngrok tunnel is ready. Its URL is: "$NGROK_URL
@@ -35,7 +25,7 @@ echo
 echo "   Configuring the environment..."
 echo
 
-melody run $DIR/config.php
+run_companienv
 
 echo
 echo "   Starting the remaining Docker containers."
@@ -44,7 +34,7 @@ echo "   (in the meantime, you can run 'docker-compose logs -f' in another termi
 echo
 
 docker-compose up -d
-php $DIR/wait-for.php api 60
+wait_for api 60
 
 if [ ! -d $ROOT_DIR/api/web/css ]; then
     echo

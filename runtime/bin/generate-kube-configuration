@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR=$DIR/../../
+
+source $DIR/../helpers/functions.sh
+
+echo
+echo "   Configuring the environment..."
+echo
+
+run_companienv
+
+echo
+echo "   Generating the Kubernetes files..."
+echo
+
+GENERATED_FOLDER=$ROOT_DIR/runtime/kubernetes/generated
+files=($GENERATED_FOLDER/*)
+if [ ${#files[@]} -gt 1 ]; then
+    echo -n "   Important: there are some files in the generated folder. "
+    read -p "Are you happy to replace them? " -n 1 -r
+    echo
+
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+        exit 1
+    fi
+
+    echo
+    rm $GENERATED_FOLDER/*
+fi
+
+cp $ROOT_DIR/runtime/kubernetes/dist/* $GENERATED_FOLDER/
+melody_run $DIR/../helpers/env-to-k8s-config-map.php $ROOT_DIR .env $GENERATED_FOLDER/00-main-config.yaml
+
+echo
+echo "   Files are ready in the 'runtime/kubernetes/generated/' folder. Use kubectl to create the objects"
+echo "   on your Kubernetes cluster:"
+echo
+echo "       $ kubectl create -f runtime/kubernetes/generated/"
+echo

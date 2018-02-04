@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: api
+  name: api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: api
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: docker.io/continuouspipe/api:latest
+        imagePullPolicy: Always
+        name: api
+        env:
+        - name: DATABASE_HOST
+          value: database
+        - name: DATABASE_NAME
+          value: continuouspipe
+        - name: DATABASE_PASSWORD
+          value: continuouspipe
+        - name: DATABASE_USER
+          value: continuouspipe
+        - name: K8S_WATCHER_URL
+          value: http://k8s-watcher
+        - name: LOGSTREAM_URL
+          value: https://logstream
+        - name: REDIS_HOST
+          value: redis
+        envFrom:
+        - configMapRef:
+            name: main-config
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          failureThreshold: 30
+          periodSeconds: 30
+          timeoutSeconds: 30
+        volumeMounts:
+        - name: runtime-keys
+          mountPath: "/runtime/keys"
+          readOnly: true
+      volumes:
+      - name: runtime-keys
+        secret:
+          secretName: secret--runtime-keys

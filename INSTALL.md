@@ -3,6 +3,12 @@
 ContinuousPipe can be installed and run in multiple ways. This guide will guide you through the list of requirements
 and how to get started with CP.
 
+1. [Requirements](#requirements)
+2. Running ContinuousPipe
+   - [Option 1: With DockerCompose](#option-1-with-dockercompose)
+   - [Option 2: With Kubernetes](#option-2-with-kubernetes)
+3. [Usage](#usage)
+
 ## Requirements
 
 To work, ContinuousPipe requires the following:
@@ -27,7 +33,8 @@ the following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
 2. **Homepage URL:** https://continuouspipe.io
-3. **Authorization callback URL:** `$LOCAL_API_URL/auth/login/check-github` (`$LOCAL_API_URL` is the URL you use to access the authentication page. On the Docker-Compose setup, it would be `http://localhost:81`)
+3. **Authorization callback URL:** `$LOCAL_API_URL/auth/login/check-github` (`$LOCAL_API_URL` is the URL you use to access 
+   the authentication page. On the Docker-Compose setup, it would be `http://localhost:81`)
 
 Click the green button "Register application". After being redirected, you should be able to
 read the OAuth "Client ID" and "Client Secret" to fill the `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
@@ -40,7 +47,8 @@ following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
 2. **Homepage URL:** https://continuouspipe.io
-3. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain name, such as the ngrok tunnel mentioned earlier)
+3. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain 
+   name, such as the ngrok tunnel mentioned earlier)
 4. **WebHook secret:** *a random secret string you want (keep it for later)*
 
 From the permissions, select the following ones:
@@ -90,3 +98,86 @@ you can read the "Project ID" for the `FIREBASE_APP` configuration. The `FIREBAS
 You will need a service account as well. In the "Settings", go to the "Service accounts" tab. Make sure the "Firebase Admin SDK"
 tab is selected on the left and press "Generate new private key". Same than for the GitHub key, use the path of the downloaded 
 file within the configurator to propagate the key (or manually paste it to `./runtime/keys/firebase.json`).
+
+## Starting ContinuousPipe
+
+ContinuousPipe is a web application. You can run it in various different ways but we've especially worked on two options:
+
+1. [With DockerCompose](#option-1-docker-compose), on your own machine(s). It is started by default in development mode (which is slower than usual) 
+   and is especially useful to give a try to ContinuousPipe.
+
+2. [With `kubectl` on your Kubernetes cluster](#option-2-kubernetes). You already have a cluster and configured your `kubectl` command line tool, you can deploy
+   ContinuousPipe very easily.
+
+### Option 1: DockerCompose
+
+1. Clone this repository
+```
+git clone https://github.com/continuouspipe/continuouspipe
+```
+
+2. Run the following command:
+```
+runtime/bin/start
+```
+
+3. Answer all the questions with the help of the [Requirements section](#requirements), and you should be ready to go!
+
+### Option 2: Kubernetes
+
+We've packaged a set of files for you in the `/runtime/kubernetes` directory. You should be able to use them directly
+with `kubectl`:
+
+1. Clone this repository
+```
+git clone https://github.com/continuouspipe/continuouspipe
+```
+
+2. Create the `continuouspipe` (you can name it differently if you want) namespace:
+```
+kubectl create namespace continuouspipe
+```
+
+3. Create the load-balancer that is going to be used for the API
+```
+kubectl --namespace=continuouspipe create -f runtime/kubernetes/dist/00-api-service.yaml
+```
+
+Wait until the service has a load-balancer IP (check with `kubectl --namespace=continuouspipe get services`). Use this
+address as the `RIVER_API_URL` configuration (example: `http://1.2.3.4`) for the following step.
+
+2. Generate the configuration according to your needs and the [Requirements section](#requirements)
+```
+runtime/bin/generate-kube-configuration
+```
+
+4. Create the resources with the following command:
+```
+kubectl --namespace=continuouspipe create -f runtime/kubernetes/generated
+```
+
+5. Run the database migrations. It's the only step that requires manual intervention. Get the `api` pod name and 
+```
+$ kubectl --namespace=continuouspipe get pods | grep api
+api-4019277730-bn6t0           1/1       Running   0          13m
+
+$ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- sh -c 'bin/console -e=prod doctrine:migrations:migrate --no-interaction'
+[...]
+```
+
+5. Get the address of your `ui` load-balancer
+```
+$ kubectl --namespace=continuouspipe get services/ui
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+ui        LoadBalancer   10.3.247.115   35.195.150.34   80:32341/TCP   21m
+```
+
+6. Open the link! In this example `http://35.195.150.34`
+
+## Usage
+
+For your first time after the installation, we've got a [first usage of ContinuousPipe](FIRST_USAGE.md) guide for you.
+It should help you understand what's around you and do your first deployment!
+
+Last but not least, checkout [the documentation](https://docs.continuouspipe.io) and especially the basics and 
+[ContinuousPipe's concepts](https://docs.continuouspipe.io/basics/concepts-continuous-pipe-concepts/)

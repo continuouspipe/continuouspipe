@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: worker
+  name: worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: worker
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: docker.io/continuouspipe/worker:latest
+        imagePullPolicy: Always
+        name: worker
+        command:
+        - /usr/local/bin/worker
+        env:
+        - name: DATABASE_HOST
+          value: database
+        - name: DATABASE_NAME
+          value: continuouspipe
+        - name: DATABASE_PASSWORD
+          value: continuouspipe
+        - name: DATABASE_USER
+          value: continuouspipe
+        - name: K8S_WATCHER_URL
+          value: http://k8s-watcher
+        - name: LOGSTREAM_URL
+          value: https://logstream
+        - name: REDIS_HOST
+          value: redis
+        - name: NUM_OF_WORKERS
+          value: '2'
+        envFrom:
+        - configMapRef:
+            name: main-config
+        volumeMounts:
+        - name: runtime-keys
+          mountPath: "/runtime/keys"
+          readOnly: true
+        - name: docker-socket
+          mountPath: "/var/run/docker.sock"
+      volumes:
+      - name: runtime-keys
+        secret:
+          secretName: secret--runtime-keys
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock

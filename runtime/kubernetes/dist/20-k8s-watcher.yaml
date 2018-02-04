@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    component-identifier: k8s-watcher
+  name: k8s-watcher
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component-identifier: k8s-watcher
+    spec:
+      restartPolicy: Always
+      containers:
+      - image: docker.io/continuouspipe/k8s-watcher:latest
+        imagePullPolicy: Always
+        name: k8s-watcher
+        env:
+        - name: KUBE_PROXY_HOSTNAME
+          value: kube-proxy
+        - name: REDIS_HOST
+          value: redis
+        envFrom:
+        - configMapRef:
+            name: main-config
+        volumeMounts:
+        - name: runtime-keys
+          mountPath: "/runtime/keys"
+          readOnly: true
+      volumes:
+      - name: runtime-keys
+        secret:
+          secretName: secret--runtime-keys
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component-identifier: k8s-watcher
+  name: k8s-watcher
+spec:
+  ports:
+  - name: k8s-watcher
+    port: 80
+  selector:
+    component-identifier: k8s-watcher
