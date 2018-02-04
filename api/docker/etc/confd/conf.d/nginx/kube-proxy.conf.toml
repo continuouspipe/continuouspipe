@@ -1,0 +1,6 @@
+[template]
+src   = "nginx/kube_proxy.conf.tmpl"
+dest  = "/etc/nginx/sites-available/default-10-kube-proxy.conf"
+mode  = "0644"
+keys = [
+]

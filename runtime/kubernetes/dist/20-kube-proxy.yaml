@@ -16,6 +16,9 @@ spec:
       - image: docker.io/continuouspipe/kube-proxy:latest
         imagePullPolicy: Always
         name: kube-proxy
+        env:
+        - name: KUBE_PROXY_LISTEN_ADDRESS
+          value: http://0.0.0.0:80
         envFrom:
         - configMapRef:
             name: main-config
@@ -39,7 +42,5 @@ spec:
   ports:
   - name: kube-proxy
     port: 80
-  - name: kube-proxy-ssl
-    port: 443
   selector:
     component-identifier: kube-proxy

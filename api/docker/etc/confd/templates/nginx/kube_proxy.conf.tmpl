@@ -1,0 +1,6 @@
+location /kube-proxy/ {
+    proxy_pass {{ getenv "KUBE_PROXY_URL" }}/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+}

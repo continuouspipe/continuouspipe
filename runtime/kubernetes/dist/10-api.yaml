@@ -31,6 +31,8 @@ spec:
           value: https://logstream
         - name: REDIS_HOST
           value: redis
+        - name: KUBE_PROXY_URL
+          value: http://kube-proxy
         envFrom:
         - configMapRef:
             name: main-config

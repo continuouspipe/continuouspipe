@@ -46,8 +46,6 @@ services:
             - ./ui/app:/app/app
         env_file:
             - .env
-        environment:
-            - KUBE_PROXY_URL=ws://localhost:82
 
     logstream:
         volumes:

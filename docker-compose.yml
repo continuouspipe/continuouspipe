@@ -12,6 +12,7 @@ services:
             - REDIS_HOST=redis
             - LOGSTREAM_URL=https://logstream
             - K8S_WATCHER_URL=http://k8s-watcher
+            - KUBE_PROXY_URL=http://kube-proxy
         depends_on:
             - database
             - redis
