@@ -45,8 +45,8 @@ parameters:
     env(MESSAGE_QUEUES_DELAYED_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
     env(MESSAGE_QUEUES_LONG_RUNNING_DEPLOYMENTS_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
 
-    env(FLEX_QUAY_IO_ACCESS_TOKEN): mytoken
-    env(FLEX_QUAY_IO_ORGANISATION): continuouspipe
+    env(QUAY_IO_ACCESS_TOKEN): mytoken
+    env(QUAY_IO_ORGANISATION): continuouspipe
 
     env(SECURITY_ENCRYPTION_KEY): def00000fc5829bd0007abaa3a3d6cc641e7b52e3fc0a1e111f6acb243b0ddc7a3a05e85f392af96be6649dbd6469bec95c07a14a751db93cd9bde94547225f751a2e23b
 
@@ -206,8 +206,8 @@ parameters:
     managed_cloudflare_email: %env(CLOUD_FLARE_MANAGED_EMAIL)%
     managed_cloudflare_api_key: %env(CLOUD_FLARE_MANAGED_ZONE_API_KEY)%
 
-    flex_quay_io_access_token: "%env(FLEX_QUAY_IO_ACCESS_TOKEN)%"
-    flex_quay_io_organisation: "%env(FLEX_QUAY_IO_ORGANISATION)%"
+    quay_io_access_token: "%env(QUAY_IO_ACCESS_TOKEN)%"
+    quay_io_organisation: "%env(QUAY_IO_ORGANISATION)%"
 
     # Go to https://console.developers.google.com/apis/credentials to create a Service Account Key.
     google_cloud_audit_enabled: true

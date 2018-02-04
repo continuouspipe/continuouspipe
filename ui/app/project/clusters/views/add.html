@@ -10,8 +10,8 @@
         <md-subheader class="md-primary">Cluster basics</md-subheader>
         <div class="form-container">
             <md-radio-group ng-model="cluster.type">
+                <md-radio-button value="automated">Automated (if applicable)</md-radio-button>
                 <md-radio-button value="gke">Google Container Engine</md-radio-button>
-                <md-radio-button value="managed">Automated</md-radio-button>
                 <md-radio-button value="kubernetes">Add manually</md-radio-button>
             </md-radio-group>
         </div>
@@ -107,10 +107,10 @@
             </md-input-container>
         </div>
 
-        <!-- Managed cluster -->
-        <md-subheader class="md-primary" ng-if="cluster.type == 'managed'">Managed cluster</md-subheader>
-        <div class="form-container" ng-if="cluster.type == 'managed'">
-            <p>This Kubernetes cluster will be provided to you by ContinuousPipe. You need a Managed plan to access such clusters. <a href="https://docs.continouspipe.io/managed/">Learn more</a>.</p>
+        <!-- Automated cluster -->
+        <md-subheader class="md-primary" ng-if="cluster.type == 'automated'">Automated cluster</md-subheader>
+        <div class="form-container" ng-if="cluster.type == 'automated'">
+            <p>This Kubernetes cluster will be provided to you by your administrator, no need to configure anything.</p>
         </div>
     </form>
 </md-content>

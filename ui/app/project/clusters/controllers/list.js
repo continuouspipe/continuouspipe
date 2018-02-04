@@ -66,7 +66,7 @@ angular.module('continuousPipeRiver')
             }
 
             for (var i = 0; i < cluster.policies.length; i++) {
-                if (cluster.policies[i]['name'] == 'managed') {
+                if (['managed', 'automated'].indexOf(cluster.policies[i].name) !== -1) {
                     return true;
                 }
             }

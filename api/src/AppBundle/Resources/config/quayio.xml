@@ -19,8 +19,8 @@
         </service>
         <service id="quay.client" class="ContinuousPipe\QuayIo\HttpQuayClient">
             <argument type="service" id="quay.client.http_client" />
-            <argument>%flex_quay_io_organisation%</argument>
-            <argument>%flex_quay_io_access_token%</argument>
+            <argument>%quay_io_organisation%</argument>
+            <argument>%quay_io_access_token%</argument>
         </service>
     </services>
 </container>

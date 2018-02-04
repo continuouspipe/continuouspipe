@@ -14,7 +14,7 @@ angular.module('continuousPipeRiver')
         };
 
         var createCluster = function(cluster) {
-            if (cluster.type == 'managed') {
+            if (cluster.type == 'automated') {
                 return ClusterRepository.createManaged();
             }
             
