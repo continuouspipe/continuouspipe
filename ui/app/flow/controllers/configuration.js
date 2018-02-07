@@ -279,14 +279,14 @@ angular.module('continuousPipeRiver')
                             'click': function() {
                                 return AlertManager.open(status.attributes.alert);
                             }
-                        };
+                        }
                     }
                 }
             },
             {
                 icon: 'cloud',
-                title: 'Automated cluster',
-                description: 'Click on "Enable" to automatically register a Kubernetes cluster within your project. This has been configured by the admins of your ContinuousPipe instance.',
+                title: 'Managed cluster',
+                description: 'You don\'t have an infrastructure or a Kubernetes cluster? No worries, we can run your containers! Click on "Enable" to register a managed cluster to your project.',
                 getStatus: function() {
                     return ClusterRepository.findAll(project).then(function(clusters) {
                         var clusterIsManaged = function(cluster) {
@@ -295,7 +295,7 @@ angular.module('continuousPipeRiver')
                             }
 
                             for (var i = 0; i < cluster.policies.length; i++) {
-                                if (['managed', 'automated'].indexOf(cluster.policies[i].name) !== -1) {
+                                if (cluster.policies[i].name == 'managed') {
                                     return true;
                                 }
                             }
@@ -319,14 +319,14 @@ angular.module('continuousPipeRiver')
                             click: function() {
                                 return ClusterRepository.createManaged(project);
                             }
-                        };
+                        }
                     }
                 }
             },
             {
                 icon: 'storage',
-                title: 'Automated Docker Image Registry',
-                description: 'You don\'t have a Docker Registry to store your Docker image? Click "Enable" to create a Docker Registry automatically.',
+                title: 'Docker image in managed registry',
+                description: 'You don\'t have a Docker Registry to store your Docker images? We have you stored if you click "Enable" !',
                 getStatus: function() {
                     return RegistryCredentialsRepository.findAll(project).then(function(registries) {
                         var registryIsManagedForFlow = function(registry, flow) {
