@@ -286,7 +286,7 @@ angular.module('continuousPipeRiver')
             {
                 icon: 'cloud',
                 title: 'Managed cluster',
-                description: 'You don\'t have an infrastructure or a Kubernetes cluster? No worries, we can run your containers! Click on "Enable" to register a managed cluster to your project.',
+                description: 'Click on "Enable" to register a managed cluster to your project.',
                 getStatus: function() {
                     return ClusterRepository.findAll(project).then(function(clusters) {
                         var clusterIsManaged = function(cluster) {
@@ -319,14 +319,14 @@ angular.module('continuousPipeRiver')
                             click: function() {
                                 return ClusterRepository.createManaged(project);
                             }
-                        }
+                        };
                     }
                 }
             },
             {
                 icon: 'storage',
                 title: 'Docker image in managed registry',
-                description: 'You don\'t have a Docker Registry to store your Docker images? We have you stored if you click "Enable" !',
+                description: 'Click "Enable" to create a Docker Registry automatically.',
                 getStatus: function() {
                     return RegistryCredentialsRepository.findAll(project).then(function(registries) {
                         var registryIsManagedForFlow = function(registry, flow) {

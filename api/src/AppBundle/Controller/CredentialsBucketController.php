@@ -254,7 +254,7 @@ class CredentialsBucketController
 
         if (!$this->authorizationChecker->isGranted('EDIT', $cluster)) {
             return new JsonResponse([
-                'error' => 'You cannot update the policies of a managed cluster'
+                'error' => 'You cannot update the policies of this cluster'
             ], 403);
         }
 
