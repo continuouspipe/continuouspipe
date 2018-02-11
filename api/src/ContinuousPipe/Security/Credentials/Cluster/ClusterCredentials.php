@@ -41,18 +41,25 @@ class ClusterCredentials
      */
     private $googleCloudServiceAccount;
 
+    /**
+     * @var string|null
+     */
+    private $token;
+
     public function __construct(
         string $username = null,
         string $password = null,
         string $clientCertificate = null,
         string $clientCertificatePassword = null,
-        string $googleCloudServiceAccount = null
+        string $googleCloudServiceAccount = null,
+        string $token = null
     ) {
         $this->username = $username;
         $this->password = $password;
         $this->clientCertificate = $clientCertificate;
         $this->clientCertificatePassword = $clientCertificatePassword;
         $this->googleCloudServiceAccount = $googleCloudServiceAccount;
+        $this->token = $token;
     }
 
     /**
@@ -96,12 +103,20 @@ class ClusterCredentials
     }
 
     /**
+     * @return null|string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
      * Return true if the credentials are empty.
      *
      * @return bool
      */
     public function isEmpty() : bool
     {
-        return $this->username === null && $this->password === null && $this->clientCertificate === null && $this->googleCloudServiceAccount === null;
+        return $this->username === null && $this->password === null && $this->clientCertificate === null && $this->googleCloudServiceAccount === null && $this->token === null;
     }
 }
