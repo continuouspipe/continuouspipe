@@ -24,7 +24,7 @@ class KubernetesInceptionCreatorSpec extends ObjectBehavior
 
     function it_supports_kinception_dsn()
     {
-        $this->supports(new Team('slug', 'Name'), 'identifier', 'kinception://');
+        $this->supports(new Team('slug', 'Name'), 'identifier', 'kinception://this')->shouldBe(true);
     }
 
     function it_creates_a_cluster_from_the_local_filesystem(RelativeFileSystem $fileSystem)
@@ -34,7 +34,7 @@ class KubernetesInceptionCreatorSpec extends ObjectBehavior
 
         putenv('KUBERNETES_SERVICE_HOST=10.3.240.1');
 
-        $cluster = $this->createForTeam(new Team('slug', 'Name'), 'identifier', 'kinception://');
+        $cluster = $this->createForTeam(new Team('slug', 'Name'), 'identifier', 'kinception://this');
         $cluster->getAddress()->shouldBe('https://10.3.240.1');
         $cluster->getCredentials()->getToken()->shouldBe('123.qwerty.jwt');
     }
