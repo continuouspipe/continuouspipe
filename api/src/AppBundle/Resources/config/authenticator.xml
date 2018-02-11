@@ -244,8 +244,10 @@
         </service>
         <service id="app.managed.cluster_creator.kinception" class="ContinuousPipe\Managed\ClusterCreation\KubernetesInceptionCreator" />
         <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\ClusterCreatorAdapter">
-            <argument type="service" id="app.managed.cluster_creator.gke" />
-            <argument type="service" id="app.managed.cluster_creator.kinception" />
+            <argument type="collection">
+                <argument type="service" id="app.managed.cluster_creator.gke" />
+                <argument type="service" id="app.managed.cluster_creator.kinception" />
+            </argument>
         </service>
 
         <service id="app.managed.cluster_creator.add_cluster_policies"
