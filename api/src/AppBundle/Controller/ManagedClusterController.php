@@ -32,13 +32,15 @@ class ManagedClusterController
     private $clusterCreator;
 
     /**
-     * @param BucketRepository $bucketRepository
-     * @param ClusterCreator $clusterCreator
+     * @var string
      */
-    public function __construct(BucketRepository $bucketRepository, ClusterCreator $clusterCreator)
+    private $managedClusterDsn;
+
+    public function __construct(BucketRepository $bucketRepository, ClusterCreator $clusterCreator, string $managedClusterDsn)
     {
         $this->bucketRepository = $bucketRepository;
         $this->clusterCreator = $clusterCreator;
+        $this->managedClusterDsn = $managedClusterDsn;
     }
 
     /**
@@ -58,7 +60,7 @@ class ManagedClusterController
         }
 
         try {
-            $cluster = $this->clusterCreator->createForTeam($team, 'managed');
+            $cluster = $this->clusterCreator->createForTeam($team, 'managed', $this->managedClusterDsn);
         } catch (ClusterCreationUserException $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),

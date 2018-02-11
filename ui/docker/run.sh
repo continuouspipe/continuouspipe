@@ -17,7 +17,8 @@ angular.module('config', [])
 .constant('GOOGLE_ANALYTICS_TRACKER', '"$GOOGLE_ANALYTICS_TRACKER"')
 .constant('FIREBASE_APP', '"$FIREBASE_APP"')
 .constant('FIREBASE_WEB_API_KEY', '"$FIREBASE_WEB_API_KEY"')
-
+.constant('MANAGED_CLUSTER_ENABLED', '"$MANAGED_CLUSTER_ENABLED"')
+.constant('MANAGED_REGISTRY_ENABLED', '"$MANAGED_REGISTRY_ENABLED"')
 ;" > /app/dist/scripts/config.js
 
 # Start nginx

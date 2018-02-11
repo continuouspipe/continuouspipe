@@ -205,7 +205,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         ) {
             $upToDateService = $namespaceClient->getServiceRepository()->findOneByName($name);
 
-            return new PublicEndpoint($name, $this->nodePortAddressFromCluster($deploymentContext->getCluster()), array_map(function(ServicePort $port) {
+            return new PublicEndpoint($name, $this->nodePortAddressFromCluster($deploymentContext->getCluster()), array_map(function (ServicePort $port) {
                 return new PublicEndpointPort($port->getNodePort() ?: 12345, $port->getProtocol());
             }, $upToDateService->getSpecification()->getPorts()));
         }
@@ -331,8 +331,7 @@ class LoopPublicEndpointWaiter implements PublicEndpointWaiter
         KubernetesObject $object,
         string $name,
         array $ports
-    ): PublicEndpoint
-    {
+    ): PublicEndpoint {
         foreach ($this->getIngresses($namespaceClient, $object) as $ingress) {
             if ($hostname = $ingress->getHostname()) {
                 return new PublicEndpoint($name, $hostname, $ports);

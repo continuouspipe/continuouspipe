@@ -10,7 +10,6 @@ use ContinuousPipe\Security\Account\GoogleAccount;
 use ContinuousPipe\Security\Credentials\Cluster;
 use ContinuousPipe\Security\Credentials\Cluster\Kubernetes;
 use ContinuousPipe\Security\Team\Team;
-use GuzzleHttp\ClientInterface;
 use Ramsey\Uuid\Uuid;
 
 class GKEClusterAccountCreator implements ClusterCreator
@@ -25,47 +24,21 @@ class GKEClusterAccountCreator implements ClusterCreator
      */
     private $containerEngineClusterRepository;
 
-    /**
-     * @var string
-     */
-    private $projectId;
-
-    /**
-     * @var string
-     */
-    private $serviceAccountFilePath;
-
-    /**
-     * @var string
-     */
-    private $sharedClusterIdentifier;
-
-    public function __construct(
-        ContainerEngineClusterRepository $containerEngineClusterRepository,
-        string $serviceAccountFilePath,
-        string $projectId,
-        string $sharedClusterIdentifier
-    ) {
+    public function __construct(ContainerEngineClusterRepository $containerEngineClusterRepository, \Google_Client $googleClient = null)
+    {
         $this->containerEngineClusterRepository = $containerEngineClusterRepository;
-        $this->projectId = $projectId;
-        $this->serviceAccountFilePath = $serviceAccountFilePath;
-        $this->sharedClusterIdentifier = $sharedClusterIdentifier;
-
-        $this->googleClient = new \Google_Client();
-        $this->googleClient->setAuthConfig($serviceAccountFilePath);
-        $this->googleClient->setScopes(array(
-            'https://www.googleapis.com/auth/cloud-platform',
-            'https://www.googleapis.com/auth/compute.readonly'
-        ));
+        $this->googleClient = $googleClient ?: new \Google_Client();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function createForTeam(Team $team, string $clusterIdentifier): Cluster
+    public function createForTeam(Team $team, string $clusterIdentifier, string $dsn): Cluster
     {
+        $parsedDsn = parse_url($dsn);
+
         try {
-            $base64EncodedServiceAccount = $this->getTeamUserServiceAccount($team);
+            $base64EncodedServiceAccount = $this->getTeamUserServiceAccount($team, $parsedDsn);
         } catch (\Google_Exception $e) {
             throw new ClusterCreationException('Was not able to get service account from Google Cloud: '.$e->getMessage(), $e->getCode(), $e);
         }
@@ -79,10 +52,10 @@ class GKEClusterAccountCreator implements ClusterCreator
                     null,
                     null,
                     null,
-                    base64_encode(file_get_contents($this->serviceAccountFilePath))
+                    $parsedDsn['pass']
                 ),
-                $this->projectId,
-                $this->sharedClusterIdentifier
+                $parsedDsn['host'],
+                substr($parsedDsn['path'], 1)
             );
         } catch (GoogleException $e) {
             throw new ClusterCreationException('Can\'t get cluster from GKE API', $e->getCode(), $e);
@@ -107,28 +80,46 @@ class GKEClusterAccountCreator implements ClusterCreator
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function supports(Team $team, string $clusterIdentifier, string $dsn): bool
+    {
+        return ($parsedDsn = parse_url($dsn)) && $parsedDsn['scheme'] == 'gke';
+    }
+
+    /**
      * Create a base64-encoded service account.
      *
      * @param Team $team
      *
-     * @throws \Google_Service_Exception
+     * @throws \Google_Exception
      *
      * @return string
      */
-    private function getTeamUserServiceAccount(Team $team) : string
+    private function getTeamUserServiceAccount(Team $team, array $parsedDsn) : string
     {
+        $this->googleClient->setAuthConfig(
+            \GuzzleHttp\json_decode(base64_decode($parsedDsn['pass']), true)
+        );
+
+        $this->googleClient->setScopes(array(
+            'https://www.googleapis.com/auth/cloud-platform',
+            'https://www.googleapis.com/auth/compute.readonly'
+        ));
+
         $iam = new \Google_Service_Iam($this->googleClient);
 
-        $projectFullName = 'projects/'.$this->projectId;
+
+        $projectFullName = 'projects/'.$parsedDsn['host'];
         $accountId = 'team-'.$team->getSlug();
-        $serviceAccountName = $accountId.'@'.$this->projectId.'.iam.gserviceaccount.com';
+        $serviceAccountName = $accountId.'@'.$parsedDsn['host'].'.iam.gserviceaccount.com';
         $serviceAccountFullName = $projectFullName.'/serviceAccounts/'.$serviceAccountName;
 
         try {
             $iam->projects_serviceAccounts->get($serviceAccountFullName);
         } catch (\Google_Service_Exception $e) {
             if ($e->getCode() == 404) {
-                $iam->projects_serviceAccounts->create('projects/' . $this->projectId, new \Google_Service_Iam_CreateServiceAccountRequest([
+                $iam->projects_serviceAccounts->create('projects/' . $parsedDsn['host'], new \Google_Service_Iam_CreateServiceAccountRequest([
                     'accountId' => $accountId,
                     'serviceAccount' => new \Google_Service_Iam_ServiceAccount([
                         'displayName' => 'Team "'.$team->getSlug().'"',

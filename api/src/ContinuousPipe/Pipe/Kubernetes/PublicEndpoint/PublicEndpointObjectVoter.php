@@ -20,7 +20,6 @@ class PublicEndpointObjectVoter
 
     public function isThePrimaryPublicEndpointToWait(KubernetesObject $object) : bool
     {
-
         if ($object instanceof Ingress) {
             return true;
         }

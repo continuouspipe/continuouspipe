@@ -1,7 +1,7 @@
 <?php
 <<<CONFIG
 packages:
-    - "sroze/companienv: ^0.0.4"
+    - "sroze/companienv: ^0.0.7"
 CONFIG;
 
 use Companienv\Application;

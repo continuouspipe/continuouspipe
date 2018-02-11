@@ -29,16 +29,6 @@ final class ManagedCloudFlareCredentials
         $this->apiKey = $apiKey;
     }
 
-    public static function fromArray(array $array) : self
-    {
-        return new self(
-            $array['domain-name'],
-            $array['zone-identifier'],
-            $array['email'],
-            $array['api-key']
-        );
-    }
-
     /**
      * @return string
      */

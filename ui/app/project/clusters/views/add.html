@@ -10,7 +10,7 @@
         <md-subheader class="md-primary">Cluster basics</md-subheader>
         <div class="form-container">
             <md-radio-group ng-model="cluster.type">
-                <md-radio-button value="managed">Managed</md-radio-button>
+                <md-radio-button value="managed" ng-if="managedClusterEnabled">Managed</md-radio-button>
                 <md-radio-button value="gke">Google Container Engine</md-radio-button>
                 <md-radio-button value="kubernetes">Add manually</md-radio-button>
             </md-radio-group>

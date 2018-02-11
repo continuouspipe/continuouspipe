@@ -8,11 +8,6 @@ parameters:
     locale: en
     api_keys:
         - "%env(MASTER_API_KEY)%"
-    managed_cloud_flare_credentials:
-        'domain-name': "%managed_cloudflare_domain_name%"
-        'zone-identifier': "%managed_cloudflare_zone_identifier%"
-        'email': "%managed_cloudflare_email%"
-        'api-key': "%managed_cloudflare_api_key%"
 
     billing_plans:
         - identifier: toolkit

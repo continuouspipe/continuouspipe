@@ -70,6 +70,7 @@
         <service id="api.controller.managed_cluster" class="AppBundle\Controller\ManagedClusterController">
             <argument type="service" id="app.repository.credentials_bucket"/>
             <argument type="service" id="app.managed.cluster_creator"/>
+            <argument>%managed_cluster_dsn%</argument>
         </service>
 
         <!-- Authentication -->
@@ -238,26 +239,41 @@
         </service>
 
         <!-- Managed cluster -->
-        <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\GoogleCloud\GKEClusterAccountCreator">
+        <service id="app.managed.cluster_creator.gke" class="ContinuousPipe\Managed\ClusterCreation\GoogleCloud\GKEClusterAccountCreator">
             <argument type="service" id="google.cluster_repository.http" />
-            <argument>%managed_google_service_account_file_path%</argument>
-            <argument>%managed_google_project_id%</argument>
-            <argument>%managed_google_cluster_identifier%</argument>
+        </service>
+        <service id="app.managed.cluster_creator.kinception" class="ContinuousPipe\Managed\ClusterCreation\KubernetesInceptionCreator" />
+        <service id="app.managed.cluster_creator" class="ContinuousPipe\Managed\ClusterCreation\ClusterCreatorAdapter">
+            <argument type="collection">
+                <argument type="service" id="app.managed.cluster_creator.gke" />
+                <argument type="service" id="app.managed.cluster_creator.kinception" />
+            </argument>
         </service>
 
         <service id="app.managed.cluster_creator.add_cluster_policies"
                  class="ContinuousPipe\Managed\ClusterCreation\AddManagedClusterPolicies"
                  decorates="app.managed.cluster_creator">
             <argument type="service" id="app.managed.cluster_creator.add_cluster_policies.inner" />
-            <argument>%managed_cloud_flare_credentials%</argument>
-            <argument>%managed_google_rbac_cluster_role%</argument>
         </service>
 
         <service id="app.managed.cluster_creator.ensure_team_billing"
-                 class="ContinuousPipe\Managed\ClusterCreation\Permissions\EnsureTeamHasSufficientBilling"
+                 class="ContinuousPipe\Managed\ClusterCreation\Billing\EnsureTeamHasSufficientBilling"
                  decorates="app.managed.cluster_creator">
             <argument type="service" id="app.managed.cluster_creator.ensure_team_billing.inner" />
             <argument type="service" id="app.repository.billing_profile" />
+            <argument type="service" id="platform.flag_resolver" />
+        </service>
+
+        <!-- Managed Registry -->
+        <service id="app.managed.docker_registry_resolver" class="ContinuousPipe\Managed\DockerRegistry\ChainDockerRegistryManagerResolver">
+            <argument type="collection">
+                <argument type="service" id="app.managed.docker_registry.quay.resolver" />
+            </argument>
+        </service>
+
+        <service id="app.managed.docker_registry.quay.resolver" class="ContinuousPipe\Managed\DockerRegistry\QuayIo\QuayManagerResolver">
+            <argument type="service" id="app.repository.credentials_bucket"/>
+            <argument type="service" id="quay.client.http_client"/>
         </service>
     </services>
 </container>

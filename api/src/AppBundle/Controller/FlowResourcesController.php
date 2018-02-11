@@ -2,7 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use ContinuousPipe\River\Flex\Resources\DockerRegistry\DockerRegistryManager;
+use ContinuousPipe\Managed\DockerRegistry\DockerRegistryManager;
+use ContinuousPipe\Managed\DockerRegistry\DockerRegistryManagerResolver;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
@@ -21,19 +22,28 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class FlowResourcesController
 {
     /**
-     * @var DockerRegistryManager
-     */
-    private $dockerRegistryManager;
-
-    /**
      * @var BucketRepository
      */
     private $bucketRepository;
 
-    public function __construct(DockerRegistryManager $dockerRegistryManager, BucketRepository $bucketRepository)
-    {
-        $this->dockerRegistryManager = $dockerRegistryManager;
+    /**
+     * @var DockerRegistryManagerResolver
+     */
+    private $managerResolver;
+
+    /**
+     * @var string
+     */
+    private $managedRegistryDsn;
+
+    public function __construct(
+        DockerRegistryManagerResolver $managerResolver,
+        BucketRepository $bucketRepository,
+        string $managedRegistryDsn
+    ) {
         $this->bucketRepository = $bucketRepository;
+        $this->managerResolver = $managerResolver;
+        $this->managedRegistryDsn = $managedRegistryDsn;
     }
 
     /**
@@ -56,7 +66,7 @@ class FlowResourcesController
             $visibility = 'private';
         }
 
-        return $this->dockerRegistryManager->createRepositoryForFlow($flow, $visibility);
+        return $this->managerResolver->get($this->managedRegistryDsn)->createRepositoryForFlow($flow, $visibility);
     }
 
     /**
@@ -84,7 +94,7 @@ class FlowResourcesController
             throw new BadRequestHttpException($e->getMessage(), $e->getCode(), $e);
         }
 
-        $this->dockerRegistryManager->changeVisibility($flow, $registry, $requestContents['visibility']);
+        $this->managerResolver->get($this->managedRegistryDsn)->changeVisibility($flow, $registry, $requestContents['visibility']);
     }
 
     /**

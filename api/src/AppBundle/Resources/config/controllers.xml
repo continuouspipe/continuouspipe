@@ -83,8 +83,9 @@
             <argument type="service" id="river.flex.availability_detector"/>
         </service>
         <service id="app.controller.resources" class="AppBundle\Controller\FlowResourcesController">
-            <argument type="service" id="river.flex.resources.docker_registry_managed"/>
+            <argument type="service" id="app.managed.docker_registry_resolver"/>
             <argument type="service" id="app.repository.credentials_bucket"/>
+            <argument>%managed_registry_dsn%</argument>
         </service>
         <service id="app.controller.usage" class="AppBundle\Controller\UsageController">
             <argument type="service" id="river.managed.resources.history_repository" />

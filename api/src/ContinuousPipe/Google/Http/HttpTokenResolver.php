@@ -40,7 +40,7 @@ class HttpTokenResolver implements TokenResolver
      * @param string              $clientId
      * @param string              $clientSecret
      */
-    public function __construct(ClientInterface $client, SerializerInterface $serializer, string $clientId, string $clientSecret)
+    public function __construct(ClientInterface $client, SerializerInterface $serializer, string $clientId = null, string $clientSecret = null)
     {
         $this->client = $client;
         $this->serializer = $serializer;

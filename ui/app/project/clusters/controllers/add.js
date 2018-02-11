@@ -1,7 +1,9 @@
 'use strict';
 
 angular.module('continuousPipeRiver')
-    .controller('ProjectAddClusterController', function($scope, $state, $http, $intercom, ClusterRepository, AccountRepository) {
+    .controller('ProjectAddClusterController', function($scope, $state, $http, $intercom, MANAGED_CLUSTER_ENABLED, ClusterRepository, AccountRepository) {
+        $scope.managedClusterEnabled = MANAGED_CLUSTER_ENABLED === 'true';
+
         var clusterFromGkeCluster = function(gkeCluster) {
             return {
                 type: 'kubernetes',
