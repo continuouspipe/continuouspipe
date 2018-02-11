@@ -21,6 +21,7 @@ interface QuayClient
      * @param string $name
      * @param string $visibility
      *
+     * @throws RepositoryAlreadyExists
      * @throws QuayException
      *
      * @return Repository

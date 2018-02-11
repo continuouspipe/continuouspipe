@@ -1,21 +1,21 @@
 <?php
 
-namespace ContinuousPipe\River\Flex\Resources\DockerRegistry;
+namespace ContinuousPipe\Managed\DockerRegistry\QuayIo;
 
+use ContinuousPipe\Managed\DockerRegistry\DockerRegistryException;
+use ContinuousPipe\Managed\DockerRegistry\DockerRegistryManager;
 use ContinuousPipe\QuayIo\QuayClient;
 use ContinuousPipe\QuayIo\QuayException;
 use ContinuousPipe\QuayIo\RepositoryAlreadyExists;
 use ContinuousPipe\QuayIo\RobotAccount;
 use ContinuousPipe\River\Flex\Resources\FlexResourcesException;
 use ContinuousPipe\River\Flow\Projections\FlatFlow;
-use ContinuousPipe\Security\Authenticator\AuthenticatorClient;
-use ContinuousPipe\Security\Authenticator\AuthenticatorException;
 use ContinuousPipe\Security\Credentials\Bucket;
 use ContinuousPipe\Security\Credentials\BucketRepository;
 use ContinuousPipe\Security\Credentials\DockerRegistry;
 use ContinuousPipe\Security\Team\Team;
 
-class DockerRegistryManager
+class QuayManager implements DockerRegistryManager
 {
     /**
      * @var QuayClient
@@ -27,21 +27,14 @@ class DockerRegistryManager
      */
     private $bucketRepository;
 
-    public function __construct(
-        QuayClient $quayClient,
-        BucketRepository $bucketRepository
-    ) {
+    public function __construct(QuayClient $quayClient, BucketRepository $bucketRepository)
+    {
         $this->quayClient = $quayClient;
         $this->bucketRepository = $bucketRepository;
     }
 
     /**
-     * @param FlatFlow $flow
-     * @param string $visibility
-     *
-     * @throws FlexResourcesException
-     *
-     * @return DockerRegistry
+     * {@inheritdoc}
      */
     public function createRepositoryForFlow(FlatFlow $flow, string $visibility)
     {
@@ -52,7 +45,7 @@ class DockerRegistryManager
         } catch (RepositoryAlreadyExists $e) {
             $repository = $e->getRepository();
         } catch (QuayException $e) {
-            throw new FlexResourcesException('Could not create a Docker registry', $e->getCode(), $e);
+            throw new DockerRegistryException('Could not create a Docker registry', $e->getCode(), $e);
         }
 
         $fullRegistryAddress = 'quay.io/'.$repository->getName();
@@ -60,7 +53,7 @@ class DockerRegistryManager
             try {
                 $robot = $this->generateRobotAccount($flow->getTeam());
             } catch (QuayException $e) {
-                throw new FlexResourcesException('Could not create registry robot account', $e->getCode(), $e);
+                throw new DockerRegistryException('Could not create registry robot account', $e->getCode(), $e);
             }
 
             $registry = new DockerRegistry(
@@ -80,8 +73,8 @@ class DockerRegistryManager
                 $bucket->getDockerRegistries()->add($registry);
 
                 $this->bucketRepository->save($bucket);
-            } catch (AuthenticatorException $e) {
-                throw new FlexResourcesException('Could not save created Docker registry into project\'s credentials', $e->getCode(), $e);
+            } catch (\Exception $e) {
+                throw new DockerRegistryException('Could not save created Docker registry into project\'s credentials', $e->getCode(), $e);
             }
         }
 
@@ -91,23 +84,19 @@ class DockerRegistryManager
                 $repository->getName()
             );
         } catch (QuayException $e) {
-            throw new FlexResourcesException('Could not allow user to access Docker Registry repository', $e->getCode(), $e);
+            throw new DockerRegistryException('Could not allow user to access Docker Registry repository', $e->getCode(), $e);
         }
 
         return $registry;
     }
 
     /**
-     * @param FlatFlow $flow
-     * @param DockerRegistry $registry
-     * @param string $visibility
-     *
-     * @throws FlexResourcesException
+     * {@inheritdoc}
      */
     public function changeVisibility(FlatFlow $flow, DockerRegistry $registry, string $visibility)
     {
         if (strpos($registry->getFullAddress(), 'quay.io/') !== 0) {
-            throw new FlexResourcesException('Only supports quay.io docker registries');
+            throw new DockerRegistryException('Only supports quay.io docker registries');
         }
 
         $name = substr($registry->getFullAddress(), strlen('quay.io/'));
@@ -115,7 +104,7 @@ class DockerRegistryManager
         try {
             $this->quayClient->changeVisibility($name, $visibility);
         } catch (QuayException $e) {
-            throw new FlexResourcesException('Could not change repository\'s visibility', $e->getCode(), $e);
+            throw new DockerRegistryException('Could not change repository\'s visibility', $e->getCode(), $e);
         }
 
         try {
@@ -134,6 +123,13 @@ class DockerRegistryManager
         }
     }
 
+    /**
+     * @param Team $team
+     *
+     * @throws QuayException
+     *
+     * @return RobotAccount
+     */
     private function generateRobotAccount(Team $team) : RobotAccount
     {
         $robotAccountName = $this->getDockerRegistryRobotAccountName($team);

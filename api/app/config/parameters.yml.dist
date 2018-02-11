@@ -45,8 +45,7 @@ parameters:
     env(MESSAGE_QUEUES_DELAYED_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
     env(MESSAGE_QUEUES_LONG_RUNNING_DEPLOYMENTS_DSN): '%env(MESSAGE_QUEUES_MAIN_DSN)%'
 
-    env(QUAY_IO_ACCESS_TOKEN): mytoken
-    env(QUAY_IO_ORGANISATION): continuouspipe
+    env(MANAGED_REGISTRY_DSN): quay://token:mytoken@continuouspipe
 
     env(SECURITY_ENCRYPTION_KEY): def00000fc5829bd0007abaa3a3d6cc641e7b52e3fc0a1e111f6acb243b0ddc7a3a05e85f392af96be6649dbd6469bec95c07a14a751db93cd9bde94547225f751a2e23b
 
@@ -190,9 +189,8 @@ parameters:
     api_retry_count: 4    # Maximum number of failed API call retries.
 
     security_php_encryption_key: "%env(SECURITY_ENCRYPTION_KEY)%"
-    managed_cluster_dsn: %env(MANAGED_CLUSTER_DSN)%
-    quay_io_access_token: "%env(QUAY_IO_ACCESS_TOKEN)%"
-    quay_io_organisation: "%env(QUAY_IO_ORGANISATION)%"
+    managed_cluster_dsn: "%env(MANAGED_CLUSTER_DSN)%"
+    managed_registry_dsn: "%env(MANAGED_REGISTRY_DSN)%"
 
     # Go to https://console.developers.google.com/apis/credentials to create a Service Account Key.
     google_cloud_audit_enabled: true

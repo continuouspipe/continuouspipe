@@ -231,7 +231,7 @@ angular.module('continuousPipeRiver')
             $mdDialog.hide(answer);
         };
     })
-    .controller('FlowConfigurationChecklistController', function(MANAGED_CLUSTER_ENABLED, $scope, $rootScope, $http, $state, $q, AlertsRepository, AlertManager, FeaturesRepository, ClusterRepository, RegistryCredentialsRepository, project, flow) {
+    .controller('FlowConfigurationChecklistController', function(MANAGED_CLUSTER_ENABLED, MANAGED_REGISTRY_ENABLED, $scope, $rootScope, $http, $state, $q, AlertsRepository, AlertManager, FeaturesRepository, ClusterRepository, RegistryCredentialsRepository, project, flow) {
         $scope.flow = flow;
 
         var checks = [
@@ -317,14 +317,14 @@ angular.module('continuousPipeRiver')
             });
         }
 
-        checks.push(
-            {
+        if (MANAGED_REGISTRY_ENABLED === 'true') {
+            checks.push({
                 icon: 'storage',
                 title: 'Docker image in managed registry',
                 description: 'Click "Enable" to create a Docker Registry automatically.',
-                getStatus: function() {
-                    return RegistryCredentialsRepository.findAll(project).then(function(registries) {
-                        var registryIsManagedForFlow = function(registry, flow) {
+                getStatus: function () {
+                    return RegistryCredentialsRepository.findAll(project).then(function (registries) {
+                        var registryIsManagedForFlow = function (registry, flow) {
                             return registry.attributes && registry.attributes.managed == true && registry.attributes.flow == flow.uuid;
                         };
 
@@ -337,20 +337,20 @@ angular.module('continuousPipeRiver')
                         return 'optional';
                     });
                 },
-                getAction: function(status, check) {
+                getAction: function (status, check) {
                     if (status.summary != 'success') {
                         var visibility = check && check.last_error ? 'public' : 'private';
 
                         return {
                             title: visibility == 'private' ? 'Create private registry' : 'Create public registry',
-                            click: function() {
+                            click: function () {
                                 return RegistryCredentialsRepository.createManagedForFlow(flow, visibility);
                             }
                         }
                     }
                 }
-            }
-        );
+            });
+        }
 
         $scope.$on('$destroy', $rootScope.$on('visibility-changed', function() {
             refreshStatus();
