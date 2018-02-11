@@ -50,5 +50,4 @@ class HttpLabs
     {
         return $this->incoming;
     }
-    
 }

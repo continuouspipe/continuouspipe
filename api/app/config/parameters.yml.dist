@@ -50,9 +50,7 @@ parameters:
 
     env(SECURITY_ENCRYPTION_KEY): def00000fc5829bd0007abaa3a3d6cc641e7b52e3fc0a1e111f6acb243b0ddc7a3a05e85f392af96be6649dbd6469bec95c07a14a751db93cd9bde94547225f751a2e23b
 
-    env(CLOUD_FLARE_MANAGED_EMAIL): email@example.com
-    env(CLOUD_FLARE_MANAGED_ZONE_API_KEY): 12345qwerty
-    env(CLOUD_FLARE_MANAGED_ZONE_IDENTIFIER): zone-id
+    env(MANAGED_CLUSTER_DSN): null://
 
     env(BILLING_ENABLED): true
     env(RECURLY_API_KEY): ~
@@ -76,8 +74,6 @@ parameters:
     env(GOOGLE_CONTAINER_BUILDER_PROJECT_ID): ~
     env(GOOGLE_CONTAINER_BUILDER_SOURCE_BUCKET): ~
     env(GOOGLE_CONTAINER_BUILDER_SERVICE_ACCOUNT_PATH): ~
-
-    env(MANAGED_CLUSTER_GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH): ~
 
     env(GOOGLE_CLOUD_AUDIT_LOG_PROJECT_ID): ~
     env(GOOGLE_CLOUD_AUDIT_LOG_SERVICE_ACCOUNT_PATH): ~
@@ -194,18 +190,7 @@ parameters:
     api_retry_count: 4    # Maximum number of failed API call retries.
 
     security_php_encryption_key: "%env(SECURITY_ENCRYPTION_KEY)%"
-
-    # This service account needs the following permissions: "Container Engine Admin", "Container Engine Service Agent", "Project IAM Admin", "Service Account Admin", "Service Account Key Admin"
-    managed_google_service_account_file_path: "%env(MANAGED_CLUSTER_GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH)%"
-    managed_google_project_id: continuous-pipe-managed
-    managed_google_cluster_identifier: continuouspipe-production
-    managed_google_rbac_cluster_role: managed-user
-
-    managed_cloudflare_domain_name: continuouspipe.net
-    managed_cloudflare_zone_identifier: %env(CLOUD_FLARE_MANAGED_ZONE_IDENTIFIER)%
-    managed_cloudflare_email: %env(CLOUD_FLARE_MANAGED_EMAIL)%
-    managed_cloudflare_api_key: %env(CLOUD_FLARE_MANAGED_ZONE_API_KEY)%
-
+    managed_cluster_dsn: %env(MANAGED_CLUSTER_DSN)%
     quay_io_access_token: "%env(QUAY_IO_ACCESS_TOKEN)%"
     quay_io_organisation: "%env(QUAY_IO_ORGANISATION)%"
 

@@ -63,6 +63,25 @@ final class ContainerEngineCluster
      */
     private $currentNodeCount;
 
+    public function __construct(
+        string $name,
+        string $zone,
+        string $endpoint,
+        NodeConfiguration $nodeConfiguration = null,
+        MasterAuthentication $masterAuthentication = null,
+        string $currentMasterVersion = null,
+        string $currentNodeCount = null
+    ) {
+        $this->name = $name;
+        $this->nodeConfiguration = $nodeConfiguration;
+        $this->masterAuthentication = $masterAuthentication;
+        $this->zone = $zone;
+        $this->endpoint = $endpoint;
+        $this->currentMasterVersion = $currentMasterVersion;
+        $this->currentNodeCount = $currentNodeCount;
+    }
+
+
     /**
      * @return string
      */

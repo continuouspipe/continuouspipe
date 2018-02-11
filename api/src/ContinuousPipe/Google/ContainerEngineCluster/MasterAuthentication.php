@@ -46,6 +46,15 @@ final class MasterAuthentication
      */
     private $clientKey;
 
+    public function __construct(string $username, string $password, string $clusterCaCertificate, string $clientCertificate, string $clientKey)
+    {
+        $this->username = $username;
+        $this->password = $password;
+        $this->clusterCaCertificate = $clusterCaCertificate;
+        $this->clientCertificate = $clientCertificate;
+        $this->clientKey = $clientKey;
+    }
+
     /**
      * @return string
      */

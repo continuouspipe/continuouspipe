@@ -35,7 +35,6 @@ class DoNotDownloadIfSourceIsLocal implements ArchiveDownloader
     {
         if (strpos($archive->getUrl(), 'https://'.$this->riverUrl) !== 0
             || !preg_match('#/flows/([a-z0-9-]+)/source-code/archive/([^/]+)$#', $archive->getUrl(), $matches)) {
-
             $this->decoratedDownloader->download($archive, $to);
 
             return;
