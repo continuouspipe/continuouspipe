@@ -4,20 +4,9 @@ angular.module('continuousPipeRiver')
     .controller('FlowConfigurationController', function($rootScope, $scope, $remoteResource, $mdToast, $mdDialog, $state, $http, $intercom, TideRepository, EnvironmentRepository, FlowRepository, flow) {
         $scope.flow = flow;
         $scope.variables = [];
-
-        var aceInitialized = false,
-            changed = false;
-
         $scope.aceOption = {
             mode: 'yaml',
-            onBlur: loadVariables,
-            onChange: function() {
-                if (aceInitialized) {
-                    changed = true;
-                } else {
-                    aceInitialized = true;
-                }
-            }
+            onBlur: loadVariables
         };
 
         $scope.save = function() {
@@ -242,7 +231,7 @@ angular.module('continuousPipeRiver')
             $mdDialog.hide(answer);
         };
     })
-    .controller('FlowConfigurationChecklistController', function($scope, $rootScope, $http, $state, $q, AlertsRepository, AlertManager, FeaturesRepository, ClusterRepository, RegistryCredentialsRepository, project, flow) {
+    .controller('FlowConfigurationChecklistController', function(MANAGED_CLUSTER_ENABLED, $scope, $rootScope, $http, $state, $q, AlertsRepository, AlertManager, FeaturesRepository, ClusterRepository, RegistryCredentialsRepository, project, flow) {
         $scope.flow = flow;
 
         var checks = [
@@ -282,14 +271,17 @@ angular.module('continuousPipeRiver')
                         }
                     }
                 }
-            },
-            {
+            }
+        ];
+
+        if (MANAGED_CLUSTER_ENABLED === 'true') {
+            checks.push({
                 icon: 'cloud',
                 title: 'Managed cluster',
                 description: 'Click on "Enable" to register a managed cluster to your project.',
-                getStatus: function() {
-                    return ClusterRepository.findAll(project).then(function(clusters) {
-                        var clusterIsManaged = function(cluster) {
+                getStatus: function () {
+                    return ClusterRepository.findAll(project).then(function (clusters) {
+                        var clusterIsManaged = function (cluster) {
                             if (!cluster.policies) {
                                 return false;
                             }
@@ -312,17 +304,20 @@ angular.module('continuousPipeRiver')
                         return 'optional';
                     });
                 },
-                getAction: function(status) {
+                getAction: function (status) {
                     if (status.summary != 'success') {
                         return {
                             title: 'Enable',
-                            click: function() {
+                            click: function () {
                                 return ClusterRepository.createManaged(project);
                             }
                         };
                     }
                 }
-            },
+            });
+        }
+
+        checks.push(
             {
                 icon: 'storage',
                 title: 'Docker image in managed registry',
@@ -355,7 +350,7 @@ angular.module('continuousPipeRiver')
                     }
                 }
             }
-        ];
+        );
 
         $scope.$on('$destroy', $rootScope.$on('visibility-changed', function() {
             refreshStatus();

@@ -448,7 +448,8 @@ module.exports = function (grunt) {
           BILLING_ENABLED: process.env.BILLING_ENABLED,
           GOOGLE_ANALYTICS_TRACKER: process.env.GOOGLE_ANALYTICS_TRACKER,
           FIREBASE_APP: process.env.FIREBASE_APP,
-          FIREBASE_WEB_API_KEY: process.env.FIREBASE_WEB_API_KEY
+          FIREBASE_WEB_API_KEY: process.env.FIREBASE_WEB_API_KEY,
+          MANAGED_CLUSTER_ENABLED: process.env.MANAGED_CLUSTER_ENABLED
         }
       }
     },
