@@ -1,0 +1,40 @@
+language: php
+
+dist: xenial
+sudo: false
+
+matrix:
+    include:
+        - php: 7.1
+
+env:
+    global:
+        - DATABASE_HOST=127.0.0.1
+        - DATABASE_USER=root
+        - DATABASE_PASSWORD=
+        - REDIS_HOST=127.0.0.1
+
+services:
+    - mysql
+    - redis-server
+
+before_install:
+    - sudo apt-get install -y librabbitmq-dev
+    - printf "\n" | pecl install amqp
+
+install:
+    - pushd api && composer install && popd
+
+script:
+    - source .env.dist
+
+    # API tests
+    - pushd api/
+    - vendor/bin/phpspec --no-interaction run
+    - vendor/bin/phpunit
+    - vendor/bin/behat --profile=domain -fprogress
+
+    - bin/console doctrine:database:create --no-interaction
+    - bin/console doctrine:migrations:migrate --no-interaction
+    - vendor/bin/behat --profile=smoke -fprogress
+    - popd
