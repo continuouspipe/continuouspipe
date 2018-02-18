@@ -1,6 +1,0 @@
-web:
-  build: .
-  expose:
-    - 80
-  ports:
-    - 80:80
