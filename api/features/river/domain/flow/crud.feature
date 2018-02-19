@@ -27,7 +27,6 @@ Feature:
     And I have a flow in the team "samuel"
     When I send an update request with a configuration
     Then the flow is successfully saved
-    And the stored configuration is not empty
 
   Scenario: Only administrators can update a flow
     Given the team "samuel" exists
