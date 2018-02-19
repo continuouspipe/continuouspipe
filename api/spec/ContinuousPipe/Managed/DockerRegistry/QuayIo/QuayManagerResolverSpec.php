@@ -11,7 +11,7 @@ use GuzzleHttp\ClientInterface;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
-class QuayResolverSpec extends ObjectBehavior
+class QuayManagerResolverSpec extends ObjectBehavior
 {
     function let(BucketRepository $bucketRepository, ClientInterface $httpClient)
     {

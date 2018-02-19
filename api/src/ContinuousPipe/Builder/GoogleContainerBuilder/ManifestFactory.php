@@ -44,11 +44,11 @@ class ManifestFactory
     public function __construct(
         DockerfileResolver $dockerfileResolver,
         UrlGeneratorInterface $urlGenerator,
-        string $artifactsBucketName,
-        string $artifactsServiceAccountFilePath,
-        string $firebaseDatabaseUrl,
-        string $firebaseServiceAccountFilePath,
-        string $riverHost
+        string $artifactsBucketName = null,
+        string $artifactsServiceAccountFilePath = null,
+        string $firebaseDatabaseUrl = null,
+        string $firebaseServiceAccountFilePath = null,
+        string $riverHost = null
     ) {
         $this->dockerfileResolver = $dockerfileResolver;
         $this->urlGenerator = $urlGenerator;
@@ -73,12 +73,12 @@ class ManifestFactory
             'build_complete_endpoint' => $buildCompleteEndpoint,
             'artifacts_configuration' => [
                 'bucket_name' => $this->artifactsBucketName,
-                'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true),
+                'service_account' => null !== $this->artifactsServiceAccountFilePath ? \GuzzleHttp\json_decode(file_get_contents($this->artifactsServiceAccountFilePath), true) : null,
             ],
             'firebase_logging_configuration' => [
                 'database_url' => $this->firebaseDatabaseUrl,
                 'parent_log' => $this->getFirebaseParentLog($request->getLogging()),
-                'service_account' => \GuzzleHttp\json_decode(file_get_contents($this->firebaseServiceAccountFilePath), true),
+                'service_account' => null !== $this->firebaseServiceAccountFilePath ? \GuzzleHttp\json_decode(file_get_contents($this->firebaseServiceAccountFilePath), true) : null,
             ],
             'auth_configs' => $this->dockerRegistryAuthConfigs($request),
             'steps' => array_map(function (BuildStepConfiguration $step) {

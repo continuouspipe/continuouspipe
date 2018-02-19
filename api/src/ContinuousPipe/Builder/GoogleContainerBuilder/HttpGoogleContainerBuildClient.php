@@ -7,6 +7,7 @@ use ContinuousPipe\Builder\Archive;
 use ContinuousPipe\Builder\ArchiveBuilder;
 use ContinuousPipe\Builder\Artifact;
 use ContinuousPipe\Builder\Artifact\ArtifactManager;
+use ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\GuzzleHttpClientFactory;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
@@ -25,9 +26,9 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     private $artifactManager;
 
     /**
-     * @var ClientInterface
+     * @var GuzzleHttpClientFactory
      */
-    private $googleHttpClient;
+    private $httpClientFactory;
 
     /**
      * @var ManifestFactory
@@ -47,14 +48,14 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function __construct(
         ArchiveBuilder $archiveBuilder,
         ArtifactManager $artifactManager,
-        ClientInterface $googleHttpClient,
+        GuzzleHttpClientFactory $httpClientFactory,
         ManifestFactory $manifestFactory,
         BuildCreator $buildCreator,
-        string $googleProjectId
+        string $googleProjectId = null
     ) {
         $this->archiveBuilder = $archiveBuilder;
         $this->artifactManager = $artifactManager;
-        $this->googleHttpClient = $googleHttpClient;
+        $this->httpClientFactory = $httpClientFactory;
         $this->manifestFactory = $manifestFactory;
         $this->googleProjectId = $googleProjectId;
         $this->buildCreator = $buildCreator;
@@ -82,7 +83,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
     public function fetchStatus(GoogleContainerBuild $build): GoogleContainerBuildStatus
     {
         try {
-            $response = $this->googleHttpClient->request(
+            $response = $this->httpClientFactory->create()->request(
                 'get',
                 'https://cloudbuild.googleapis.com/v1/projects/' . $this->googleProjectId . '/builds/' . $build->getIdentifier()
             );
@@ -101,26 +102,6 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
         }
 
         return new GoogleContainerBuildStatus($json['status']);
-    }
-
-    private function getUserKey(Build $build)
-    {
-        $steps = $build->getRequest()->getSteps();
-        if (!isset($steps[0])) {
-            return 'builder';
-        }
-
-        $image = $steps[0]->getImage();
-        if (!isset($image)) {
-            return 'builder';
-        }
-
-        $imageName = $image->getName();
-        if (!isset($imageName)) {
-            return 'builder';
-        }
-
-        return $imageName;
     }
 
     private function writeArtifact($sourceArchive, $sourceArtifact)

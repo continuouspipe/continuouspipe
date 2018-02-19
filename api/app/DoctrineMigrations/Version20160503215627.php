@@ -18,7 +18,7 @@ class Version20160503215627 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tide_dto CHANGE creation_date creation_date TIMESTAMP(6) NULL');
+        $this->addSql('ALTER TABLE tide_dto CHANGE creation_date creation_date TIMESTAMP NULL');
     }
 
     /**
@@ -29,6 +29,6 @@ class Version20160503215627 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE tide_dto CHANGE creation_date creation_date TIMESTAMP(6) DEFAULT \'CURRENT_TIMESTAMP(6)\' NOT NULL');
+        $this->addSql('ALTER TABLE tide_dto CHANGE creation_date creation_date TIMESTAMP DEFAULT \'CURRENT_TIMESTAMP\' NOT NULL');
     }
 }

@@ -67,6 +67,8 @@ parameters:
     env(GOOGLE_KMS_SERVICE_ACCOUNT_PATH): ~
     env(JWT_PRIVATE_KEY_PATH): ~
     env(JWT_PUBLIC_KEY_PATH): ~
+    env(JWT_PRIVATE_KEY_PASS_PHRASE): ~
+
     env(GITHUB_INTEGRATION_PRIVATE_KEY_PATH): ~
     env(GOOGLE_STORAGE_SERVICE_ACCOUNT_PATH): ~
 
@@ -76,6 +78,8 @@ parameters:
 
     env(GOOGLE_CLOUD_AUDIT_LOG_PROJECT_ID): ~
     env(GOOGLE_CLOUD_AUDIT_LOG_SERVICE_ACCOUNT_PATH): ~
+
+    env(APP_SECRET): ThisIsASecretToBeChanged
 
     # Parameters
     database_host:     "%env(DATABASE_HOST)%"

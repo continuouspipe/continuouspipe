@@ -31,10 +31,10 @@ Feature:
     Then the archive should contain a "Dockerfile" file
     And the file "Dockerfile" in the archive should look like:
     """
-    FROM quay.io/continuouspipe/symfony-flex:latest
-    ARG APP_ENV
-    ARG APP_DEBUG
-    ARG APP_SECRET
+    FROM quay.io/continuouspipe/symfony-pack:latest
+    ARG APP_ENV=
+    ARG APP_DEBUG=
+    ARG APP_SECRET=
     COPY . /app/
     WORKDIR /app
     RUN container build

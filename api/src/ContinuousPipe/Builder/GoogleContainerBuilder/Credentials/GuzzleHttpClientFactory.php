@@ -11,25 +11,27 @@ use GuzzleHttp\HandlerStack;
 class GuzzleHttpClientFactory
 {
     /**
-     * @var FetchAuthTokenInterface
-     */
-    private $authTokenFetcher;
-
-    /**
      * @var callable
      */
     private $historyMiddleware;
 
-    public function __construct(FetchAuthTokenInterface $authTokenFetcher, callable $historyMiddleware = null)
+    /**
+     * @var string
+     */
+    private $serviceAccountPath;
+
+    public function __construct(callable $historyMiddleware = null, string $serviceAccountPath = null)
     {
-        $this->authTokenFetcher = $authTokenFetcher;
         $this->historyMiddleware = $historyMiddleware;
+        $this->serviceAccountPath = $serviceAccountPath;
     }
 
     public function create() : ClientInterface
     {
         $stack = HandlerStack::create();
-        $stack->push(new AuthTokenMiddleware($this->authTokenFetcher), 'auth_service_account');
+        $stack->push(new AuthTokenMiddleware(
+            (new ServiceAccountAuthTokenFetcherFactory($this->serviceAccountPath))->create()
+        ), 'auth_service_account');
 
         if (null !== $this->historyMiddleware) {
             $stack->push($this->historyMiddleware);

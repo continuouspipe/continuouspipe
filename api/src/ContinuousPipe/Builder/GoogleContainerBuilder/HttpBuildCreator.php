@@ -3,15 +3,16 @@
 namespace ContinuousPipe\Builder\GoogleContainerBuilder;
 
 use ContinuousPipe\Builder\Artifact;
+use ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\GuzzleHttpClientFactory;
 use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpBuildCreator implements BuildCreator
 {
     /**
-     * @var ClientInterface
+     * @var GuzzleHttpClientFactory
      */
-    private $googleHttpClient;
+    private $httpClientFactory;
 
     /**
      * @var string
@@ -29,12 +30,12 @@ class HttpBuildCreator implements BuildCreator
     private $maximumAllowedBuildTime;
 
     public function __construct(
-        ClientInterface $googleHttpClient,
+        GuzzleHttpClientFactory $httpClientFactory,
         string $googleProjectId,
         string $googleSourceArtifactBucket,
         int $maximumAllowedBuildTime = 3600
     ) {
-        $this->googleHttpClient = $googleHttpClient;
+        $this->httpClientFactory = $httpClientFactory;
         $this->googleProjectId = $googleProjectId;
         $this->googleSourceArtifactBucket = $googleSourceArtifactBucket;
         $this->maximumAllowedBuildTime = $maximumAllowedBuildTime;
@@ -42,7 +43,7 @@ class HttpBuildCreator implements BuildCreator
 
     public function startBuild(Artifact $sourceArtifact, string $gcbBuilderVersion): ResponseInterface
     {
-        return $this->googleHttpClient->request(
+        return $this->httpClientFactory->create()->request(
             'post',
             'https://cloudbuild.googleapis.com/v1/projects/' . $this->googleProjectId . '/builds',
             [
