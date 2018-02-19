@@ -14,7 +14,7 @@
         <service id="builder.google_container_builder" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient">
             <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.google_container_builder.artifacts_manager.traceable" />
-            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.http_client_factory" />
             <argument type="service" id="builder.google_container_builder.manifest_factory" />
             <argument type="service" id="builder.google_container_builder.build_creator" />
             <argument>%google_container_builder_project%</argument>

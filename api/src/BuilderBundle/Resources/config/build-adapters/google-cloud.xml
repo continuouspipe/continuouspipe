@@ -28,34 +28,9 @@
             <argument type="service" id="builder.google_container_builder.artifact_manager.bucket_resolver" />
         </service>
 
-        <service id="builder.google_container_builder.credentials.service_account_fetcher_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\ServiceAccountAuthTokenFetcherFactory">
-            <argument>%google_container_builder_service_account_path%</argument>
-        </service>
-
-        <service id="builder.google_container_builder.http_client.auth_token_fetcher" class="Google\Auth\FetchAuthTokenCache">
-            <factory service="builder.google_container_builder.credentials.service_account_fetcher_factory" method="create" />
-        </service>
-
-        <!--
-          Do not cache the access token just yet.
-
-        <service id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached"
-                 class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\Cache\CachedAuthTokenFetcher"
-                 decorates="builder.google_container_builder.http_client.auth_token_fetcher"
-                 decoration-priority="5">
-            <argument type="service" id="river.view.storage.firebase.database_factory.auth_token_fetcher.redis_cached.inner" />
-            <argument type="service" id="river.predis_cache" />
-            <argument type="service" id="logger" />
-        </service>
-        -->
-
         <service id="builder.google_container_builder.http_client_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\Credentials\GuzzleHttpClientFactory">
-            <argument type="service" id="builder.google_container_builder.http_client.auth_token_fetcher" />
             <argument type="service" id="csa_guzzle.middleware.history" on-invalid="null" />
-        </service>
-
-        <service id="builder.google_container_builder.http_client" class="GuzzleHttp\Client">
-            <factory service="builder.google_container_builder.http_client_factory" method="create" />
+            <argument>%google_container_builder_service_account_path%</argument>
         </service>
 
         <service id="builder.google_container_builder.manifest_factory" class="ContinuousPipe\Builder\GoogleContainerBuilder\ManifestFactory">
@@ -71,14 +46,14 @@
         <service id="builder.google_container_builder" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpGoogleContainerBuildClient">
             <argument type="service" id="builder.archive_builder" />
             <argument type="service" id="builder.google_container_builder.artifacts_manager" />
-            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.http_client_factory" />
             <argument type="service" id="builder.google_container_builder.manifest_factory" />
             <argument type="service" id="builder.google_container_builder.build_creator" />
             <argument>%google_container_builder_project%</argument>
         </service>
 
         <service id="builder.google_container_builder.build_creator" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpBuildCreator">
-            <argument type="service" id="builder.google_container_builder.http_client" />
+            <argument type="service" id="builder.google_container_builder.http_client_factory" />
             <argument>%google_container_builder_project%</argument>
             <argument>%google_container_builder_source_bucket%</argument>
         </service>
