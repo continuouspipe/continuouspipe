@@ -28,7 +28,7 @@ You can see that a project contains some flows (your code repositories), Docker 
 You need to register a Kubernetes cluster, to be able to deploy applications to it. This can be the Kubernetes cluster on
 which ContinuousPipe runs or can be something completely different.
 
-![Add a Kubernetes cluster](runtime/assets/first-usage/2-add-a-docker-registry.gif)
+![Add a Docker Registry credentials](runtime/assets/first-usage/3-add-a-cluster.gif)
 
 Check out more details in the [Configuring a cluster](https://docs.continuouspipe.io/quick-start/configuring-a-cluster/) documentation.
 
@@ -37,7 +37,7 @@ Check out more details in the [Configuring a cluster](https://docs.continuouspip
 ContinuousPipe will build and push the Docker images for you. You need to add at least one Docker Registry credentials in
 order to have ContinuousPipe building and pushing your Docker images!
 
-![Add a Docker Registry credentials](runtime/assets/first-usage/3-add-a-cluster.gif)
+![Add a Kubernetes cluster](runtime/assets/first-usage/2-add-a-docker-registry.gif)
 
 Check out more details in the [Configuring a Docker Registry](https://docs.continuouspipe.io/quick-start/configuring-a-registry/) documentation.
 
