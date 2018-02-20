@@ -19,8 +19,11 @@ services:
     - redis-server
 
 before_install:
-    - sudo apt-get install -y librabbitmq-dev
+    - sudo apt-get install -y librabbitmq-dev curl bzip2
     - printf "\n" | pecl install amqp
+    - curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2
+    - tar -C /tmp -xf /tmp/shellcheck.tar.bz2
+    - sudo mv /tmp/shellcheck-0.4.5/shellcheck /usr/local/bin/
 
 install:
     - pushd api && composer install && popd
@@ -32,6 +35,8 @@ script:
     - pushd api/
     - vendor/bin/phpspec --no-interaction run
     - vendor/bin/phpunit
+    # Shell script tests
+    - for file in $(find .. -type f \( -perm +111 -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements"); do shellcheck --exclude SC1091 "$file"; done
     - vendor/bin/behat --profile=domain -fprogress
 
     - bin/console doctrine:database:create --no-interaction
