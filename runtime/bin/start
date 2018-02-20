@@ -3,14 +3,15 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR=$DIR/../../
+ROOT_DIR="$DIR/../../"
 
-source $DIR/../helpers/functions.sh
+# shellcheck source=../helpers/functions.sh
+source "$DIR/../helpers/functions.sh"
 
 # If `.env` do not exists, create it
 ENV_FILE_PATH=$ROOT_DIR/.env
-if [ ! -f $ENV_FILE_PATH ]; then
-    echo > $ENV_FILE_PATH
+if [ ! -f "$ENV_FILE_PATH" ]; then
+    echo > "$ENV_FILE_PATH"
 fi
 
 echo "Creating the ngrok tunnel"
@@ -18,7 +19,7 @@ docker-compose up -d tunnel
 NGROK_URL=$(wait_for tunnel)
 
 echo
-echo "   Ngrok tunnel is ready. Its URL is: "$NGROK_URL
+echo "   Ngrok tunnel is ready. Its URL is: $NGROK_URL"
 echo
 
 echo
@@ -36,7 +37,7 @@ echo
 docker-compose up -d
 wait_for api 1800
 
-if [ ! -d $ROOT_DIR/api/web/css ]; then
+if [ ! -d "$ROOT_DIR/api/web/css" ]; then
     echo
     echo "   Generating the front-end assets as they are not found."
     echo

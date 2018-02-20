@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 alias_function do_start do_project_start_inner
 function do_start() {
