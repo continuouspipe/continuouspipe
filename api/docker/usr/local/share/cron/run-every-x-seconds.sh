@@ -7,18 +7,19 @@ error="no"
 
 if [ 'x'"$runCommand" != 'x' ]
 then
-    if [ 'x'$inputPeriod != 'x' ]
+    if [ 'x'"$inputPeriod" != 'x' ]
     then
-        loops=$(( $RUN_TIME / $inputPeriod ))
+        loops=$(( RUN_TIME / inputPeriod ))
         if [ $loops -eq 0 ]
         then
             loops=1
         fi
 
-        for i in $(eval echo {1..$loops})
+        # shellcheck disable=SC2034
+        for i in $(seq 1 "$loops")
         do
             $runCommand
-            sleep $inputPeriod
+            sleep "$inputPeriod"
         done
 
     else
