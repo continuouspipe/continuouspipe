@@ -23,7 +23,7 @@
             <join-column name="user_username" referenced-column-name="username" />
         </many-to-one>
 
-        <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team">
+        <many-to-one field="team" target-entity="ContinuousPipe\Security\Team\Team" fetch="EAGER">
             <join-column name="team_slug" referenced-column-name="slug" />
         </many-to-one>
     </entity>
