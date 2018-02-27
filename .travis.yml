@@ -1,7 +1,7 @@
 language: php
 
 dist: xenial
-sudo: false
+sudo: required
 
 matrix:
     include:
@@ -17,6 +17,7 @@ env:
 services:
     - mysql
     - redis-server
+    - docker
 
 before_install:
     - sudo apt-get install -y librabbitmq-dev curl bzip2
@@ -43,3 +44,11 @@ script:
     - bin/console doctrine:migrations:migrate --no-interaction
     - vendor/bin/behat --profile=smoke -fprogress
     - popd
+
+after_success:
+    - |
+      if [ "$TRAVIS_BRANCH" = "master" ]; then
+        docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" &&
+        docker-compose -f docker-compose.yml -f docker-compose.images.yml build && docker-compose -f docker-compose.yml -f docker-compose.with-images.yml push;
+      fi
+
