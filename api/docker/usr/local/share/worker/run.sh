@@ -2,9 +2,9 @@
 
 set -xe
 
-EXTRA_ARGUMENTS=''
+EXTRA_ARGUMENTS=()
 if [ ! -z "$WORKER_CONNECTION_NAME" ]; then
-    EXTRA_ARGUMENTS=" --connection=${WORKER_CONNECTION_NAME}"
+    EXTRA_ARGUMENTS+=("--connection=${WORKER_CONNECTION_NAME}")
 fi
 
 if [ -z "$SYMFONY_ENV" ]; then
