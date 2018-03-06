@@ -61,7 +61,7 @@ class GKEClusterAccountCreator implements ClusterCreator
             throw new ClusterCreationException('Can\'t get cluster from GKE API', $e->getCode(), $e);
         }
 
-        return new Kubernetes(
+        $newCluster = new Kubernetes(
             $clusterIdentifier,
             $this->endpoint($cluster->getEndpoint()),
             $this->version($cluster->getCurrentMasterVersion()),
@@ -70,13 +70,15 @@ class GKEClusterAccountCreator implements ClusterCreator
             [],
             null,
             null, // (Don't add the CA certificate for now - https://inviqa.atlassian.net/browse/CD-599) $cluster->getMasterAuthentication()->getClusterCaCertificate(),
-            $base64EncodedServiceAccount,
+            null,
             new Cluster\ClusterCredentials(
                 $cluster->getMasterAuthentication()->getUsername(),
                 $cluster->getMasterAuthentication()->getPassword()
                 // (Don't use client certificate for now - https://inviqa.atlassian.net/browse/CD-606) $cluster->getMasterAuthentication()->getClientCertificate()
             )
         );
+        $newCluster->setCredentials(new Cluster\ClusterCredentials(null, null, null, null, $base64EncodedServiceAccount));
+        return $newCluster;
     }
 
     /**
