@@ -18,30 +18,30 @@ services:
 
 before_install:
     - docker run --rm --detach --name "php${PHP_VERSION}" -v "$(pwd):/app" "quay.io/continuouspipe/php${PHP_VERSION}-nginx:latest" sleep infinity
-    - docker exec "php${PHP_VERSION}" bash -c 'set -e
-      apt-get update
-      apt-get install -y librabbitmq-dev curl bzip2 php-amqp
-      curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2
-      tar -C /tmp -xjf /tmp/shellcheck.tar.bz2
+    - docker exec "php${PHP_VERSION}" bash -c 'set -e;
+      apt-get update;
+      apt-get install -y librabbitmq-dev curl bzip2 php-amqp;
+      curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2;
+      tar -C /tmp -xjf /tmp/shellcheck.tar.bz2;
       mv /tmp/shellcheck-0.4.5/shellcheck /usr/local/bin/'
 
 install:
     - docker exec "php${PHP_VERSION}" bash -c 'set -e;
-      cd /app
+      cd /app;
       pushd api && composer install && popd'
 
 script:
     - docker exec "php${PHP_VERSION}" bash -c 'set -e;
-      cd /app
-      source .env.dist
-      pushd api/
-      vendor/bin/phpspec --no-interaction run
-      vendor/bin/phpunit
-      find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +
-      vendor/bin/behat --profile=domain -fprogress
-      bin/console doctrine:database:create --no-interaction
-      bin/console doctrine:migrations:migrate --no-interaction
-      vendor/bin/behat --profile=smoke -fprogress
+      cd /app;
+      source .env.dist;
+      pushd api/;
+      vendor/bin/phpspec --no-interaction run;
+      vendor/bin/phpunit;
+      find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +;
+      vendor/bin/behat --profile=domain -fprogress;
+      bin/console doctrine:database:create --no-interaction;
+      bin/console doctrine:migrations:migrate --no-interaction;
+      vendor/bin/behat --profile=smoke -fprogress;
       popd'
 
 after_script:
