@@ -1,6 +1,5 @@
 language: php
 
-dist: xenial
 sudo: required
 
 matrix:
@@ -30,6 +29,7 @@ install:
     - pushd api && composer install && popd
 
 script:
+    - docker ps -a || exit 1
     - source .env.dist
 
     # API tests
