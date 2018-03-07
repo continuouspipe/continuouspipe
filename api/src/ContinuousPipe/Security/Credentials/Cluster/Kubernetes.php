@@ -125,13 +125,14 @@ class Kubernetes extends Cluster
      */
     public function getCredentials()
     {
-        return $this->credentials ?: new ClusterCredentials(
-            $this->username,
-            $this->password,
-            $this->clientCertificate,
-            null,
-            $this->googleCloudServiceAccount
-        );
+        return $this->credentials && !$this->credentials->isEmpty()
+            ? $this->credentials : new ClusterCredentials(
+                $this->username,
+                $this->password,
+                $this->clientCertificate,
+                null,
+                $this->googleCloudServiceAccount
+            );
     }
 
     /**
