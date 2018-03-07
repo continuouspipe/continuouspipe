@@ -12,15 +12,20 @@ env:
         - REDIS_HOST=127.0.0.1
 
 services:
-    - mysql
-    - redis-server
     - docker
 
 before_install:
     - docker run --rm --detach --name "php${PHP_VERSION}" -v "$(pwd):/app" "quay.io/continuouspipe/php${PHP_VERSION}-nginx:latest" sleep infinity
     - docker exec "php${PHP_VERSION}" bash -c 'set -e;
       apt-get update;
-      apt-get install -y librabbitmq-dev curl bzip2 php-amqp;
+      DEBIAN_FRONTEND=noninteractive apt-get install -y librabbitmq-dev curl bzip2 php-amqp mysql-server redis-server;
+      mkdir -p /var/run/mysqld/;
+      chown -R "mysql:mysql" /var/run/mysqld/;
+      {
+        echo "[mysqld]";
+        echo "bind_address = 127.0.0.1";
+        echo "sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";
+      } > /etc/my.cnf;
       curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2;
       tar -C /tmp -xjf /tmp/shellcheck.tar.bz2;
       mv /tmp/shellcheck-0.4.5/shellcheck /usr/local/bin/'
@@ -38,10 +43,14 @@ script:
       vendor/bin/phpspec --no-interaction run;
       vendor/bin/phpunit;
       find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +;
+      mysqld_safe &
+      redis-server 2>&1 > /dev/null &
       vendor/bin/behat --profile=domain -fprogress;
       bin/console doctrine:database:create --no-interaction;
       bin/console doctrine:migrations:migrate --no-interaction;
       vendor/bin/behat --profile=smoke -fprogress;
+      kill "$(cat /var/run/mysqld/mysqld.pid)";
+      pkill redis-server;
       popd'
 
 after_script:
