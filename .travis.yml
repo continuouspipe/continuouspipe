@@ -47,8 +47,7 @@ script:
 
 after_success:
     - |
-      if [ "$TRAVIS_BRANCH" = "master" ]; then
+      if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" &&
         docker-compose -f docker-compose.yml -f docker-compose.images.yml build && docker-compose -f docker-compose.yml -f docker-compose.with-images.yml push;
       fi
-
