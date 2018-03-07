@@ -34,15 +34,11 @@ script:
     - docker exec "php${PHP_VERSION}" bash -c 'set -e;
       cd /app
       source .env.dist
-
-      # API tests
       pushd api/
       vendor/bin/phpspec --no-interaction run
       vendor/bin/phpunit
-      # Shell script tests
       find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +
       vendor/bin/behat --profile=domain -fprogress
-
       bin/console doctrine:database:create --no-interaction
       bin/console doctrine:migrations:migrate --no-interaction
       vendor/bin/behat --profile=smoke -fprogress
