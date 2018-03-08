@@ -50,7 +50,7 @@ script:
       vendor/bin/phpunit;
       find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +;
       mysqld_safe &
-      redis-server 2>&1 > /dev/null &
+      (cd /tmp && redis-server 2>&1 > /dev/null) &
       vendor/bin/behat --profile=domain -fprogress;
       bin/console doctrine:database:create --no-interaction;
       bin/console doctrine:migrations:migrate --no-interaction;
