@@ -1,13 +1,10 @@
 language: php
 
-dist: xenial
 sudo: required
 
-matrix:
-    include:
-        - php: 7.1
-
 env:
+    matrix:
+        - PHP_VERSION: "7.1"
     global:
         - DATABASE_HOST=127.0.0.1
         - DATABASE_USER=root
@@ -15,40 +12,59 @@ env:
         - REDIS_HOST=127.0.0.1
 
 services:
-    - mysql
-    - redis-server
     - docker
 
 before_install:
-    - sudo apt-get install -y librabbitmq-dev curl bzip2
-    - printf "\n" | pecl install amqp
-    - curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2
-    - tar -C /tmp -xf /tmp/shellcheck.tar.bz2
-    - sudo mv /tmp/shellcheck-0.4.5/shellcheck /usr/local/bin/
+    - |
+      docker run --rm --detach --name "php${PHP_VERSION}" -v "$(pwd):/app" \
+      -e "DATABASE_HOST=$DATABASE_HOST" \
+      -e "DATABASE_USER=$DATABASE_USER" \
+      -e "DATABASE_PASSWORD=$DATABASE_PASSWORD" \
+      -e "REDIS_HOST=$REDIS_HOST" \
+      "quay.io/continuouspipe/php${PHP_VERSION}-nginx:latest" sleep infinity
+    - docker exec "php${PHP_VERSION}" bash -c 'set -e;
+      apt-get update;
+      DEBIAN_FRONTEND=noninteractive apt-get install -y librabbitmq-dev curl bzip2 php-amqp mysql-server redis-server;
+      mkdir -p /var/run/mysqld/;
+      chown -R "mysql:mysql" /var/run/mysqld/;
+      {
+        echo "[mysqld]";
+        echo "bind_address = 127.0.0.1";
+        echo "sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";
+      } > /etc/my.cnf;
+      curl -o /tmp/shellcheck.tar.bz2 https://s3.amazonaws.com/travis-blue-public/binaries/ubuntu/14.04/x86_64/shellcheck-0.4.5.tar.bz2;
+      tar -C /tmp -xjf /tmp/shellcheck.tar.bz2;
+      mv /tmp/shellcheck-0.4.5/shellcheck /usr/local/bin/'
 
 install:
-    - pushd api && composer install && popd
+    - docker exec "php${PHP_VERSION}" bash -c 'set -e;
+      cd /app;
+      pushd api && composer install && popd'
 
 script:
-    - source .env.dist
+    - docker exec "php${PHP_VERSION}" bash -c 'set -e;
+      cd /app;
+      source .env.dist;
+      pushd api/;
+      vendor/bin/phpspec --no-interaction run;
+      vendor/bin/phpunit;
+      find .. -type f \( -executable -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements" -exec shellcheck --exclude SC1091 {} +;
+      mysqld_safe &
+      (cd /tmp && redis-server 2>&1 > /dev/null) &
+      vendor/bin/behat --profile=domain -fprogress;
+      bin/console doctrine:database:create --no-interaction;
+      bin/console doctrine:migrations:migrate --no-interaction;
+      vendor/bin/behat --profile=smoke -fprogress;
+      kill "$(cat /var/run/mysqld/mysqld.pid)";
+      pkill redis-server;
+      popd'
 
-    # API tests
-    - pushd api/
-    - vendor/bin/phpspec --no-interaction run
-    - vendor/bin/phpunit
-    # Shell script tests
-    - for file in $(find .. -type f \( -perm +111 -or -name "*.sh" \) ! -path "*/vendor/*" ! -path "*/.git/*" ! -path "*/api/bin/console" ! -path "*/api/bin/symfony_requirements"); do shellcheck --exclude SC1091 "$file"; done
-    - vendor/bin/behat --profile=domain -fprogress
-
-    - bin/console doctrine:database:create --no-interaction
-    - bin/console doctrine:migrations:migrate --no-interaction
-    - vendor/bin/behat --profile=smoke -fprogress
-    - popd
+after_script:
+    - docker stop php7.1
 
 after_success:
     - |
-      if [ "$TRAVIS_BRANCH" = "master" ]; then
+      if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
         docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD" &&
         docker-compose -f docker-compose.yml -f docker-compose.images.yml build && docker-compose -f docker-compose.yml -f docker-compose.with-images.yml push;
       fi
-
