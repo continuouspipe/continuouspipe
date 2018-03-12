@@ -5,8 +5,8 @@ and how to get started with CP.
 
 1. [Requirements](#requirements)
 2. Running ContinuousPipe
-   - [Option 1: With DockerCompose](#option-1-with-dockercompose)
-   - [Option 2: With Kubernetes](#option-2-with-kubernetes)
+   - [Option 1: With DockerCompose](#option-1-dockercompose)
+   - [Option 2: With Kubernetes](#option-2-kubernetes)
 3. [Usage](#usage)
 
 ## Requirements
