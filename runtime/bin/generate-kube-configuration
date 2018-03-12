@@ -22,7 +22,7 @@ GENERATED_FOLDER="$ROOT_DIR/runtime/kubernetes/generated"
 files=("$GENERATED_FOLDER/"*)
 if [ ${#files[@]} -gt 1 ]; then
     echo -n "   Important: there are some files in the generated folder. "
-    read -p "Are you happy to replace them? " -n 1 -r
+    read -p "Are you happy to replace them? (n)" -n 1 -r
     echo
 
     if [[ ! $REPLY =~ ^[Yy]$ ]]
