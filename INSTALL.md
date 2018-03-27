@@ -65,8 +65,8 @@ Subscribe to the following events:
 3. Status
 4. Deployment status
 5. Issues
-6. Pull-requests
-7. Pull-requests reviews
+6. Pull request
+7. Pull request review
 8. Create
 9. Delete
 10. Push
