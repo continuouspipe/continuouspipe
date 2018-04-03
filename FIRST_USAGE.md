@@ -70,7 +70,7 @@ Once your tide is created, you should be redirected back to the overview of the 
 Click on the tide in the list (bellow the _pipelines_) to see more details:
 ![Successful tide](runtime/assets/first-usage/8-successful-tide.png)
 
-When your tide is finished, all you need is to click on the "Open app" app.
+When your tide is finished, all you need is to click on the "Open app" button.
 
 ## More...
 
