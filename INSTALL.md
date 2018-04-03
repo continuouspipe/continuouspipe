@@ -156,12 +156,13 @@ runtime/bin/generate-kube-configuration
 kubectl --namespace=continuouspipe create -f runtime/kubernetes/generated
 ```
 
-5. Run the database migrations. It's the only step that requires manual intervention. Get the `api` pod name and 
+5. Run the database migrations and install the assets. Only these steps require manual intervention. Get the `api` pod name and 
 ```
 $ kubectl --namespace=continuouspipe get pods | grep api
 api-4019277730-bn6t0           1/1       Running   0          13m
 
 $ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- sh -c 'bin/console -e=prod doctrine:migrations:migrate --no-interaction'
+$ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- sh -c 'bin/console -e=prod assets:install'
 [...]
 ```
 
