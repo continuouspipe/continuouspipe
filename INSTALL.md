@@ -1,7 +1,7 @@
 # Installing ContinuousPipe
 
-ContinuousPipe can be installed and run in multiple ways. This guide will guide you through the list of requirements
-and how to get started with CP.
+ContinuousPipe can be installed and run in multiple ways.
+This guide will guide you through the list of requirements and how to get started with ContinuousPipe.
 
 1. [Requirements](#requirements)
 2. Running ContinuousPipe
@@ -26,62 +26,80 @@ the internet, so their web-hooks can work.
 **Note:** When starting ContinuousPipe with the Docker setup, an [ngrok](https://ngrok.com) tunnel is started for you
 and should be displayed at the beginning when using the `start` script.
 
-### 1. GitHub OAuth
+### 1. GitHub OAuth Application
 
-Go to your [GitHub OAuth Apps settings](https://github.com/settings/developers) and click on **New OAuth App**. Fill in
-the following details:
+Go to your [GitHub OAuth Apps settings](https://github.com/settings/developers) and click on **Register a new application**.
+
+![Register a new application](runtime/assets/installation/10-register-oauth-app.png)
+
+Fill in the following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
 2. **Homepage URL:** https://continuouspipe.io
 3. **Authorization callback URL:** `$LOCAL_API_URL/auth/login/check-github` (`$LOCAL_API_URL` is the URL you use to access 
    the authentication page. On the Docker-Compose setup, it would be `http://localhost:81`)
 
-Click the green button "Register application". After being redirected, you should be able to
-read the OAuth "Client ID" and "Client Secret" to fill the `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
+![OAuth application form](runtime/assets/installation/20-oauth-application-form.png)
+
+Click the green button **Register application**. After being redirected, you should be able to
+read the OAuth *Client ID* and *Client Secret* to fill the `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
 configurations.
+
+![Client ID and Client Secret](runtime/assets/installation/20-id-and-secret.png)
 
 ### 2. GitHub Integration Application
 
-Go to your [GitHub Apps settings](https://github.com/settings/apps) and click on **New GitHub app**, and fill the 
-following details:
+Go to your [GitHub Apps settings](https://github.com/settings/apps) and click on **New GitHub app**.
+
+![Register a new integration](runtime/assets/installation/40-register-integration.png)
+
+Fill in the following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
-2. **Homepage URL:** https://continuouspipe.io
-3. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain 
+1. **Homepage URL:** https://continuouspipe.io
+1. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain 
    name, such as the ngrok tunnel mentioned earlier)
-4. **WebHook secret:** *a random secret string you want (keep it for later)*
+1. **WebHook secret:** *a random secret string you want (keep it for later)*
+
+![Integration form](runtime/assets/installation/50-integration-form.png)
 
 From the permissions, select the following ones:
+
 1. **Commit statuses:** Read & Write
 1. **Deployments:** Read & Write
-1. **Issues:** Read
+1. **Issues:** Read-only
 1. **Pull requests:** Read & Write
 1. **Repository contents:** Read & Write
-1. **Organisation members:** Read
+1. **Organisation members:** Read-only
+
+![Integration permissions](runtime/assets/installation/60-integration-permissions.png)
 
 Subscribe to the following events:
-1. Label
-2. Repository
-3. Status
-4. Deployment status
-5. Issues
-6. Pull request
-7. Pull request review
-8. Create
-9. Delete
-10. Push
-11. Release
 
-Press the green button "Create GitHub App". 
+1. Label
+1. Repository
+1. Status
+1. Deployment status
+1. Issues
+1. Pull request
+1. Pull request review
+1. Create
+1. Delete
+1. Push
+1. Release
+
+![Integration events](runtime/assets/installation/70-integration-events.png)
+
+Press the green button **Create GitHub App**. 
 
 You should arrive on a page summarizing your GitHub integration.
-The `GITHUB_INTEGRATION_ID` configuration will be the "ID" displayed in the "About" section. 
-The `GITHUB_SECRET` configuration is what you typed as a "WebHook secret" earlier. 
+The `GITHUB_INTEGRATION_ID` configuration will be the **ID** displayed in the **About** section. 
+The `GITHUB_SECRET` configuration is what you typed as a **WebHook secret** earlier. 
 
 The `GITHUB_INTEGRATION_SLUG` is the name for the integration in the URL 
 (given the URL `https://github.com/settings/apps/continuouspipe-for-samuel`, the slug would be `continuouspipe-for-samuel`).
 
-Last but not least, you need to generate the private key for this integration by clicking on the "Generate private key" button. 
+Last but not least, you need to generate the private key for this integration by clicking on the **Generate private key** button. 
 Once you have downloaded the `.pem` file, paste its path in the installation process (or manually paste it to `./runtime/keys/github.pem`).
 
 ### 3. Firebase
@@ -143,8 +161,13 @@ kubectl create namespace continuouspipe
 kubectl --namespace=continuouspipe create -f runtime/kubernetes/dist/00-api-service.yaml
 ```
 
-Wait until the service has a load-balancer IP (check with `kubectl --namespace=continuouspipe get services`). Use this
-address as the `RIVER_API_URL` configuration (example: `http://1.2.3.4`) for the following step.
+Wait until the service has a LoadBalancer IP (check with `kubectl --namespace=continuouspipe get services`):
+```
+NAME      TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+api       LoadBalancer   99.99.999.99   1.2.3.4       80:12345/TCP   1m
+```
+
+Use **EXTERNAL-IP** as the `RIVER_API_URL` configuration `http://1.2.3.4` for the following step.
 
 2. Generate the configuration according to your needs and the [Requirements section](#requirements)
 ```
@@ -156,17 +179,24 @@ runtime/bin/generate-kube-configuration
 kubectl --namespace=continuouspipe create -f runtime/kubernetes/generated
 ```
 
-5. Run the database migrations and install the assets. Only these steps require manual intervention. Get the `api` pod name and 
+You can ignore the following error, because you already deployed it in step 3:
+**Error from server (AlreadyExists): error when creating "runtime/kubernetes/generated/00-api-service.yaml": services "api" already exists**
+
+5. Run the database migrations and install the assets. Only these steps require manual intervention. Get the `api` pod name
 ```
 $ kubectl --namespace=continuouspipe get pods | grep api
 api-4019277730-bn6t0           1/1       Running   0          13m
-
-$ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- sh -c 'bin/console -e=prod doctrine:migrations:migrate --no-interaction'
-$ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- sh -c 'bin/console -e=prod assets:install'
-[...]
 ```
 
-5. Get the address of your `ui` load-balancer
+and execute:
+```
+$ kubectl --namespace=continuouspipe exec -it api-4019277730-bn6t0 -- \
+  sh -c 'bin/console --env=prod doctrine:migrations:migrate --no-interaction && \
+  bin/console --env=prod assets:install && \
+  bin/console --env=prod assetic:dump'
+```
+
+5. Get the address of your `ui` LoadBalancer
 ```
 $ kubectl --namespace=continuouspipe get services/ui
 NAME      TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
