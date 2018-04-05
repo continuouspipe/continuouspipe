@@ -45,20 +45,27 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
      */
     private $buildCreator;
 
+    /**
+     * @var string
+     */
+    private $builderVersion;
+
     public function __construct(
         ArchiveBuilder $archiveBuilder,
         ArtifactManager $artifactManager,
         GuzzleHttpClientFactory $httpClientFactory,
         ManifestFactory $manifestFactory,
         BuildCreator $buildCreator,
-        string $googleProjectId = null
+        string $googleProjectId = null,
+        string $builderVersion = 'v8'
     ) {
         $this->archiveBuilder = $archiveBuilder;
         $this->artifactManager = $artifactManager;
         $this->httpClientFactory = $httpClientFactory;
         $this->manifestFactory = $manifestFactory;
-        $this->googleProjectId = $googleProjectId;
         $this->buildCreator = $buildCreator;
+        $this->googleProjectId = $googleProjectId;
+        $this->builderVersion = $builderVersion;
     }
 
     public function createFromRequest(Build $build): GoogleContainerBuild
@@ -75,7 +82,7 @@ class HttpGoogleContainerBuildClient implements GoogleContainerBuilderClient
 
         $sourceArtifact = new Artifact($build->getIdentifier() . '.tar.gz');
         $this->writeArtifact($sourceArchive, $sourceArtifact);
-        $response = $this->startBuild($sourceArtifact, 'v8');
+        $response = $this->startBuild($sourceArtifact, $this->builderVersion);
 
         return new GoogleContainerBuild($this->getGcbBuildId($response));
     }

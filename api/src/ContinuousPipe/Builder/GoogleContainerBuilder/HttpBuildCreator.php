@@ -29,16 +29,23 @@ class HttpBuildCreator implements BuildCreator
      */
     private $maximumAllowedBuildTime;
 
+    /**
+     * @var string
+     */
+    private $builderImage;
+
     public function __construct(
         GuzzleHttpClientFactory $httpClientFactory,
         string $googleProjectId,
         string $googleSourceArtifactBucket,
+        string $builderImage,
         int $maximumAllowedBuildTime = 3600
     ) {
         $this->httpClientFactory = $httpClientFactory;
         $this->googleProjectId = $googleProjectId;
         $this->googleSourceArtifactBucket = $googleSourceArtifactBucket;
         $this->maximumAllowedBuildTime = $maximumAllowedBuildTime;
+        $this->builderImage = $builderImage;
     }
 
     public function startBuild(Artifact $sourceArtifact, string $gcbBuilderVersion): ResponseInterface
@@ -56,7 +63,7 @@ class HttpBuildCreator implements BuildCreator
                     ],
                     'steps' => [
                         [
-                            'name' => 'gcr.io/continuous-pipe-1042/cloud-builder:' . $gcbBuilderVersion,
+                            'name' => sprintf('%s:%s', $this->builderImage, $gcbBuilderVersion),
                             'args' => [
                                 // Delete the manifest file once read
                                 '-delete-manifest',

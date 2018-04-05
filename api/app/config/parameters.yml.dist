@@ -74,6 +74,8 @@ parameters:
 
     env(GOOGLE_CONTAINER_BUILDER_PROJECT_ID): ~
     env(GOOGLE_CONTAINER_BUILDER_SOURCE_BUCKET): ~
+    env(GOOGLE_CONTAINER_BUILDER_IMAGE): ~
+    env(GOOGLE_CONTAINER_BUILDER_VERSION): ~
     env(GOOGLE_CONTAINER_BUILDER_SERVICE_ACCOUNT_PATH): ~
 
     env(GOOGLE_CLOUD_AUDIT_LOG_PROJECT_ID): ~
@@ -165,6 +167,8 @@ parameters:
     google_container_builder_enabled: true
     google_container_builder_source_bucket: "%env(GOOGLE_CONTAINER_BUILDER_SOURCE_BUCKET)%"
     google_container_builder_project: "%env(GOOGLE_CONTAINER_BUILDER_PROJECT_ID)%"
+    google_container_builder_image: "%env(GOOGLE_CONTAINER_BUILDER_IMAGE)%"
+    google_container_builder_version: "%env(GOOGLE_CONTAINER_BUILDER_VERSION)%"
     google_container_builder_service_account_path: "%env(GOOGLE_CONTAINER_BUILDER_SERVICE_ACCOUNT_PATH)%"
 
     firebase_database_uri: 'https://%env(FIREBASE_APP)%.firebaseio.com'

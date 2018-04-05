@@ -50,12 +50,14 @@
             <argument type="service" id="builder.google_container_builder.manifest_factory" />
             <argument type="service" id="builder.google_container_builder.build_creator" />
             <argument>%google_container_builder_project%</argument>
+            <argument>%google_container_builder_version%</argument>
         </service>
 
         <service id="builder.google_container_builder.build_creator" class="ContinuousPipe\Builder\GoogleContainerBuilder\HttpBuildCreator">
             <argument type="service" id="builder.google_container_builder.http_client_factory" />
             <argument>%google_container_builder_project%</argument>
             <argument>%google_container_builder_source_bucket%</argument>
+            <argument>%google_container_builder_image%</argument>
         </service>
     </services>
 </container>
