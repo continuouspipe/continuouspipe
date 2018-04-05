@@ -5,7 +5,7 @@
     <p><i class="icon cp-icon-logo"></i></p>
 
     <h3>Connecting an account</h3>
-    <form action="{{ path('hwi_oauth_connect_service', {'service': service, 'key': key}) }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+    <form action="{{ path('hwi_oauth_connect_service', {'service': service, 'key': key}) }}" method="POST" class="fos_user_registration_register">
         {{ form_widget(form) }}
         <p>{{ 'connect.confirm.text' | trans({'%service%': service | trans({}, 'HWIOAuthBundle'), '%name%': userInformation.realName}, 'HWIOAuthBundle') }}</p>
 
