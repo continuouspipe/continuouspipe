@@ -11,8 +11,8 @@
 <md-content flex id="content" class="card-grid">
     <div class="zero-content-help" ng-if="projects.length == 0">
         <i class="cp-icon-arrow-right-up top-right-arrow"></i>
-        <h3>No project yet, you should create one!</h3>
-        <p>A project is a logical group of different <em>flows</em>. It will help you to organise your different group of code repositories.</p>
+        <h3>No projects yet, you should create one!</h3>
+        <p>A project is a logical group of different <em>flows</em>. It will help you to organise your different groups of code repositories.</p>
     </div>
     <remote-resource resource-name="projects">
         <div class="list-items" ng-if="projects.length != 0">
@@ -23,7 +23,7 @@
 
             <div class="list-item clickable" ng-repeat="project in projects | orderBy:'name'" ui-sref="flows({project: project.slug})">
                 <div class="list-col-8">
-                    <md-icon class="md-avatar-icon"><i class="material-icons">group</i></md-icon>
+                    <md-icon class="md-avatar-icon"><i class="material-icons">apps</i></md-icon>
                     <span>{{ project.name || project.slug }}</span>
                 </div>
                 <div class="list-col-2">
