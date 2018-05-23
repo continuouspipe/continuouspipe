@@ -11,4 +11,4 @@ if [ -z "$SYMFONY_ENV" ]; then
     SYMFONY_ENV=prod
 fi
 
-exec /app/bin/console -e "$SYMFONY_ENV" continuouspipe:message:pull-and-consume "${EXTRA_ARGUMENTS[@]}"
+exec /app/bin/console --env="$SYMFONY_ENV" continuouspipe:message:pull-and-consume "${EXTRA_ARGUMENTS[@]}"
