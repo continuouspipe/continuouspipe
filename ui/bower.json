@@ -38,8 +38,10 @@
   "appPath": "app",
   "moduleName": "continuousPipeRiver",
   "resolutions": {
+    "angular-google-chart": "be412b217d73e4825aaa3217bdc2ecb063c5e947",
     "angular": "~1.5.0",
-    "angular-material": "~1.0.6",
-    "angular-google-chart": "be412b217d73e4825aaa3217bdc2ecb063c5e947"
+    "angular-aria": "~1.5.0",
+    "angular-messages": "~1.5.0",
+    "angular-animate": "~1.5.0"
   }
 }
