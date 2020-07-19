@@ -15,7 +15,7 @@ To work, ContinuousPipe requires the following:
 
 1. **GitHub OAuth Application**, to let users authenticate themselves with their GitHub account.
 2. **GitHub App** (also called "GitHub Integration"). In order to connect ContinuousPipe to a set of GitHub repositories, receive
-   web-hooks and 
+   web-hooks and
 3. **Firebase account**, to have realtime logs of your builds and deployments.
 
 ### 0. Internet Public Address
@@ -35,8 +35,8 @@ Go to your [GitHub OAuth Apps settings](https://github.com/settings/developers) 
 Fill in the following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
-2. **Homepage URL:** https://continuouspipe.io
-3. **Authorization callback URL:** `$LOCAL_API_URL/auth/login/check-github` (`$LOCAL_API_URL` is the URL you use to access 
+2. **Homepage URL:** https://continuouspipe.github.io
+3. **Authorization callback URL:** `$LOCAL_API_URL/auth/login/check-github` (`$LOCAL_API_URL` is the URL you use to access
    the authentication page. On the Docker-Compose setup, it would be `http://localhost:81`)
 
 ![OAuth application form](runtime/assets/installation/20-oauth-application-form.png)
@@ -56,8 +56,8 @@ Go to your [GitHub Apps settings](https://github.com/settings/apps) and click on
 Fill in the following details:
 
 1. **Application name:** ContinuousPipe for *your-organisation*
-1. **Homepage URL:** https://continuouspipe.io
-1. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain 
+1. **Homepage URL:** https://continuouspipe.github.io
+1. **WebHook URL:** `$PUBLIC_API_URL/github/integration/webhook` (`$PUBLIC_API_URL` is the base URL of the public domain
    name, such as the ngrok tunnel mentioned earlier)
 1. **WebHook secret:** *a random secret string you want (keep it for later)*
 
@@ -90,21 +90,21 @@ Subscribe to the following events:
 
 ![Integration events](runtime/assets/installation/70-integration-events.png)
 
-Press the green button **Create GitHub App**. 
+Press the green button **Create GitHub App**.
 
 You should arrive on a page summarizing your GitHub integration.
-The `GITHUB_INTEGRATION_ID` configuration will be the **ID** displayed in the **About** section. 
-The `GITHUB_SECRET` configuration is what you typed as a **WebHook secret** earlier. 
+The `GITHUB_INTEGRATION_ID` configuration will be the **ID** displayed in the **About** section.
+The `GITHUB_SECRET` configuration is what you typed as a **WebHook secret** earlier.
 
-The `GITHUB_INTEGRATION_SLUG` is the name for the integration in the URL 
+The `GITHUB_INTEGRATION_SLUG` is the name for the integration in the URL
 (given the URL `https://github.com/settings/apps/continuouspipe-for-samuel`, the slug would be `continuouspipe-for-samuel`).
 
-Last but not least, you need to generate the private key for this integration by clicking on the **Generate private key** button. 
+Last but not least, you need to generate the private key for this integration by clicking on the **Generate private key** button.
 Once you have downloaded the `.pem` file, paste its path in the installation process (or manually paste it to `./runtime/keys/github.pem`).
 
 ### 3. Firebase
 
-In order to display the real-time logs of your builds and deployments, ContinuousPipe uses Firebase Realtime Database. You 
+In order to display the real-time logs of your builds and deployments, ContinuousPipe uses Firebase Realtime Database. You
 need an account and a project for ContinuousPipe.
 
 **Note:** the Free plan should be enough for most of the usages. ContinuousPipe can also archive logs to a Google Cloud Storage
@@ -114,14 +114,14 @@ Go to the [Firebase Console](https://console.firebase.google.com/) and create a 
 you can read the "Project ID" for the `FIREBASE_APP` configuration. The `FIREBASE_WEB_API_KEY` is just bellow, titled "Web API Key".
 
 You will need a service account as well. In the "Settings", go to the "Service accounts" tab. Make sure the "Firebase Admin SDK"
-tab is selected on the left and press "Generate new private key". Same than for the GitHub key, use the path of the downloaded 
+tab is selected on the left and press "Generate new private key". Same than for the GitHub key, use the path of the downloaded
 file within the configurator to propagate the key (or manually paste it to `./runtime/keys/firebase.json`).
 
 ## Starting ContinuousPipe
 
 ContinuousPipe is a web application. You can run it in various different ways but we've especially worked on two options:
 
-1. [With DockerCompose](#option-1-docker-compose), on your own machine(s). It is started by default in development mode (which is slower than usual) 
+1. [With DockerCompose](#option-1-docker-compose), on your own machine(s). It is started by default in development mode (which is slower than usual)
    and is especially useful to give a try to ContinuousPipe.
 
 2. [With `kubectl` on your Kubernetes cluster](#option-2-kubernetes). You already have a cluster and configured your `kubectl` command line tool, you can deploy
@@ -210,5 +210,5 @@ ui        LoadBalancer   10.3.247.115   35.195.150.34   80:32341/TCP   21m
 For your first time after the installation, we've got a [first usage of ContinuousPipe](FIRST_USAGE.md) guide for you.
 It should help you understand what's around you and do your first deployment!
 
-Last but not least, checkout [the documentation](https://docs.continuouspipe.io) and especially the basics and 
-[ContinuousPipe's concepts](https://docs.continuouspipe.io/basics/concepts-continuous-pipe-concepts/)
+Last but not least, checkout [the documentation](https://documentation-continuouspipe.github.io) and especially the basics and
+[ContinuousPipe's concepts](https://documentation-continuouspipe.github.io/basics/concepts-continuous-pipe-concepts/)

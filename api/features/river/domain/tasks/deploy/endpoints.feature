@@ -275,7 +275,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.example.com"'
 
                         specification:
                             source:
@@ -285,7 +285,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-certeo.inviqa-001.example.com"
 
   Scenario: If the branch name contains non valid characters, the ingress host name can be slugified
     When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
@@ -302,7 +302,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.example.com"'
 
                         specification:
                             source:
@@ -312,7 +312,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-123-foo-bar-certeo.inviqa-001.example.com"
 
   Scenario: If the branch name is too long, the host name can be hashed with a custom function
     When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
@@ -329,7 +329,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.example.com"'
 
                         specification:
                             source:
@@ -339,7 +339,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "my-very-long-shi-02b27a5635-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "my-very-long-shi-02b27a5635-certeo.inviqa-001.example.com"
 
   Scenario: The host_suffix key can be used to simplify slugifying and shortening hostnames
     When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
@@ -355,7 +355,7 @@ Feature:
                                 name: http
                                 ingress:
                                     class: nginx
-                                    host_suffix: "-certeo.inviqa-001.continuouspipe.net"
+                                    host_suffix: "-certeo.inviqa-001.example.com"
 
                         specification:
                             source:
@@ -365,7 +365,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "feature-my-very-c5743d6c37-certeo.inviqa-001.example.com"
 
   Scenario: The host_suffix cannot be too long
     When a tide is started for the branch "feature/new-branch-name" with the following configuration:
@@ -381,7 +381,7 @@ Feature:
                                 name: http
                                 ingress:
                                     class: nginx
-                                    host_suffix: "my-very-long-host-suffix-certeo.inviqa-001.continuouspipe.net"
+                                    host_suffix: "my-very-long-host-suffix-certeo.inviqa-001.example.com"
 
                         specification:
                             source:
@@ -437,7 +437,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'code_reference.branch ~ "-certeo.inviqa-001.example.com"'
 
                                 cloud_flare_zone:
                                     zone_identifier: 123456
@@ -470,7 +470,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'certeo.inviqa-001.continuouspipe.net'
+                                        expression: 'certeo.inviqa-001.example.com'
 
                         specification:
                             source:
@@ -479,7 +479,7 @@ Feature:
                                 - 80
     """
     Then the tide should be failed
-    And a log containing 'The expression provided ("certeo.inviqa-001.continuouspipe.net") is not valid' should be created
+    And a log containing 'The expression provided ("certeo.inviqa-001.example.com") is not valid' should be created
 
   Scenario: The hostname is generated for cloudflare
     When a tide is started with the following configuration:
@@ -525,7 +525,7 @@ Feature:
                                 cloud_flare_zone:
                                     zone_identifier: 123456
                                     host:
-                                        expression: 'code_reference.branch ~ ".certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'code_reference.branch ~ ".certeo.inviqa-001.example.com"'
                                     authentication:
                                         email: sam@example.com
                                         api_key: qwerty1234567890
@@ -538,7 +538,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "master.certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "master.certeo.inviqa-001.example.com"
 
   Scenario: Create cloudflare dns configuration with slugified host expression
     When a tide is started for the branch "feature/123-foo-bar" with the following configuration:
@@ -555,7 +555,7 @@ Feature:
                                 cloud_flare_zone:
                                     zone_identifier: 123456
                                     host:
-                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'slugify(code_reference.branch) ~ "-certeo.inviqa-001.example.com"'
                                     authentication:
                                         email: sam@example.com
                                         api_key: qwerty1234567890
@@ -568,7 +568,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-123-foo-bar-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-123-foo-bar-certeo.inviqa-001.example.com"
 
   Scenario: Create cloudflare dns configuration with hashed host expression
     When a tide is started for the branch "my-very-long-shiny-new-feature-branch-name" with the following configuration:
@@ -585,7 +585,7 @@ Feature:
                                 cloud_flare_zone:
                                     zone_identifier: 123456
                                     host:
-                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.continuouspipe.net"'
+                                        expression: 'hash_long_domain_prefix(code_reference.branch, 27) ~ "-certeo.inviqa-001.example.com"'
                                     authentication:
                                         email: sam@example.com
                                         api_key: qwerty1234567890
@@ -598,7 +598,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "my-very-long-shi-02b27a5635-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "my-very-long-shi-02b27a5635-certeo.inviqa-001.example.com"
 
   Scenario: The host_suffix key can be used to simplify slugifying and shortening CloudFlare hostnames
     When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
@@ -614,7 +614,7 @@ Feature:
                                 name: http
                                 cloud_flare_zone:
                                     zone_identifier: 123456
-                                    record_suffix: "-certeo.inviqa-001.continuouspipe.net"
+                                    record_suffix: "-certeo.inviqa-001.example.com"
                                     authentication:
                                         email: sam@example.com
                                         api_key: qwerty1234567890
@@ -627,7 +627,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with a CloudFlare DNS zone configuration with hostname "feature-my-very-c5743d6c37-certeo.inviqa-001.example.com"
 
   @smoke
   Scenario: A self-signed SSL certificate can be generated automatically for the hostname
@@ -645,7 +645,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-12357-flex.continuouspipe.net"'
+                                        expression: 'code_reference.branch ~ "-12357-flex.example.com"'
 
                                 cloud_flare_zone:
                                     zone_identifier: 123456
@@ -668,7 +668,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "app"
     And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
     And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
-    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.example.com"
 
   Scenario: A self-signed SSL certificate can be generated automatically for the hostname, regardless the name
     When a tide is started for the branch "my-feature" with the following configuration:
@@ -685,7 +685,7 @@ Feature:
                                 ingress:
                                     class: nginx
                                     host:
-                                        expression: 'code_reference.branch ~ "-12357-flex.continuouspipe.net"'
+                                        expression: 'code_reference.branch ~ "-12357-flex.example.com"'
                                 cloud_flare_zone:
                                     zone_identifier: 123456
                                     authentication:
@@ -705,7 +705,7 @@ Feature:
     And the component "app" should be deployed with an endpoint named "app"
     And the endpoint "app" of the component "app" should be deployed with a CloudFlare DNS zone configuration
     And the endpoint "app" of the component "app" should be deployed with 1 SSL certificate
-    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.continuouspipe.net"
+    And the endpoint "app" of the component "app" should be deployed with a SSL certificate for the hostname "my-feature-12357-flex.example.com"
 
   Scenario: I can use directly the host, without an expression
     When a tide is started for the branch "feature/my-very-long-shiny-new-branch-name" with the following configuration:
@@ -721,7 +721,7 @@ Feature:
                                 name: http
                                 ingress:
                                     class: nginx
-                                    host: docs.continuouspipe.io
+                                    host: documentation-continuouspipe.github.io
 
                         specification:
                             source:
@@ -731,7 +731,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "documentation-continuouspipe.github.io"
 
   Scenario: Non-matching condition means the endpoint is not used
     When a tide is started for the branch "master" with the following configuration:
@@ -746,12 +746,12 @@ Feature:
                             - name: production
                               ingress:
                                 class: nginx
-                                host: docs.continuouspipe.io
+                                host: documentation-continuouspipe.github.io
                               condition: code_reference.branch == 'production'
                             - name: http
                               ingress:
                                 class: nginx
-                                host_suffix: -12357-flex.continuouspipe.net
+                                host_suffix: -12357-flex.example.com
 
                         specification:
                             source:
@@ -762,7 +762,7 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the component "app" should not be deployed with an endpoint named "production"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-12357-flex.continuouspipe.net"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "master-12357-flex.example.com"
 
   Scenario: Matching condition means the endpoint is used
     When a tide is started for the branch "production" with the following configuration:
@@ -777,12 +777,12 @@ Feature:
                             - name: production
                               ingress:
                                 class: nginx
-                                host: docs.continuouspipe.io
+                                host: documentation-continuouspipe.github.io
                               condition: code_reference.branch == 'production'
                             - name: http
                               ingress:
                                 class: nginx
-                                host_suffix: -12357-flex.continuouspipe.net
+                                host_suffix: -12357-flex.example.com
 
                         specification:
                             source:
@@ -792,5 +792,5 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "production-12357-flex.continuouspipe.net"
-    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "docs.continuouspipe.io"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "production-12357-flex.example.com"
+    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "documentation-continuouspipe.github.io"

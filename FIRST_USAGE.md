@@ -1,6 +1,6 @@
 # First usage of ContinuousPipe
 
-You have already [installed ContinuousPipe](INSTALL.md), probably explored [the documentation of ContinuousPipe](https://docs.continuouspipe.io) 
+You have already [installed ContinuousPipe](INSTALL.md), probably explored [the documentation of ContinuousPipe](https://documentation-continuouspipe.github.io)
 already and are looking at more details to ease your first usage of ContinuousPipe: you are at the right place!
 You should see something like that:
 
@@ -21,7 +21,7 @@ see the following screen.
 
 ![An empty project](runtime/assets/first-usage/1-no-flows.png)
 
-You can see that a project contains some flows (your code repositories), Docker Registries and Clusters. Lean more about the concept of "Project" [in the Concepts documentation](https://docs.continuouspipe.io/basics/concepts-continuous-pipe-concepts/#projects)
+You can see that a project contains some flows (your code repositories), Docker Registries and Clusters. Lean more about the concept of "Project" [in the Concepts documentation](https://documentation-continuouspipe.github.io/basics/concepts-continuous-pipe-concepts/#projects)
 
 ## 2. Add a Kubernetes cluster
 
@@ -30,7 +30,7 @@ which ContinuousPipe runs or can be something completely different.
 
 ![Add a Docker Registry credentials](runtime/assets/first-usage/3-add-a-cluster.gif)
 
-Check out more details in the [Configuring a cluster](https://docs.continuouspipe.io/quick-start/configuring-a-cluster/) documentation.
+Check out more details in the [Configuring a cluster](https://documentation-continuouspipe.github.io/quick-start/configuring-a-cluster/) documentation.
 
 ## 3. Add some Docker Registry credentials
 
@@ -39,22 +39,22 @@ order to have ContinuousPipe building and pushing your Docker images!
 
 ![Add a Kubernetes cluster](runtime/assets/first-usage/2-add-a-docker-registry.gif)
 
-Check out more details in the [Configuring a Docker Registry](https://docs.continuouspipe.io/quick-start/configuring-a-registry/) documentation.
+Check out more details in the [Configuring a Docker Registry](https://documentation-continuouspipe.github.io/quick-start/configuring-a-registry/) documentation.
 
 ## 4. Create your flow
 
-Now, you are ready to create your first Flow. It's basically a code repository plus some configuration. Just click on 
+Now, you are ready to create your first Flow. It's basically a code repository plus some configuration. Just click on
 the **Create a flow** button and select your code repository:
 
 ![Flow creation: select your code repository](runtime/assets/first-usage/4-create-flow.png)
 
-Once you have selected your flow, a checklist will appear. You can verify that your GitHub App has access to your code 
+Once you have selected your flow, a checklist will appear. You can verify that your GitHub App has access to your code
 repository. Click on "Get started" to create your first deployment!
 
 ![Flow checklist](runtime/assets/first-usage/5-flow-checklist.png)
 
 **Note:** You may also see options to automatically create and/or use an automated Kubernetes cluster and/or Docker Registry.
-These are explained in the [Automation section](https://docs.continuouspipe.io/automation/) of the documentation.
+These are explained in the [Automation section](https://documentation-continuouspipe.github.io/automation/) of the documentation.
 
 ## 5. Start your first deployment
 
@@ -63,7 +63,7 @@ You can also click on the "Start manually" button to manually start a new tide:
 
 ![Start a tide manually](runtime/assets/first-usage/6-start-tide-manually.png)
 
-Once your tide is created, you should be redirected back to the overview of the flow: 
+Once your tide is created, you should be redirected back to the overview of the flow:
 
 ![Overview of the flow: tide is running](runtime/assets/first-usage/7-tide-is-running.png)
 
@@ -74,5 +74,5 @@ When your tide is finished, all you need is to click on the "Open app" button.
 
 ## More...
 
-You want more? Check out [the documentation](https://docs.continuouspipe.io). You can also join [our Slack community](README.md#community),
+You want more? Check out [the documentation](https://documentation-continuouspipe.github.io). You can also join [our Slack community](README.md#community),
 even contribute to the code on GitHub.

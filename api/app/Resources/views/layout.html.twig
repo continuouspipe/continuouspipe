@@ -17,7 +17,7 @@
     <header class="header">
         <div class="account-links">
             {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-            <a href="https://ui.continuouspipe.io">Console</a>
+            <a href="/">Console</a>
             <a href="{{ path('logout') }}">Logout</a>
             {% endif %}
         </div>

@@ -26,7 +26,7 @@ The authentication is made by HTTP basic auth.
 
 ```
 KUBE_PROXY_LISTEN_ADDRESS=https://localhost:4433 \
-KUBE_PROXY_API_URL=http://your-api.continuouspipe.io \
+KUBE_PROXY_API_URL=http://your-api.example.com \
 KUBE_PROXY_MASTER_API_KEY=[api-key] \
 KUBE_PROXY_INSECURE_SKIP_VERIFY=true \
 go run main.go -logtostderr -v 5

@@ -73,8 +73,10 @@ class InvitationController
 
         $this->userInvitationRepository->delete($invitation);
 
+        throw new \Exception("This needs customisation for your installation");
+
         return new RedirectResponse(
-            'https://ui.continuouspipe.io/team/'.$invitation->getTeamSlug().'/flows'
+            '/team/'.$invitation->getTeamSlug().'/flows'
         );
     }
 

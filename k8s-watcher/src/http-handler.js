@@ -4,7 +4,7 @@ var ajv = require('ajv')(),
 var HttpHandlerFactory = function(queue, firebase, statsd) {
     var redirect = function(request, response) {
         response.writeHead(200, {"Content-Type": "text/html"});
-        response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.io" /></head></html>');
+        response.write('<html><head><meta http-equiv="refresh" content="0; url=https://continuouspipe.github.io" /></head></html>');
         response.end();
     };
 

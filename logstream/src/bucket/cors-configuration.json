@@ -1,12 +1,6 @@
 [
   {
     "origin": [
-      "http://logstream.continuouspipe.io",
-      "http://river.continuouspipe.io",
-      "http://ui.continuouspipe.io",
-      "https://logstream.continuouspipe.io",
-      "https://ui.continuouspipe.io",
-      "https://river.continuouspipe.io",
       "http://localhost:9000",
       "http://logstream-frontend.docker",
       "http://logstream_frontend.docker"

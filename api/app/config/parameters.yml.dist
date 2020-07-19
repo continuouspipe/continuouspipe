@@ -15,7 +15,7 @@ parameters:
     env(LOGSTREAM_URL): https://void
     env(K8S_WATCHER_URL): https://void
     env(K8S_HEALTH_CHECKER_URL): https://void
-    env(AUTH_DEFAULT_REDIRECTION_URL): http://localhost # https://ui.continuouspipe.io
+    env(AUTH_DEFAULT_REDIRECTION_URL): http://localhost # https://your-ui.example.com
 
     env(KEEN_PROJECT_ID): ~
     env(KEEN_WRITE_KEY): ~

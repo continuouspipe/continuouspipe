@@ -23,7 +23,7 @@ class Guzzle4HttpClient implements HttpClientInterface
      * @var array
      */
     private $options = [
-        'user_agent' => 'continuous-pipe (http://continuouspipe.io)',
+        'user_agent' => 'continuous-pipe (https://continuouspipe.github.io)',
         'api_version' => 'v3',
     ];
 

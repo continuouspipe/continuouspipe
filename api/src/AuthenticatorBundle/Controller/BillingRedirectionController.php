@@ -70,7 +70,8 @@ class BillingRedirectionController
         }
 
         if (empty($target)) {
-            $target = 'https://ui.continuouspipe.io/billing';
+            throw new \Exception("This needs customisation for your installation");
+            $target = 'https://your-ui.example.com/billing';
         }
 
         return new RedirectResponse($target);

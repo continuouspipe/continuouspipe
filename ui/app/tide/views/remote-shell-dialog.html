@@ -3,7 +3,7 @@
         <md-tabs>
             <md-tab label="From your laptop">
                 <md-content class="md-padding flex">
-                    <p><strong>Note:</strong> In order to open a bash session in this container, you need to have <a href="https://docs.continuouspipe.io/remote-development/getting-started/">cp-remote</a> installed and configured.</p>
+                    <p><strong>Note:</strong> In order to open a bash session in this container, you need to have <a href="https://documentation-continuouspipe.github.io/remote-development/getting-started/">cp-remote</a> installed and configured.</p>
                     <pre class="raw">cp-remote bash -i -e {{environment.identifier}} -s {{component.name}} -f {{environment.flow.uuid}}</pre>
                     <hr />
                     <p><strong>If <code>/bin/bash</code> is not available on the pod</strong>, you can specify the command you want to run:</p>

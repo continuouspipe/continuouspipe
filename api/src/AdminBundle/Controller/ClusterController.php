@@ -57,13 +57,7 @@ class ClusterController
         }
 
         $httpClient = new Client();
-        $response = $httpClient->post('https://kube-status.continuouspipe.io/cluster/full-status', [
-            'json' => [
-                'address' => $cluster->getAddress(),
-                'username' => $cluster->getUsername(),
-                'password' => $cluster->getPassword(),
-            ],
-        ]);
+        throw new \Exception("This needs customisation for your installation");
 
         $status = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
 

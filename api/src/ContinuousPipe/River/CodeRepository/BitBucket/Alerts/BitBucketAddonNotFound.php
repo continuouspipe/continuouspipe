@@ -48,7 +48,7 @@ class BitBucketAddonNotFound implements AlertsRepository
                 new AlertAction(
                     'link',
                     'Documentation',
-                    'https://docs.continuouspipe.io/configuration/bitbucket-integration/'
+                    'https://documentation-continuouspipe.github.io/configuration/bitbucket-integration/'
                 )
             );
         }

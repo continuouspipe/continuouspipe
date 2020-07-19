@@ -11,7 +11,7 @@ import (
 )
 
 var envCpApiUrl, _ = os.LookupEnv("KUBE_PROXY_API_URL") //e.g.: https://api
-//var envCpRiverHost, _ = os.LookupEnv("KUBE_PROXY_RIVER_HOST")                 //e.g.: river-staging.continuouspipe.io
+//var envCpRiverHost, _ = os.LookupEnv("KUBE_PROXY_RIVER_HOST")                 //e.g.: your-river.example.com
 var envCpMasterApiKey, _ = os.LookupEnv("KUBE_PROXY_MASTER_API_KEY")          // master api key for cp api
 
 type ClusterInfoProvider interface {
