@@ -210,5 +210,5 @@ ui        LoadBalancer   10.3.247.115   35.195.150.34   80:32341/TCP   21m
 For your first time after the installation, we've got a [first usage of ContinuousPipe](FIRST_USAGE.md) guide for you.
 It should help you understand what's around you and do your first deployment!
 
-Last but not least, checkout [the documentation](https://documentation-continuouspipe.github.io) and especially the basics and
-[ContinuousPipe's concepts](https://documentation-continuouspipe.github.io/basics/concepts-continuous-pipe-concepts/)
+Last but not least, checkout [the documentation](https://continuouspipe.github.io/docs) and especially the basics and
+[ContinuousPipe's concepts](https://continuouspipe.github.io/docs/basics/concepts-continuous-pipe-concepts/)

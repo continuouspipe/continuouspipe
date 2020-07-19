@@ -721,7 +721,7 @@ Feature:
                                 name: http
                                 ingress:
                                     class: nginx
-                                    host: documentation-continuouspipe.github.io
+                                    host: continuouspipe.github.io
 
                         specification:
                             source:
@@ -731,7 +731,7 @@ Feature:
     """
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
-    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "documentation-continuouspipe.github.io"
+    And the endpoint "http" of the component "app" should be deployed with an ingress with the host "continuouspipe.github.io"
 
   Scenario: Non-matching condition means the endpoint is not used
     When a tide is started for the branch "master" with the following configuration:
@@ -746,7 +746,7 @@ Feature:
                             - name: production
                               ingress:
                                 class: nginx
-                                host: documentation-continuouspipe.github.io
+                                host: continuouspipe.github.io
                               condition: code_reference.branch == 'production'
                             - name: http
                               ingress:
@@ -777,7 +777,7 @@ Feature:
                             - name: production
                               ingress:
                                 class: nginx
-                                host: documentation-continuouspipe.github.io
+                                host: continuouspipe.github.io
                               condition: code_reference.branch == 'production'
                             - name: http
                               ingress:
@@ -793,4 +793,4 @@ Feature:
     Then the component "app" should be deployed
     And the component "app" should be deployed with an endpoint named "http"
     And the endpoint "http" of the component "app" should be deployed with an ingress with the host "production-12357-flex.example.com"
-    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "documentation-continuouspipe.github.io"
+    And the endpoint "production" of the component "app" should be deployed with an ingress with the host "continuouspipe.github.io"
