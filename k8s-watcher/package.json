@@ -11,7 +11,7 @@
     "express": "^4.13.3",
     "firebase": "^2.4.2",
     "firebase-admin": "^5.2.1",
-    "googleapis": "^21.3.0",
+    "googleapis": "^39.1.0",
     "kubernetes-client": "^2.2.2",
     "kue": "^0.11.5",
     "node-statsd": "^0.1.1",
