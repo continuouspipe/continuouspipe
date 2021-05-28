@@ -11,7 +11,7 @@ melody_run() {
         if [[ "$REPLY" =~ ^[Yy]$ ]]; then
             sudo sh -c "curl http://get.sensiolabs.org/melody.phar -o /usr/local/bin/melody && chmod a+x /usr/local/bin/melody"
         else
-            exit 1
+            exit 1 # exiting does not allow windows to run melody
         fi
     }
 
