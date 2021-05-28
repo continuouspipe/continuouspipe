@@ -78,15 +78,27 @@ angular.module('continuousPipeRiver')
             });
         };
 
-        $scope.deleteAndRetry = function(environment) {
-            swal({
+        $scope.delete = function(environment) {
+            getDeleteConfirmationMessage(environment.identifier).then(function() {
+                EnvironmentRepository.delete(flow, environment).then(function () {}, function (error) {
+                    swal("Error !", $http.getError(error) || "An unknown error occurred while deleting the environment", "error");
+                });
+            }).catch(swal.noop);
+        };
+
+        getDeleteConfirmationMessage = function (identifier) {
+            return swal({
                 title: "Are you sure?",
-                text: "The environment "+environment.identifier+" won't be recoverable",
+                text: "The environment "+identifier+" won't be recoverable",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "Yes, remove it!"
-            }).then(function() {
+            });
+        }
+
+        $scope.deleteAndRetry = function(environment) {
+            getDeleteConfirmationMessage(environment.identifier).then(function() {
                 EnvironmentRepository.delete(flow, environment).then(function () {
                     $scope.retry();
 
