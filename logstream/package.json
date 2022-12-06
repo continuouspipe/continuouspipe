@@ -7,7 +7,7 @@
   "dependencies": {
     "core-util-is": "^1.0.2",
     "dns-zonefile": "^0.2.2",
-    "express": "^4.15.4",
+    "express": "^4.18.2",
     "firebase": "^2.4.2",
     "firebase-admin": "^5.8.1",
     "google-auth-library": "^0.11.0",
