@@ -9,7 +9,7 @@
     "dns-zonefile": "^0.2.2",
     "express": "^4.15.4",
     "firebase": "^2.4.2",
-    "firebase-admin": "^5.8.1",
+    "firebase-admin": "^11.4.1",
     "google-auth-library": "^0.11.0",
     "google-cloud": "^0.56.0",
     "graceful-fs": "^4.1.11",
